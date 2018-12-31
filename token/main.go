@@ -3,7 +3,7 @@ package token
 import (
 	"github.com/axetroy/redpack/utils"
 	"github.com/dgrijalva/jwt-go"
-	"gitlab.com/axetroy/server/exception"
+	"github.com/axetroy/go-server/exception"
 	"strconv"
 	"strings"
 	"time"

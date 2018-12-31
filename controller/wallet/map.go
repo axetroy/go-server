@@ -4,10 +4,10 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"gitlab.com/axetroy/server/exception"
-	"gitlab.com/axetroy/server/model"
-	"gitlab.com/axetroy/server/orm"
-	"gitlab.com/axetroy/server/response"
+	"github.com/axetroy/go-server/exception"
+	"github.com/axetroy/go-server/model"
+	"github.com/axetroy/go-server/orm"
+	"github.com/axetroy/go-server/response"
 	"net/http"
 )
 

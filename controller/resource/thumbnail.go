@@ -3,7 +3,7 @@ package resource
 import (
 	"github.com/axetroy/go-fs"
 	"github.com/gin-gonic/gin"
-	"gitlab.com/axetroy/server/controller/uploader"
+	"github.com/axetroy/go-server/controller/uploader"
 	"net/http"
 	"path"
 )

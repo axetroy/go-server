@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/joho/godotenv"
-	"gitlab.com/axetroy/server/router"
+	"github.com/axetroy/go-server/router"
 )
 
 func init() {

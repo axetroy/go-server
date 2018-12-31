@@ -3,10 +3,10 @@ package email_test
 import (
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
-	"gitlab.com/axetroy/server/controller/email"
-	"gitlab.com/axetroy/server/exception"
-	"gitlab.com/axetroy/server/response"
-	"gitlab.com/axetroy/server/tester"
+	"github.com/axetroy/go-server/controller/email"
+	"github.com/axetroy/go-server/exception"
+	"github.com/axetroy/go-server/response"
+	"github.com/axetroy/go-server/tester"
 	"net/http"
 	"testing"
 )

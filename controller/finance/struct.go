@@ -1,6 +1,6 @@
 package finance
 
-import "gitlab.com/axetroy/server/model"
+import "github.com/axetroy/go-server/model"
 
 type Log struct {
 	Id       int64  `json:"id"`       // 流水ID

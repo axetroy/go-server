@@ -2,7 +2,7 @@ package user
 
 import (
 	"github.com/gin-gonic/gin"
-	"gitlab.com/axetroy/server/response"
+	"github.com/axetroy/go-server/response"
 	"net/http"
 )
 

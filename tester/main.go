@@ -2,7 +2,7 @@ package tester
 
 import (
 	"github.com/axetroy/mocker"
-	"gitlab.com/axetroy/server/router"
+	"github.com/axetroy/go-server/router"
 )
 
 var (

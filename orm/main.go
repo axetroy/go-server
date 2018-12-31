@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/go-xorm/xorm"
 	_ "github.com/lib/pq"
-	"gitlab.com/axetroy/server/model"
+	"github.com/axetroy/go-server/model"
 	"log"
 )
 

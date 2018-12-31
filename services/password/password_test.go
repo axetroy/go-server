@@ -2,7 +2,7 @@ package password_test
 
 import (
 	"github.com/stretchr/testify/assert"
-	"gitlab.com/axetroy/server/services/password"
+	"github.com/axetroy/go-server/services/password"
 	"testing"
 )
 

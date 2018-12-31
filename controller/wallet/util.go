@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris/core/errors"
-	"gitlab.com/axetroy/server/model"
+	"github.com/axetroy/go-server/model"
 	"strings"
 )
 

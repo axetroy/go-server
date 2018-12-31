@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"gitlab.com/axetroy/server/response"
-	"gitlab.com/axetroy/server/token"
+	"github.com/axetroy/go-server/response"
+	"github.com/axetroy/go-server/token"
 	"net/http"
 )
 
