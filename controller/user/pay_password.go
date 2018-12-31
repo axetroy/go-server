@@ -2,13 +2,13 @@ package user
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/model"
 	"github.com/axetroy/go-server/orm"
 	"github.com/axetroy/go-server/response"
 	"github.com/axetroy/go-server/services/password"
+	"github.com/gin-gonic/gin"
+	"github.com/go-xorm/xorm"
 	"net/http"
 )
 
@@ -24,7 +24,7 @@ type UpdatePayPasswordParams struct {
 func SetPayPassword(context *gin.Context) {
 	var (
 		err     error
-		uid     int64
+		uid     string
 		input   SetPayPasswordParams
 		session *xorm.Session
 		tx      bool
@@ -76,7 +76,7 @@ func SetPayPassword(context *gin.Context) {
 
 	// TODO 校验input是否正确
 
-	uid = context.GetInt64("uid")
+	uid = context.GetString("uid")
 
 	session = orm.Db.NewSession()
 
@@ -116,7 +116,7 @@ func SetPayPassword(context *gin.Context) {
 func UpdatePayPassword(context *gin.Context) {
 	var (
 		err     error
-		uid     int64
+		uid     string
 		input   UpdatePasswordParams
 		session *xorm.Session
 		tx      bool
@@ -173,7 +173,7 @@ func UpdatePayPassword(context *gin.Context) {
 
 	// TODO: 校验支付密码格式是否正确
 
-	uid = context.GetInt64("uid")
+	uid = context.GetString("uid")
 
 	session = orm.Db.NewSession()
 

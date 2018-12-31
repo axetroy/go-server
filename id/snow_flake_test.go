@@ -1,12 +1,11 @@
 package id
 
 import (
-	"strconv"
 	"testing"
 )
 
 func TestGenerate(t *testing.T) {
-	id := strconv.FormatInt(Generate(), 10)
+	id := Generate()
 
 	if len(id) != 17 {
 		t.Fail()

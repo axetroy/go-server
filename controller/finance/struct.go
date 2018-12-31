@@ -3,10 +3,10 @@ package finance
 import "github.com/axetroy/go-server/model"
 
 type Log struct {
-	Id       int64  `json:"id"`       // 流水ID
+	Id       string `json:"id"`       // 流水ID
 	Currency string `json:"currency"` // 对应的币种流水
-	OrderId  int64  `json:"order_id"` // 对应的订单id, 系统产生的流水可能不会orderId
-	Uid      int64  `json:"uid"`      // 对应的用户
+	OrderId  string `json:"order_id"` // 对应的订单id, 系统产生的流水可能不会orderId
+	Uid      string `json:"uid"`      // 对应的用户
 
 	BeforeBalance   float64 `json:"before_balance"`   // 这条流水前的余额
 	BalanceMutation float64 `json:"balance_mutation"` // 可用余额的变动，正数则为加，负数为减

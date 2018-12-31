@@ -2,8 +2,6 @@ package email
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/id"
 	"github.com/axetroy/go-server/model"
@@ -12,8 +10,9 @@ import (
 	"github.com/axetroy/go-server/services/email"
 	"github.com/axetroy/go-server/services/redis"
 	"github.com/axetroy/go-server/utils"
+	"github.com/gin-gonic/gin"
+	"github.com/go-xorm/xorm"
 	"net/http"
-	"strconv"
 	"time"
 )
 
@@ -21,9 +20,9 @@ type SendResetPasswordEmailParams struct {
 	To string `json:"to"` // 发送给谁
 }
 
-func GenerateResetCode(uid int64) string {
+func GenerateResetCode(uid string) string {
 	// 生成重置码
-	var codeId = "reset-" + strconv.FormatInt(id.Generate(), 10) + strconv.FormatInt(uid, 10)
+	var codeId = "reset-" + id.Generate() + uid
 	return utils.MD5(codeId)
 }
 

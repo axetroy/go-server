@@ -9,7 +9,7 @@ var (
 )
 
 type Wallet struct {
-	Id        int64     `xorm:"pk unique notnull index" json:"-"`
+	Id        string    `xorm:"pk unique notnull index" json:"-"` // 用户ID
 	Balance   float64   `json:"balance"`
 	Frozen    float64   `json:"frozen"`
 	CreatedAt time.Time `xorm:"created" json:"created_at"`

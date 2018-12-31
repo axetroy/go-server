@@ -2,13 +2,13 @@ package auth_test
 
 import (
 	"encoding/json"
-	"github.com/mitchellh/mapstructure"
-	"github.com/stretchr/testify/assert"
 	"github.com/axetroy/go-server/controller/auth"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/response"
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/go-server/token"
+	"github.com/mitchellh/mapstructure"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
 )
@@ -74,7 +74,7 @@ func TestSignInSuccess(t *testing.T) {
 
 	assert.NotEmpty(t, profile.Token)
 
-	if c, err := token.Parse(profile.Token); err != nil {
+	if c, err := token.Parse("Bearer " + profile.Token); err != nil {
 		t.Error(err)
 		return
 	} else {

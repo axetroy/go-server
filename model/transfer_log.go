@@ -17,10 +17,10 @@ var (
 )
 
 type TransferLog struct {
-	Id           int64          `xorm:"pk unique notnull index" json:"id"` // 转账ID
+	Id           string         `xorm:"pk unique notnull index" json:"id"` // 转账ID
 	Currency     string         `xorm:"notnull" json:"currency"`           // 转账币种
-	From         int64          `xorm:"notnull index" json:"from"`         // 汇款人
-	To           int64          `xorm:"notnull index" json:"to"`           // 收款人
+	From         string         `xorm:"notnull index" json:"from"`         // 汇款人
+	To           string         `xorm:"notnull index" json:"to"`           // 收款人
 	Amount       float64        `xorm:"notnull" json:"amount"`             // 转账数量
 	Status       TransferStatus `xorm:"notnull" json:"status"`             // 转账状态
 	Note         *string        `xorm:"null varchar(128)" json:"note"`     // 转账备注

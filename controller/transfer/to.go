@@ -2,8 +2,6 @@ package transfer
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
 	"github.com/axetroy/go-server/controller/finance"
 	"github.com/axetroy/go-server/controller/wallet"
 	"github.com/axetroy/go-server/exception"
@@ -11,6 +9,8 @@ import (
 	"github.com/axetroy/go-server/model"
 	"github.com/axetroy/go-server/orm"
 	"github.com/axetroy/go-server/response"
+	"github.com/gin-gonic/gin"
+	"github.com/go-xorm/xorm"
 	"net/http"
 	"strconv"
 	"strings"
@@ -18,7 +18,7 @@ import (
 
 type ToParams struct {
 	Currency string  `json:"currency" binding:"required"`    // 币种
-	To       int64   `json:"to" binding:"required"`          // 转账给谁
+	To       string  `json:"to" binding:"required"`          // 转账给谁
 	Amount   string  `json:"amount" binding:"required,gt=0"` // 转账数量
 	Note     *string `json:"note"`                           // 转账备注
 }
@@ -72,7 +72,7 @@ func To(context *gin.Context) {
 		}
 	}()
 
-	uid := context.GetInt64("uid")
+	uid := context.GetString("uid")
 
 	if err = context.ShouldBindJSON(&input); err != nil {
 		return

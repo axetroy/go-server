@@ -1,10 +1,10 @@
 package transfer
 
 type Log struct {
-	Id        int64   `json:"id"`
+	Id        string  `json:"id"`
+	From      string  `json:"from"`
+	To        string  `json:"to"`
 	Currency  string  `json:"currency"`
-	From      int64   `json:"from"`
-	To        int64   `json:"to"`
 	Amount    float64 `json:"amount"`
 	Status    int     `json:"status"`
 	Note      *string `json:"note"`

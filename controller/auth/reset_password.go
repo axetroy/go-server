@@ -2,16 +2,15 @@ package auth
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/model"
 	"github.com/axetroy/go-server/orm"
 	"github.com/axetroy/go-server/response"
 	"github.com/axetroy/go-server/services/password"
 	"github.com/axetroy/go-server/services/redis"
+	"github.com/gin-gonic/gin"
+	"github.com/go-xorm/xorm"
 	"net/http"
-	"strconv"
 )
 
 type ResetPasswordParams struct {
@@ -75,16 +74,11 @@ func ResetPassword(context *gin.Context) {
 	// TODO: 参数校验
 
 	var (
-		uidStr string
-		uid    int64
+		uid string
 	)
 
-	if uidStr, err = redis.ResetCode.Get(input.Code).Result(); err != nil {
+	if uid, err = redis.ResetCode.Get(input.Code).Result(); err != nil {
 		err = exception.InvalidResetCode
-		return
-	}
-
-	if uid, err = strconv.ParseInt(uidStr, 10, 64); err != nil {
 		return
 	}
 

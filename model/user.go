@@ -21,7 +21,7 @@ const (
 )
 
 type User struct {
-	Id          int64      `xorm:"pk notnull unique index" json:"id"`            // 用户ID
+	Id          string     `xorm:"pk notnull unique index" json:"id"`            // 用户ID
 	Username    string     `xorm:"notnull unique index" json:"username"`         // 用户名
 	Password    string     `xorm:"notnull varchar(36)" json:"password"`          // 登陆密码
 	PayPassword *string    `xorm:"varchar(36)" json:"pay_password"`              // 支付密码

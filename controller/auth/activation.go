@@ -2,15 +2,14 @@ package auth
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/model"
 	"github.com/axetroy/go-server/orm"
 	"github.com/axetroy/go-server/response"
 	"github.com/axetroy/go-server/services/redis"
+	"github.com/gin-gonic/gin"
+	"github.com/go-xorm/xorm"
 	"net/http"
-	"strconv"
 )
 
 type ActivationParams struct {
@@ -73,16 +72,11 @@ func Activation(context *gin.Context) {
 	// TODO: 校验参数
 
 	var (
-		uidStr string
-		uid    int64
+		uid string
 	)
 
-	if uidStr, err = redis.ActivationCode.Get(input.Code).Result(); err != nil {
+	if uid, err = redis.ActivationCode.Get(input.Code).Result(); err != nil {
 		err = exception.InvalidActiveCode
-		return
-	}
-
-	if uid, err = strconv.ParseInt(uidStr, 10, 64); err != nil {
 		return
 	}
 

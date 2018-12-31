@@ -2,14 +2,14 @@ package transfer
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
-	"github.com/mitchellh/mapstructure"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/id"
 	"github.com/axetroy/go-server/model"
 	"github.com/axetroy/go-server/orm"
 	"github.com/axetroy/go-server/response"
+	"github.com/gin-gonic/gin"
+	"github.com/go-xorm/xorm"
+	"github.com/mitchellh/mapstructure"
 	"net/http"
 	"time"
 )
@@ -61,7 +61,7 @@ func GetDetail(context *gin.Context) {
 		}
 	}()
 
-	uid := context.GetInt64("uid")
+	uid := context.GetString("uid")
 
 	transferId := context.Param("id")
 

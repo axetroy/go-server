@@ -16,7 +16,7 @@ import (
 )
 
 type ProfilePure struct {
-	Id       int64            `json:"id"`
+	Id       string           `json:"id"`
 	Username string           `json:"username"`
 	Nickname *string          `json:"nickname"`
 	Email    *string          `json:"email"`
@@ -43,7 +43,7 @@ type UpdateProfileParams struct {
 func GetProfile(context *gin.Context) {
 	var (
 		err     error
-		uid     int64
+		uid     string
 		data    Profile
 		session *xorm.Session
 		tx      bool
@@ -89,13 +89,7 @@ func GetProfile(context *gin.Context) {
 		}
 	}()
 
-	if val, isExist := context.Get("uid"); isExist != true {
-		return
-	} else {
-		if uid, err = strconv.ParseInt(fmt.Sprintf("%v", val), 10, 64); err != nil {
-			return
-		}
-	}
+	uid = context.GetString("uid")
 
 	session = orm.Db.NewSession()
 

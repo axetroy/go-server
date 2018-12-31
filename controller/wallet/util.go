@@ -2,9 +2,9 @@ package wallet
 
 import (
 	"fmt"
+	"github.com/axetroy/go-server/model"
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris/core/errors"
-	"github.com/axetroy/go-server/model"
 	"strings"
 )
 
@@ -12,7 +12,7 @@ func GetTableName(currency string) string {
 	return "wallet_" + strings.ToLower(currency)
 }
 
-func EnsureWalletExist(session *xorm.Session, currency string, uid int64) (*model.Wallet, error) {
+func EnsureWalletExist(session *xorm.Session, currency string, uid string) (*model.Wallet, error) {
 	var (
 		isExistTable  bool
 		isExistWallet bool

@@ -3,9 +3,6 @@ package auth
 import (
 	"errors"
 	"github.com/asaskevich/govalidator"
-	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
-	"github.com/mitchellh/mapstructure"
 	"github.com/axetroy/go-server/controller/user"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/id"
@@ -14,6 +11,9 @@ import (
 	"github.com/axetroy/go-server/response"
 	"github.com/axetroy/go-server/services/password"
 	"github.com/axetroy/go-server/token"
+	"github.com/gin-gonic/gin"
+	"github.com/go-xorm/xorm"
+	"github.com/mitchellh/mapstructure"
 	"net/http"
 	"time"
 )

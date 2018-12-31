@@ -2,13 +2,13 @@ package wallet
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
-	"github.com/mitchellh/mapstructure"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/model"
 	"github.com/axetroy/go-server/orm"
 	"github.com/axetroy/go-server/response"
+	"github.com/gin-gonic/gin"
+	"github.com/go-xorm/xorm"
+	"github.com/mitchellh/mapstructure"
 	"net/http"
 )
 
@@ -60,7 +60,7 @@ func GetWallet(context *gin.Context) {
 		}
 	}()
 
-	uid := context.GetInt64("uid")
+	uid := context.GetString("uid")
 
 	currency := context.Param("currency")
 

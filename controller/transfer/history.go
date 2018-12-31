@@ -3,13 +3,13 @@ package transfer
 import (
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
-	"github.com/mitchellh/mapstructure"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/orm"
 	"github.com/axetroy/go-server/request"
 	"github.com/axetroy/go-server/response"
+	"github.com/gin-gonic/gin"
+	"github.com/go-xorm/xorm"
+	"github.com/mitchellh/mapstructure"
 	"net/http"
 	"strings"
 	"time"
@@ -67,7 +67,7 @@ func GetHistory(context *gin.Context) {
 		}
 	}()
 
-	uid := context.GetInt64("uid")
+	uid := context.GetString("uid")
 
 	if err = context.ShouldBindQuery(&query); err != nil {
 		return
@@ -134,7 +134,7 @@ func GetHistory(context *gin.Context) {
 	}
 }
 
-func GenerateSql(FromField int64, selected string) string {
+func GenerateSql(FromField string, selected string) string {
 	cnyTableName := GetTransferTableName("cny")
 	usdTableName := GetTransferTableName("usd")
 	coinTableName := GetTransferTableName("coin")

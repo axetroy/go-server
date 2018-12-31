@@ -2,16 +2,14 @@ package user
 
 import (
 	"errors"
-	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/model"
 	"github.com/axetroy/go-server/orm"
 	"github.com/axetroy/go-server/response"
 	"github.com/axetroy/go-server/services/password"
+	"github.com/gin-gonic/gin"
+	"github.com/go-xorm/xorm"
 	"net/http"
-	"strconv"
 )
 
 type UpdatePasswordParams struct {
@@ -22,7 +20,7 @@ type UpdatePasswordParams struct {
 func UpdatePassword(context *gin.Context) {
 	var (
 		err     error
-		uid     int64
+		uid     string
 		input   UpdatePasswordParams
 		session *xorm.Session
 		tx      bool
@@ -78,14 +76,7 @@ func UpdatePassword(context *gin.Context) {
 	}
 
 	// TODO 校验input是否正确
-
-	if val, isExist := context.Get("uid"); isExist != true {
-
-	} else {
-		if uid, err = strconv.ParseInt(fmt.Sprintf("%v", val), 10, 64); err != nil {
-			return
-		}
-	}
+	uid = context.GetString("uid")
 
 	session = orm.Db.NewSession()
 

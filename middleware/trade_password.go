@@ -2,13 +2,13 @@ package middleware
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/model"
 	"github.com/axetroy/go-server/orm"
 	"github.com/axetroy/go-server/response"
 	"github.com/axetroy/go-server/services/password"
+	"github.com/gin-gonic/gin"
+	"github.com/go-xorm/xorm"
 	"net/http"
 )
 
@@ -66,9 +66,9 @@ func AuthPayPassword(context *gin.Context) {
 		return
 	}
 
-	uid := context.GetInt64("uid")
+	uid := context.GetString("uid")
 
-	if uid == 0 {
+	if uid == "" {
 		err = exception.UserNotLogin
 		return
 	}

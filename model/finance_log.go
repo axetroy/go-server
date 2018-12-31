@@ -16,10 +16,10 @@ var (
 )
 
 type FinanceLog struct {
-	Id       int64  `xorm:"pk unique notnull index" json:"id"` // 流水ID
+	Id       string `xorm:"pk unique notnull index" json:"id"` // 流水ID
 	Currency string `xorm:"notnull index" json:"currency"`     // 对应的币种流水
-	OrderId  int64  `xorm:"null index" json:"order_id"`        // 对应的订单id, 系统产生的流水可能不会orderId
-	Uid      int64  `xorm:"notnull index" json:"uid"`          // 对应的用户
+	OrderId  string `xorm:"null index" json:"order_id"`        // 对应的订单id, 系统产生的流水可能不会orderId
+	Uid      string `xorm:"notnull index" json:"uid"`          // 对应的用户
 
 	BeforeBalance   float64 `xorm:"notnull" json:"before_balance"`   // 这条流水前的余额
 	BalanceMutation float64 `xorm:"notnull" json:"balance_mutation"` // 可用余额的变动，正数则为加，负数为减

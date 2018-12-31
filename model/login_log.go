@@ -3,7 +3,7 @@ package model
 import "time"
 
 type LoginLog struct {
-	Id       int64  `json:"id"`
+	Id       string `json:"id"`
 	Uid      string `json:"uid"`
 	Username string `json:"username"`
 	// 登录方式

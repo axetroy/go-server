@@ -14,8 +14,8 @@ const (
 )
 
 type News struct {
-	Id        int64      `xorm:"pk notnull unique index" json:"id"` // 新闻公告类ID
-	Author    int64      `xorm:"notnull index" json:"author"`       // 公告的作者ID
+	Id        string     `xorm:"pk notnull unique index" json:"id"` // 新闻公告类ID
+	Author    string     `xorm:"notnull index" json:"author"`       // 公告的作者ID
 	Tittle    string     `xorm:"notnull index" json:"tittle"`       // 公告标题
 	Content   string     `xorm:"notnull text" json:"content"`       // 公告内容
 	Type      NewsType   `xorm:"notnull varchar(32)" json:"type"`   // 公告类型

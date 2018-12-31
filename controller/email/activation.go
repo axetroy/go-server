@@ -2,16 +2,15 @@ package email
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/model"
 	"github.com/axetroy/go-server/orm"
 	"github.com/axetroy/go-server/response"
 	"github.com/axetroy/go-server/services/email"
 	"github.com/axetroy/go-server/services/redis"
+	"github.com/gin-gonic/gin"
+	"github.com/go-xorm/xorm"
 	"net/http"
-	"strconv"
 	"time"
 )
 
@@ -19,9 +18,9 @@ type SendActivationEmailParams struct {
 	To string `json:"to"` // 发送给谁
 }
 
-func GenerateActivationCode(uid int64) string {
+func GenerateActivationCode(uid string) string {
 	// 生成重置码
-	activationCode := "activation-" + strconv.FormatInt(uid, 10)
+	activationCode := "activation-" + uid
 	return activationCode
 }
 

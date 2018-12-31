@@ -1,9 +1,9 @@
 package token
 
 import (
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/redpack/utils"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/axetroy/go-server/exception"
 	"strconv"
 	"strings"
 	"time"
@@ -25,14 +25,13 @@ type ClaimsInternal struct {
 }
 
 // generate jwt token
-func Generate(userId int64) (tokenString string, err error) {
+func Generate(userId string) (tokenString string, err error) {
 	// 生成token
-	var idStr = strconv.FormatInt(userId, 10)
 	c := ClaimsInternal{
-		utils.Base64Encode(idStr),
+		utils.Base64Encode(userId),
 		jwt.StandardClaims{
-			Audience:  idStr,
-			Id:        idStr,
+			Audience:  userId,
+			Id:        userId,
 			ExpiresAt: time.Now().Add(time.Hour * time.Duration(6)).Unix(),
 			Issuer:    "test",
 			IssuedAt:  time.Now().Unix(),
@@ -74,11 +73,11 @@ func Parse(tokenString string) (claims Claims, err error) {
 		if strings.HasPrefix(err.Error(), "token is expired by") {
 			err = exception.TokenExpired
 		}
+		err = exception.InvalidToken
 		return
 	}
 
 	if token != nil && token.Valid {
-
 		var (
 			uidStr string
 			uid    int64

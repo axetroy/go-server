@@ -2,6 +2,7 @@ package auth
 
 import (
 	"errors"
+	"fmt"
 	"github.com/axetroy/go-server/controller/invite"
 	"github.com/axetroy/go-server/controller/user"
 	"github.com/axetroy/go-server/exception"
@@ -16,7 +17,6 @@ import (
 	"github.com/go-xorm/xorm"
 	"github.com/mitchellh/mapstructure"
 	"net/http"
-	"strconv"
 	"time"
 )
 
@@ -119,7 +119,7 @@ func SignUp(context *gin.Context) {
 	)
 
 	if input.Username == nil {
-		username = "用户" + strconv.FormatInt(uid, 10)
+		username = "用户" + uid
 	} else {
 		username = *input.Username
 	}
@@ -180,6 +180,7 @@ func SignUp(context *gin.Context) {
 				return
 			}
 			invitor = &u
+			fmt.Println("邀请者", invitor)
 		}
 	}
 
@@ -226,6 +227,7 @@ func SignUp(context *gin.Context) {
 	data.CreatedAt = userInfo.CreatedAt.Format(time.RFC3339Nano)
 	data.UpdatedAt = userInfo.UpdatedAt.Format(time.RFC3339Nano)
 
+	// TODO: 循环创建
 	// 创建用户对应的钱包账号
 	cny := model.WalletCny{
 		Wallet: model.Wallet{
@@ -261,7 +263,7 @@ func SignUp(context *gin.Context) {
 	// 如果是以邮箱注册的，那么发送激活链接
 	if userInfo.Email != nil && len(*userInfo.Email) != 0 {
 		// generate activation code
-		activationCode := "activation-" + strconv.FormatInt(userInfo.Id, 10)
+		activationCode := "activation-" + userInfo.Id
 
 		// set activationCode to redis
 		if err = redis.ActivationCode.Set(activationCode, userInfo.Id, time.Minute*30).Err(); err != nil {
