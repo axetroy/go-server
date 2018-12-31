@@ -1,0 +1,19 @@
+version: '3'
+services:
+  pg:
+    image: postgres:9.6.6-alpine
+    restart: always
+    volumes:
+      - "./docker/volumes/pg:/var/lib/postgresql/data"
+    ports:
+      - 65432:5432
+  redis:
+    image: redis:5.0.2-alpine
+    restart: always
+    ports:
+      - 6379:6379
+    volumes:
+      - "./docker/volumes/redis:/data"
+    environment:
+      - REDIS_PASSWORD=password
+    command: [ "redis-server", "--requirepass", "password" ]
