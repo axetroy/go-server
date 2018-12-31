@@ -2,10 +2,6 @@ package auth
 
 import (
 	"errors"
-	"github.com/axetroy/redpack/services/password"
-	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
-	"github.com/mitchellh/mapstructure"
 	"github.com/axetroy/go-server/controller/invite"
 	"github.com/axetroy/go-server/controller/user"
 	"github.com/axetroy/go-server/exception"
@@ -15,6 +11,10 @@ import (
 	"github.com/axetroy/go-server/response"
 	"github.com/axetroy/go-server/services/email"
 	"github.com/axetroy/go-server/services/redis"
+	"github.com/axetroy/redpack/services/password"
+	"github.com/gin-gonic/gin"
+	"github.com/go-xorm/xorm"
+	"github.com/mitchellh/mapstructure"
 	"net/http"
 	"strconv"
 	"time"
@@ -192,6 +192,7 @@ func SignUp(context *gin.Context) {
 		Phone:      input.Phone,
 		Email:      input.Email,
 		InviteCode: invite.GenerateInviteCode(),
+		Gender:     model.GenderUnknown,
 	}
 
 	if _, err = session.Insert(&userInfo); err != nil {

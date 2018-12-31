@@ -3,13 +3,13 @@ package user
 import (
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
-	"github.com/mitchellh/mapstructure"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/model"
 	"github.com/axetroy/go-server/orm"
 	"github.com/axetroy/go-server/response"
+	"github.com/gin-gonic/gin"
+	"github.com/go-xorm/xorm"
+	"github.com/mitchellh/mapstructure"
 	"net/http"
 	"strconv"
 	"time"
@@ -35,8 +35,9 @@ type Profile struct {
 }
 
 type UpdateProfileParams struct {
-	Nickname *string `json:"nickname"`
-	Avatar   *string `json:"avatar"`
+	Nickname *string       `json:"nickname"`
+	Gender   *model.Gender `json:"gender"`
+	Avatar   *string       `json:"avatar"`
 }
 
 func GetProfile(context *gin.Context) {
@@ -218,6 +219,11 @@ func UpdateProfile(context *gin.Context) {
 	if input.Avatar != nil {
 		user.Avatar = *input.Avatar
 		query = query.Cols("avatar")
+	}
+
+	if input.Gender != nil {
+		user.Gender = *input.Gender
+		query = query.Cols("gender")
 	}
 
 	if _, err = query.Update(&user); err != nil {
