@@ -1,8 +1,8 @@
 package redis
 
 import (
+	"github.com/axetroy/go-server/env"
 	"github.com/go-redis/redis"
-	"github.com/joho/godotenv"
 	"os"
 )
 
@@ -22,7 +22,7 @@ var config Config
 
 func init() {
 
-	if err := godotenv.Load(); err != nil {
+	if err := env.Load(); err != nil {
 		return
 	}
 

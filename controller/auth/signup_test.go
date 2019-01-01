@@ -104,8 +104,8 @@ func TestSignUpSuccess(t *testing.T) {
 
 	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
 
-	assert.Equal(t, res.Status, response.StatusSuccess)
-	assert.Equal(t, res.Message, "")
+	assert.Equal(t, response.StatusSuccess, res.Status)
+	assert.Equal(t, "", res.Message)
 
 	profile := user.Profile{}
 

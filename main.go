@@ -1,12 +1,12 @@
 package main
 
 import (
-	"github.com/joho/godotenv"
+	"github.com/axetroy/go-server/env"
 	"github.com/axetroy/go-server/router"
 )
 
 func init() {
-	if err := godotenv.Load(); err != nil {
+	if err := env.Load(); err != nil {
 		panic(err)
 	}
 }

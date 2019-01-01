@@ -4,7 +4,7 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
-	"github.com/joho/godotenv"
+	"github.com/axetroy/go-server/env"
 	"github.com/jordan-wright/email"
 	"net/smtp"
 	"net/textproto"
@@ -55,7 +55,7 @@ type Message struct {
 }
 
 func init() {
-	if err := godotenv.Load(); err != nil {
+	if err := env.Load(); err != nil {
 		panic(err)
 	}
 
