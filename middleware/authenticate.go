@@ -1,45 +1,47 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/axetroy/go-server/response"
 	"github.com/axetroy/go-server/token"
+	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 // 普通用户的token验证
-func Authenticate() gin.HandlerFunc {
+func Authenticate(isAdmin bool) gin.HandlerFunc {
 	return func(context *gin.Context) {
-		tokenString := context.GetHeader("Authorization")
+		var (
+			err         error
+			tokenString string
+		)
+		defer func() {
+			if err != nil {
+				context.JSON(http.StatusOK, response.Response{
+					Message: err.Error(),
+					Data:    nil,
+				})
+				context.Abort()
+			}
+		}()
 
-		if claims, err := token.Parse(tokenString); err != nil {
-			context.JSON(http.StatusOK, response.Response{
-				Message: err.Error(),
-				Data:    nil,
-			})
-
-			context.Abort()
-
+		if s, isExist := context.GetQuery(token.AuthField); isExist == true {
+			tokenString = s
 			return
 		} else {
-			context.Set("uid", claims.Uid)
+			tokenString = context.GetHeader(token.AuthField)
+
+			if len(tokenString) == 0 {
+				if s, er := context.Cookie(token.AuthField); er != nil {
+					err = er
+					return
+				} else {
+					tokenString = s
+				}
+			}
 		}
-	}
-}
 
-// TODO: 管理员的token验证
-func AuthenticateAdmin() gin.HandlerFunc {
-	return func(context *gin.Context) {
-		tokenString := context.GetHeader("Authorization")
-
-		if claims, err := token.Parse(tokenString); err != nil {
-			context.JSON(http.StatusOK, response.Response{
-				Message: err.Error(),
-				Data:    nil,
-			})
-
-			context.Abort()
-
+		if claims, er := token.Parse(tokenString, isAdmin); er != nil {
+			err = er
 			return
 		} else {
 			context.Set("uid", claims.Uid)

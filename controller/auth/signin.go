@@ -118,7 +118,7 @@ func SignIn(input SignInParams, context SignInContext) (res response.Response) {
 
 	// generate token
 	var tokenString string
-	if tokenString, err = token.Generate(userInfo.Id); err != nil {
+	if tokenString, err = token.Generate(userInfo.Id, false); err != nil {
 		return
 	}
 

@@ -26,7 +26,7 @@ func TestSignInWithEmptyBody(t *testing.T) {
 	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
 
 	assert.Equal(t, response.StatusFail, res.Status)
-	assert.Equal(t, exception.InvalidParams.Error(), res.Message, )
+	assert.Equal(t, exception.InvalidParams.Error(), res.Message)
 	assert.Nil(t, res.Data)
 }
 
@@ -90,7 +90,7 @@ func TestSignInSuccess(t *testing.T) {
 
 	assert.NotEmpty(t, profile.Token)
 
-	if c, err := token.Parse("Bearer " + profile.Token); err != nil {
+	if c, err := token.Parse("Bearer "+profile.Token, false); err != nil {
 		t.Error(err)
 		return
 	} else {

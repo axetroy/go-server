@@ -10,8 +10,10 @@ import (
 )
 
 var (
-	SecreteKey = "hello"
-	Prefix     = "Bearer"
+	userSecreteKey  = "user"
+	adminSecreteKey = "admin"
+	Prefix          = "Bearer"
+	AuthField       = "Authorization"
 )
 
 type Claims struct {
@@ -25,7 +27,20 @@ type ClaimsInternal struct {
 }
 
 // generate jwt token
-func Generate(userId string) (tokenString string, err error) {
+func Generate(userId string, isAdmin bool) (tokenString string, err error) {
+	var (
+		issuer string
+		key    string
+	)
+
+	if isAdmin {
+		issuer = "admin"
+		key = adminSecreteKey
+	} else {
+		issuer = "user"
+		key = userSecreteKey
+	}
+
 	// 生成token
 	c := ClaimsInternal{
 		utils.Base64Encode(userId),
@@ -33,25 +48,31 @@ func Generate(userId string) (tokenString string, err error) {
 			Audience:  userId,
 			Id:        userId,
 			ExpiresAt: time.Now().Add(time.Hour * time.Duration(6)).Unix(),
-			Issuer:    "test",
+			Issuer:    issuer,
 			IssuedAt:  time.Now().Unix(),
-			Subject:   "test",
 			NotBefore: time.Now().Unix(),
 		},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
 
-	tokenString, err = token.SignedString([]byte(SecreteKey))
+	tokenString, err = token.SignedString([]byte(key))
 
 	return
 }
 
 // parse jwt token
-func Parse(tokenString string) (claims Claims, err error) {
+func Parse(tokenString string, isAdmin bool) (claims Claims, err error) {
 	var (
 		token *jwt.Token
+		key   string
 	)
+
+	if isAdmin {
+		key = adminSecreteKey
+	} else {
+		key = userSecreteKey
+	}
 
 	if strings.HasPrefix(tokenString, Prefix+" ") == false {
 		err = exception.InvalidAuth
@@ -68,7 +89,7 @@ func Parse(tokenString string) (claims Claims, err error) {
 	c := ClaimsInternal{}
 
 	if token, err = jwt.ParseWithClaims(tokenString, &c, func(token *jwt.Token) (interface{}, error) {
-		return []byte(SecreteKey), nil
+		return []byte(key), nil
 	}); err != nil {
 		if strings.HasPrefix(err.Error(), "token is expired by") {
 			err = exception.TokenExpired

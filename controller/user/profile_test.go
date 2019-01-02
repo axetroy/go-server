@@ -8,6 +8,7 @@ import (
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/response"
 	"github.com/axetroy/go-server/tester"
+	"github.com/axetroy/go-server/token"
 	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
 	"net/http"
@@ -42,7 +43,7 @@ func TestGetProfileWithInvalidAuth(t *testing.T) {
 
 func TestGetProfileWithInvalidToken(t *testing.T) {
 	header := mocker.Header{
-		"Authorization": "Bearer 12312",
+		"Authorization": token.Prefix + " 12312",
 	}
 
 	r := tester.Http.Get("/v1/user/profile", []byte(""), &header)
@@ -67,10 +68,10 @@ func TestGetProfileWithInvalidToken(t *testing.T) {
 
 func TestGetProfile(t *testing.T) {
 	var (
-		uid      string
-		username = "test-TestResetPasswordSuccess"
-		password = "123123"
-		token    string
+		uid         string
+		username    = "test-TestResetPasswordSuccess"
+		password    = "123123"
+		tokenString string
 	)
 	if r := auth.SignUp(auth.SignUpParams{
 		Username: &username,
@@ -105,12 +106,12 @@ func TestGetProfile(t *testing.T) {
 				t.Error(err)
 				return
 			}
-			token = userInfo.Token
+			tokenString = userInfo.Token
 		}
 	}
 
 	header := mocker.Header{
-		"Authorization": "Bearer " + token,
+		"Authorization": token.Prefix + " " + tokenString,
 	}
 
 	r := tester.Http.Get("/v1/user/profile", []byte(""), &header)

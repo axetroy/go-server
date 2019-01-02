@@ -66,6 +66,12 @@ func init() {
 				"ping": "pong",
 			})
 		})
+
+		adminRouter := v1.Group("/admin")
+		{
+			adminRouter.Use(middleware.Authenticate(true))
+		}
+
 		// 认证类
 		authRouter := v1.Group("/auth")
 		{
@@ -78,7 +84,7 @@ func init() {
 		// 用户类
 		userRouter := v1.Group("/user")
 		{
-			userRouter.Use(middleware.Authenticate())
+			userRouter.Use(middleware.Authenticate(false))
 			userRouter.GET("/signout", user.SignOut)
 			userRouter.GET("/profile", user.GetProfileRouter)
 			userRouter.PUT("/profile", user.UpdateProfileRouter)
@@ -94,7 +100,7 @@ func init() {
 		// 钱包类
 		walletRouter := v1.Group("/wallet")
 		{
-			walletRouter.Use(middleware.Authenticate())
+			walletRouter.Use(middleware.Authenticate(false))
 			// 获取所有的钱包信息
 			walletRouter.GET("/map", wallet.GetWallets)
 			walletRouter.GET("/currency/:currency", wallet.GetWallet)
@@ -107,7 +113,7 @@ func init() {
 		// 财务日志
 		financeRouter := v1.Group("/finance")
 		{
-			financeRouter.Use(middleware.Authenticate())
+			financeRouter.Use(middleware.Authenticate(false))
 			financeRouter.GET("/history", finance.GetHistory) // TODO: 获取我的财务日志
 		}
 
@@ -115,7 +121,7 @@ func init() {
 		newsRouter := v1.Group("/news")
 		{
 			// TODO: 写新闻咨询类
-			newsRouter.Use(middleware.Authenticate())
+			newsRouter.Use(middleware.Authenticate(false))
 			newsRouter.POST("/", news.CreateRouter)
 			newsRouter.GET("/list", news.GetNewsList)
 			newsRouter.GET("/detail/:id", news.GetNews)
@@ -147,7 +153,7 @@ func init() {
 			// 文件上传 (需要验证token)
 			uploadRouter := v1.Group("/upload")
 			{
-				uploadRouter.Use(middleware.Authenticate())
+				uploadRouter.Use(middleware.Authenticate(false))
 				uploadRouter.POST("/file", uploader.File)
 				uploadRouter.POST("/image", uploader.Image)
 			}
