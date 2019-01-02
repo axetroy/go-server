@@ -1,12 +1,30 @@
 package password_test
 
 import (
-	"github.com/stretchr/testify/assert"
+	"fmt"
 	"github.com/axetroy/go-server/services/password"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestGenerate(t *testing.T) {
-	s := password.Generate("123123")
-	assert.Equal(t, "1d7840e9cffb0a6127b20a7014eef2d5", s)
+	fmt.Println("运行测试用例")
+	testPassword := "password"
+	s := password.Generate(testPassword)
+
+	// 生成的密码与预期的一致
+	if !assert.Equal(t, "39d9782aa70de6b4944c40991ac37004", s) {
+		return
+	}
+
+	// 生成两次的密码保持一致
+	if !assert.Equal(t, password.Generate(testPassword), password.Generate(testPassword)) {
+		return
+	}
+
+	if !assert.Len(t, password.Generate(testPassword), 32, "密码必须是32位") {
+		return
+	}
+
+	fmt.Println(password.Generate("123123"))
 }

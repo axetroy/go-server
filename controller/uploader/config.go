@@ -2,6 +2,7 @@ package uploader
 
 import (
 	"github.com/axetroy/go-fs"
+	"github.com/axetroy/go-server/env"
 	"os"
 	"path"
 )
@@ -47,6 +48,7 @@ var Config = TConfig{
 	},
 }
 
+// 确保上传的文件目录存在
 func init() {
 	var (
 		err      error
@@ -55,7 +57,10 @@ func init() {
 	)
 
 	if len(rootPath) == 0 {
-		if cwd, err = os.Getwd(); err != nil {
+		// 如果是测试环境的话, 写死生成的目录，防止到处创建upload目录
+		if env.Test {
+			Config.Path = path.Join(env.RootDir, "upload")
+		} else if cwd, err = os.Getwd(); err != nil {
 			panic(cwd)
 		} else {
 			Config.Path = path.Join(cwd, "upload")

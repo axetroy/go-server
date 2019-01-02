@@ -18,9 +18,8 @@ type ResetPasswordParams struct {
 	NewPassword string `json:"new_password"`
 }
 
-func ResetPassword(context *gin.Context) {
+func ResetPassword(input ResetPasswordParams) (res response.Response) {
 	var (
-		input   ResetPasswordParams
 		err     error
 		session *xorm.Session
 		tx      bool
@@ -52,26 +51,13 @@ func ResetPassword(context *gin.Context) {
 		}
 
 		if err != nil {
-			context.JSON(http.StatusOK, response.Response{
-				Status:  response.StatusFail,
-				Message: err.Error(),
-				Data:    nil,
-			})
+			res.Message = err.Error()
+			res.Data = false
 		} else {
-			context.JSON(http.StatusOK, response.Response{
-				Status:  response.StatusSuccess,
-				Message: "密码重置成功",
-				Data:    true,
-			})
+			res.Status = response.StatusSuccess
+			res.Data = true
 		}
 	}()
-
-	if err = context.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	// TODO: 参数校验
 
 	var (
 		uid string
@@ -123,5 +109,28 @@ func ResetPassword(context *gin.Context) {
 	}
 
 	// TODO: 安全起见，发送一封邮件/短信告知用户
+	return
+}
 
+func ResetPasswordRouter(context *gin.Context) {
+	var (
+		input ResetPasswordParams
+		err   error
+		res   = response.Response{}
+	)
+
+	defer func() {
+		if err != nil {
+			res.Data = nil
+			res.Message = err.Error()
+		}
+		context.JSON(http.StatusOK, res)
+	}()
+
+	if err = context.ShouldBindJSON(&input); err != nil {
+		err = exception.InvalidParams
+		return
+	}
+
+	res = ResetPassword(input)
 }

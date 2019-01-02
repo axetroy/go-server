@@ -2,7 +2,6 @@ package user
 
 import (
 	"errors"
-	"fmt"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/model"
 	"github.com/axetroy/go-server/orm"
@@ -11,20 +10,20 @@ import (
 	"github.com/go-xorm/xorm"
 	"github.com/mitchellh/mapstructure"
 	"net/http"
-	"strconv"
 	"time"
 )
 
 type ProfilePure struct {
-	Id       string           `json:"id"`
-	Username string           `json:"username"`
-	Nickname *string          `json:"nickname"`
-	Email    *string          `json:"email"`
-	Phone    *string          `json:"phone"`
-	Status   model.UserStatus `json:"status"`
-	Avatar   string           `json:"avatar"`
-	Role     string           `json:"role"`
-	Level    int32            `json:"level"`
+	Id         string           `json:"id"`
+	Username   string           `json:"username"`
+	Nickname   *string          `json:"nickname"`
+	Email      *string          `json:"email"`
+	Phone      *string          `json:"phone"`
+	Status     model.UserStatus `json:"status"`
+	Avatar     string           `json:"avatar"`
+	Role       string           `json:"role"`
+	Level      int32            `json:"level"`
+	InviteCode string           `json:"invite_code"`
 }
 
 type Profile struct {
@@ -40,10 +39,9 @@ type UpdateProfileParams struct {
 	Avatar   *string       `json:"avatar"`
 }
 
-func GetProfile(context *gin.Context) {
+func GetProfile(uid string) (res response.Response) {
 	var (
 		err     error
-		uid     string
 		data    Profile
 		session *xorm.Session
 		tx      bool
@@ -75,21 +73,13 @@ func GetProfile(context *gin.Context) {
 		}
 
 		if err != nil {
-			context.JSON(http.StatusOK, response.Response{
-				Status:  response.StatusFail,
-				Message: err.Error(),
-				Data:    nil,
-			})
+			res.Message = err.Error()
+			res.Data = nil
 		} else {
-			context.JSON(http.StatusOK, response.Response{
-				Status:  response.StatusSuccess,
-				Message: "",
-				Data:    data,
-			})
+			res.Data = data
+			res.Status = response.StatusSuccess
 		}
 	}()
-
-	uid = context.GetString("uid")
 
 	session = orm.Db.NewSession()
 
@@ -119,13 +109,30 @@ func GetProfile(context *gin.Context) {
 	data.PayPassword = user.PayPassword != nil && len(*user.PayPassword) != 0
 	data.CreatedAt = user.CreatedAt.Format(time.RFC3339Nano)
 	data.UpdatedAt = user.UpdatedAt.Format(time.RFC3339Nano)
+
+	return
 }
 
-func UpdateProfile(context *gin.Context) {
+func GetProfileRouter(context *gin.Context) {
 	var (
-		input   UpdateProfileParams
+		err error
+		res = response.Response{}
+	)
+
+	defer func() {
+		if err != nil {
+			res.Data = nil
+			res.Message = err.Error()
+		}
+		context.JSON(http.StatusOK, res)
+	}()
+
+	res = GetProfile(context.GetString("uid"))
+}
+
+func UpdateProfile(uid string, input UpdateProfileParams) (res response.Response) {
+	var (
 		err     error
-		uid     int64
 		data    Profile
 		session *xorm.Session
 		tx      bool
@@ -157,32 +164,14 @@ func UpdateProfile(context *gin.Context) {
 		}
 
 		if err != nil {
-			context.JSON(http.StatusOK, response.Response{
-				Status:  response.StatusFail,
-				Message: err.Error(),
-				Data:    nil,
-			})
+			res.Message = err.Error()
+			res.Data = nil
 		} else {
-			context.JSON(http.StatusOK, response.Response{
-				Status:  response.StatusSuccess,
-				Message: "",
-				Data:    data,
-			})
+			res.Message = err.Error()
+			res.Data = data
+			res.Status = response.StatusSuccess
 		}
 	}()
-
-	if val, isExist := context.Get("uid"); isExist != true {
-		return
-	} else {
-		if uid, err = strconv.ParseInt(fmt.Sprintf("%v", val), 10, 64); err != nil {
-			return
-		}
-	}
-
-	if err = context.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
 
 	session = orm.Db.NewSession()
 
@@ -231,4 +220,29 @@ func UpdateProfile(context *gin.Context) {
 	data.PayPassword = user.PayPassword != nil && len(*user.PayPassword) != 0
 	data.CreatedAt = user.CreatedAt.Format(time.RFC3339Nano)
 	data.UpdatedAt = user.UpdatedAt.Format(time.RFC3339Nano)
+
+	return
+}
+
+func UpdateProfileRouter(context *gin.Context) {
+	var (
+		err   error
+		res   = response.Response{}
+		input UpdateProfileParams
+	)
+
+	defer func() {
+		if err != nil {
+			res.Data = nil
+			res.Message = err.Error()
+		}
+		context.JSON(http.StatusOK, res)
+	}()
+
+	if err = context.ShouldBindJSON(&input); err != nil {
+		err = exception.InvalidParams
+		return
+	}
+
+	res = UpdateProfile(context.GetString("uid"), input)
 }

@@ -21,11 +21,9 @@ type UpdatePayPasswordParams struct {
 	NewPassword string `json:"new_password"`
 }
 
-func SetPayPassword(context *gin.Context) {
+func SetPayPassword(uid string, input SetPayPasswordParams) (res response.Response) {
 	var (
 		err     error
-		uid     string
-		input   SetPayPasswordParams
 		session *xorm.Session
 		tx      bool
 	)
@@ -56,27 +54,14 @@ func SetPayPassword(context *gin.Context) {
 		}
 
 		if err != nil {
-			context.JSON(http.StatusOK, response.Response{
-				Status:  response.StatusFail,
-				Message: err.Error(),
-				Data:    nil,
-			})
+			res.Message = err.Error()
+			res.Data = nil
+			res.Data = false
 		} else {
-			context.JSON(http.StatusOK, response.Response{
-				Status:  response.StatusSuccess,
-				Message: "设置成功",
-				Data:    true,
-			})
+			res.Data = true
+			res.Status = response.StatusSuccess
 		}
 	}()
-
-	if err = context.ShouldBindJSON(&input); err != nil {
-		return
-	}
-
-	// TODO 校验input是否正确
-
-	uid = context.GetString("uid")
 
 	session = orm.Db.NewSession()
 
@@ -111,13 +96,36 @@ func SetPayPassword(context *gin.Context) {
 	if _, err = session.Cols("pay_password").Update(&user); err == nil {
 		return
 	}
+
+	return
 }
 
-func UpdatePayPassword(context *gin.Context) {
+func SetPayPasswordRouter(context *gin.Context) {
+	var (
+		err   error
+		res   = response.Response{}
+		input SetPayPasswordParams
+	)
+
+	defer func() {
+		if err != nil {
+			res.Data = nil
+			res.Message = err.Error()
+		}
+		context.JSON(http.StatusOK, res)
+	}()
+
+	if err = context.ShouldBindJSON(&input); err != nil {
+		err = exception.InvalidParams
+		return
+	}
+
+	res = SetPayPassword(context.GetString("uid"), input)
+}
+
+func UpdatePayPassword(uid string, input UpdatePayPasswordParams) (res response.Response) {
 	var (
 		err     error
-		uid     string
-		input   UpdatePasswordParams
 		session *xorm.Session
 		tx      bool
 	)
@@ -148,23 +156,14 @@ func UpdatePayPassword(context *gin.Context) {
 		}
 
 		if err != nil {
-			context.JSON(http.StatusOK, response.Response{
-				Status:  response.StatusFail,
-				Message: err.Error(),
-				Data:    nil,
-			})
+			res.Message = err.Error()
+			res.Data = nil
+			res.Data = false
 		} else {
-			context.JSON(http.StatusOK, response.Response{
-				Status:  response.StatusSuccess,
-				Message: "更新成功",
-				Data:    true,
-			})
+			res.Data = true
+			res.Status = response.StatusSuccess
 		}
 	}()
-
-	if err = context.ShouldBindJSON(&input); err != nil {
-		return
-	}
 
 	if input.OldPassword == input.NewPassword {
 		err = exception.PasswordDuplicate
@@ -172,8 +171,6 @@ func UpdatePayPassword(context *gin.Context) {
 	}
 
 	// TODO: 校验支付密码格式是否正确
-
-	uid = context.GetString("uid")
 
 	session = orm.Db.NewSession()
 
@@ -210,4 +207,29 @@ func UpdatePayPassword(context *gin.Context) {
 	if _, err = session.Cols("pay_password").Update(&user); err == nil {
 		return
 	}
+
+	return
+}
+
+func UpdatePayPasswordRouter(context *gin.Context) {
+	var (
+		err   error
+		res   = response.Response{}
+		input UpdatePayPasswordParams
+	)
+
+	defer func() {
+		if err != nil {
+			res.Data = nil
+			res.Message = err.Error()
+		}
+		context.JSON(http.StatusOK, res)
+	}()
+
+	if err = context.ShouldBindJSON(&input); err != nil {
+		err = exception.InvalidParams
+		return
+	}
+
+	res = UpdatePayPassword(context.GetString("uid"), input)
 }

@@ -2,11 +2,11 @@ package email_test
 
 import (
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
 	"github.com/axetroy/go-server/controller/email"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/response"
 	"github.com/axetroy/go-server/tester"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
 )

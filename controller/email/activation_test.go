@@ -2,6 +2,7 @@ package email_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/axetroy/go-server/controller/email"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/response"
@@ -25,12 +26,21 @@ func TestSendActivationEmail(t *testing.T) {
 
 	r := tester.Http.Post("/v1/email/send/activation", body, nil)
 
-	assert.Equal(t, http.StatusOK, r.Code)
+	if !assert.Equal(t, http.StatusOK, r.Code) {
+		return
+	}
 
 	res := response.Response{}
 
-	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+	if !assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res)) {
+		return
+	}
 
-	assert.Equal(t, response.StatusFail, res.Status)
-	assert.Equal(t, exception.UserNotExist.Error(), res.Message)
+	if !assert.Equal(t, response.StatusFail, res.Status) {
+		fmt.Println(res.Message)
+		return
+	}
+	if !assert.Equal(t, exception.UserNotExist.Error(), res.Message) {
+		return
+	}
 }

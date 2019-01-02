@@ -17,11 +17,9 @@ type UpdatePasswordParams struct {
 	NewPassword string `json:"new_password"`
 }
 
-func UpdatePassword(context *gin.Context) {
+func UpdatePassword(uid string, input UpdatePasswordParams) (res response.Response) {
 	var (
 		err     error
-		uid     string
-		input   UpdatePasswordParams
 		session *xorm.Session
 		tx      bool
 	)
@@ -52,31 +50,20 @@ func UpdatePassword(context *gin.Context) {
 		}
 
 		if err != nil {
-			context.JSON(http.StatusOK, response.Response{
-				Status:  response.StatusFail,
-				Message: err.Error(),
-				Data:    nil,
-			})
+			res.Message = err.Error()
+			res.Data = nil
+			res.Data = false
 		} else {
-			context.JSON(http.StatusOK, response.Response{
-				Status:  response.StatusSuccess,
-				Message: "更新成功",
-				Data:    true,
-			})
+			res.Data = true
+			res.Message = "更新成功"
+			res.Status = response.StatusSuccess
 		}
 	}()
-
-	if err = context.ShouldBindJSON(&input); err != nil {
-		return
-	}
 
 	if input.OldPassword == input.NewPassword {
 		err = exception.PasswordDuplicate
 		return
 	}
-
-	// TODO 校验input是否正确
-	uid = context.GetString("uid")
 
 	session = orm.Db.NewSession()
 
@@ -108,4 +95,28 @@ func UpdatePassword(context *gin.Context) {
 	if _, err = session.Cols("password").Update(&user); err == nil {
 		return
 	}
+	return
+}
+
+func UpdatePasswordRouter(context *gin.Context) {
+	var (
+		err   error
+		res   = response.Response{}
+		input UpdatePasswordParams
+	)
+
+	defer func() {
+		if err != nil {
+			res.Data = nil
+			res.Message = err.Error()
+		}
+		context.JSON(http.StatusOK, res)
+	}()
+
+	if err = context.ShouldBindJSON(&input); err != nil {
+		err = exception.InvalidParams
+		return
+	}
+
+	res = UpdatePassword(context.GetString("uid"), input)
 }

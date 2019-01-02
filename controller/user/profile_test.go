@@ -3,6 +3,7 @@ package user_test
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/axetroy/go-server/controller/auth"
 	"github.com/axetroy/go-server/controller/user"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/response"
@@ -65,8 +66,51 @@ func TestGetProfileWithInvalidToken(t *testing.T) {
 }
 
 func TestGetProfile(t *testing.T) {
+	var (
+		uid      string
+		username = "test-TestResetPasswordSuccess"
+		password = "123123"
+		token    string
+	)
+	if r := auth.SignUp(auth.SignUpParams{
+		Username: &username,
+		Password: password,
+	}); r.Status != response.StatusSuccess {
+		t.Error(r.Message)
+		return
+	} else {
+		userInfo := user.Profile{}
+		if err := tester.Decode(r.Data, &userInfo); err != nil {
+			t.Error(err)
+			return
+		}
+		uid = userInfo.Id
+		defer func() {
+			auth.DeleteUserByUserName(username)
+		}()
+
+		// 登陆获取Token
+		if r := auth.SignIn(auth.SignInParams{
+			Account:  username,
+			Password: password,
+		}, auth.SignInContext{
+			UserAgent: "test",
+			Ip:        "0.0.0.0.0",
+		}); r.Status != response.StatusSuccess {
+			t.Error(r.Message)
+			return
+		} else {
+			userInfo := auth.SignInResponse{}
+			if err := tester.Decode(r.Data, &userInfo); err != nil {
+				t.Error(err)
+				return
+			}
+			token = userInfo.Token
+		}
+	}
+
 	header := mocker.Header{
-		"Authorization": tester.Token,
+		"Authorization": "Bearer " + token,
 	}
 
 	r := tester.Http.Get("/v1/user/profile", []byte(""), &header)
@@ -82,6 +126,7 @@ func TestGetProfile(t *testing.T) {
 	}
 
 	if !assert.Equal(t, response.StatusSuccess, res.Status) {
+		fmt.Println(res.Message)
 		return
 	}
 	if !assert.Equal(t, "", res.Message) {
@@ -94,12 +139,10 @@ func TestGetProfile(t *testing.T) {
 		return
 	}
 
-	fmt.Println(profile)
-
-	if !assert.Equal(t, tester.Uid, profile.Id) {
+	if !assert.Equal(t, uid, profile.Id) {
 		return
 	}
-	if !assert.Equal(t, tester.Username, *profile.Email) {
+	if !assert.Equal(t, username, *profile.Email) {
 		return
 	}
 }

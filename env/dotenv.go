@@ -7,12 +7,20 @@ import (
 	"path"
 )
 
+var (
+	Test    bool
+	RootDir string
+)
+
 func Load() (err error) {
 	var envFilePath = ".env"
 	isRunInTest := flag.Lookup("test.v") != nil
 
+	Test = isRunInTest
+
 	if isRunInTest {
-		envFilePath = path.Join(os.Getenv("GOPATH"), "src", "github.com", "axetroy", "go-server", envFilePath)
+		RootDir = path.Join(os.Getenv("GOPATH"), "src", "github.com", "axetroy", "go-server")
+		envFilePath = path.Join(RootDir, envFilePath)
 	}
 
 	err = godotenv.Load(envFilePath)

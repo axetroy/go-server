@@ -1,7 +1,6 @@
 package router
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/axetroy/go-server/controller/auth"
 	"github.com/axetroy/go-server/controller/downloader"
 	"github.com/axetroy/go-server/controller/email"
@@ -15,12 +14,14 @@ import (
 	"github.com/axetroy/go-server/controller/user"
 	"github.com/axetroy/go-server/controller/wallet"
 	"github.com/axetroy/go-server/middleware"
+	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 var Router *gin.Engine
 
 func init() {
+	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 
 	router.Use(gin.Logger())
@@ -68,24 +69,24 @@ func init() {
 		// 认证类
 		authRouter := v1.Group("/auth")
 		{
-			authRouter.POST("/signup", auth.SignUp)
-			authRouter.POST("/signin", auth.Signin)
-			authRouter.POST("/activation", auth.Activation)
-			authRouter.PUT("/password/reset", auth.ResetPassword)
+			authRouter.POST("/signup", auth.SignUpRouter)
+			authRouter.POST("/signin", auth.SignInRouter)
+			authRouter.POST("/activation", auth.ActivationRouter)
+			authRouter.PUT("/password/reset", auth.ResetPasswordRouter)
 		}
 
 		// 用户类
 		userRouter := v1.Group("/user")
 		{
 			userRouter.Use(middleware.Authenticate())
-			userRouter.GET("/signout", user.Signout)
-			userRouter.GET("/profile", user.GetProfile)
-			userRouter.PUT("/profile", user.UpdateProfile)
-			userRouter.PUT("/password/update", user.UpdatePassword)
-			userRouter.PUT("/trade_password/set", user.SetPayPassword)
-			userRouter.PUT("/trade_password/update", user.UpdatePayPassword)
+			userRouter.GET("/signout", user.SignOut)
+			userRouter.GET("/profile", user.GetProfileRouter)
+			userRouter.PUT("/profile", user.UpdateProfileRouter)
+			userRouter.PUT("/password/update", user.UpdatePasswordRouter)
+			userRouter.PUT("/trade_password/set", user.SetPayPasswordRouter)
+			userRouter.PUT("/trade_password/update", user.UpdatePayPasswordRouter)
 			// TODO: 上传头像
-			userRouter.POST("/avatar", user.UpdatePayPassword)
+			userRouter.POST("/avatar", user.UpdatePayPasswordRouter)
 			// 邀请人列表
 			userRouter.GET("/invite", invite.GetMyInviteList)
 		}
@@ -140,8 +141,8 @@ func init() {
 		// 通用类
 		{
 			// 邮件服务
-			v1.POST("/email/send/activation", email.SendActivationEmail)
-			v1.POST("/email/send/reset_password", email.SendResetPasswordEmail)
+			v1.POST("/email/send/activation", email.SendActivationEmailRouter)
+			v1.POST("/email/send/reset_password", email.SendResetPasswordEmailRouter)
 
 			// 文件上传 (需要验证token)
 			uploadRouter := v1.Group("/upload")

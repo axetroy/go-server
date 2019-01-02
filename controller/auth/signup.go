@@ -2,7 +2,6 @@ package auth
 
 import (
 	"errors"
-	"fmt"
 	"github.com/axetroy/go-server/controller/invite"
 	"github.com/axetroy/go-server/controller/user"
 	"github.com/axetroy/go-server/exception"
@@ -11,8 +10,8 @@ import (
 	"github.com/axetroy/go-server/orm"
 	"github.com/axetroy/go-server/response"
 	"github.com/axetroy/go-server/services/email"
+	"github.com/axetroy/go-server/services/password"
 	"github.com/axetroy/go-server/services/redis"
-	"github.com/axetroy/redpack/services/password"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
 	"github.com/mitchellh/mapstructure"
@@ -29,9 +28,8 @@ type SignUpParams struct {
 	InviteCode *string `json:"invite_code"` // 邀请码
 }
 
-func SignUp(context *gin.Context) {
+func SignUp(input SignUpParams) (res response.Response) {
 	var (
-		input   SignUpParams
 		err     error
 		data    user.Profile
 		session *xorm.Session
@@ -64,25 +62,14 @@ func SignUp(context *gin.Context) {
 		}
 
 		if err != nil {
-			context.JSON(http.StatusOK, response.Response{
-				Status:  response.StatusFail,
-				Message: err.Error(),
-				Data:    nil,
-			})
+			res.Data = nil
+			res.Message = err.Error()
 		} else {
-			context.JSON(http.StatusOK, response.Response{
-				Status:  response.StatusSuccess,
-				Message: "",
-				Data:    data,
-			})
+			res.Data = data
+			res.Status = response.StatusSuccess
 		}
 
 	}()
-
-	if err = context.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
 
 	if input.Password == "" {
 		err = exception.RequirePassword
@@ -180,7 +167,6 @@ func SignUp(context *gin.Context) {
 				return
 			}
 			invitor = &u
-			fmt.Println("邀请者", invitor)
 		}
 	}
 
@@ -281,5 +267,28 @@ func SignUp(context *gin.Context) {
 		}
 		return
 	}
+	return
+}
 
+func SignUpRouter(context *gin.Context) {
+	var (
+		input SignUpParams
+		err   error
+		res   = response.Response{}
+	)
+
+	defer func() {
+		if err != nil {
+			res.Data = nil
+			res.Message = err.Error()
+		}
+		context.JSON(http.StatusOK, res)
+	}()
+
+	if err = context.ShouldBindJSON(&input); err != nil {
+		err = exception.InvalidParams
+		return
+	}
+
+	res = SignUp(input)
 }

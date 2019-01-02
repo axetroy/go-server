@@ -11,6 +11,7 @@ import (
 	"github.com/axetroy/go-server/response"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
+	"github.com/mitchellh/mapstructure"
 	"math/rand"
 	"net/http"
 	"strconv"
@@ -22,6 +23,74 @@ func GenerateInviteCode() string {
 	r := rand.New(rand.NewSource(time.Now().Unix()))
 	r.Read(b)
 	return hex.EncodeToString(b)
+}
+
+func GetInviteById(m *model.InviteHistory) (res response.Response) {
+	var (
+		err     error
+		data    Invite
+		session *xorm.Session
+		tx      bool
+		isExist bool
+	)
+
+	defer func() {
+
+		if r := recover(); r != nil {
+			switch t := r.(type) {
+			case string:
+				err = errors.New(t)
+			case error:
+				err = t
+			default:
+				err = exception.Unknown
+			}
+		}
+
+		if tx {
+			if err != nil {
+				_ = session.Rollback()
+			} else {
+				err = session.Commit()
+			}
+		}
+
+		if session != nil {
+			session.Close()
+		}
+
+		if err != nil {
+			res.Message = err.Error()
+			res.Data = nil
+		} else {
+			res.Data = data
+			res.Status = response.StatusSuccess
+		}
+	}()
+
+	session = orm.Db.NewSession()
+
+	if err = session.Begin(); err != nil {
+		return
+	}
+
+	tx = true
+
+	if isExist, err = session.Get(m); err != nil {
+		return
+	} else if isExist == false {
+		err = exception.UserNotExist
+		return
+	}
+
+	if err = mapstructure.Decode(m, &data.InvitePure); err != nil {
+		return
+	}
+
+	data.CreatedAt = m.CreatedAt.Format(time.RFC3339Nano)
+	data.UpdatedAt = m.UpdatedAt.Format(time.RFC3339Nano)
+
+	return
 }
 
 func GetMyInviteList(context *gin.Context) {

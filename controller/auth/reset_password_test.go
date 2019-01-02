@@ -2,10 +2,9 @@ package auth_test
 
 import (
 	"encoding/json"
-	"github.com/go-xorm/xorm"
-	"github.com/stretchr/testify/assert"
 	"github.com/axetroy/go-server/controller/auth"
 	"github.com/axetroy/go-server/controller/email"
+	"github.com/axetroy/go-server/controller/user"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/model"
 	"github.com/axetroy/go-server/orm"
@@ -13,13 +12,14 @@ import (
 	"github.com/axetroy/go-server/services/password"
 	"github.com/axetroy/go-server/services/redis"
 	"github.com/axetroy/go-server/tester"
+	"github.com/go-xorm/xorm"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
 	"time"
 )
 
 func TestResetPasswordWithEmptyBody(t *testing.T) {
-	t.Skip()
 	// empty body
 	r := tester.Http.Put("/v1/auth/password/reset", []byte(nil), nil)
 
@@ -35,7 +35,6 @@ func TestResetPasswordWithEmptyBody(t *testing.T) {
 }
 
 func TestResetPasswordWithInvalidPassword(t *testing.T) {
-	t.Skip()
 	newPassword := "321321"
 
 	body, _ := json.Marshal(&auth.ResetPasswordParams{
@@ -54,17 +53,39 @@ func TestResetPasswordWithInvalidPassword(t *testing.T) {
 
 	assert.Equal(t, res.Status, response.StatusFail)
 	assert.Equal(t, res.Message, exception.InvalidResetCode.Error())
-	assert.Nil(t, res.Data)
+	assert.Equal(t, false, res.Data)
 }
 
 func TestResetPasswordSuccess(t *testing.T) {
+	// 先创建一个测试账号
+	username := "test-TestResetPasswordSuccess"
+	oldPassword := "123123"
+	var uid string
+	if r := auth.SignUp(auth.SignUpParams{
+		Username: &username,
+		Password: oldPassword,
+	}); r.Status != response.StatusSuccess {
+		t.Error(r.Message)
+		return
+	} else {
+		userInfo := user.Profile{}
+		if err := tester.Decode(r.Data, &userInfo); err != nil {
+			t.Error(err)
+			return
+		}
+		uid = userInfo.Id
+		defer func() {
+			auth.DeleteUserByUserName(username)
+		}()
+	}
+
 	newPassword := "321321"
 
-	var resetCode = email.GenerateResetCode(tester.Uid)
+	var resetCode = email.GenerateResetCode(uid)
 
 	// set to redis
 	// set activationCode to redis
-	if err := redis.ResetCode.Set(resetCode, tester.Uid, time.Minute*30).Err(); err != nil {
+	if err := redis.ResetCode.Set(resetCode, uid, time.Minute*30).Err(); err != nil {
 		t.Error(err)
 		return
 	}
@@ -87,10 +108,11 @@ func TestResetPasswordSuccess(t *testing.T) {
 		return
 	}
 
-	if ok := assert.Equal(t, response.StatusSuccess, res.Status); !ok {
+	if !assert.Equal(t, response.StatusSuccess, res.Status) {
 		return
 	}
-	if ok := assert.Equal(t, true, res.Data); !ok {
+
+	if !assert.Equal(t, true, res.Data) {
 		return
 	}
 
@@ -118,7 +140,7 @@ func TestResetPasswordSuccess(t *testing.T) {
 		// 重置密码回旧密码
 		user := &model.User{}
 		var isExist bool
-		if isExist, err = session.Where("email = ?", tester.Username).Get(user); err != nil {
+		if isExist, err = session.Where("email = ?", username).Get(user); err != nil {
 			return
 		}
 		if isExist == false {
@@ -126,15 +148,15 @@ func TestResetPasswordSuccess(t *testing.T) {
 			return
 		}
 
-		user.Password = password.Generate(tester.Password)
+		user.Password = password.Generate(oldPassword)
 
-		if _, er := session.Where("email = ?", tester.Username).Cols("password").Update(user); er != nil {
+		if _, er := session.Where("email = ?", username).Cols("password").Update(user); er != nil {
 			err = er
 		}
 	}()
 
 	user := model.User{
-		Email: &tester.Username,
+		Username: username,
 	}
 
 	if isExist, err := session.Get(&user); err != nil {

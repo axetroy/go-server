@@ -26,9 +26,8 @@ func GenerateResetCode(uid string) string {
 	return utils.MD5(codeId)
 }
 
-func SendResetPasswordEmail(context *gin.Context) {
+func SendResetPasswordEmail(input SendResetPasswordEmailParams) (res response.Response) {
 	var (
-		input   SendResetPasswordEmailParams
 		err     error
 		session *xorm.Session
 		tx      bool
@@ -60,26 +59,15 @@ func SendResetPasswordEmail(context *gin.Context) {
 		}
 
 		if err != nil {
-			context.JSON(http.StatusOK, response.Response{
-				Status:  response.StatusFail,
-				Message: err.Error(),
-				Data:    nil,
-			})
+			res.Data = nil
+			res.Message = err.Error()
+			res.Data = false
 		} else {
-			context.JSON(http.StatusOK, response.Response{
-				Status:  response.StatusSuccess,
-				Message: "",
-				Data:    true,
-			})
+			res.Data = true
+			res.Status = response.StatusSuccess
 		}
 	}()
 
-	if err = context.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	// TODO: 校验参数
 	session = orm.Db.NewSession()
 
 	if err = session.Begin(); err != nil {
@@ -118,4 +106,29 @@ func SendResetPasswordEmail(context *gin.Context) {
 		return
 	}
 
+	return
+
+}
+
+func SendResetPasswordEmailRouter(context *gin.Context) {
+	var (
+		input SendResetPasswordEmailParams
+		err   error
+		res   = response.Response{}
+	)
+
+	defer func() {
+		if err != nil {
+			res.Data = nil
+			res.Message = err.Error()
+		}
+		context.JSON(http.StatusOK, res)
+	}()
+
+	if err = context.ShouldBindJSON(&input); err != nil {
+		err = exception.InvalidParams
+		return
+	}
+
+	res = SendResetPasswordEmail(input)
 }

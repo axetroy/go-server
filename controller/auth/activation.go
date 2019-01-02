@@ -16,9 +16,8 @@ type ActivationParams struct {
 	Code string `valid:"Required;";json:"code"`
 }
 
-func Activation(context *gin.Context) {
+func Activation(input ActivationParams) (res response.Response) {
 	var (
-		input   ActivationParams
 		err     error
 		session *xorm.Session
 		tx      bool
@@ -50,26 +49,11 @@ func Activation(context *gin.Context) {
 		}
 
 		if err != nil {
-			context.JSON(http.StatusOK, response.Response{
-				Status:  response.StatusFail,
-				Message: err.Error(),
-				Data:    nil,
-			})
+			res.Message = err.Error()
 		} else {
-			context.JSON(http.StatusOK, response.Response{
-				Status:  response.StatusSuccess,
-				Message: "",
-				Data:    nil,
-			})
+			res.Status = response.StatusSuccess
 		}
 	}()
-
-	if err = context.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	// TODO: 校验参数
 
 	var (
 		uid string
@@ -125,4 +109,28 @@ func Activation(context *gin.Context) {
 	if err = redis.ActivationCode.Del(input.Code).Err(); err != nil {
 		return
 	}
+	return
+}
+
+func ActivationRouter(context *gin.Context) {
+	var (
+		input ActivationParams
+		err   error
+		res   = response.Response{}
+	)
+
+	defer func() {
+		if err != nil {
+			res.Data = nil
+			res.Message = err.Error()
+		}
+		context.JSON(http.StatusOK, res)
+	}()
+
+	if err = context.ShouldBindJSON(&input); err != nil {
+		err = exception.InvalidParams
+		return
+	}
+
+	res = Activation(input)
 }

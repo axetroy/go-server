@@ -24,9 +24,8 @@ func GenerateActivationCode(uid string) string {
 	return activationCode
 }
 
-func SendActivationEmail(context *gin.Context) {
+func SendActivationEmail(input SendActivationEmailParams) (res response.Response) {
 	var (
-		input   SendActivationEmailParams
 		err     error
 		session *xorm.Session
 		tx      bool
@@ -57,26 +56,12 @@ func SendActivationEmail(context *gin.Context) {
 		}
 
 		if err != nil {
-			context.JSON(http.StatusOK, response.Response{
-				Status:  response.StatusFail,
-				Message: err.Error(),
-				Data:    nil,
-			})
+			res.Data = nil
+			res.Message = err.Error()
 		} else {
-			context.JSON(http.StatusOK, response.Response{
-				Status:  response.StatusSuccess,
-				Message: "",
-				Data:    true,
-			})
+			res.Status = response.StatusSuccess
 		}
 	}()
-
-	if err = context.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	// TODO: 校验参数
 
 	session = orm.Db.NewSession()
 
@@ -121,4 +106,28 @@ func SendActivationEmail(context *gin.Context) {
 		return
 	}
 
+	return
+}
+
+func SendActivationEmailRouter(context *gin.Context) {
+	var (
+		input SendActivationEmailParams
+		err   error
+		res   = response.Response{}
+	)
+
+	defer func() {
+		if err != nil {
+			res.Data = nil
+			res.Message = err.Error()
+		}
+		context.JSON(http.StatusOK, res)
+	}()
+
+	if err = context.ShouldBindJSON(&input); err != nil {
+		err = exception.InvalidParams
+		return
+	}
+
+	res = SendActivationEmail(input)
 }
