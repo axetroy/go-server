@@ -116,7 +116,7 @@ func init() {
 		{
 			// TODO: 写新闻咨询类
 			newsRouter.Use(middleware.Authenticate())
-			newsRouter.POST("/", news.Create)
+			newsRouter.POST("/", news.CreateRouter)
 			newsRouter.GET("/list", news.GetNewsList)
 			newsRouter.GET("/detail/:id", news.GetNews)
 			newsRouter.PUT("/update/:id", news.Update)

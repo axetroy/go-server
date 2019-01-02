@@ -13,14 +13,27 @@ const (
 	NewsStatusActive                   // 启用的状态
 )
 
+var (
+	NewsTypes = []NewsType{NewsType_News, NewsType_Announcement}
+)
+
+func IsValidNewsType(t NewsType) bool {
+	for _, v := range NewsTypes {
+		if v == t {
+			return true
+		}
+	}
+	return false
+}
+
 type News struct {
-	Id        string     `xorm:"pk notnull unique index" json:"id"` // 新闻公告类ID
-	Author    string     `xorm:"notnull index" json:"author"`       // 公告的作者ID
-	Tittle    string     `xorm:"notnull index" json:"tittle"`       // 公告标题
-	Content   string     `xorm:"notnull text" json:"content"`       // 公告内容
-	Type      NewsType   `xorm:"notnull varchar(32)" json:"type"`   // 公告类型
-	Tags      []string   `xorm:"notnull" json:"tags"`               // 公告的标签
-	Status    NewsStatus `xorm:"notnull" json:"status"`             // 公告状态
+	Id        string     `xorm:"pk notnull unique index varchar(32)" json:"id"` // 新闻公告类ID
+	Author    string     `xorm:"notnull index varchar(32)" json:"author"`       // 公告的作者ID
+	Tittle    string     `xorm:"notnull index varchar(32)" json:"tittle"`       // 公告标题
+	Content   string     `xorm:"notnull text" json:"content"`                   // 公告内容
+	Type      NewsType   `xorm:"notnull varchar(32)" json:"type"`               // 公告类型
+	Tags      []string   `xorm:"notnull" json:"tags"`                           // 公告的标签
+	Status    NewsStatus `xorm:"notnull" json:"status"`                         // 公告状态
 	CreatedAt time.Time  `xorm:"created" json:"created_at"`
 	UpdatedAt time.Time  `xorm:"updated" json:"updated_at"`
 	DeletedAt *time.Time `xorm:"deleted" json:"deleted_at"`

@@ -2,9 +2,9 @@ package orm
 
 import (
 	"fmt"
+	"github.com/axetroy/go-server/model"
 	"github.com/go-xorm/xorm"
 	_ "github.com/lib/pq"
-	"github.com/axetroy/go-server/model"
 	"log"
 )
 
@@ -21,6 +21,9 @@ func init() {
 
 	// sync table
 	err = Db.Sync(
+		// 管理员表
+		new(model.Admin),
+		// 用户表
 		new(model.User),
 		new(model.LoginLog),
 		// 钱包
