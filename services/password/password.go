@@ -1,7 +1,7 @@
 package password
 
 import (
-	"github.com/axetroy/redpack/utils"
+	"github.com/axetroy/go-server/utils"
 )
 
 const (
