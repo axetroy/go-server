@@ -21,4 +21,6 @@ var (
 	// user
 	UserExist    = New("用户已存在")
 	UserNotExist = New("用户不存在")
+	// 没有权限
+	NoPermission = New("没有权限")
 )
