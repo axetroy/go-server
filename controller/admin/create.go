@@ -2,7 +2,6 @@ package admin
 
 import (
 	"errors"
-	"fmt"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/id"
 	"github.com/axetroy/go-server/model"
@@ -119,9 +118,10 @@ func CreateAdmin(input CreateAdminParams, isSuper bool) (res response.Response) 
 
 func CreateAdminRouter(context *gin.Context) {
 	var (
-		input CreateAdminParams
-		err   error
-		res   = response.Response{}
+		input   CreateAdminParams
+		err     error
+		res     = response.Response{}
+		session *xorm.Session
 	)
 
 	defer func() {
@@ -137,10 +137,24 @@ func CreateAdminRouter(context *gin.Context) {
 		return
 	}
 
-	// TODO: 验证是否是超级管理员
 	uid := context.GetString("uid")
 
-	fmt.Println(uid)
+	session = orm.Db.NewSession()
+
+	adminInfo := model.Admin{
+		Id: uid,
+	}
+
+	if isExist, er := session.Get(&adminInfo); er != nil {
+		err = er
+		return
+	} else if !isExist {
+		err = exception.AdminNotExist
+		return
+	} else if adminInfo.IsSuper == false {
+		err = exception.AdminNotSuper
+		return
+	}
 
 	res = CreateAdmin(input, false)
 }

@@ -1,6 +1,7 @@
 package router
 
 import (
+	"github.com/axetroy/go-server/controller/admin"
 	"github.com/axetroy/go-server/controller/auth"
 	"github.com/axetroy/go-server/controller/downloader"
 	"github.com/axetroy/go-server/controller/email"
@@ -70,6 +71,19 @@ func init() {
 		adminRouter := v1.Group("/admin")
 		{
 			adminRouter.Use(middleware.Authenticate(true))
+
+			// 管理员类
+			adRouter := adminRouter.Group("admin")
+			{
+				adRouter.POST("/", admin.CreateAdminRouter)
+			}
+
+			// 新闻咨询类
+			newsRouter := adminRouter.Group("/news")
+			{
+				newsRouter.POST("/", news.CreateRouter)
+				newsRouter.PUT("/update/:id", news.Update)
+			}
 		}
 
 		// 认证类
@@ -122,10 +136,8 @@ func init() {
 		{
 			// TODO: 写新闻咨询类
 			newsRouter.Use(middleware.Authenticate(false))
-			newsRouter.POST("/", news.CreateRouter)
 			newsRouter.GET("/list", news.GetNewsList)
 			newsRouter.GET("/detail/:id", news.GetNews)
-			newsRouter.PUT("/update/:id", news.Update)
 		}
 
 		// 系统通知
