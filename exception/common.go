@@ -21,9 +21,4 @@ var (
 	// user
 	UserExist    = New("用户已存在")
 	UserNotExist = New("用户不存在")
-	// upload
-	NotSupportType = New("不支持该文件类型")
-	OutOfSize      = New("超出文件大小限制")
-	// wallet
-	NotEnoughBalance = New("钱包余额不足")
 )
