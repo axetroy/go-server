@@ -24,6 +24,8 @@ before_script:
   # start postgres
   - psql -c 'create database gotest;' -U postgres
 
+  - go get -v -u
+
 script:
   - make test
   - make build
