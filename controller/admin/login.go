@@ -2,6 +2,7 @@ package admin
 
 import (
 	"errors"
+	"fmt"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/model"
 	"github.com/axetroy/go-server/orm"
@@ -146,4 +147,6 @@ func LoginRouter(context *gin.Context) {
 	}
 
 	res = Login(input)
+
+	fmt.Sprintf("%v", res)
 }

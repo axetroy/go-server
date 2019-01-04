@@ -68,24 +68,27 @@ func init() {
 			})
 		})
 
+		userAuthMiddleware := middleware.Authenticate(false) // 用户Token的中间件
+		adminAuthMiddleware := middleware.Authenticate(true) // 管理员Token的中间件
+
 		// 管理员所有接口
 		// TODO: 管理员接口应该和用户接口分离
 		adminRouter := v1.Group("/admin")
 		{
-			adminRouter.Use(middleware.Authenticate(true))
-
 			// 登陆
 			adminRouter.POST("/login", admin.LoginRouter)
 
 			// 管理员类
 			adRouter := adminRouter.Group("admin")
 			{
+				adRouter.Use(adminAuthMiddleware)
 				adRouter.POST("/", admin.CreateAdminRouter)
 			}
 
 			// 新闻咨询类
 			newsRouter := adminRouter.Group("/news")
 			{
+				newsRouter.Use(adminAuthMiddleware)
 				newsRouter.POST("/", news.CreateRouter)
 				newsRouter.PUT("/update/:id", news.Update)
 			}
@@ -103,7 +106,7 @@ func init() {
 		// 用户类
 		userRouter := v1.Group("/user")
 		{
-			userRouter.Use(middleware.Authenticate(false))
+			userRouter.Use(userAuthMiddleware)
 			userRouter.GET("/signout", user.SignOut)
 			userRouter.GET("/profile", user.GetProfileRouter)
 			userRouter.PUT("/profile", user.UpdateProfileRouter)
@@ -119,7 +122,7 @@ func init() {
 		// 钱包类
 		walletRouter := v1.Group("/wallet")
 		{
-			walletRouter.Use(middleware.Authenticate(false))
+			walletRouter.Use(userAuthMiddleware)
 			// 获取所有的钱包信息
 			walletRouter.GET("/map", wallet.GetWallets)
 			walletRouter.GET("/currency/:currency", wallet.GetWallet)
@@ -132,7 +135,7 @@ func init() {
 		// 财务日志
 		financeRouter := v1.Group("/finance")
 		{
-			financeRouter.Use(middleware.Authenticate(false))
+			financeRouter.Use(userAuthMiddleware)
 			financeRouter.GET("/history", finance.GetHistory) // TODO: 获取我的财务日志
 		}
 
@@ -140,7 +143,7 @@ func init() {
 		newsRouter := v1.Group("/news")
 		{
 			// TODO: 写新闻咨询类
-			newsRouter.Use(middleware.Authenticate(false))
+			newsRouter.Use(userAuthMiddleware)
 			newsRouter.GET("/list", news.GetNewsList)
 			newsRouter.GET("/detail/:id", news.GetNews)
 		}
@@ -170,7 +173,7 @@ func init() {
 			// 文件上传 (需要验证token)
 			uploadRouter := v1.Group("/upload")
 			{
-				uploadRouter.Use(middleware.Authenticate(false))
+				uploadRouter.Use(userAuthMiddleware)
 				uploadRouter.POST("/file", uploader.File)
 				uploadRouter.POST("/image", uploader.Image)
 			}

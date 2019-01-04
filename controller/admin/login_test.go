@@ -1,6 +1,7 @@
 package admin_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/axetroy/go-server/controller/admin"
 	"github.com/axetroy/go-server/exception"
@@ -8,6 +9,7 @@ import (
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/go-server/token"
 	"github.com/stretchr/testify/assert"
+	"net/http"
 	"testing"
 )
 
@@ -50,6 +52,60 @@ func TestLogin(t *testing.T) {
 			// 判断UID是否与用户一致
 			//c.Uid
 			fmt.Println(c)
+		}
+	}
+}
+
+func TestLoginRouter(t *testing.T) {
+	// 登陆无效的管理员账号
+	{
+		body, _ := json.Marshal(&admin.SignInParams{
+			Username: "admin",
+			Password: "invalid_password",
+		})
+
+		r := tester.Http.Post("/v1/admin/login", body, nil)
+
+		assert.Equal(t, http.StatusOK, r.Code)
+
+		res := response.Response{}
+
+		assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+
+		assert.Equal(t, response.StatusFail, res.Status)
+		assert.Equal(t, exception.InvalidAccountOrPassword.Error(), res.Message)
+	}
+
+	// 登陆正确的管理员账号
+	{
+		body, _ := json.Marshal(&admin.SignInParams{
+			Username: "admin",
+			Password: "admin",
+		})
+
+		r := tester.Http.Post("/v1/admin/login", body, nil)
+
+		assert.Equal(t, http.StatusOK, r.Code)
+
+		res := response.Response{}
+
+		assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+
+		assert.Equal(t, response.StatusSuccess, res.Status)
+		assert.Equal(t, "", res.Message)
+
+		adminInfo := admin.SignInResponse{}
+
+		if err := tester.Decode(res.Data, &adminInfo); err != nil {
+			t.Error(err)
+		}
+
+		assert.True(t, len(adminInfo.Token) > 0)
+
+		if _, er := token.Parse(token.Prefix+" "+adminInfo.Token, true); er != nil {
+			t.Error(er)
+		} else {
+			// 到这里说明token已经解析成功了
 		}
 	}
 }
