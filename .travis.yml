@@ -11,6 +11,13 @@ dist: trusty
 addons:
   postgresql: "9.6.6"
 
+env:
+  - DB_DRIVER=postgres
+  - DB_NAME=gotest
+  - DB_USERNAME=postgres
+  - DB_PASSWORD=postgres
+  - DB_PORT=5432
+
 services:
   - postgresql
   - redis-server
@@ -20,7 +27,8 @@ before_script:
   - redis-cli shutdown
   - sudo redis-server --requirepass 'password' & echo "完成redis的启动"
   # restart postgres
-  - sudo /etc/init.d/postgresql stop && sudo /etc/init.d/postgresql start -p 65432
+  - sudo /etc/init.d/postgresql stop
+  - sudo /etc/init.d/postgresql start
   # start postgres
   - psql -c 'create database gotest;' -U postgres
 

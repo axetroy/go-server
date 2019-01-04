@@ -6,13 +6,44 @@ import (
 	"github.com/go-xorm/xorm"
 	_ "github.com/lib/pq"
 	"log"
+	"os"
 )
 
 var Db *xorm.Engine
 
 func init() {
-	var err error
-	if Db, err = xorm.NewEngine("postgres", "postgres://postgres:postgres@localhost:65432/gotest?sslmode=disable"); err != nil {
+	var (
+		err        error
+		driverName = os.Getenv("DB_DRIVER")
+		dbName     = os.Getenv("DB_NAME")
+		dbUsername = os.Getenv("DB_USERNAME")
+		dbPassword = os.Getenv("DB_PASSWORD")
+		dbPort     = os.Getenv("DB_PORT")
+	)
+
+	if len(driverName) == 0 {
+		driverName = "postgres"
+	}
+
+	if len(dbName) == 0 {
+		dbName = "gotest"
+	}
+
+	if len(dbUsername) == 0 {
+		dbUsername = "postgres"
+	}
+
+	if len(dbPassword) == 0 {
+		dbPassword = "postgres"
+	}
+
+	if len(dbPort) == 0 {
+		dbPort = "65432"
+	}
+
+	link := fmt.Sprintf("%s://%s:%s@localhost:%s/%s?sslmode=disable", driverName, dbUsername, dbPassword, dbPort, dbName)
+
+	if Db, err = xorm.NewEngine(driverName, link); err != nil {
 		panic(err)
 		return
 	}
