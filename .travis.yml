@@ -24,6 +24,6 @@ before_script:
   # start postgres
   - psql -c 'create database gotest;' -U postgres
 
-  - go get -v -u && go get -v -u github.com/axetroy/mocker
+  - go get -v -u && go get -v -u github.com/axetroy/mocker && go get -v -u github.com/stretchr/testify/assert
 
 script: make test && make build
