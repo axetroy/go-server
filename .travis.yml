@@ -16,10 +16,11 @@ services:
   - redis-server
 
 before_script:
-  # showdown redis
+  # restart redis
   - redis-cli shutdown
-  # start redis
   - sudo redis-server --requirepass 'password' & echo "完成redis的启动"
+  # restart postgres
+  - sudo /etc/init.d/postgresql stop & sudo /etc/init.d/postgresql start
   # start postgres
   - psql -c 'create database gotest;' -U postgres
 
