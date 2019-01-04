@@ -2,7 +2,6 @@ package auth_test
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/axetroy/go-server/controller/auth"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/response"
@@ -77,8 +76,6 @@ func TestSignInSuccess(t *testing.T) {
 		Ip:        "0.0.0.0.0",
 	})
 
-	fmt.Println(res)
-
 	assert.Equal(t, response.StatusSuccess, res.Status)
 	assert.Equal(t, "", res.Message)
 
@@ -94,6 +91,6 @@ func TestSignInSuccess(t *testing.T) {
 		t.Error(err)
 		return
 	} else {
-		assert.IsType(t, c.Uid, int64(123), "UID必须是int64")
+		assert.IsType(t, "", c.Uid, "UID必须是字符串")
 	}
 }
