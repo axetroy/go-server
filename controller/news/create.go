@@ -1,14 +1,18 @@
 package news
 
 import (
+	"fmt"
 	"github.com/axetroy/go-server/exception"
+	"github.com/axetroy/go-server/id"
 	"github.com/axetroy/go-server/model"
 	"github.com/axetroy/go-server/orm"
 	"github.com/axetroy/go-server/response"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
 	"github.com/kataras/iris/core/errors"
+	"github.com/mitchellh/mapstructure"
 	"net/http"
+	"time"
 )
 
 type CreateNewParams struct {
@@ -18,26 +22,10 @@ type CreateNewParams struct {
 	Tags    []string       `json:"tags"`
 }
 
-type PureNews struct {
-	Id      string           `json:"id"`      // 新闻公告类ID
-	Author  string           `json:"author"`  // 公告的作者ID
-	Tittle  string           `json:"tittle"`  // 公告标题
-	Content string           `json:"content"` // 公告内容
-	Type    model.NewsType   `json:"type"`    // 公告类型
-	Tags    []string         `json:"tags"`    // 公告的标签
-	Status  model.NewsStatus `json:"status"`  // 公告状态
-}
-
-type Instance struct {
-	PureNews
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
-}
-
 func Create(uid string, input CreateNewParams) (res response.Response) {
 	var (
 		err     error
-		data    Instance
+		data    News
 		session *xorm.Session
 		tx      bool
 	)
@@ -81,7 +69,9 @@ func Create(uid string, input CreateNewParams) (res response.Response) {
 		return
 	}
 
-	// TODO: 验证这个UID是不是管理员
+	// TODO: 找一找是否有这个管理员
+
+	// TODO: RBAC权限校验
 
 	if !model.IsValidNewsType(input.Type) {
 		err = exception.NewsInvalidType
@@ -90,6 +80,7 @@ func Create(uid string, input CreateNewParams) (res response.Response) {
 	tx = true
 
 	n := model.News{
+		Id:      id.Generate(),
 		Author:  uid,
 		Tittle:  input.Title,
 		Content: input.Content,
@@ -101,6 +92,16 @@ func Create(uid string, input CreateNewParams) (res response.Response) {
 	if _, err = session.Insert(&n); err != nil {
 		return
 	}
+
+	if er := mapstructure.Decode(n, &data.Pure); er != nil {
+		err = er
+		return
+	}
+
+	data.CreatedAt = n.CreatedAt.Format(time.RFC3339Nano)
+	data.UpdatedAt = n.UpdatedAt.Format(time.RFC3339Nano)
+
+	fmt.Println(n)
 
 	return
 }

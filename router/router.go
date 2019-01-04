@@ -89,7 +89,7 @@ func init() {
 			newsRouter := adminRouter.Group("/news")
 			{
 				newsRouter.Use(adminAuthMiddleware)
-				newsRouter.POST("/", news.CreateRouter)
+				newsRouter.POST("/create", news.CreateRouter)
 				newsRouter.PUT("/update/:id", news.Update)
 			}
 		}

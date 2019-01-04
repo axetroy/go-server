@@ -4,7 +4,6 @@ import (
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/utils"
 	"github.com/dgrijalva/jwt-go"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -17,7 +16,7 @@ var (
 )
 
 type Claims struct {
-	Uid int64 `json:"uid"`
+	Uid string `json:"uid"`
 	jwt.StandardClaims
 }
 
@@ -100,15 +99,10 @@ func Parse(tokenString string, isAdmin bool) (claims Claims, err error) {
 
 	if token != nil && token.Valid {
 		var (
-			uidStr string
-			uid    int64
+			uid string
 		)
 
-		if uidStr, err = utils.Base64Decode(c.Uid); err != nil {
-			return
-		}
-
-		if uid, err = strconv.ParseInt(uidStr, 10, 64); err != nil {
+		if uid, err = utils.Base64Decode(c.Uid); err != nil {
 			return
 		}
 
