@@ -69,36 +69,41 @@ func TestCreateAdmin(t *testing.T) {
 }
 
 func TestCreateAdminRouter(t *testing.T) {
-	// TODO: 先登陆超级管理员拿到token
-	header := mocker.Header{
-		"Authorization": token.Prefix + " 12312",
+	{
+		header := mocker.Header{
+			"Authorization": token.Prefix + " 12312",
+		}
+
+		username := "test-TestCreateAdminRouter"
+		password := "12312"
+
+		body, _ := json.Marshal(&admin.CreateAdminParams{
+			Account:  username,
+			Password: password,
+			Name:     username,
+		})
+
+		r := tester.Http.Post("/v1/admin/admin/create", body, &header)
+
+		if !assert.Equal(t, http.StatusOK, r.Code) {
+			return
+		}
+
+		res := response.Response{}
+
+		if !assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res)) {
+			return
+		}
+
+		if !assert.Equal(t, response.StatusFail, res.Status) {
+			return
+		}
+		if !assert.Equal(t, exception.InvalidToken.Error(), res.Message) {
+			return
+		}
 	}
 
-	username := "test-TestCreateAdminRouter"
-	password := "12312"
-
-	body, _ := json.Marshal(&admin.CreateAdminParams{
-		Account:  username,
-		Password: password,
-		Name:     username,
-	})
-
-	r := tester.Http.Post("/v1/admin/admin", body, &header)
-
-	if !assert.Equal(t, http.StatusOK, r.Code) {
-		return
-	}
-
-	res := response.Response{}
-
-	if !assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res)) {
-		return
-	}
-
-	if !assert.Equal(t, response.StatusFail, res.Status) {
-		return
-	}
-	if !assert.Equal(t, exception.InvalidToken.Error(), res.Message) {
-		return
+	{
+		// 拿正确的Token创建管理员
 	}
 }

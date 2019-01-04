@@ -82,7 +82,7 @@ func init() {
 			adRouter := adminRouter.Group("admin")
 			{
 				adRouter.Use(adminAuthMiddleware)
-				adRouter.POST("/", admin.CreateAdminRouter)
+				adRouter.POST("/create", admin.CreateAdminRouter)
 			}
 
 			// 新闻咨询类

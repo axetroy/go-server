@@ -69,7 +69,23 @@ func Create(uid string, input CreateNewParams) (res response.Response) {
 		return
 	}
 
-	// TODO: 找一找是否有这个管理员
+	adminInfo := model.Admin{
+		Id: uid,
+	}
+
+	if isExist, er := session.Get(&adminInfo); er != nil {
+		err = er
+		return
+	} else if !isExist {
+		err = exception.AdminNotExist
+		return
+	}
+
+	// 需要超级管理员才能创建
+	if !adminInfo.IsSuper {
+		err = exception.AdminNotSuper
+		return
+	}
 
 	// TODO: RBAC权限校验
 

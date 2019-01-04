@@ -65,19 +65,23 @@ func TestCreate(t *testing.T) {
 		assert.Equal(t, response.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		defer func() {
-			// TODO: 删除这篇文章
-		}()
-
 		n := news.News{}
 
 		assert.Nil(t, tester.Decode(r.Data, &n))
+
+		defer func() {
+			news.DeleteNewsById(n.Id)
+		}()
 
 		assert.Equal(t, adminUid, n.Author)
 		assert.Equal(t, title, n.Tittle)
 		assert.Equal(t, content, n.Content)
 		assert.Equal(t, newsType, n.Type)
 		assert.Len(t, n.Tags, 0)
+	}
+
+	{
+		// TODO: 非管理员的uid去创建，应该报错
 	}
 }
 
@@ -142,13 +146,13 @@ func TestCreateRouter(t *testing.T) {
 		assert.Equal(t, http.StatusOK, r.Code)
 		assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
 
-		defer func() {
-			// TODO: 删除这篇文章
-		}()
-
 		n := news.News{}
 
 		assert.Nil(t, tester.Decode(res.Data, &n))
+
+		defer func() {
+			news.DeleteNewsById(n.Id)
+		}()
 
 		assert.Equal(t, adminUid, n.Author)
 		assert.Equal(t, title, n.Tittle)
