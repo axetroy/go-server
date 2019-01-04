@@ -12,6 +12,8 @@ services:
   - redis-server
 
 before_script:
+  # showdown redis
+  - redis-cli shutdown
   # start redis
   - sudo redis-server --requirepass 'password'
   # start postgres
