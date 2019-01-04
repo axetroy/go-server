@@ -4,6 +4,8 @@ go:
   - "1.11.2"
   - master
 
+dist: trusty
+
 addons:
   postgresql: "9.6.6"
 
