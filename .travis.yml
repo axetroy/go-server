@@ -12,11 +12,12 @@ addons:
   postgresql: "9.6.6"
 
 env:
-  - DB_DRIVER=postgres
-  - DB_NAME=gotest
-  - DB_USERNAME=postgres
-  - DB_PASSWORD=postgres
-  - DB_PORT=5432
+  global:
+    - DB_DRIVER=postgres
+    - DB_NAME=gotest
+    - DB_USERNAME=postgres
+    - DB_PASSWORD=postgres
+    - DB_PORT=5432
 
 services:
   - postgresql
