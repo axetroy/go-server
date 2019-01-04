@@ -1,0 +1,22 @@
+language: go
+
+go:
+  - "1.11.2"
+  - master
+
+addons:
+  postgresql: "9.6.6"
+
+services:
+  - postgresql
+  - redis-server
+
+before_script:
+  # start redis
+  - sudo redis-server --requirepass 'password'
+  # start postgres
+  - psql -c 'create database gotest;' -U postgres
+
+script:
+  - make test
+  - make build
