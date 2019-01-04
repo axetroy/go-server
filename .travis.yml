@@ -26,6 +26,4 @@ before_script:
 
   - go get -v -u
 
-script:
-  - make test
-  - make build
+script: make test && make build
