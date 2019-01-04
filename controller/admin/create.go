@@ -7,6 +7,7 @@ import (
 	"github.com/axetroy/go-server/model"
 	"github.com/axetroy/go-server/orm"
 	"github.com/axetroy/go-server/response"
+	"github.com/axetroy/go-server/services/password"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
 	"github.com/mitchellh/mapstructure"
@@ -85,7 +86,7 @@ func CreateAdmin(input CreateAdminParams, isSuper bool) (res response.Response) 
 		Id:       id.Generate(),
 		Username: input.Account,
 		Name:     input.Name,
-		Password: input.Password,
+		Password: password.Generate(input.Password),
 		Status:   model.AdminStatusInit,
 		IsSuper:  isSuper,
 	}

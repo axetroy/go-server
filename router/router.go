@@ -68,9 +68,14 @@ func init() {
 			})
 		})
 
+		// 管理员所有接口
+		// TODO: 管理员接口应该和用户接口分离
 		adminRouter := v1.Group("/admin")
 		{
 			adminRouter.Use(middleware.Authenticate(true))
+
+			// 登陆
+			adminRouter.POST("/login", admin.LoginRouter)
 
 			// 管理员类
 			adRouter := adminRouter.Group("admin")

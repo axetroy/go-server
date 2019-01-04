@@ -117,12 +117,12 @@ func SignIn(input SignInParams, context SignInContext) (res response.Response) {
 	data.UpdatedAt = userInfo.UpdatedAt.Format(time.RFC3339Nano)
 
 	// generate token
-	var tokenString string
-	if tokenString, err = token.Generate(userInfo.Id, false); err != nil {
+	if t, er := token.Generate(userInfo.Id, false); er != nil {
+		err = er
 		return
+	} else {
+		data.Token = t
 	}
-
-	data.Token = tokenString
 
 	// 写入登陆记录
 	var log = &model.LoginLog{
