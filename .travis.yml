@@ -15,7 +15,7 @@ before_script:
   # showdown redis
   - redis-cli shutdown
   # start redis
-  - sudo redis-server --requirepass 'password'
+  - sudo redis-server --requirepass 'password' & echo "完成redis的启动"
   # start postgres
   - psql -c 'create database gotest;' -U postgres
 
