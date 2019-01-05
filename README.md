@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/axetroy/go-server.svg?branch=master)](https://travis-ci.com/axetroy/go-server)
+
 ### Golang实现的基础服务
 
 这是我在闲暇时间写的一些基础服务
