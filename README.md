@@ -1,4 +1,7 @@
 [![Build Status](https://travis-ci.com/axetroy/go-server.svg?branch=master)](https://travis-ci.com/axetroy/go-server)
+[![Go Report Card](https://goreportcard.com/badge/github.com/axetroy/go-server)](https://goreportcard.com/report/github.com/axetroy/go-server)
+![License](https://img.shields.io/github/license/axetroy/go-server.svg)
+![Repo Size](https://img.shields.io/github/repo-size/axetroy/go-server.svg)
 
 ### Golang实现的基础服务
 
