@@ -45,7 +45,6 @@ func init() {
 
 	if Db, err = xorm.NewEngine(driverName, link); err != nil {
 		panic(err)
-		return
 	}
 
 	fmt.Println("正在同步数据库...")

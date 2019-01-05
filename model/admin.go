@@ -16,7 +16,7 @@ const (
 type Admin struct {
 	Id        string      `xorm:"pk notnull unique index" json:"id"`                // 用户ID
 	Username  string      `xorm:"notnull unique index varchar(36)" json:"username"` // 用户名, 用于登陆
-	Name      string      `xorm:"notnull index varchar(36)" json:"username"`        // 管理员名
+	Name      string      `xorm:"notnull index varchar(36)" json:"Name"`            // 管理员名
 	Password  string      `xorm:"notnull varchar(36)" json:"password"`              // 登陆密码
 	IsSuper   bool        `xorm:"notnull unique" json:"is_super"`                   // 是否是超级管理员, 超级管理员全站应该只有一个
 	Status    AdminStatus `xorm:"notnull" json:"status"`                            // 状态

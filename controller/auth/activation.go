@@ -13,7 +13,7 @@ import (
 )
 
 type ActivationParams struct {
-	Code string `valid:"Required;";json:"code"`
+	Code string `valid:"Required;" json:"code"`
 }
 
 func Activation(input ActivationParams) (res response.Response) {
