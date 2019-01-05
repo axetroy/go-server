@@ -18,3 +18,4 @@ bin
 gin-bin
 upload
 .DS_Store
+coverage.out

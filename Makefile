@@ -3,7 +3,7 @@
 # last commit there is Fri Oct 16 21:33:39 2015 +0200, from https://github.com/apache/thrift
 
 test:
-	go test --cover ./...
+	go test --cover -covermode=count -coverprofile=coverage.out ./...
 
 all:
 	make windows

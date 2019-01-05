@@ -38,3 +38,7 @@ before_script:
 script:
   - make test
   - make build
+
+after_success:
+  # report code cover
+  - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
