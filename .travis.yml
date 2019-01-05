@@ -41,4 +41,6 @@ script:
 
 after_success:
   # report code cover
-  - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
+  - go get golang.org/x/tools/cmd/cover
+  - go get github.com/mattn/goveralls
+  - $GOPATH/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
