@@ -3,13 +3,17 @@ package news_test
 import (
 	"encoding/json"
 	"github.com/axetroy/go-server/controller/admin"
+	"github.com/axetroy/go-server/controller/auth"
 	"github.com/axetroy/go-server/controller/news"
+	"github.com/axetroy/go-server/controller/user"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/model"
 	"github.com/axetroy/go-server/response"
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/go-server/token"
 	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
+	"math/rand"
 	"net/http"
 	"testing"
 )
@@ -89,8 +93,49 @@ func TestCreate(t *testing.T) {
 		assert.Len(t, n.Tags, 0)
 	}
 
+	// 非管理员的uid去创建，应该报错
 	{
-		// TODO: 非管理员的uid去创建，应该报错
+		// 创建一个普通用户
+		var (
+			username = "tester-normal"
+			uid      string
+		)
+
+		{
+			rand.Seed(10331)
+			password := "123123"
+
+			r := auth.SignUp(auth.SignUpParams{
+				Username: &username,
+				Password: password,
+			})
+
+			profile := user.Profile{}
+
+			assert.Nil(t, tester.Decode(r.Data, &profile))
+
+			defer func() {
+				auth.DeleteUserByUserName(username)
+			}()
+
+			uid = profile.Id
+		}
+
+		var (
+			title    = "test"
+			content  = "test"
+			newsType = model.NewsType_News
+		)
+
+		r := news.Create(uid, news.CreateNewParams{
+			Title:   title,
+			Content: content,
+			Type:    newsType,
+			Tags:    []string{},
+		})
+
+		assert.Equal(t, response.StatusFail, r.Status)
+		assert.Equal(t, exception.AdminNotExist.Error(), r.Message)
 	}
 }
 
