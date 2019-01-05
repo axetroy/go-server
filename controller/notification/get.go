@@ -1,5 +1,5 @@
 package notification
 
 func Get() {
-	
+
 }

@@ -30,7 +30,7 @@ func TestResetPasswordWithEmptyBody(t *testing.T) {
 	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
 
 	assert.Equal(t, response.StatusFail, res.Status)
-	assert.Equal(t, exception.InvalidParams.Error(), res.Message, )
+	assert.Equal(t, exception.InvalidParams.Error(), res.Message)
 	assert.Nil(t, res.Data)
 }
 
