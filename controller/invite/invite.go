@@ -20,9 +20,10 @@ import (
 
 func GenerateInviteCode() string {
 	b := make([]byte, 4) // 8 位的邀请码
-	r := rand.New(rand.NewSource(time.Now().Unix()))
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	r.Read(b)
-	return hex.EncodeToString(b)
+	code := hex.EncodeToString(b)
+	return code
 }
 
 func GetInviteById(m *model.InviteHistory) (res response.Response) {

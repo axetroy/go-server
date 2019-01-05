@@ -2,7 +2,9 @@ package email_test
 
 import (
 	"encoding/json"
+	"github.com/axetroy/go-server/controller/auth"
 	"github.com/axetroy/go-server/controller/email"
+	"github.com/axetroy/go-server/controller/user"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/response"
 	"github.com/axetroy/go-server/tester"
@@ -12,7 +14,28 @@ import (
 )
 
 func TestGenerateResetCode(t *testing.T) {
-	code := email.GenerateResetCode(tester.Uid)
+	testerUsername := "tester-TestGenerateResetCode"
+	testerUid := ""
+
+	// 动态创建一个测试账号
+	{
+		r := auth.SignUp(auth.SignUpParams{
+			Username: &testerUsername,
+			Password: "123123",
+		})
+
+		profile := user.Profile{}
+
+		assert.Nil(t, tester.Decode(r.Data, &profile))
+
+		testerUid = profile.Id
+
+		defer func() {
+			auth.DeleteUserByUserName(testerUsername)
+		}()
+	}
+
+	code := email.GenerateResetCode(testerUid)
 
 	assert.IsType(t, "", code)
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/axetroy/go-server/controller/auth"
 	"github.com/axetroy/go-server/controller/email"
+	"github.com/axetroy/go-server/controller/user"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/response"
 	"github.com/axetroy/go-server/services/redis"
@@ -30,7 +31,7 @@ func TestActivationWithEmptyBody(t *testing.T) {
 	}
 
 	assert.Equal(t, response.StatusFail, res.Status)
-	assert.Equal(t, exception.InvalidParams.Error(), res.Message, )
+	assert.Equal(t, exception.InvalidParams.Error(), res.Message)
 	assert.Nil(t, res.Data)
 }
 
@@ -54,11 +55,33 @@ func TestActivationWithInvalidCode(t *testing.T) {
 }
 
 func TestActivationSuccess(t *testing.T) {
+	var (
+		testerUsername = "tester-TestActivationSuccess"
+		testerUid      = ""
+	)
+	// 动态创建一个测试账号
+	{
+		r := auth.SignUp(auth.SignUpParams{
+			Username: &testerUsername,
+			Password: "123123",
+		})
+
+		profile := user.Profile{}
+
+		assert.Nil(t, tester.Decode(r.Data, &profile))
+
+		testerUid = profile.Id
+
+		defer func() {
+			auth.DeleteUserByUserName(testerUsername)
+		}()
+	}
+
 	// generate activation code
-	activationCode := email.GenerateActivationCode(tester.Uid)
+	activationCode := email.GenerateActivationCode(testerUid)
 
 	// set activationCode to redis
-	if err := redis.ActivationCode.Set(activationCode, tester.Uid, time.Minute*30).Err(); err != nil {
+	if err := redis.ActivationCode.Set(activationCode, testerUid, time.Minute*30).Err(); err != nil {
 		t.Error(err)
 		return
 	}
@@ -81,6 +104,6 @@ func TestActivationSuccess(t *testing.T) {
 
 	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
 
-	assert.Equal(t, res.Status, response.StatusFail)
-	assert.Equal(t, res.Message, exception.UserHaveActive.Error())
+	assert.Equal(t, response.StatusSuccess, res.Status)
+	assert.Equal(t, "", res.Message)
 }

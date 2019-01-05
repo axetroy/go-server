@@ -13,6 +13,14 @@ import (
 	"testing"
 )
 
+func init() {
+	admin.CreateAdmin(admin.CreateAdminParams{
+		Account:  "admin",
+		Password: "admin",
+		Name:     "admin",
+	}, true)
+}
+
 func TestLogin(t *testing.T) {
 	// 登陆超级管理员-失败
 	{

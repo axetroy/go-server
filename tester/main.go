@@ -7,12 +7,7 @@ import (
 )
 
 var (
-	Http       mocker.Mocker
-	Username   = "tester"
-	Password   = "password"
-	Uid        string
-	Token      string
-	InviteCode string
+	Http mocker.Mocker
 )
 
 func init() {

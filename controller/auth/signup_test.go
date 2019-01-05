@@ -94,24 +94,41 @@ func TestSignUpSuccess(t *testing.T) {
 func TestSignUpInviteCode(t *testing.T) {
 	rand.Seed(133) // 重置随机码，否则随机数会一样
 
+	testerUsername := "tester"
+	testerUid := ""
 	username := "test-TestSignUpInviteCode"
 
-	inviteCode := tester.InviteCode
+	inviteCode := ""
+
+	// 动态创建一个测试账号
+	{
+		r := auth.SignUp(auth.SignUpParams{
+			Username: &testerUsername,
+			Password: "123123",
+		})
+
+		profile := user.Profile{}
+
+		assert.Nil(t, tester.Decode(r.Data, &profile))
+
+		inviteCode = profile.InviteCode
+		testerUid = profile.Id
+
+		defer func() {
+			auth.DeleteUserByUserName(testerUsername)
+		}()
+	}
+
+	rand.Seed(1111) // 重置随机码，否则随机数会一样
 
 	res := auth.SignUp(auth.SignUpParams{
-		Username: &username,
-		Password: "123123",
-		// TODO: 动态生成一个账号
+		Username:   &username,
+		Password:   "123123",
 		InviteCode: &inviteCode,
 	})
 
-	if !assert.Equal(t, res.Status, response.StatusSuccess) {
-		fmt.Println(res.Message)
-		return
-	}
-	if !assert.Equal(t, res.Message, "") {
-		return
-	}
+	assert.Equal(t, response.StatusSuccess, res.Status)
+	assert.Equal(t, "", res.Message)
 
 	defer func() {
 		defer func() {
@@ -126,18 +143,14 @@ func TestSignUpInviteCode(t *testing.T) {
 	}
 
 	// 默认未激活状态
-	assert.Equal(t, int(profile.Status), int(model.UserStatusInactivated))
-	assert.Equal(t, profile.Username, username)
-	assert.Equal(t, *profile.Nickname, username)
-	if !assert.Nil(t, profile.Email) {
-		return
-	}
-	if !assert.Nil(t, profile.Phone) {
-		return
-	}
+	assert.Equal(t, int(model.UserStatusInactivated), int(profile.Status))
+	assert.Equal(t, username, profile.Username)
+	assert.Equal(t, username, *profile.Nickname)
+	assert.Nil(t, profile.Email)
+	assert.Nil(t, profile.Phone)
 
 	// 获取我的邀请记录
-	resInvite := invite.GetInviteById(&model.InviteHistory{Invited: profile.Id,})
+	resInvite := invite.GetInviteById(&model.InviteHistory{Invited: profile.Id})
 	inviteData := invite.Invite{}
 
 	if !assert.Nil(t, tester.Decode(resInvite.Data, &inviteData)) {
@@ -147,7 +160,7 @@ func TestSignUpInviteCode(t *testing.T) {
 	if !assert.Equal(t, profile.Id, inviteData.Invited) {
 		return
 	}
-	if !assert.Equal(t, "86303081515450368", inviteData.Invitor) {
+	if !assert.Equal(t, testerUid, inviteData.Invitor) {
 		return
 	}
 }

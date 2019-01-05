@@ -13,6 +13,14 @@ import (
 	"testing"
 )
 
+func init() {
+	admin.CreateAdmin(admin.CreateAdminParams{
+		Account:  "admin",
+		Password: "admin",
+		Name:     "admin",
+	}, true)
+}
+
 func TestCreateAdmin(t *testing.T) {
 	// 不能创建超级管理员，因为只能存在一个超级管理员
 	{

@@ -14,6 +14,15 @@ import (
 	"testing"
 )
 
+func init() {
+	// 确保超级管理员存在
+	admin.CreateAdmin(admin.CreateAdminParams{
+		Account:  "admin",
+		Password: "admin",
+		Name:     "admin",
+	}, true)
+}
+
 func TestCreate(t *testing.T) {
 	var (
 		adminUid string

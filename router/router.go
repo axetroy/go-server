@@ -145,7 +145,7 @@ func init() {
 			// TODO: 写新闻咨询类
 			newsRouter.Use(userAuthMiddleware)
 			newsRouter.GET("/list", news.GetNewsList)
-			newsRouter.GET("/detail/:id", news.GetNews)
+			newsRouter.GET("/detail/:id", news.GetNewsRouter)
 		}
 
 		// 系统通知
@@ -153,7 +153,7 @@ func init() {
 		{
 			// TODO: 写通知类
 			notificationRouter.GET("/")
-			notificationRouter.GET("/:id")
+			notificationRouter.GET("/:news_id")
 		}
 
 		// 用户的个人通知
