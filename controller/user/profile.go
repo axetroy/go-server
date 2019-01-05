@@ -167,7 +167,6 @@ func UpdateProfile(uid string, input UpdateProfileParams) (res response.Response
 			res.Message = err.Error()
 			res.Data = nil
 		} else {
-			res.Message = err.Error()
 			res.Data = data
 			res.Status = response.StatusSuccess
 		}

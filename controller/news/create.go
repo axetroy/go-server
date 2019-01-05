@@ -1,7 +1,6 @@
 package news
 
 import (
-	"fmt"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/id"
 	"github.com/axetroy/go-server/model"
@@ -116,8 +115,6 @@ func Create(uid string, input CreateNewParams) (res response.Response) {
 
 	data.CreatedAt = n.CreatedAt.Format(time.RFC3339Nano)
 	data.UpdatedAt = n.UpdatedAt.Format(time.RFC3339Nano)
-
-	fmt.Println(n)
 
 	return
 }
