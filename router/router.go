@@ -140,11 +140,11 @@ func init() {
 		}
 
 		// 新闻咨询类
+		// @公开接口
 		newsRouter := v1.Group("/news")
 		{
-			// TODO: 写新闻咨询类
 			newsRouter.Use(userAuthMiddleware)
-			newsRouter.GET("/list", news.GetNewsList)
+			newsRouter.GET("/list", news.GetListRouter)
 			newsRouter.GET("/detail/:id", news.GetNewsRouter)
 		}
 

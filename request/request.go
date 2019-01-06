@@ -7,10 +7,10 @@ var (
 )
 
 type Query struct {
-	Limit    int     `json:"limit"`
-	Page     int     `json:"page"`
-	Sort     string  `json:"sort"`
-	Platform *string `json:"platform"`
+	Limit    int     `json:"limit" form:"limit"`
+	Page     int     `json:"page" form:"page"`
+	Sort     string  `json:"sort" form:"sort"`
+	Platform *string `json:"platform" form:"platform"`
 }
 
 func (q *Query) Normalize() *Query {
