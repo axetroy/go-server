@@ -8,6 +8,7 @@ import (
 	"github.com/axetroy/go-server/controller/finance"
 	"github.com/axetroy/go-server/controller/invite"
 	"github.com/axetroy/go-server/controller/news"
+	"github.com/axetroy/go-server/controller/notification"
 	"github.com/axetroy/go-server/controller/resource"
 	"github.com/axetroy/go-server/controller/static"
 	"github.com/axetroy/go-server/controller/transfer"
@@ -91,6 +92,12 @@ func init() {
 				newsRouter.Use(adminAuthMiddleware)
 				newsRouter.POST("/create", news.CreateRouter)
 				newsRouter.PUT("/update/:news_id", news.UpdateRouter)
+			}
+
+			// 系统通知
+			notificationRouter := adminRouter.Group("/notification")
+			{
+				notificationRouter.POST("/create", notification.CreateRouter)
 			}
 		}
 

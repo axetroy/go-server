@@ -72,6 +72,8 @@ func init() {
 		new(model.InviteHistory),
 		// 新闻公告表
 		new(model.News),
+		// 系统消息
+		new(model.Notification),
 	)
 
 	if err != nil {
