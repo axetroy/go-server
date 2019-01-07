@@ -2,6 +2,7 @@ package env
 
 import (
 	"flag"
+	"github.com/axetroy/go-fs"
 	"github.com/joho/godotenv"
 	"os"
 	"path"
@@ -23,6 +24,10 @@ func Load() (err error) {
 	if isRunInTest {
 		RootDir = path.Join(os.Getenv("GOPATH"), "src", "github.com", "axetroy", "go-server")
 		envFilePath = path.Join(RootDir, envFilePath)
+	}
+
+	if !fs.PathExists(envFilePath) {
+		return
 	}
 
 	err = godotenv.Load(envFilePath)

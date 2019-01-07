@@ -1,6 +1,7 @@
 package news_test
 
 import (
+	"github.com/axetroy/go-server/controller"
 	"github.com/axetroy/go-server/controller/admin"
 	"github.com/axetroy/go-server/controller/news"
 	"github.com/axetroy/go-server/model"
@@ -68,7 +69,9 @@ func TestGetList(t *testing.T) {
 				newsType = model.NewsType_News
 			)
 
-			r := news.Create(adminUid, news.CreateNewParams{
+			r := news.Create(controller.Context{
+				Uid: adminUid,
+			}, news.CreateNewParams{
 				Title:   title,
 				Content: content,
 				Type:    newsType,

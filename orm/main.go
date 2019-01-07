@@ -2,14 +2,19 @@ package orm
 
 import (
 	"fmt"
+	"github.com/axetroy/go-server/env"
 	"github.com/axetroy/go-server/model"
 	"github.com/go-xorm/xorm"
+	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
 	"log"
 	"os"
 )
 
-var Db *xorm.Engine
+var (
+	Db *xorm.Engine
+	DB *gorm.DB
+)
 
 func init() {
 	var (
@@ -41,9 +46,9 @@ func init() {
 		dbPort = "65432"
 	}
 
-	link := fmt.Sprintf("%s://%s:%s@localhost:%s/%s?sslmode=disable", driverName, dbUsername, dbPassword, dbPort, dbName)
+	DataSourceName := fmt.Sprintf("%s://%s:%s@localhost:%s/%s?sslmode=disable", driverName, dbUsername, dbPassword, dbPort, dbName)
 
-	if Db, err = xorm.NewEngine(driverName, link); err != nil {
+	if Db, err = xorm.NewEngine(driverName, DataSourceName); err != nil {
 		panic(err)
 	}
 
@@ -71,7 +76,7 @@ func init() {
 		// 邀请表
 		new(model.InviteHistory),
 		// 新闻公告表
-		new(model.News),
+		//new(model.News),
 		// 系统消息
 		new(model.Notification),
 	)
@@ -82,5 +87,18 @@ func init() {
 		return
 	}
 
-	Db.ShowSQL(true)
+	// 使用 gorm 连接
+
+	db, err := gorm.Open(driverName, DataSourceName)
+
+	if err != nil {
+		panic("failed to connect database")
+	}
+
+	// Migrate the schema
+	db.AutoMigrate(&model.News{})
+	db.LogMode(env.Test)
+	DB = db
+
+	Db.ShowSQL(env.Test)
 }

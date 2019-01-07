@@ -2,6 +2,7 @@ package news_test
 
 import (
 	"encoding/json"
+	"github.com/axetroy/go-server/controller"
 	"github.com/axetroy/go-server/controller/admin"
 	"github.com/axetroy/go-server/controller/auth"
 	"github.com/axetroy/go-server/controller/news"
@@ -68,7 +69,9 @@ func TestCreate(t *testing.T) {
 			newsType = model.NewsType_News
 		)
 
-		r := news.Create(adminUid, news.CreateNewParams{
+		r := news.Create(controller.Context{
+			Uid: adminUid,
+		}, news.CreateNewParams{
 			Title:   title,
 			Content: content,
 			Type:    newsType,
@@ -127,7 +130,9 @@ func TestCreate(t *testing.T) {
 			newsType = model.NewsType_News
 		)
 
-		r := news.Create(uid, news.CreateNewParams{
+		r := news.Create(controller.Context{
+			Uid: uid,
+		}, news.CreateNewParams{
 			Title:   title,
 			Content: content,
 			Type:    newsType,

@@ -8,7 +8,7 @@ import (
 	"github.com/axetroy/go-server/orm"
 	"github.com/axetroy/go-server/response"
 	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
+	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
 	"net/http"
 	"time"
@@ -26,8 +26,7 @@ func Update(context controller.Context, newsId string, input UpdateParams) (res 
 	var (
 		err          error
 		data         News
-		session      *xorm.Session
-		tx           bool
+		tx           *gorm.DB
 		shouldUpdate bool
 	)
 
@@ -44,16 +43,12 @@ func Update(context controller.Context, newsId string, input UpdateParams) (res 
 			}
 		}
 
-		if tx {
+		if tx != nil {
 			if err != nil || !shouldUpdate {
-				_ = session.Rollback()
+				_ = tx.Rollback().Error
 			} else {
-				err = session.Commit()
+				err = tx.Commit().Error
 			}
-		}
-
-		if session != nil {
-			session.Close()
 		}
 
 		if err != nil {
@@ -65,68 +60,60 @@ func Update(context controller.Context, newsId string, input UpdateParams) (res 
 		}
 	}()
 
-	session = orm.Db.NewSession()
+	tx = orm.DB.Begin()
 
-	if err = session.Begin(); err != nil {
-		return
-	}
+	adminInfo := model.AdminGo{Id: context.Uid}
 
-	tx = true
-
-	{
-		if isExist, er := session.Exist(&model.Admin{Id: context.Uid}); er != nil {
-			err = er
-			return
-		} else if !isExist {
+	// 判断管理员是否存在
+	if err = tx.First(&adminInfo).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
 			err = exception.AdminNotExist
 			return
 		}
 	}
 
-	newsInfo := model.News{}
+	newsInfo := model.News{
+		Id: newsId,
+	}
 
-	query := session.Where("id = ?", newsId)
-
-	if isExist, er := query.Get(&newsInfo); er != nil {
-		err = er
-	} else {
-		if isExist == false {
+	if err = tx.First(&newsInfo).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
 			err = exception.NewsNotExist
 			return
 		}
+		return
 	}
 
 	if input.Tittle != nil {
 		shouldUpdate = true
 		newsInfo.Tittle = *input.Tittle
-		query = query.Cols("tittle")
 	}
 
 	if input.Content != nil {
 		shouldUpdate = true
 		newsInfo.Content = *input.Content
-		query = query.Cols("content")
 	}
 
 	if input.Type != nil {
 		shouldUpdate = true
 		newsInfo.Type = *input.Type
-		query = query.Cols("type")
 	}
 
 	if input.Status != nil {
 		shouldUpdate = true
 		newsInfo.Status = *input.Status
-		query = query.Cols("status")
 	}
 
 	if input.Tags != nil {
 		shouldUpdate = true
 		newsInfo.Tags = *input.Tags
-		query = query.Cols("tags")
 	}
 
-	if _, err = query.Update(&newsInfo); err != nil {
+	if err = tx.Save(&newsInfo).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = exception.NewsNotExist
+			return
+		}
 		return
 	}
 

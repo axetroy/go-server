@@ -8,7 +8,6 @@ import (
 	"github.com/axetroy/go-server/request"
 	"github.com/axetroy/go-server/response"
 	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
 	"net/http"
 )
 
@@ -19,15 +18,12 @@ type Query struct {
 
 func GetList(input Query) (res response.List) {
 	var (
-		err     error
-		session *xorm.Session
-		tx      bool
-		data    = make([]model.News, 0)
-		meta    = &response.Meta{}
+		err  error
+		data = make([]model.News, 0)
+		meta = &response.Meta{}
 	)
 
 	defer func() {
-
 		if r := recover(); r != nil {
 			switch t := r.(type) {
 			case string:
@@ -37,18 +33,6 @@ func GetList(input Query) (res response.List) {
 			default:
 				err = exception.Unknown
 			}
-		}
-
-		if tx {
-			if err != nil {
-				_ = session.Rollback()
-			} else {
-				err = session.Commit()
-			}
-		}
-
-		if session != nil {
-			session.Close()
 		}
 
 		if err != nil {
@@ -66,20 +50,9 @@ func GetList(input Query) (res response.List) {
 
 	query.Normalize()
 
-	session = orm.Db.NewSession()
-
-	if err = session.Begin(); err != nil {
-		return
-	}
-
-	tx = true
-
 	var total int64
 
-	// TODO: support sort field
-	if total, err = session.Table(model.News{}).
-		Limit(query.Limit, query.Limit*query.Page).
-		FindAndCount(&data); err != nil {
+	if err = orm.DB.Limit(query.Limit).Offset(query.Limit * query.Page).Find(&data).Count(&total).Error; err != nil {
 		return
 	}
 

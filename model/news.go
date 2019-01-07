@@ -1,6 +1,11 @@
 package model
 
-import "time"
+import (
+	"github.com/axetroy/go-server/id"
+	"github.com/jinzhu/gorm"
+	"github.com/lib/pq"
+	"time"
+)
 
 type NewsType string
 type NewsStatus int
@@ -27,14 +32,22 @@ func IsValidNewsType(t NewsType) bool {
 }
 
 type News struct {
-	Id        string     `xorm:"pk notnull unique index varchar(32)" json:"id"` // 新闻公告类ID
-	Author    string     `xorm:"notnull index varchar(32)" json:"author"`       // 公告的作者ID
-	Tittle    string     `xorm:"notnull index varchar(32)" json:"tittle"`       // 公告标题
-	Content   string     `xorm:"notnull text" json:"content"`                   // 公告内容
-	Type      NewsType   `xorm:"notnull varchar(32)" json:"type"`               // 公告类型
-	Tags      []string   `xorm:"notnull" json:"tags"`                           // 公告的标签
-	Status    NewsStatus `xorm:"notnull" json:"status"`                         // 公告状态
-	CreatedAt time.Time  `xorm:"created" json:"created_at"`
-	UpdatedAt time.Time  `xorm:"updated" json:"updated_at"`
-	DeletedAt *time.Time `xorm:"deleted" json:"deleted_at"`
+	Id        string         `gorm:"primary_key;unique;not null;index;type:varchar(32)" json:"id"` // 新闻公告类ID
+	Author    string         `gorm:"not null;index;type:varchar(32)" json:"author"`                // 公告的作者ID
+	Tittle    string         `gorm:"not null;index;type:varchar(32)" json:"tittle"`                // 公告标题
+	Content   string         `gorm:"not null;type:text" json:"content"`                            // 公告内容
+	Type      NewsType       `gorm:"not null;type:varchar(32)" json:"type"`                        // 公告类型
+	Tags      pq.StringArray `gorm:"type:varchar(32)[]" json:"tags"`                               // 公告的标签
+	Status    NewsStatus     `gorm:"not null;type:integer" json:"status"`                          // 公告状态
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt *time.Time `sql:"index"`
+}
+
+func (news *News) TableName() string {
+	return "news"
+}
+
+func (news *News) BeforeCreate(scope *gorm.Scope) error {
+	return scope.SetColumn("id", id.Generate())
 }

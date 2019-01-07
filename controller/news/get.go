@@ -7,7 +7,7 @@ import (
 	"github.com/axetroy/go-server/orm"
 	"github.com/axetroy/go-server/response"
 	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
+	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
 	"net/http"
 	"time"
@@ -15,14 +15,11 @@ import (
 
 func GetNews(id string) (res response.Response) {
 	var (
-		err     error
-		session *xorm.Session
-		tx      bool
-		data    = News{}
+		err  error
+		data = News{}
 	)
 
 	defer func() {
-
 		if r := recover(); r != nil {
 			switch t := r.(type) {
 			case string:
@@ -34,18 +31,6 @@ func GetNews(id string) (res response.Response) {
 			}
 		}
 
-		if tx {
-			if err != nil {
-				_ = session.Rollback()
-			} else {
-				err = session.Commit()
-			}
-		}
-
-		if session != nil {
-			session.Close()
-		}
-
 		if err != nil {
 			res.Data = nil
 			res.Message = err.Error()
@@ -55,23 +40,14 @@ func GetNews(id string) (res response.Response) {
 		}
 	}()
 
-	session = orm.Db.NewSession()
-
-	if err = session.Begin(); err != nil {
-		return
-	}
-
-	tx = true
-
 	newsInfo := model.News{
 		Id: id,
 	}
 
-	if isExist, er := session.Get(&newsInfo); er != nil {
-		err = er
-		return
-	} else if !isExist {
-		err = exception.NewsNotExist
+	if err = orm.DB.First(&newsInfo).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = exception.NewsNotExist
+		}
 		return
 	}
 

@@ -57,7 +57,9 @@ func TestUpdate(t *testing.T) {
 				newsType = model.NewsType_News
 			)
 
-			r := news.Create(adminUid, news.CreateNewParams{
+			r := news.Create(controller.Context{
+				Uid: adminUid,
+			}, news.CreateNewParams{
 				Title:   title,
 				Content: content,
 				Type:    newsType,

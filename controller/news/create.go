@@ -1,13 +1,13 @@
 package news
 
 import (
+	"github.com/axetroy/go-server/controller"
 	"github.com/axetroy/go-server/exception"
-	"github.com/axetroy/go-server/id"
 	"github.com/axetroy/go-server/model"
 	"github.com/axetroy/go-server/orm"
 	"github.com/axetroy/go-server/response"
 	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
+	"github.com/jinzhu/gorm"
 	"github.com/kataras/iris/core/errors"
 	"github.com/mitchellh/mapstructure"
 	"net/http"
@@ -21,12 +21,11 @@ type CreateNewParams struct {
 	Tags    []string       `json:"tags"`
 }
 
-func Create(uid string, input CreateNewParams) (res response.Response) {
+func Create(context controller.Context, input CreateNewParams) (res response.Response) {
 	var (
-		err     error
-		data    News
-		session *xorm.Session
-		tx      bool
+		err  error
+		data News
+		tx   *gorm.DB
 	)
 
 	defer func() {
@@ -41,16 +40,12 @@ func Create(uid string, input CreateNewParams) (res response.Response) {
 			}
 		}
 
-		if tx {
+		if tx != nil {
 			if err != nil {
-				_ = session.Rollback()
+				_ = tx.Rollback().Error
 			} else {
-				err = session.Commit()
+				err = tx.Commit().Error
 			}
-		}
-
-		if session != nil {
-			session.Close()
 		}
 
 		if err != nil {
@@ -62,41 +57,33 @@ func Create(uid string, input CreateNewParams) (res response.Response) {
 		}
 	}()
 
-	session = orm.Db.NewSession()
-
-	if err = session.Begin(); err != nil {
+	// 参数校验
+	if !model.IsValidNewsType(input.Type) {
+		err = exception.NewsInvalidType
 		return
 	}
 
-	adminInfo := model.Admin{
-		Id: uid,
+	tx = orm.DB.Begin()
+
+	adminINfo := model.AdminGo{
+		Id: context.Uid,
 	}
 
-	if isExist, er := session.Get(&adminInfo); er != nil {
-		err = er
-		return
-	} else if !isExist {
-		err = exception.AdminNotExist
+	if err = tx.First(&adminINfo).Error; err != nil {
+		// 没有找到管理员
+		if err == gorm.ErrRecordNotFound {
+			err = exception.AdminNotExist
+		}
 		return
 	}
 
-	// 需要超级管理员才能创建
-	if !adminInfo.IsSuper {
+	if !adminINfo.IsSuper {
 		err = exception.AdminNotSuper
 		return
 	}
 
-	// TODO: RBAC权限校验
-
-	if !model.IsValidNewsType(input.Type) {
-		err = exception.NewsInvalidType
-	}
-
-	tx = true
-
-	n := model.News{
-		Id:      id.Generate(),
-		Author:  uid,
+	NewsInfo := model.News{
+		Author:  context.Uid,
 		Tittle:  input.Title,
 		Content: input.Content,
 		Type:    input.Type,
@@ -104,18 +91,15 @@ func Create(uid string, input CreateNewParams) (res response.Response) {
 		Status:  model.NewsStatusActive,
 	}
 
-	if _, err = session.Insert(&n); err != nil {
-		return
-	}
+	tx.Create(&NewsInfo)
 
-	if er := mapstructure.Decode(n, &data.Pure); er != nil {
+	if er := mapstructure.Decode(NewsInfo, &data.Pure); er != nil {
 		err = er
 		return
 	}
 
-	data.CreatedAt = n.CreatedAt.Format(time.RFC3339Nano)
-	data.UpdatedAt = n.UpdatedAt.Format(time.RFC3339Nano)
-
+	data.CreatedAt = NewsInfo.CreatedAt.Format(time.RFC3339Nano)
+	data.UpdatedAt = NewsInfo.UpdatedAt.Format(time.RFC3339Nano)
 	return
 }
 
@@ -139,5 +123,7 @@ func CreateRouter(context *gin.Context) {
 		return
 	}
 
-	res = Create(context.GetString("uid"), input)
+	res = Create(controller.Context{
+		Uid: context.GetString("uid"),
+	}, input)
 }
