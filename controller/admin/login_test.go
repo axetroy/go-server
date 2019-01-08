@@ -59,7 +59,7 @@ func TestLogin(t *testing.T) {
 		} else {
 			// 判断UID是否与用户一致
 			//c.Uid
-			fmt.Println(c)
+			fmt.Printf("%+v", c)
 		}
 	}
 }

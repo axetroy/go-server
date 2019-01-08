@@ -65,7 +65,7 @@ func Create(context controller.Context, input CreateNewParams) (res response.Res
 
 	tx = orm.DB.Begin()
 
-	adminINfo := model.AdminGo{
+	adminINfo := model.Admin{
 		Id: context.Uid,
 	}
 

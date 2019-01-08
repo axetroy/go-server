@@ -73,7 +73,6 @@ func TestCreateAdmin(t *testing.T) {
 		assert.Equal(t, detail.Username, input.Account)
 		assert.Equal(t, detail.Name, input.Name)
 	}
-
 }
 
 func TestCreateAdminRouter(t *testing.T) {

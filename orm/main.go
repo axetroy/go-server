@@ -56,8 +56,6 @@ func init() {
 
 	// sync table
 	err = Db.Sync(
-		// 管理员表
-		new(model.Admin),
 		// 用户表
 		new(model.User),
 		new(model.LoginLog),
@@ -96,8 +94,13 @@ func init() {
 	}
 
 	// Migrate the schema
-	db.AutoMigrate(&model.News{})
-	db.LogMode(env.Test)
+	db.AutoMigrate(
+		// 管理员表
+		new(model.Admin),
+		// 新闻公告
+		new(model.News),
+	)
+	db.LogMode(true)
 	DB = db
 
 	Db.ShowSQL(env.Test)

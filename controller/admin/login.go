@@ -9,7 +9,7 @@ import (
 	"github.com/axetroy/go-server/services/password"
 	"github.com/axetroy/go-server/token"
 	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
+	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
 	"net/http"
 	"time"
@@ -41,14 +41,12 @@ type SignInResponse struct {
 
 func Login(input SignInParams) (res response.Response) {
 	var (
-		err     error
-		data    = SignInResponse{}
-		session *xorm.Session
-		tx      bool
+		err  error
+		data = SignInResponse{}
+		tx   *gorm.DB
 	)
 
 	defer func() {
-
 		if r := recover(); r != nil {
 			switch t := r.(type) {
 			case string:
@@ -60,17 +58,12 @@ func Login(input SignInParams) (res response.Response) {
 			}
 		}
 
-		if tx {
+		if tx != nil {
 			if err != nil {
-				_ = session.Rollback()
+				_ = tx.Rollback().Error
 			} else {
-				err = session.Commit()
+				err = tx.Commit().Error
 			}
-			session.Close()
-		}
-
-		if session != nil {
-			session.Close()
 		}
 
 		if err != nil {
@@ -80,30 +73,19 @@ func Login(input SignInParams) (res response.Response) {
 			res.Data = data
 			res.Status = response.StatusSuccess
 		}
-
 	}()
 
-	session = orm.Db.NewSession()
-
-	if err = session.Begin(); err != nil {
-		return
-	}
-
-	tx = true
+	tx = orm.DB.Begin()
 
 	adminInfo := model.Admin{
 		Username: input.Username,
 		Password: password.Generate(input.Password),
 	}
 
-	var hasExist bool
-
-	if hasExist, err = session.Get(&adminInfo); err != nil {
-		return
-	}
-
-	if hasExist == false {
-		err = exception.InvalidAccountOrPassword
+	if err = orm.DB.Where(&adminInfo).First(&adminInfo).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = exception.InvalidAccountOrPassword
+		}
 		return
 	}
 

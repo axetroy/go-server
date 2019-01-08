@@ -62,7 +62,7 @@ func Update(context controller.Context, newsId string, input UpdateParams) (res 
 
 	tx = orm.DB.Begin()
 
-	adminInfo := model.AdminGo{Id: context.Uid}
+	adminInfo := model.Admin{Id: context.Uid}
 
 	// 判断管理员是否存在
 	if err = tx.First(&adminInfo).Error; err != nil {

@@ -16,18 +16,6 @@ const (
 )
 
 type Admin struct {
-	Id        string      `xorm:"pk notnull unique index" json:"id"`                // 用户ID
-	Username  string      `xorm:"notnull unique index varchar(36)" json:"username"` // 用户名, 用于登陆
-	Name      string      `xorm:"notnull index varchar(36)" json:"Name"`            // 管理员名
-	Password  string      `xorm:"notnull varchar(36)" json:"password"`              // 登陆密码
-	IsSuper   bool        `xorm:"notnull unique" json:"is_super"`                   // 是否是超级管理员, 超级管理员全站应该只有一个
-	Status    AdminStatus `xorm:"notnull" json:"status"`                            // 状态
-	CreatedAt time.Time   `xorm:"created" json:"created_at"`
-	UpdatedAt time.Time   `xorm:"updated" json:"updated_at"`
-	DeletedAt *time.Time  `xorm:"deleted" json:"deleted_at"`
-}
-
-type AdminGo struct {
 	Id        string      `gorm:"primary_key;not null;unique;index" json:"id"`            // 用户ID
 	Username  string      `gorm:"not null;unique;index;type:varchar(36)" json:"username"` // 用户名, 用于登陆
 	Name      string      `gorm:"not null;indextype:varchar(36)" json:"Name"`             // 管理员名
@@ -39,10 +27,10 @@ type AdminGo struct {
 	DeletedAt *time.Time `sql:"index"`
 }
 
-func (news *AdminGo) TableName() string {
+func (news *Admin) TableName() string {
 	return "admin"
 }
 
-func (news *AdminGo) BeforeCreate(scope *gorm.Scope) error {
+func (news *Admin) BeforeCreate(scope *gorm.Scope) error {
 	return scope.SetColumn("id", id.Generate())
 }
