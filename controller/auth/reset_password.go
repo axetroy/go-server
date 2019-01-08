@@ -9,7 +9,7 @@ import (
 	"github.com/axetroy/go-server/services/password"
 	"github.com/axetroy/go-server/services/redis"
 	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
+	"github.com/jinzhu/gorm"
 	"net/http"
 )
 
@@ -20,9 +20,9 @@ type ResetPasswordParams struct {
 
 func ResetPassword(input ResetPasswordParams) (res response.Response) {
 	var (
-		err     error
-		session *xorm.Session
-		tx      bool
+		err error
+		tx  *gorm.DB
+		uid string // 重置码对应的uid
 	)
 
 	defer func() {
@@ -38,16 +38,12 @@ func ResetPassword(input ResetPasswordParams) (res response.Response) {
 			}
 		}
 
-		if tx {
+		if tx != nil {
 			if err != nil {
-				_ = session.Rollback()
+				_ = tx.Rollback().Error
 			} else {
-				err = session.Commit()
+				err = tx.Commit().Error
 			}
-		}
-
-		if session != nil {
-			session.Close()
 		}
 
 		if err != nil {
@@ -59,49 +55,24 @@ func ResetPassword(input ResetPasswordParams) (res response.Response) {
 		}
 	}()
 
-	var (
-		uid string
-	)
-
 	if uid, err = redis.ResetCode.Get(input.Code).Result(); err != nil {
 		err = exception.InvalidResetCode
 		return
 	}
 
-	session = orm.Db.NewSession()
+	tx = orm.DB.Begin()
 
-	if err = session.Begin(); err != nil {
-		return
-	}
+	userInfo := model.User{Id: uid}
 
-	tx = true
-
-	defer func() {
-		if err != nil {
-			_ = session.Rollback()
-		} else {
-			_ = session.Commit()
+	if err = tx.Where(&userInfo).First(&userInfo).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = exception.UserNotExist
 		}
-	}()
-
-	user := model.User{Id: uid}
-
-	var isExist bool
-
-	if isExist, err = session.Get(&user); err != nil {
 		return
 	}
 
-	if isExist == false {
-		err = exception.UserNotExist
-		return
-	}
-
-	user.Password = password.Generate(input.NewPassword)
-
-	if _, err = session.Cols("password").Update(&user); err != nil {
-		return
-	}
+	// 更新密码
+	tx.Model(&userInfo).Update("password", password.Generate(input.NewPassword))
 
 	// delete reset code from redis
 	if err = redis.ResetCode.Del(input.Code).Err(); err != nil {

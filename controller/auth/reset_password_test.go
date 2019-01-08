@@ -12,7 +12,6 @@ import (
 	"github.com/axetroy/go-server/services/password"
 	"github.com/axetroy/go-server/services/redis"
 	"github.com/axetroy/go-server/tester"
-	"github.com/go-xorm/xorm"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
@@ -58,9 +57,13 @@ func TestResetPasswordWithInvalidPassword(t *testing.T) {
 
 func TestResetPasswordSuccess(t *testing.T) {
 	// 先创建一个测试账号
-	username := "test-TestResetPasswordSuccess"
-	oldPassword := "123123"
-	var uid string
+	var (
+		username    = "test-TestResetPasswordSuccess"
+		oldPassword = "123123"
+		uid         string
+		resetCode   string
+		newPassword = "321321"
+	)
 	if r := auth.SignUp(auth.SignUpParams{
 		Username: &username,
 		Password: oldPassword,
@@ -79,9 +82,7 @@ func TestResetPasswordSuccess(t *testing.T) {
 		}()
 	}
 
-	newPassword := "321321"
-
-	var resetCode = email.GenerateResetCode(uid)
+	resetCode = email.GenerateResetCode(uid)
 
 	// set to redis
 	// set activationCode to redis
@@ -98,77 +99,44 @@ func TestResetPasswordSuccess(t *testing.T) {
 	// empty body
 	r := tester.Http.Put("/v1/auth/password/reset", body, nil)
 
-	if ok := assert.Equal(t, http.StatusOK, r.Code); !ok {
-		return
-	}
+	assert.Equal(t, http.StatusOK, r.Code)
 
 	res := response.Response{}
 
-	if ok := assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res)); !ok {
-		return
-	}
+	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+	assert.Equal(t, response.StatusSuccess, res.Status)
+	assert.Equal(t, true, res.Data)
 
-	if !assert.Equal(t, response.StatusSuccess, res.Status) {
-		return
-	}
-
-	if !assert.Equal(t, true, res.Data) {
-		return
-	}
-
-	// 查询密码是否已修改正确
 	var (
-		session *xorm.Session
-		err     error
+		ormErr error
 	)
 
-	session = orm.Db.NewSession()
-
-	if err = session.Begin(); err != nil {
-		return
-	}
-
-	defer func() {
-		if err != nil {
-			_ = session.Rollback()
-		} else {
-			_ = session.Commit()
-		}
-	}()
+	tx := orm.DB.Begin()
 
 	defer func() {
 		// 重置密码回旧密码
-		user := &model.User{}
-		var isExist bool
-		if isExist, err = session.Where("email = ?", username).Get(user); err != nil {
-			return
-		}
-		if isExist == false {
-			err = exception.UserNotExist
-			return
+		userInfo := &model.User{
+			Id: uid,
 		}
 
-		user.Password = password.Generate(oldPassword)
+		ormErr = tx.Model(&userInfo).Update("password", password.Generate(oldPassword)).Error
 
-		if _, er := session.Where("email = ?", username).Cols("password").Update(user); er != nil {
-			err = er
+		if ormErr == nil {
+			tx.Commit()
+		} else {
+			tx.Rollback()
 		}
 	}()
 
-	user := model.User{
-		Username: username,
+	userInfo := &model.User{
+		Id: uid,
 	}
 
-	if isExist, err := session.Get(&user); err != nil {
-		t.Error(err)
+	if ormErr = tx.Where(&userInfo).First(&userInfo).Error; ormErr != nil {
+		t.Error(ormErr)
 		return
-	} else {
-		if isExist == false {
-			err = exception.UserNotExist
-			t.Error(err)
-			return
-		}
 	}
 
-	assert.Equal(t, password.Generate(newPassword), user.Password)
+	// 两次密码应该一致
+	assert.Equal(t, password.Generate(newPassword), userInfo.Password)
 }

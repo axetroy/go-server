@@ -8,7 +8,6 @@ import (
 	"github.com/axetroy/go-server/response"
 	"github.com/axetroy/go-server/services/redis"
 	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
 	"github.com/jinzhu/gorm"
 	"net/http"
 )
@@ -19,10 +18,9 @@ type ActivationParams struct {
 
 func Activation(input ActivationParams) (res response.Response) {
 	var (
-		err     error
-		session *xorm.Session
-		tx      *gorm.DB
-		uid     string // 激活码对应的用户ID
+		err error
+		tx  *gorm.DB
+		uid string // 激活码对应的用户ID
 	)
 
 	defer func() {
@@ -43,10 +41,6 @@ func Activation(input ActivationParams) (res response.Response) {
 			} else {
 				err = tx.Commit().Error
 			}
-		}
-
-		if session != nil {
-			session.Close()
 		}
 
 		if err != nil {
