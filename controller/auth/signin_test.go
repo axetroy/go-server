@@ -50,7 +50,6 @@ func TestSignInWithInvalidPassword(t *testing.T) {
 }
 
 func TestSignInSuccess(t *testing.T) {
-
 	rand.Seed(111)
 	// 先注册一个账号
 	username := "test-TestSignInSuccess"

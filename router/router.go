@@ -123,7 +123,11 @@ func init() {
 			// TODO: 上传头像
 			userRouter.POST("/avatar", user.UpdatePayPasswordRouter)
 			// 邀请人列表
-			userRouter.GET("/invite", invite.GetMyInviteList)
+			inviteRouter := userRouter.Group("/invite")
+			{
+				inviteRouter.GET("/detail/:invite_id", invite.GetRouter)
+				inviteRouter.GET("/list", invite.GetMyInviteList)
+			}
 		}
 
 		// 钱包类
