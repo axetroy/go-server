@@ -9,7 +9,7 @@ import (
 	"github.com/axetroy/go-server/services/email"
 	"github.com/axetroy/go-server/services/redis"
 	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
+	"github.com/jinzhu/gorm"
 	"net/http"
 	"time"
 )
@@ -26,9 +26,8 @@ func GenerateActivationCode(uid string) string {
 
 func SendActivationEmail(input SendActivationEmailParams) (res response.Response) {
 	var (
-		err     error
-		session *xorm.Session
-		tx      bool
+		err error
+		tx  *gorm.DB
 	)
 
 	defer func() {
@@ -43,16 +42,12 @@ func SendActivationEmail(input SendActivationEmailParams) (res response.Response
 			}
 		}
 
-		if tx {
+		if tx != nil {
 			if err != nil {
-				_ = session.Rollback()
+				_ = tx.Rollback().Error
 			} else {
-				err = session.Commit()
+				err = tx.Commit().Error
 			}
-		}
-
-		if session != nil {
-			session.Close()
 		}
 
 		if err != nil {
@@ -63,37 +58,29 @@ func SendActivationEmail(input SendActivationEmailParams) (res response.Response
 		}
 	}()
 
-	session = orm.Db.NewSession()
+	userInfo := model.User{
+		Email: &input.To,
+	}
 
-	if err = session.Begin(); err != nil {
+	tx = orm.DB.Begin()
+
+	if err = tx.Where(&userInfo).First(&userInfo).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = exception.UserNotExist
+		}
 		return
 	}
 
-	tx = true
-
-	user := model.User{}
-
-	var isExist bool
-
-	if isExist, err = session.Where("email = ?", input.To).Get(&user); err != nil {
-		return
-	}
-
-	if isExist == false {
-		err = exception.UserNotExist
-		return
-	}
-
-	if user.Status != model.UserStatusInactivated {
+	if userInfo.Status != model.UserStatusInactivated {
 		err = exception.UserHaveActive
 		return
 	}
 
 	// generate activation code
-	activationCode := GenerateActivationCode(user.Id)
+	activationCode := GenerateActivationCode(userInfo.Id)
 
 	// set activationCode to redis
-	if err = redis.ActivationCode.Set(activationCode, user.Id, time.Minute*30).Err(); err != nil {
+	if err = redis.ActivationCode.Set(activationCode, userInfo.Id, time.Minute*30).Err(); err != nil {
 		return
 	}
 
