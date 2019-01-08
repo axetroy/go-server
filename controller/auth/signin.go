@@ -12,7 +12,7 @@ import (
 	"github.com/axetroy/go-server/services/password"
 	"github.com/axetroy/go-server/token"
 	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
+	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
 	"net/http"
 	"time"
@@ -36,10 +36,9 @@ type SignInResponse struct {
 
 func SignIn(input SignInParams, context SignInContext) (res response.Response) {
 	var (
-		err     error
-		data    = &SignInResponse{}
-		session *xorm.Session
-		tx      bool
+		err  error
+		data = &SignInResponse{}
+		tx   *gorm.DB
 	)
 
 	defer func() {
@@ -55,17 +54,12 @@ func SignIn(input SignInParams, context SignInContext) (res response.Response) {
 			}
 		}
 
-		if tx {
+		if tx != nil {
 			if err != nil {
-				_ = session.Rollback()
+				_ = tx.Rollback().Error
 			} else {
-				err = session.Commit()
+				err = tx.Commit().Error
 			}
-			session.Close()
-		}
-
-		if session != nil {
-			session.Close()
 		}
 
 		if err != nil {
@@ -78,14 +72,6 @@ func SignIn(input SignInParams, context SignInContext) (res response.Response) {
 
 	}()
 
-	session = orm.Db.NewSession()
-
-	if err = session.Begin(); err != nil {
-		return
-	}
-
-	tx = true
-
 	userInfo := model.User{Password: password.Generate(input.Password)}
 
 	if govalidator.Matches(input.Account, "^/d+$") && input.Code != nil { // 如果是手机号, 并且传入了code字段
@@ -97,14 +83,12 @@ func SignIn(input SignInParams, context SignInContext) (res response.Response) {
 		userInfo.Username = input.Account // 其他则为用户名
 	}
 
-	var hasExist bool
+	tx = orm.DB.Begin()
 
-	if hasExist, err = session.Get(&userInfo); err != nil {
-		return
-	}
-
-	if hasExist == false {
-		err = exception.InvalidAccountOrPassword
+	if err = tx.Where(&userInfo).Last(&userInfo).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = exception.InvalidAccountOrPassword
+		}
 		return
 	}
 
@@ -125,17 +109,16 @@ func SignIn(input SignInParams, context SignInContext) (res response.Response) {
 	}
 
 	// 写入登陆记录
-	var log = &model.LoginLog{
-		Id:       id.Generate(),
-		Uid:      userInfo.Id,
-		Username: userInfo.Username,
-		Type:     0, // 默认用户名登陆
-		Command:  1, // 登陆成功
-		Client:   context.UserAgent,
-		LastIp:   context.Ip,
+	log := model.LoginLog{
+		Id:      id.Generate(),
+		Uid:     userInfo.Id,
+		Type:    model.LoginLogTypeUserName,        // 默认用户名登陆
+		Command: model.LoginLogCommandLoginSuccess, // 登陆成功
+		Client:  context.UserAgent,
+		LastIp:  context.Ip,
 	}
 
-	if _, err = session.Insert(log); err != nil {
+	if err = tx.Create(&log).Error; err != nil {
 		return
 	}
 

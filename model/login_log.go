@@ -2,20 +2,28 @@ package model
 
 import "time"
 
+type LoginLogType int
+type LoginLogCommand int
+
+const (
+	LoginLogTypeUserName         LoginLogType    = 0 // 用户名登陆
+	LoginLogTypeTel                                  // 手机登陆
+	LoginLogTypeEmail                                // 邮箱登陆
+	LoginLogTypeThird                                // 第三方登陆
+	LoginLogCommandLoginSuccess  LoginLogCommand = 0 // 登陆成功
+	LoginLogCommandLogoutSuccess                     // 登出成功
+	LoginLogCommandLoginFail                         // 登陆失败
+	LoginLogCommandLogoutFail                        // 登出失败
+)
+
 type LoginLog struct {
-	Id       string `json:"id"`
-	Uid      string `json:"uid"`
-	Username string `json:"username"`
-	// 登录方式
-	// 0用户名 	1手机	2邮箱	3第三方
-	Type int32 `xorm:"notnull" json:"type"`
-	// 操作类型
-	// 1登陆成功  2登出成功 3登录失败 4登出失败
-	Command   int32     `xorm:"notnull" json:"command"`
-	LastIp    string    `xorm:"notnull" json:"last_ip"`
-	Client    string    `xorm:"notnull" json:"client"`
-	CreatedAt time.Time `xorm:"created" json:"created_at"`
-	UpdatedAt time.Time `xorm:"updated" json:"updated_at"`
-	DeletedAt time.Time `xorm:"deleted" json:"deleted_at"`
-	Version   int32     `xorm:"version" json:"version"`
+	Id        string          `gorm:"primary_key;not null;index;type:varchar(32)" json:"id"`
+	Uid       string          `gorm:"not null;index;type:varchar(32)" json:"uid"`
+	Type      LoginLogType    `gorm:"not null;type:int" json:"type"`
+	Command   LoginLogCommand `gorm:"not null;type:int" json:"command"`
+	LastIp    string          `gorm:"not null;type:varchar(15)" json:"last_ip"`
+	Client    string          `gorm:"not null;type:varchar(255)" json:"client"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt *time.Time `sql:"index"`
 }

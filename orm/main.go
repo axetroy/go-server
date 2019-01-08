@@ -56,7 +56,6 @@ func init() {
 
 	// sync table
 	err = Db.Sync(
-		new(model.LoginLog),
 		// 钱包转账地址
 		new(model.TransferLogCny),
 		new(model.TransferLogUsd),
@@ -87,18 +86,14 @@ func init() {
 
 	// Migrate the schema
 	db.AutoMigrate(
-		// 管理员表
-		new(model.Admin),
-		// 新闻公告
-		new(model.News),
-		// 用户表
-		new(model.User),
-		// 钱包
-		new(model.WalletCny),
+		new(model.Admin),     // 管理员表
+		new(model.News),      // 新闻公告
+		new(model.User),      // 用户表
+		new(model.WalletCny), // 钱包
 		new(model.WalletUsd),
 		new(model.WalletCoin),
-		// 邀请表
-		new(model.InviteHistory),
+		new(model.InviteHistory), // 邀请表
+		new(model.LoginLog),      // 登陆成功表
 	)
 	DB = db
 
