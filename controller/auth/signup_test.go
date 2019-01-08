@@ -2,7 +2,6 @@ package auth_test
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/axetroy/go-server/controller/auth"
 	"github.com/axetroy/go-server/controller/invite"
 	"github.com/axetroy/go-server/controller/user"
@@ -63,14 +62,8 @@ func TestSignUpSuccess(t *testing.T) {
 		Password: "123123",
 	})
 
-	if !assert.Equal(t, res.Status, response.StatusSuccess) {
-		fmt.Println(res.Message)
-		return
-	}
-
-	if !assert.Equal(t, res.Message, "") {
-		return
-	}
+	assert.Equal(t, response.StatusSuccess, res.Status)
+	assert.Equal(t, "", res.Message)
 
 	defer func() {
 		auth.DeleteUserByUserName(username)
@@ -78,9 +71,7 @@ func TestSignUpSuccess(t *testing.T) {
 
 	profile := user.Profile{}
 
-	if assert.Nil(t, tester.Decode(res.Data, &profile)) {
-		return
-	}
+	assert.Nil(t, tester.Decode(res.Data, &profile))
 
 	// 默认未激活状态
 	assert.Equal(t, int(profile.Status), int(model.UserStatusInactivated))
@@ -88,7 +79,6 @@ func TestSignUpSuccess(t *testing.T) {
 	assert.Equal(t, *profile.Nickname, username)
 	assert.Nil(t, profile.Email)
 	assert.Nil(t, profile.Phone)
-
 }
 
 func TestSignUpInviteCode(t *testing.T) {
@@ -108,6 +98,9 @@ func TestSignUpInviteCode(t *testing.T) {
 		})
 
 		profile := user.Profile{}
+
+		assert.Equal(t, response.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
 
 		assert.Nil(t, tester.Decode(r.Data, &profile))
 
@@ -150,17 +143,17 @@ func TestSignUpInviteCode(t *testing.T) {
 	assert.Nil(t, profile.Phone)
 
 	// 获取我的邀请记录
-	resInvite := invite.GetInviteById(&model.InviteHistory{Invited: profile.Id})
-	inviteData := invite.Invite{}
+	resInvite := invite.GetInviteById(&model.InviteHistory{Invitee: profile.Id})
+	InviteeData := invite.Invite{}
 
-	if !assert.Nil(t, tester.Decode(resInvite.Data, &inviteData)) {
+	if !assert.Nil(t, tester.Decode(resInvite.Data, &InviteeData)) {
 		return
 	}
 
-	if !assert.Equal(t, profile.Id, inviteData.Invited) {
+	if !assert.Equal(t, profile.Id, InviteeData.Invitee) {
 		return
 	}
-	if !assert.Equal(t, testerUid, inviteData.Invitor) {
+	if !assert.Equal(t, testerUid, InviteeData.Inviter) {
 		return
 	}
 }

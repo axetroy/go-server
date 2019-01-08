@@ -2,7 +2,6 @@ package auth
 
 import (
 	"errors"
-	"github.com/axetroy/go-server/controller/invite"
 	"github.com/axetroy/go-server/controller/user"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/id"
@@ -13,7 +12,7 @@ import (
 	"github.com/axetroy/go-server/services/password"
 	"github.com/axetroy/go-server/services/redis"
 	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
+	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
 	"net/http"
 	"time"
@@ -32,9 +31,8 @@ func SignUp(input SignUpParams) (res response.Response) {
 	var (
 		err     error
 		data    user.Profile
-		session *xorm.Session
-		tx      bool
-		invitor *model.User
+		tx      *gorm.DB
+		inviter *model.User // 邀请人信息
 	)
 
 	defer func() {
@@ -49,16 +47,12 @@ func SignUp(input SignUpParams) (res response.Response) {
 			}
 		}
 
-		if tx {
+		if tx != nil {
 			if err != nil {
-				_ = session.Rollback()
+				_ = tx.Rollback().Error
 			} else {
-				err = session.Commit()
+				err = tx.Commit().Error
 			}
-		}
-
-		if session != nil {
-			session.Close()
 		}
 
 		if err != nil {
@@ -92,13 +86,7 @@ func SignUp(input SignUpParams) (res response.Response) {
 		// TODO: 验证短信验证码是否正确
 	}
 
-	session = orm.Db.NewSession()
-
-	if err = session.Begin(); err != nil {
-		return
-	}
-
-	tx = true
+	tx = orm.DB.Begin()
 
 	var (
 		username string
@@ -111,96 +99,95 @@ func SignUp(input SignUpParams) (res response.Response) {
 		username = *input.Username
 	}
 
-	var isExist bool
+	var (
+		existUserInfo = model.User{}
+	)
 
 	if input.Username != nil {
-		isExist, err = session.Where("username = ?", input.Username).Get(new(model.User))
-
-		if err != nil {
-			return
+		if err = tx.Where("username = ?", *input.Username).Find(&existUserInfo).Error; err != nil {
+			// 如果找不到这个用户
+			// 说明用户没存在
+			if err != gorm.ErrRecordNotFound {
+				return
+			}
 		}
 
-		if isExist {
+		if existUserInfo.Id != "" {
 			err = exception.UserExist
 			return
 		}
 	}
 
 	if input.Email != nil {
-		isExist, err = session.Where("email = ?", *input.Email).Get(new(model.User))
-
-		if err != nil {
-			return
+		if err = tx.Where("email = ?", *input.Email).Find(&existUserInfo).Error; err != nil {
+			// 如果找不到这个用户
+			// 说明用户没存在
+			if err != gorm.ErrRecordNotFound {
+				return
+			}
 		}
 
-		if isExist {
+		if existUserInfo.Id != "" {
 			err = exception.UserExist
 			return
 		}
 	}
 
 	if input.Phone != nil {
-		isExist, err = session.Where("phone = ?", *input.Phone).Get(new(model.User))
-
-		if err != nil {
-			return
+		if err = tx.Where("phone = ?", *input.Phone).Find(&existUserInfo).Error; err != nil {
+			// 如果找不到这个用户
+			// 说明用户没存在
+			if err != gorm.ErrRecordNotFound {
+				return
+			}
 		}
 
-		if isExist {
+		if existUserInfo.Id != "" {
 			err = exception.UserExist
 			return
 		}
 	}
 
 	// 填入了邀请码，则去校验邀请码是否正确
-	if input.InviteCode != nil {
-		session := orm.Db.NewSession()
+	if input.InviteCode != nil && *input.InviteCode != "" {
 		u := model.User{
 			InviteCode: *input.InviteCode,
 		}
-		if exist, er := session.Get(&u); er != nil {
-			err = er
-			return
-		} else {
-			if !exist {
-				err = errors.New("无效的邀请码")
-				return
+		if err = tx.Where(&u).Find(&u).Error; err != nil {
+			if err == gorm.ErrRecordNotFound {
+				err = exception.InvalidInviteCode
 			}
-			invitor = &u
+			return
 		}
+
+		inviter = &u
 	}
 
 	userInfo := model.User{
-		Id:         id.Generate(),
-		Username:   username,
-		Nickname:   &username,
-		Password:   password.Generate(input.Password),
-		Status:     model.UserStatusInactivated, // 开始时未激活状态
-		Phone:      input.Phone,
-		Email:      input.Email,
-		InviteCode: invite.GenerateInviteCode(),
-		Gender:     model.GenderUnknown,
+		Username: username,
+		Nickname: &username,
+		Password: password.Generate(input.Password),
+		Status:   model.UserStatusInactivated, // 开始时未激活状态
+		Phone:    input.Phone,
+		Email:    input.Email,
+		Gender:   model.GenderUnknown,
 	}
 
-	if _, err = session.Insert(&userInfo); err != nil {
-		return
-	}
-
-	if _, err = session.Get(&userInfo); err != nil {
+	if err = tx.Create(&userInfo).Error; err != nil {
 		return
 	}
 
 	// 如果存在邀请者的话，写入邀请列表中
-	if invitor != nil {
+	if inviter != nil {
 		inviteHistory := model.InviteHistory{
-			Id:            id.Generate(),
-			Invitor:       invitor.Id,
-			Invited:       userInfo.Id,
+			Inviter:       inviter.Id,
+			Invitee:       userInfo.Id,
 			Status:        model.StatusInviteRegistered,
 			RewardSettled: false,
 		}
 
-		if _, err = session.Insert(&inviteHistory); err != nil {
+		// 创建邀请记录
+		if err = tx.Create(&inviteHistory).Error; err != nil {
 			return
 		}
 	}
@@ -236,13 +223,16 @@ func SignUp(input SignUpParams) (res response.Response) {
 			Frozen:  0,
 		},
 	}
-	if _, err = session.Insert(&cny); err != nil {
+
+	if err = tx.Create(&cny).Error; err != nil {
 		return
 	}
-	if _, err = session.Insert(&usd); err != nil {
+
+	if err = tx.Create(&usd).Error; err != nil {
 		return
 	}
-	if _, err = session.Insert(&coin); err != nil {
+
+	if err = tx.Create(&coin).Error; err != nil {
 		return
 	}
 

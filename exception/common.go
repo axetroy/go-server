@@ -18,6 +18,7 @@ var (
 	InvalidActiveCode        = New("激活链接已超时")
 	UserHaveActive           = New("用户已激活")
 	PasswordDuplicate        = New("新密码和旧密码不能相同")
+	InvalidInviteCode        = New("无效的邀请码")
 	// user
 	UserExist    = New("用户已存在")
 	UserNotExist = New("用户不存在")

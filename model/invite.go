@@ -1,6 +1,8 @@
 package model
 
 import (
+	"github.com/axetroy/go-server/id"
+	"github.com/jinzhu/gorm"
 	"time"
 )
 
@@ -13,12 +15,24 @@ var (
 )
 
 type InviteHistory struct {
-	Id            string       `xorm:"pk notnull unique index" json:"id"`
-	Invitor       string       `xorm:"notnull index" json:"invitor"`        // 邀请人
-	Invited       string       `xorm:"notnull unique index" json:"invited"` // 受邀请人, 只有唯一的一个
-	Status        InviteStatus `xorm:"notnull" json:"status"`               // 受邀请人的激活状态
-	RewardSettled bool         `xorm:"notnull" json:"reward_settled"`       // 是否已发放奖励, 包括邀请人和收邀请人的奖励
-	CreatedAt     time.Time    `xorm:"created" json:"created_at"`
-	UpdatedAt     time.Time    `xorm:"updated" json:"updated_at"`
-	DeletedAt     *time.Time   `xorm:"deleted" json:"deleted_at"`
+	Id            string       `gorm:"primary_key;notnull;unique;index" json:"id"`
+	Inviter       string       `gorm:"not null;index;type:varchar(32)" json:"inviter"`        // 邀请人
+	Invitee       string       `gorm:"not null;unique;index;type:varchar(32)" json:"invitee"` // 受邀请人, 只有唯一的一个
+	Status        InviteStatus `gorm:"not null;" json:"status"`                               // 受邀请人的激活状态
+	RewardSettled bool         `gorm:"not null;" json:"reward_settled"`                       // 是否已发放奖励, 包括邀请人和收邀请人的奖励
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	DeletedAt     *time.Time `sql:"index"`
+}
+
+func (news *InviteHistory) TableName() string {
+	return "invite_history"
+}
+
+func (news *InviteHistory) BeforeCreate(scope *gorm.Scope) error {
+	// 生成ID
+	if err := scope.SetColumn("id", id.Generate()); err != nil {
+		return err
+	}
+	return nil
 }

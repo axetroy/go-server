@@ -1,7 +1,6 @@
 package invite
 
 import (
-	"encoding/hex"
 	"errors"
 	"fmt"
 	"github.com/axetroy/go-server/exception"
@@ -12,19 +11,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
 	"github.com/mitchellh/mapstructure"
-	"math/rand"
 	"net/http"
 	"strconv"
 	"time"
 )
-
-func GenerateInviteCode() string {
-	b := make([]byte, 4) // 8 位的邀请码
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	r.Read(b)
-	code := hex.EncodeToString(b)
-	return code
-}
 
 func GetInviteById(m *model.InviteHistory) (res response.Response) {
 	var (
@@ -84,7 +74,7 @@ func GetInviteById(m *model.InviteHistory) (res response.Response) {
 		return
 	}
 
-	if err = mapstructure.Decode(m, &data.InvitePure); err != nil {
+	if err = mapstructure.Decode(m, &data.Pure); err != nil {
 		return
 	}
 
@@ -177,7 +167,7 @@ func GetMyInviteList(context *gin.Context) {
 	var total int64
 
 	// TODO: support sort field
-	if total, err = session.Table(model.InviteHistory{}).Where("invitor = ?", uid).
+	if total, err = session.Table(model.InviteHistory{}).Where("inviter = ?", uid).
 		Limit(query.Limit, query.Limit*query.Page).
 		FindAndCount(&data); err != nil {
 		return

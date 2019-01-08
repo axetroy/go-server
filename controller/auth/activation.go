@@ -9,6 +9,7 @@ import (
 	"github.com/axetroy/go-server/services/redis"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
+	"github.com/jinzhu/gorm"
 	"net/http"
 )
 
@@ -20,11 +21,11 @@ func Activation(input ActivationParams) (res response.Response) {
 	var (
 		err     error
 		session *xorm.Session
-		tx      bool
+		tx      *gorm.DB
+		uid     string // 激活码对应的用户ID
 	)
 
 	defer func() {
-
 		if r := recover(); r != nil {
 			switch t := r.(type) {
 			case string:
@@ -32,15 +33,15 @@ func Activation(input ActivationParams) (res response.Response) {
 			case error:
 				err = t
 			default:
-				err = errors.New("unknown error")
+				err = exception.Unknown
 			}
 		}
 
-		if tx {
+		if tx != nil {
 			if err != nil {
-				_ = session.Rollback()
+				_ = tx.Rollback().Error
 			} else {
-				err = session.Commit()
+				err = tx.Commit().Error
 			}
 		}
 
@@ -55,55 +56,30 @@ func Activation(input ActivationParams) (res response.Response) {
 		}
 	}()
 
-	var (
-		uid string
-	)
-
 	if uid, err = redis.ActivationCode.Get(input.Code).Result(); err != nil {
 		err = exception.InvalidActiveCode
 		return
 	}
 
-	session = orm.Db.NewSession()
+	tx = orm.DB.Begin()
 
-	if err = session.Begin(); err != nil {
-		return
-	}
+	userInfo := model.User{Id: uid}
 
-	tx = true
-
-	defer func() {
-		if err != nil {
-			_ = session.Rollback()
-		} else {
-			_ = session.Commit()
+	if err = tx.Where(&userInfo).Find(&userInfo).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = exception.UserNotExist
 		}
-	}()
-
-	user := model.User{Id: uid}
-
-	var isExist bool
-
-	if isExist, err = session.Get(&user); err != nil {
 		return
 	}
 
-	if isExist == false {
-		err = exception.UserNotExist
-		return
-	}
-
-	if user.Status != model.UserStatusInactivated {
+	// 如果用户的状态不是未激活的话
+	if userInfo.Status != model.UserStatusInactivated {
 		err = exception.UserHaveActive
 		return
 	}
 
-	user.Status = model.UserStatusInit
-
-	// 指定更新这个字段
-	if _, err = orm.Db.Id(user.Id).Cols("status").Update(&user); err != nil {
-		return
-	}
+	// 更新激活状态
+	tx.Model(&userInfo).Update("status", model.UserStatusInit)
 
 	// delete code from redis
 	if err = redis.ActivationCode.Del(input.Code).Err(); err != nil {

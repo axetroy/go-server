@@ -30,7 +30,7 @@ func TestCreateAdmin(t *testing.T) {
 			Password: "123",
 		}, true)
 
-		assert.Equal(t, r.Status, response.StatusFail)
+		assert.Equal(t, response.StatusFail, r.Status)
 	}
 
 	// 创建已存在的管理员
@@ -41,8 +41,8 @@ func TestCreateAdmin(t *testing.T) {
 			Password: "123",
 		}, true)
 
-		assert.Equal(t, r.Status, response.StatusFail)
-		assert.Equal(t, r.Message, exception.AdminExist.Error())
+		assert.Equal(t, response.StatusFail, r.Status)
+		assert.Equal(t, exception.AdminExist.Error(), r.Message)
 	}
 
 	// 创建普通的管理员成功

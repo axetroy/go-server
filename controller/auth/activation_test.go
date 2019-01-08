@@ -49,8 +49,8 @@ func TestActivationWithInvalidCode(t *testing.T) {
 
 	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
 
-	assert.Equal(t, res.Status, response.StatusFail)
-	assert.Equal(t, res.Message, exception.InvalidActiveCode.Error())
+	assert.Equal(t, response.StatusFail, res.Status)
+	assert.Equal(t, exception.InvalidActiveCode.Error(), res.Message)
 	assert.Nil(t, res.Data)
 }
 

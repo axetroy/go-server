@@ -56,13 +56,7 @@ func init() {
 
 	// sync table
 	err = Db.Sync(
-		// 用户表
-		new(model.User),
 		new(model.LoginLog),
-		// 钱包
-		new(model.WalletCny),
-		new(model.WalletUsd),
-		new(model.WalletCoin),
 		// 钱包转账地址
 		new(model.TransferLogCny),
 		new(model.TransferLogUsd),
@@ -71,10 +65,6 @@ func init() {
 		new(model.FinanceLogCny),
 		new(model.FinanceLogUsd),
 		new(model.FinanceLogCoin),
-		// 邀请表
-		new(model.InviteHistory),
-		// 新闻公告表
-		//new(model.News),
 		// 系统消息
 		new(model.Notification),
 	)
@@ -93,14 +83,23 @@ func init() {
 		panic("failed to connect database")
 	}
 
+	db.LogMode(true)
+
 	// Migrate the schema
 	db.AutoMigrate(
 		// 管理员表
 		new(model.Admin),
 		// 新闻公告
 		new(model.News),
+		// 用户表
+		new(model.User),
+		// 钱包
+		new(model.WalletCny),
+		new(model.WalletUsd),
+		new(model.WalletCoin),
+		// 邀请表
+		new(model.InviteHistory),
 	)
-	db.LogMode(true)
 	DB = db
 
 	Db.ShowSQL(env.Test)
