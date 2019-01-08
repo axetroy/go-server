@@ -11,7 +11,7 @@ import (
 	"github.com/axetroy/go-server/services/redis"
 	"github.com/axetroy/go-server/utils"
 	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
+	"github.com/jinzhu/gorm"
 	"net/http"
 	"time"
 )
@@ -28,13 +28,11 @@ func GenerateResetCode(uid string) string {
 
 func SendResetPasswordEmail(input SendResetPasswordEmailParams) (res response.Response) {
 	var (
-		err     error
-		session *xorm.Session
-		tx      bool
+		err error
+		tx  *gorm.DB
 	)
 
 	defer func() {
-
 		if r := recover(); r != nil {
 			switch t := r.(type) {
 			case string:
@@ -46,16 +44,12 @@ func SendResetPasswordEmail(input SendResetPasswordEmailParams) (res response.Re
 			}
 		}
 
-		if tx {
+		if tx != nil {
 			if err != nil {
-				_ = session.Rollback()
+				_ = tx.Rollback().Error
 			} else {
-				err = session.Commit()
+				err = tx.Commit().Error
 			}
-		}
-
-		if session != nil {
-			session.Close()
 		}
 
 		if err != nil {
@@ -68,32 +62,24 @@ func SendResetPasswordEmail(input SendResetPasswordEmailParams) (res response.Re
 		}
 	}()
 
-	session = orm.Db.NewSession()
-
-	if err = session.Begin(); err != nil {
-		return
+	userInfo := model.User{
+		Email: &input.To,
 	}
 
-	tx = true
+	tx = orm.DB.Begin()
 
-	user := model.User{}
-
-	var isExist bool
-
-	if isExist, err = session.Where("email = ?", input.To).Get(&user); err != nil {
-		return
-	}
-
-	if isExist == false {
-		err = exception.UserNotExist
+	if err = tx.Where(&userInfo).First(&userInfo).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = exception.UserNotExist
+		}
 		return
 	}
 
 	// 生成重置码
-	var code = GenerateResetCode(user.Id)
+	var code = GenerateResetCode(userInfo.Id)
 
 	// set activationCode to redis
-	if err = redis.ResetCode.Set(code, user.Id, time.Minute*30).Err(); err != nil {
+	if err = redis.ResetCode.Set(code, userInfo.Id, time.Minute*30).Err(); err != nil {
 		return
 	}
 
