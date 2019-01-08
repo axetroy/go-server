@@ -8,7 +8,7 @@ import (
 	"github.com/axetroy/go-server/response"
 	"github.com/axetroy/go-server/services/password"
 	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
+	"github.com/jinzhu/gorm"
 	"net/http"
 )
 
@@ -19,13 +19,11 @@ type UpdatePasswordParams struct {
 
 func UpdatePassword(uid string, input UpdatePasswordParams) (res response.Response) {
 	var (
-		err     error
-		session *xorm.Session
-		tx      bool
+		err error
+		tx  *gorm.DB
 	)
 
 	defer func() {
-
 		if r := recover(); r != nil {
 			switch t := r.(type) {
 			case string:
@@ -37,25 +35,19 @@ func UpdatePassword(uid string, input UpdatePasswordParams) (res response.Respon
 			}
 		}
 
-		if tx {
+		if tx != nil {
 			if err != nil {
-				_ = session.Rollback()
+				_ = tx.Rollback().Error
 			} else {
-				err = session.Commit()
+				err = tx.Commit().Error
 			}
-		}
-
-		if session != nil {
-			session.Close()
 		}
 
 		if err != nil {
 			res.Message = err.Error()
-			res.Data = nil
 			res.Data = false
 		} else {
 			res.Data = true
-			res.Message = "更新成功"
 			res.Status = response.StatusSuccess
 		}
 	}()
@@ -65,36 +57,29 @@ func UpdatePassword(uid string, input UpdatePasswordParams) (res response.Respon
 		return
 	}
 
-	session = orm.Db.NewSession()
+	userInfo := model.User{Id: uid}
 
-	if err = session.Begin(); err != nil {
+	tx = orm.DB.Begin()
+
+	if err = tx.Where(&userInfo).First(&userInfo).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = exception.UserNotExist
+		}
 		return
 	}
 
-	tx = true
-
-	user := model.User{Id: uid}
-
-	var isExist bool
-
-	if isExist, err = session.Get(&user); err != nil {
-		return
-	}
-
-	if isExist == false {
-		err = exception.UserNotExist
-		return
-	}
-
-	if user.Password != password.Generate(input.OldPassword) {
+	// 验证密码是否正确
+	if userInfo.Password != password.Generate(input.OldPassword) {
 		err = exception.InvalidPassword
 		return
 	}
 
-	user.Password = password.Generate(input.NewPassword)
-	if _, err = session.Cols("password").Update(&user); err == nil {
+	newPassword := password.Generate(input.NewPassword)
+
+	if err = tx.Model(&userInfo).Update("password", newPassword).Error; err != nil {
 		return
 	}
+
 	return
 }
 

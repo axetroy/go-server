@@ -8,7 +8,7 @@ import (
 	"github.com/axetroy/go-server/response"
 	"github.com/axetroy/go-server/services/password"
 	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
+	"github.com/jinzhu/gorm"
 	"net/http"
 )
 
@@ -23,13 +23,11 @@ type UpdatePayPasswordParams struct {
 
 func SetPayPassword(uid string, input SetPayPasswordParams) (res response.Response) {
 	var (
-		err     error
-		session *xorm.Session
-		tx      bool
+		err error
+		tx  *gorm.DB
 	)
 
 	defer func() {
-
 		if r := recover(); r != nil {
 			switch t := r.(type) {
 			case string:
@@ -41,16 +39,12 @@ func SetPayPassword(uid string, input SetPayPasswordParams) (res response.Respon
 			}
 		}
 
-		if tx {
+		if tx != nil {
 			if err != nil {
-				_ = session.Rollback()
+				_ = tx.Rollback().Error
 			} else {
-				err = session.Commit()
+				err = tx.Commit().Error
 			}
-		}
-
-		if session != nil {
-			session.Close()
 		}
 
 		if err != nil {
@@ -63,37 +57,24 @@ func SetPayPassword(uid string, input SetPayPasswordParams) (res response.Respon
 		}
 	}()
 
-	session = orm.Db.NewSession()
+	userInfo := model.User{Id: uid}
 
-	if err = session.Begin(); err != nil {
+	tx = orm.DB.Begin()
+
+	if err = tx.Where(&userInfo).First(&userInfo).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = exception.UserNotExist
+		}
 		return
 	}
 
-	tx = true
-
-	user := model.User{Id: uid}
-
-	var isExist bool
-
-	if isExist, err = session.Get(&user); err != nil {
+	if userInfo.PayPassword != nil {
+		err = exception.PayPasswordSe
 		return
 	}
 
-	if isExist == false {
-		err = exception.UserNotExist
-		return
-	}
-
-	if user.PayPassword != nil {
-		err = errors.New("交易密码已设置")
-		return
-	}
-
-	pwd := password.Generate(input.Password)
-
-	user.PayPassword = &pwd
-
-	if _, err = session.Cols("pay_password").Update(&user); err == nil {
+	// 更新交易密码
+	if err = orm.DB.Model(userInfo).Update("pay_password", password.Generate(input.Password)).Error; err != nil {
 		return
 	}
 
@@ -125,13 +106,11 @@ func SetPayPasswordRouter(context *gin.Context) {
 
 func UpdatePayPassword(uid string, input UpdatePayPasswordParams) (res response.Response) {
 	var (
-		err     error
-		session *xorm.Session
-		tx      bool
+		err error
+		tx  *gorm.DB
 	)
 
 	defer func() {
-
 		if r := recover(); r != nil {
 			switch t := r.(type) {
 			case string:
@@ -143,16 +122,12 @@ func UpdatePayPassword(uid string, input UpdatePayPasswordParams) (res response.
 			}
 		}
 
-		if tx {
+		if tx != nil {
 			if err != nil {
-				_ = session.Rollback()
+				_ = tx.Rollback().Error
 			} else {
-				err = session.Commit()
+				err = tx.Commit().Error
 			}
-		}
-
-		if session != nil {
-			session.Close()
 		}
 
 		if err != nil {
@@ -165,46 +140,36 @@ func UpdatePayPassword(uid string, input UpdatePayPasswordParams) (res response.
 		}
 	}()
 
+	// TODO: 校验支付密码格式是否正确
+
 	if input.OldPassword == input.NewPassword {
 		err = exception.PasswordDuplicate
 		return
 	}
 
-	// TODO: 校验支付密码格式是否正确
+	userInfo := model.User{Id: uid}
 
-	session = orm.Db.NewSession()
+	tx = orm.DB.Begin()
 
-	if err = session.Begin(); err != nil {
-		return
-	}
-
-	tx = true
-
-	user := model.User{Id: uid}
-
-	var isExist bool
-
-	if isExist, err = session.Get(&user); err != nil {
-		return
-	}
-
-	if isExist == false {
-		err = exception.UserNotExist
+	if err = tx.Where(&userInfo).First(&userInfo).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = exception.UserNotExist
+		}
 		return
 	}
 
 	// 如果设置的密码和旧密码相同
 	oldPwd := password.Generate(input.OldPassword)
 
-	if user.PayPassword != &oldPwd {
+	if userInfo.PayPassword != &oldPwd {
 		err = exception.InvalidPassword
 		return
 	}
 
 	newPwd := password.Generate(input.NewPassword)
 
-	user.PayPassword = &newPwd
-	if _, err = session.Cols("pay_password").Update(&user); err == nil {
+	// 更新交易密码
+	if err = orm.DB.Model(userInfo).Update("pay_password", newPwd).Error; err != nil {
 		return
 	}
 
