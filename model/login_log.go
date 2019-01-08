@@ -1,6 +1,10 @@
 package model
 
-import "time"
+import (
+	"github.com/axetroy/go-server/id"
+	"github.com/jinzhu/gorm"
+	"time"
+)
 
 type LoginLogType int
 type LoginLogCommand int
@@ -26,4 +30,12 @@ type LoginLog struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt *time.Time `sql:"index"`
+}
+
+func (news *LoginLog) TableName() string {
+	return "login_log"
+}
+
+func (news *LoginLog) BeforeCreate(scope *gorm.Scope) error {
+	return scope.SetColumn("id", id.Generate())
 }
