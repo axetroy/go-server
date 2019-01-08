@@ -143,17 +143,10 @@ func TestSignUpInviteCode(t *testing.T) {
 	assert.Nil(t, profile.Phone)
 
 	// 获取我的邀请记录
-	resInvite := invite.GetInviteById(&model.InviteHistory{Invitee: profile.Id})
+	resInvite := invite.GetByStruct(&model.InviteHistory{Invitee: profile.Id})
 	InviteeData := invite.Invite{}
 
-	if !assert.Nil(t, tester.Decode(resInvite.Data, &InviteeData)) {
-		return
-	}
-
-	if !assert.Equal(t, profile.Id, InviteeData.Invitee) {
-		return
-	}
-	if !assert.Equal(t, testerUid, InviteeData.Inviter) {
-		return
-	}
+	assert.Nil(t, tester.Decode(resInvite.Data, &InviteeData))
+	assert.Equal(t, profile.Id, InviteeData.Invitee)
+	assert.Equal(t, testerUid, InviteeData.Inviter)
 }

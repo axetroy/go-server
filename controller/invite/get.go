@@ -79,6 +79,62 @@ func Get(context controller.Context, id string) (res response.Response) {
 	return
 }
 
+// 内部使用, 不对外提供
+func GetByStruct(m *model.InviteHistory) (res response.Response) {
+	var (
+		err  error
+		data Invite
+		tx   *gorm.DB
+	)
+
+	defer func() {
+		if r := recover(); r != nil {
+			switch t := r.(type) {
+			case string:
+				err = errors.New(t)
+			case error:
+				err = t
+			default:
+				err = exception.Unknown
+			}
+		}
+
+		if tx != nil {
+			if err != nil {
+				_ = tx.Rollback().Error
+			} else {
+				err = tx.Commit().Error
+			}
+		}
+
+		if err != nil {
+			res.Message = err.Error()
+			res.Data = nil
+		} else {
+			res.Data = data
+			res.Status = response.StatusSuccess
+		}
+	}()
+
+	tx = orm.DB.Begin()
+
+	if err = tx.Where(m).Last(m).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = exception.InviteNotExist
+		}
+		return
+	}
+
+	if err = mapstructure.Decode(m, &data.Pure); err != nil {
+		return
+	}
+
+	data.CreatedAt = m.CreatedAt.Format(time.RFC3339Nano)
+	data.UpdatedAt = m.UpdatedAt.Format(time.RFC3339Nano)
+
+	return
+}
+
 func GetRouter(context *gin.Context) {
 	var (
 		err error

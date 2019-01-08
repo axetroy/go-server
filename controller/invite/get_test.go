@@ -1,7 +1,6 @@
 package invite_test
 
 import (
-	"fmt"
 	"github.com/axetroy/go-server/controller"
 	"github.com/axetroy/go-server/controller/auth"
 	"github.com/axetroy/go-server/controller/invite"
@@ -115,8 +114,6 @@ func TestGet(t *testing.T) {
 		inviteInfo := invite.Invite{}
 
 		assert.Nil(t, tester.Decode(r.Data, &inviteInfo))
-
-		fmt.Printf("%+v", inviteInfo)
 	}
 
 	// 获取一个跟我不相关的
