@@ -3,6 +3,7 @@ package user_test
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/axetroy/go-server/controller"
 	"github.com/axetroy/go-server/controller/auth"
 	"github.com/axetroy/go-server/controller/user"
 	"github.com/axetroy/go-server/exception"
@@ -91,12 +92,12 @@ func TestGetProfile(t *testing.T) {
 		}()
 
 		// 登陆获取Token
-		if r := auth.SignIn(auth.SignInParams{
-			Account:  username,
-			Password: password,
-		}, auth.SignInContext{
+		if r := auth.SignIn(controller.Context{
 			UserAgent: "test",
 			Ip:        "0.0.0.0.0",
+		}, auth.SignInParams{
+			Account:  username,
+			Password: password,
 		}); r.Status != response.StatusSuccess {
 			t.Error(r.Message)
 			return

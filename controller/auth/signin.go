@@ -3,6 +3,7 @@ package auth
 import (
 	"errors"
 	"github.com/asaskevich/govalidator"
+	"github.com/axetroy/go-server/controller"
 	"github.com/axetroy/go-server/controller/user"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/id"
@@ -34,7 +35,7 @@ type SignInResponse struct {
 	Token string `json:"token"`
 }
 
-func SignIn(input SignInParams, context SignInContext) (res response.Response) {
+func SignIn(context controller.Context, input SignInParams) (res response.Response) {
 	var (
 		err  error
 		data = &SignInResponse{}
@@ -145,8 +146,8 @@ func SignInRouter(context *gin.Context) {
 		return
 	}
 
-	res = SignIn(input, SignInContext{
+	res = SignIn(controller.Context{
 		UserAgent: context.GetHeader("user-agent"),
 		Ip:        context.ClientIP(),
-	})
+	}, input)
 }

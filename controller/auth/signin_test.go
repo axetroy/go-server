@@ -2,6 +2,7 @@ package auth_test
 
 import (
 	"encoding/json"
+	"github.com/axetroy/go-server/controller"
 	"github.com/axetroy/go-server/controller/auth"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/response"
@@ -67,12 +68,12 @@ func TestSignInSuccess(t *testing.T) {
 		}()
 	}
 
-	res := auth.SignIn(auth.SignInParams{
-		Account:  username,
-		Password: password,
-	}, auth.SignInContext{
+	res := auth.SignIn(controller.Context{
 		UserAgent: "test-user-agent",
 		Ip:        "0.0.0.0.0",
+	}, auth.SignInParams{
+		Account:  username,
+		Password: password,
 	})
 
 	assert.Equal(t, response.StatusSuccess, res.Status)
