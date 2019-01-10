@@ -25,11 +25,6 @@ type SignInParams struct {
 	Code     *string `json:"code"` // 手机验证码
 }
 
-type SignInContext struct {
-	UserAgent string
-	Ip        string
-}
-
 type SignInResponse struct {
 	user.Profile
 	Token string `json:"token"`

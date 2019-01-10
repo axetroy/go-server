@@ -19,7 +19,7 @@ var (
 	UserHaveActive           = New("用户已激活")
 	PasswordDuplicate        = New("新密码和旧密码不能相同")
 	InvalidInviteCode        = New("无效的邀请码")
-	PayPasswordSe            = New("交易密码已设置")
+	PayPasswordSet           = New("交易密码已设置")
 	// user
 	UserExist    = New("用户已存在")
 	UserNotExist = New("用户不存在")

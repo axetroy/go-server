@@ -2,6 +2,7 @@ package user
 
 import (
 	"errors"
+	"github.com/axetroy/go-server/controller"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/model"
 	"github.com/axetroy/go-server/orm"
@@ -13,7 +14,8 @@ import (
 )
 
 type SetPayPasswordParams struct {
-	Password string `json:"password"`
+	Password        string `json:"password"`
+	PasswordConfirm string `json:"password_confirm"`
 }
 
 type UpdatePayPasswordParams struct {
@@ -21,7 +23,7 @@ type UpdatePayPasswordParams struct {
 	NewPassword string `json:"new_password"`
 }
 
-func SetPayPassword(uid string, input SetPayPasswordParams) (res response.Response) {
+func SetPayPassword(context controller.Context, input SetPayPasswordParams) (res response.Response) {
 	var (
 		err error
 		tx  *gorm.DB
@@ -57,11 +59,16 @@ func SetPayPassword(uid string, input SetPayPasswordParams) (res response.Respon
 		}
 	}()
 
-	userInfo := model.User{Id: uid}
+	if input.Password != input.PasswordConfirm {
+		err = exception.InvalidConfirmPassword
+		return
+	}
+
+	userInfo := model.User{Id: context.Uid}
 
 	tx = orm.DB.Begin()
 
-	if err = tx.Where(&userInfo).First(&userInfo).Error; err != nil {
+	if err = tx.Where(&userInfo).Last(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			err = exception.UserNotExist
 		}
@@ -69,12 +76,14 @@ func SetPayPassword(uid string, input SetPayPasswordParams) (res response.Respon
 	}
 
 	if userInfo.PayPassword != nil {
-		err = exception.PayPasswordSe
+		err = exception.PayPasswordSet
 		return
 	}
 
+	newPassword := password.Generate(input.Password)
+
 	// 更新交易密码
-	if err = orm.DB.Model(userInfo).Update("pay_password", password.Generate(input.Password)).Error; err != nil {
+	if err = orm.DB.Model(userInfo).Update("pay_password", newPassword).Error; err != nil {
 		return
 	}
 
@@ -101,10 +110,12 @@ func SetPayPasswordRouter(context *gin.Context) {
 		return
 	}
 
-	res = SetPayPassword(context.GetString("uid"), input)
+	res = SetPayPassword(controller.Context{
+		Uid: context.GetString("uid"),
+	}, input)
 }
 
-func UpdatePayPassword(uid string, input UpdatePayPasswordParams) (res response.Response) {
+func UpdatePayPassword(context controller.Context, input UpdatePayPasswordParams) (res response.Response) {
 	var (
 		err error
 		tx  *gorm.DB
@@ -147,7 +158,7 @@ func UpdatePayPassword(uid string, input UpdatePayPasswordParams) (res response.
 		return
 	}
 
-	userInfo := model.User{Id: uid}
+	userInfo := model.User{Id: context.Uid}
 
 	tx = orm.DB.Begin()
 
@@ -196,5 +207,7 @@ func UpdatePayPasswordRouter(context *gin.Context) {
 		return
 	}
 
-	res = UpdatePayPassword(context.GetString("uid"), input)
+	res = UpdatePayPassword(controller.Context{
+		Uid: context.GetString("uid"),
+	}, input)
 }
