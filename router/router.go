@@ -126,7 +126,7 @@ func init() {
 			inviteRouter := userRouter.Group("/invite")
 			{
 				inviteRouter.GET("/detail/:invite_id", invite.GetRouter)
-				inviteRouter.GET("/list", invite.GetMyInviteList)
+				inviteRouter.GET("/list", invite.GetListRouter)
 			}
 		}
 
