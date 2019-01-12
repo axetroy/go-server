@@ -16,35 +16,43 @@ var (
 )
 
 type FinanceLog struct {
-	Id       string `xorm:"pk unique notnull index" json:"id"` // 流水ID
-	Currency string `xorm:"notnull index" json:"currency"`     // 对应的币种流水
-	OrderId  string `xorm:"null index" json:"order_id"`        // 对应的订单id, 系统产生的流水可能不会orderId
-	Uid      string `xorm:"notnull index" json:"uid"`          // 对应的用户
-
-	BeforeBalance   float64 `xorm:"notnull" json:"before_balance"`   // 这条流水前的余额
-	BalanceMutation float64 `xorm:"notnull" json:"balance_mutation"` // 可用余额的变动，正数则为加，负数为减
-	AfterBalance    float64 `xorm:"notnull" json:"after_balance"`    // 这条流水后的余额
-
-	BeforeFrozen   float64 `xorm:"notnull" json:"before_frozen"`   // 这条流水前的冻结余额
-	FrozenMutation float64 `xorm:"notnull" json:"frozen_mutation"` // 冻结余额的变动,正数则为加，负数为减
-	AfterFrozen    float64 `xorm:"notnull" json:"after_frozen"`    // 这条流水后的冻结余额
-
-	Type FinanceType `xorm:"notnull" json:"status"` // 流水类型
-
-	Note      *string   `xorm:"null varchar(128)" json:"note"` // 流水备注
-	CreatedAt time.Time `xorm:"created" json:"created_at"`
-	UpdatedAt time.Time `xorm:"updated" json:"updated_at"`
-	DeletedAt time.Time `xorm:"deleted" json:"-"`
+	Id              string      `gorm:"primary_key;unique;not null;index;type:varchar(32)" json:"id"` // 流水ID
+	Currency        string      `gorm:"not null;index;type:varchar(16)" json:"currency"`              // 对应的币种流水
+	OrderId         string      `gorm:"null;index;type:varchar(32)" json:"order_id"`                  // 对应的订单id, 系统产生的流水可能不会存在orderId
+	Uid             string      `gorm:"not null;index;type:varchar(32)" json:"uid"`                   // 对应的用户
+	BeforeBalance   float64     `gorm:"not null;" json:"before_balance"`                              // 这条流水前的余额
+	BalanceMutation float64     `gorm:"not null;" json:"balance_mutation"`                            // 可用余额的变动，正数则为加，负数为减
+	AfterBalance    float64     `gorm:"not null" json:"after_balance"`                                // 这条流水后的余额
+	BeforeFrozen    float64     `gorm:"not null" json:"before_frozen"`                                // 这条流水前的冻结余额
+	FrozenMutation  float64     `gorm:"not null" json:"frozen_mutation"`                              // 冻结余额的变动,正数则为加，负数为减
+	AfterFrozen     float64     `gorm:"not null" json:"after_frozen"`                                 // 这条流水后的冻结余额
+	Type            FinanceType `gorm:"not null" json:"status"`                                       // 流水类型
+	Note            *string     `gorm:"null;type:varchar(128)" json:"note"`                           // 流水备注
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
+	DeletedAt       *time.Time `sql:"index" json:"-"`
 }
 
 type FinanceLogCny struct {
-	FinanceLog `xorm:"extends"`
+	FinanceLog
 }
 
 type FinanceLogUsd struct {
-	FinanceLog `xorm:"extends"`
+	FinanceLog
 }
 
 type FinanceLogCoin struct {
-	FinanceLog `xorm:"extends"`
+	FinanceLog
+}
+
+func (news *FinanceLogCny) TableName() string {
+	return "finance_log_cny"
+}
+
+func (news *FinanceLogUsd) TableName() string {
+	return "finance_log_usd"
+}
+
+func (news *FinanceLogCoin) TableName() string {
+	return "finance_log_coin"
 }

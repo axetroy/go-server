@@ -2,24 +2,23 @@ package transfer
 
 import (
 	"errors"
+	"fmt"
+	"github.com/axetroy/go-server/controller"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/id"
 	"github.com/axetroy/go-server/model"
 	"github.com/axetroy/go-server/orm"
 	"github.com/axetroy/go-server/response"
 	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
-	"github.com/mitchellh/mapstructure"
+	"github.com/jinzhu/gorm"
 	"net/http"
-	"time"
 )
 
-func GetDetail(context *gin.Context) {
+func GetDetail(context controller.Context, transferId string) (res response.Response) {
 	var (
-		err     error
-		session *xorm.Session
-		tx      bool
-		data    = Log{}
+		err  error
+		tx   *gorm.DB
+		data = Log{}
 	)
 
 	defer func() {
@@ -34,83 +33,91 @@ func GetDetail(context *gin.Context) {
 			}
 		}
 
-		if tx {
+		if tx != nil {
 			if err != nil {
-				_ = session.Rollback()
+				_ = tx.Rollback().Error
 			} else {
-				err = session.Commit()
+				err = tx.Commit().Error
 			}
 		}
 
-		if session != nil {
-			session.Close()
-		}
-
 		if err != nil {
-			context.JSON(http.StatusOK, response.Response{
-				Status:  response.StatusFail,
-				Message: err.Error(),
-				Data:    nil,
-			})
+			res.Message = err.Error()
+			res.Data = nil
 		} else {
-			context.JSON(http.StatusOK, response.Response{
-				Status:  response.StatusSuccess,
-				Message: "",
-				Data:    data,
-			})
+			res.Status = response.StatusSuccess
+			res.Data = data
 		}
 	}()
 
-	uid := context.GetString("uid")
-
-	transferId := context.Param("id")
+	uid := context.Uid
 
 	if id.IsValidStr(transferId) != true {
 		err = exception.InvalidId
 		return
 	}
 
-	session = orm.Db.NewSession()
+	tx = orm.DB.Begin()
 
-	if err = session.Begin(); err != nil {
-		return
-	}
+	userInfo := model.User{Id: uid}
 
-	tx = true
-
-	user := model.User{Id: uid}
-
-	var isExist bool
-
-	if isExist, err = session.Get(&user); err != nil {
-		return
-	}
-
-	if isExist != true {
-		err = exception.UserNotExist
+	if err = tx.Where(&userInfo).Last(&userInfo).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = exception.UserNotExist
+		}
 		return
 	}
 
 	// 联表查询
-	sql := GenerateSql(uid, "*")
+	sql := GenerateSql(uid, "*") + " LIMIT 1"
 
-	if res, er := session.QueryInterface(sql + " LIMIT 1"); er != nil {
-		err = er
+	r := tx.Exec(sql)
+
+	if r.Error != nil {
 		return
-	} else {
-		if len(res) == 0 {
-			err = exception.NoData
-			return
-		}
-		var v = res[0]
-		if err = mapstructure.Decode(v, &data); err != nil {
-			return
-		}
-		createdAt := v["created_at"].(time.Time)
-		updatedAt := v["updated_at"].(time.Time)
-
-		data.CreatedAt = createdAt.Format(time.RFC3339Nano)
-		data.UpdatedAt = updatedAt.Format(time.RFC3339Nano)
 	}
 
+	// TODO: 解析row
+
+	fmt.Println(r.Row())
+
+	//if res, er := session.QueryInterface(sql + " LIMIT 1"); er != nil {
+	//	err = er
+	//	return
+	//} else {
+	//	if len(res) == 0 {
+	//		err = exception.NoData
+	//		return
+	//	}
+	//	var v = res[0]
+	//	if err = mapstructure.Decode(v, &data); err != nil {
+	//		return
+	//	}
+	//	createdAt := v["created_at"].(time.Time)
+	//	updatedAt := v["updated_at"].(time.Time)
+	//
+	//	data.CreatedAt = createdAt.Format(time.RFC3339Nano)
+	//	data.UpdatedAt = updatedAt.Format(time.RFC3339Nano)
+	//}
+
+	return
+}
+
+func GetDetailRouter(context *gin.Context) {
+	var (
+		err error
+		res = response.Response{}
+	)
+
+	defer func() {
+		if err != nil {
+			res.Data = nil
+			res.Message = err.Error()
+		}
+		context.JSON(http.StatusOK, res)
+	}()
+
+	res = GetDetail(controller.Context{
+		Uid: context.GetString("uid"),
+	}, context.Param("transfer_id"))
 }

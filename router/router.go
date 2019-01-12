@@ -139,8 +139,8 @@ func init() {
 			walletRouter.GET("/currency/:currency", wallet.GetWallet)
 			// 转账相关
 			walletRouter.GET("/transfer/history", transfer.GetHistory)
-			walletRouter.GET("/transfer/detail/:id", transfer.GetDetail)
-			walletRouter.POST("/transfer", middleware.AuthPayPassword, transfer.To)
+			walletRouter.GET("/transfer/detail/:transfer_id", transfer.GetDetailRouter)
+			walletRouter.POST("/transfer", middleware.AuthPayPassword, transfer.ToRouter)
 		}
 
 		// 财务日志

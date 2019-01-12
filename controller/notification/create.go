@@ -1,19 +1,11 @@
 package notification
 
 import (
-	"errors"
-	"fmt"
 	"github.com/axetroy/go-server/controller"
 	"github.com/axetroy/go-server/exception"
-	"github.com/axetroy/go-server/id"
-	"github.com/axetroy/go-server/model"
-	"github.com/axetroy/go-server/orm"
 	"github.com/axetroy/go-server/response"
 	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
-	"github.com/mitchellh/mapstructure"
 	"net/http"
-	"time"
 )
 
 type CreateParams struct {
@@ -23,92 +15,92 @@ type CreateParams struct {
 }
 
 func Create(context controller.Context, input CreateParams) (res response.Response) {
-	var (
-		err     error
-		data    Notification
-		session *xorm.Session
-		tx      bool
-	)
-
-	defer func() {
-		if r := recover(); r != nil {
-			switch t := r.(type) {
-			case string:
-				err = errors.New(t)
-			case error:
-				err = t
-			default:
-				err = exception.Unknown
-			}
-		}
-
-		if tx {
-			if err != nil {
-				_ = session.Rollback()
-			} else {
-				err = session.Commit()
-			}
-		}
-
-		if session != nil {
-			session.Close()
-		}
-
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		} else {
-			res.Data = data
-			res.Status = response.StatusSuccess
-		}
-	}()
-
-	session = orm.Db.NewSession()
-
-	if err = session.Begin(); err != nil {
-		return
-	}
-
-	adminInfo := model.Admin{
-		Id: context.Uid,
-	}
-
-	if isExist, er := session.Get(&adminInfo); er != nil {
-		err = er
-		return
-	} else if !isExist {
-		err = exception.AdminNotExist
-		return
-	}
-
-	// 需要超级管理员才能创建
-	if !adminInfo.IsSuper {
-		err = exception.AdminNotSuper
-		return
-	}
-
-	tx = true
-
-	n := model.Notification{
-		Id:      id.Generate(),
-		Tittle:  input.Tittle,
-		Content: input.Content,
-		Status:  model.NotificationStatusActive,
-	}
-
-	if _, err = session.Insert(&n); err != nil {
-		return
-	}
-
-	fmt.Printf("%+v\n", n)
-
-	if er := mapstructure.Decode(n, &data.Pure); er != nil {
-		err = er
-		return
-	}
-
-	data.CreatedAt = n.CreatedAt.Format(time.RFC3339Nano)
-	data.UpdatedAt = n.UpdatedAt.Format(time.RFC3339Nano)
+	//var (
+	//	err     error
+	//	data    Notification
+	//	session *xorm.Session
+	//	tx      bool
+	//)
+	//
+	//defer func() {
+	//	if r := recover(); r != nil {
+	//		switch t := r.(type) {
+	//		case string:
+	//			err = errors.New(t)
+	//		case error:
+	//			err = t
+	//		default:
+	//			err = exception.Unknown
+	//		}
+	//	}
+	//
+	//	if tx {
+	//		if err != nil {
+	//			_ = session.Rollback()
+	//		} else {
+	//			err = session.Commit()
+	//		}
+	//	}
+	//
+	//	if session != nil {
+	//		session.Close()
+	//	}
+	//
+	//	if err != nil {
+	//		res.Data = nil
+	//		res.Message = err.Error()
+	//	} else {
+	//		res.Data = data
+	//		res.Status = response.StatusSuccess
+	//	}
+	//}()
+	//
+	//session = orm.Db.NewSession()
+	//
+	//if err = session.Begin(); err != nil {
+	//	return
+	//}
+	//
+	//adminInfo := model.Admin{
+	//	Id: context.Uid,
+	//}
+	//
+	//if isExist, er := session.Get(&adminInfo); er != nil {
+	//	err = er
+	//	return
+	//} else if !isExist {
+	//	err = exception.AdminNotExist
+	//	return
+	//}
+	//
+	//// 需要超级管理员才能创建
+	//if !adminInfo.IsSuper {
+	//	err = exception.AdminNotSuper
+	//	return
+	//}
+	//
+	//tx = true
+	//
+	//n := model.Notification{
+	//	Id:      id.Generate(),
+	//	Tittle:  input.Tittle,
+	//	Content: input.Content,
+	//	Status:  model.NotificationStatusActive,
+	//}
+	//
+	//if _, err = session.Insert(&n); err != nil {
+	//	return
+	//}
+	//
+	//fmt.Printf("%+v\n", n)
+	//
+	//if er := mapstructure.Decode(n, &data.Pure); er != nil {
+	//	err = er
+	//	return
+	//}
+	//
+	//data.CreatedAt = n.CreatedAt.Format(time.RFC3339Nano)
+	//data.UpdatedAt = n.UpdatedAt.Format(time.RFC3339Nano)
 
 	return
 }

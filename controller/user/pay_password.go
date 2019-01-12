@@ -2,6 +2,7 @@ package user
 
 import (
 	"errors"
+	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/controller"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/model"
@@ -14,19 +15,20 @@ import (
 )
 
 type SetPayPasswordParams struct {
-	Password        string `json:"password"`
-	PasswordConfirm string `json:"password_confirm"`
+	Password        string `json:"password" valid:"required~请输入密码,int~请输入纯数字的密码,length(6|6)~密码长度为6位"`
+	PasswordConfirm string `json:"password_confirm" valid:"required~请输入确认密码,int~请输入纯数字的确认密码,length(6|6)~确认密码长度为6位"`
 }
 
 type UpdatePayPasswordParams struct {
-	OldPassword string `json:"old_password"`
-	NewPassword string `json:"new_password"`
+	OldPassword string `json:"old_password" valid:"required~请输入旧密码,int~请输入纯数字的旧密码,length(6|6)~旧密码长度为6位"`
+	NewPassword string `json:"new_password" valid:"required~请输入新密码,int~请输入纯数字的新密码,length(6|6)~新密码长度为6位"`
 }
 
 func SetPayPassword(context controller.Context, input SetPayPasswordParams) (res response.Response) {
 	var (
-		err error
-		tx  *gorm.DB
+		err          error
+		tx           *gorm.DB
+		isValidInput bool
 	)
 
 	defer func() {
@@ -58,6 +60,13 @@ func SetPayPassword(context controller.Context, input SetPayPasswordParams) (res
 			res.Status = response.StatusSuccess
 		}
 	}()
+
+	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		return
+	} else if isValidInput == false {
+		err = exception.InvalidParams
+		return
+	}
 
 	if input.Password != input.PasswordConfirm {
 		err = exception.InvalidConfirmPassword
@@ -117,8 +126,9 @@ func SetPayPasswordRouter(context *gin.Context) {
 
 func UpdatePayPassword(context controller.Context, input UpdatePayPasswordParams) (res response.Response) {
 	var (
-		err error
-		tx  *gorm.DB
+		err          error
+		tx           *gorm.DB
+		isValidInput bool
 	)
 
 	defer func() {
@@ -151,7 +161,12 @@ func UpdatePayPassword(context controller.Context, input UpdatePayPasswordParams
 		}
 	}()
 
-	// TODO: 校验支付密码格式是否正确
+	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		return
+	} else if isValidInput == false {
+		err = exception.InvalidParams
+		return
+	}
 
 	if input.OldPassword == input.NewPassword {
 		err = exception.PasswordDuplicate

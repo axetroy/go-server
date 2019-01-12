@@ -7,7 +7,7 @@ import (
 	"github.com/axetroy/go-server/orm"
 	"github.com/axetroy/go-server/response"
 	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
+	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
 	"net/http"
 	"time"
@@ -34,17 +34,16 @@ type Profile struct {
 }
 
 type UpdateProfileParams struct {
-	Nickname *string       `json:"nickname"`
+	Nickname *string       `json:"nickname" valid:"length(1|36)~昵称长度为1-36位"`
 	Gender   *model.Gender `json:"gender"`
 	Avatar   *string       `json:"avatar"`
 }
 
 func GetProfile(uid string) (res response.Response) {
 	var (
-		err     error
-		data    Profile
-		session *xorm.Session
-		tx      bool
+		err  error
+		data Profile
+		tx   *gorm.DB
 	)
 
 	defer func() {
@@ -60,16 +59,12 @@ func GetProfile(uid string) (res response.Response) {
 			}
 		}
 
-		if tx {
+		if tx != nil {
 			if err != nil {
-				_ = session.Rollback()
+				_ = tx.Rollback().Error
 			} else {
-				err = session.Commit()
+				err = tx.Commit().Error
 			}
-		}
-
-		if session != nil {
-			session.Close()
 		}
 
 		if err != nil {
@@ -81,24 +76,14 @@ func GetProfile(uid string) (res response.Response) {
 		}
 	}()
 
-	session = orm.Db.NewSession()
-
-	if err = session.Begin(); err != nil {
-		return
-	}
-
-	tx = true
+	tx = orm.DB.Begin()
 
 	user := model.User{Id: uid}
 
-	var isExist bool
-
-	if isExist, err = session.Get(&user); err != nil {
-		return
-	}
-
-	if isExist == false {
-		err = exception.UserNotExist
+	if err = tx.Where(&user).Last(&user).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = exception.UserNotExist
+		}
 		return
 	}
 
@@ -132,10 +117,9 @@ func GetProfileRouter(context *gin.Context) {
 
 func UpdateProfile(uid string, input UpdateProfileParams) (res response.Response) {
 	var (
-		err     error
-		data    Profile
-		session *xorm.Session
-		tx      bool
+		err  error
+		data Profile
+		tx   *gorm.DB
 	)
 
 	defer func() {
@@ -151,16 +135,12 @@ func UpdateProfile(uid string, input UpdateProfileParams) (res response.Response
 			}
 		}
 
-		if tx {
+		if tx != nil {
 			if err != nil {
-				_ = session.Rollback()
+				_ = tx.Rollback().Error
 			} else {
-				err = session.Commit()
+				err = tx.Commit().Error
 			}
-		}
-
-		if session != nil {
-			session.Close()
 		}
 
 		if err != nil {
@@ -172,53 +152,46 @@ func UpdateProfile(uid string, input UpdateProfileParams) (res response.Response
 		}
 	}()
 
-	session = orm.Db.NewSession()
+	// TODO: 参数校验
 
-	if err = session.Begin(); err != nil {
+	tx = orm.DB.Begin()
+
+	userInfo := model.User{
+		Id: uid,
+	}
+
+	if err = tx.Where(&userInfo).Last(&userInfo).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = exception.UserNotExist
+		}
 		return
 	}
 
-	tx = true
-
-	user := model.User{}
-
-	query := session.Where("id = ?", uid)
-
-	if isExist, er := query.Get(&user); er != nil {
-		err = er
-	} else {
-		if isExist == false {
-			err = exception.UserNotExist
-			return
-		}
-	}
+	updateMap := map[string]interface{}{}
 
 	if input.Nickname != nil {
-		user.Nickname = input.Nickname
-		query = query.Cols("nickname")
+		updateMap["nickname"] = input.Nickname
 	}
 
 	if input.Avatar != nil {
-		user.Avatar = *input.Avatar
-		query = query.Cols("avatar")
+		updateMap["avatar"] = *input.Avatar
 	}
 
 	if input.Gender != nil {
-		user.Gender = *input.Gender
-		query = query.Cols("gender")
+		updateMap["gender"] = *input.Gender
 	}
 
-	if _, err = query.Update(&user); err != nil {
+	if err = tx.Model(&userInfo).Updates(updateMap).Error; err != nil {
 		return
 	}
 
-	if err = mapstructure.Decode(user, &data.ProfilePure); err != nil {
+	if err = mapstructure.Decode(userInfo, &data.ProfilePure); err != nil {
 		return
 	}
 
-	data.PayPassword = user.PayPassword != nil && len(*user.PayPassword) != 0
-	data.CreatedAt = user.CreatedAt.Format(time.RFC3339Nano)
-	data.UpdatedAt = user.UpdatedAt.Format(time.RFC3339Nano)
+	data.PayPassword = userInfo.PayPassword != nil && len(*userInfo.PayPassword) != 0
+	data.CreatedAt = userInfo.CreatedAt.Format(time.RFC3339Nano)
+	data.UpdatedAt = userInfo.UpdatedAt.Format(time.RFC3339Nano)
 
 	return
 }

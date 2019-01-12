@@ -2,17 +2,13 @@ package orm
 
 import (
 	"fmt"
-	"github.com/axetroy/go-server/env"
 	"github.com/axetroy/go-server/model"
-	"github.com/go-xorm/xorm"
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
-	"log"
 	"os"
 )
 
 var (
-	Db *xorm.Engine
 	DB *gorm.DB
 )
 
@@ -48,38 +44,12 @@ func init() {
 
 	DataSourceName := fmt.Sprintf("%s://%s:%s@localhost:%s/%s?sslmode=disable", driverName, dbUsername, dbPassword, dbPort, dbName)
 
-	if Db, err = xorm.NewEngine(driverName, DataSourceName); err != nil {
-		panic(err)
-	}
-
 	fmt.Println("正在同步数据库...")
-
-	// sync table
-	err = Db.Sync(
-		// 钱包转账地址
-		new(model.TransferLogCny),
-		new(model.TransferLogUsd),
-		new(model.TransferLogCoin),
-		// 流水列表
-		new(model.FinanceLogCny),
-		new(model.FinanceLogUsd),
-		new(model.FinanceLogCoin),
-		// 系统消息
-		new(model.Notification),
-	)
-
-	if err != nil {
-		fmt.Println("同步数据库错误")
-		log.Fatal(err)
-		return
-	}
-
-	// 使用 gorm 连接
 
 	db, err := gorm.Open(driverName, DataSourceName)
 
 	if err != nil {
-		panic("failed to connect database")
+		panic(err)
 	}
 
 	db.LogMode(true)
@@ -92,10 +62,16 @@ func init() {
 		new(model.WalletCny), // 钱包
 		new(model.WalletUsd),
 		new(model.WalletCoin),
-		new(model.InviteHistory), // 邀请表
-		new(model.LoginLog),      // 登陆成功表
+		new(model.InviteHistory),  // 邀请表
+		new(model.LoginLog),       // 登陆成功表
+		new(model.TransferLogCny), // 钱包转账地址
+		new(model.TransferLogUsd),
+		new(model.TransferLogCoin),
+		new(model.FinanceLogCny), // 流水列表
+		new(model.FinanceLogUsd),
+		new(model.FinanceLogCoin),
+		new(model.Notification), // 系统消息
 	)
-	DB = db
 
-	Db.ShowSQL(env.Test)
+	DB = db
 }
