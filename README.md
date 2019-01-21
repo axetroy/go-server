@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/axetroy/go-server.svg?branch=master)](https://travis-ci.com/axetroy/go-server)
+[![Build Status](https://travis-ci.com/axetroy/go-server.svg?token=QMG6TLRNwECnaTsy6ssj&branch=master)](https://travis-ci.com/axetroy/go-server)
 [![Coverage Status](https://coveralls.io/repos/github/axetroy/go-server/badge.svg?branch=master)](https://coveralls.io/github/axetroy/go-server?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/axetroy/go-server)](https://goreportcard.com/report/github.com/axetroy/go-server)
 ![License](https://img.shields.io/github/license/axetroy/go-server.svg)

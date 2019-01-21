@@ -11,6 +11,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -68,7 +69,7 @@ func GetWallet(context controller.Context, currencyName string) (res response.Re
 
 	// TODO: 校验currencyName是否合法
 
-	if err = tx.Table("wallet_" + currencyName).Scan(&walletInfo).Error; err != nil {
+	if err = tx.Table("wallet_" + strings.ToLower(currencyName)).Scan(&walletInfo).Error; err != nil {
 		return
 	}
 
