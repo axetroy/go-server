@@ -84,6 +84,7 @@ func SignUp(input SignUpParams) (res response.Response) {
 		// TODO: 校验手机号码是否正确
 
 		// TODO: 验证短信验证码是否正确
+		// 因为现在没有引入短信服务, 所以暂时没有这一块的功能
 	}
 
 	tx = orm.DB.Begin()

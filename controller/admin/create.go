@@ -2,6 +2,7 @@ package admin
 
 import (
 	"errors"
+	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/model"
 	"github.com/axetroy/go-server/orm"
@@ -15,17 +16,18 @@ import (
 )
 
 type CreateAdminParams struct {
-	Account  string `json:"account"`  // 管理员账号，登陆凭借
-	Password string `json:"password"` // 管理员密码
-	Name     string `json:"name"`     // 管理员名称，注册后不可修改
+	Account  string `json:"account" valid:"required~请输入管理员账号"`                                    // 管理员账号，登陆凭借
+	Password string `json:"password" valid:"required~请输入管理员密码,int~请输入纯数字的密码,length(6|6)~密码长度为6位"` // 管理员密码
+	Name     string `json:"name" valid:"required~请输入管理员名称"`                                       // 管理员名称，注册后不可修改
 }
 
 // 创建管理员
 func CreateAdmin(input CreateAdminParams, isSuper bool) (res response.Response) {
 	var (
-		err  error
-		data Detail
-		tx   *gorm.DB
+		err          error
+		data         Detail
+		tx           *gorm.DB
+		isValidInput bool
 	)
 
 	defer func() {
@@ -57,6 +59,13 @@ func CreateAdmin(input CreateAdminParams, isSuper bool) (res response.Response) 
 		}
 
 	}()
+
+	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		return
+	} else if isValidInput == false {
+		err = exception.InvalidParams
+		return
+	}
 
 	tx = orm.DB.Begin()
 
