@@ -152,8 +152,6 @@ func UpdateProfile(uid string, input UpdateProfileParams) (res response.Response
 		}
 	}()
 
-	// TODO: 参数校验
-
 	tx = orm.DB.Begin()
 
 	userInfo := model.User{

@@ -16,9 +16,9 @@ import (
 )
 
 type CreateAdminParams struct {
-	Account  string `json:"account" valid:"required~请输入管理员账号"`                                    // 管理员账号，登陆凭借
-	Password string `json:"password" valid:"required~请输入管理员密码,int~请输入纯数字的密码,length(6|6)~密码长度为6位"` // 管理员密码
-	Name     string `json:"name" valid:"required~请输入管理员名称"`                                       // 管理员名称，注册后不可修改
+	Account  string `json:"account" valid:"required~请输入管理员账号"`  // 管理员账号，登陆凭借
+	Password string `json:"password" valid:"required~请输入管理员密码"` // 管理员密码
+	Name     string `json:"name" valid:"required~请输入管理员名称"`     // 管理员名称，注册后不可修改
 }
 
 // 创建管理员

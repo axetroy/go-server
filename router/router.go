@@ -136,7 +136,7 @@ func init() {
 			walletRouter.Use(userAuthMiddleware)
 			// 获取所有的钱包信息
 			walletRouter.GET("/map", wallet.GetWallets)
-			walletRouter.GET("/currency/:currency", wallet.GetWallet)
+			walletRouter.GET("/currency/:currency", wallet.GetWalletRouter)
 			// 转账相关
 			walletRouter.GET("/transfer/history", transfer.GetHistory)
 			walletRouter.GET("/transfer/detail/:transfer_id", transfer.GetDetailRouter)
