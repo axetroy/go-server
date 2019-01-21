@@ -8,6 +8,7 @@ var (
 	WalletCNY  = "CNY"
 	WalletUSD  = "USD"
 	WalletCOIN = "COIN"
+	Wallets    = []string{WalletCNY, WalletUSD, WalletCOIN}
 )
 
 type Wallet struct {
