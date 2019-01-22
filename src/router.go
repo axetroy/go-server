@@ -164,8 +164,7 @@ func init() {
 		// 系统通知
 		notificationRouter := v1.Group("/notification")
 		{
-			// TODO: 写通知类
-			notificationRouter.GET("/list")
+			notificationRouter.GET("/list", notification.GetListRouter)
 			notificationRouter.GET("/detail/:id", notification.GetRouter)
 		}
 

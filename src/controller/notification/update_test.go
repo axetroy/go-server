@@ -53,8 +53,8 @@ func TestUpdate(t *testing.T) {
 	// 创建一篇系统通知
 	{
 		var (
-			title   = "test"
-			content = "test"
+			title   = "TestUpdate"
+			content = "TestUpdate"
 		)
 
 		r := notification.Create(context, notification.CreateParams{

@@ -6,7 +6,6 @@ import (
 	"github.com/axetroy/go-server/src/controller/admin"
 	"github.com/axetroy/go-server/src/controller/auth"
 	"github.com/axetroy/go-server/src/controller/news"
-	"github.com/axetroy/go-server/src/controller/notification"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
@@ -68,21 +67,22 @@ func TestCreate(t *testing.T) {
 			content = "test"
 		)
 
-		r := notification.Create(controller.Context{
+		r := news.Create(controller.Context{
 			Uid: adminUid,
-		}, notification.CreateParams{
-			Tittle:  title,
+		}, news.CreateNewParams{
+			Title:   title,
 			Content: content,
+			Type:    model.NewsType_News,
 		})
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		n := schema.Notification{}
+		n := model.News{}
 
 		assert.Nil(t, tester.Decode(r.Data, &n))
 
-		defer notification.DeleteNotificationById(n.Id)
+		defer news.DeleteNewsById(n.Id)
 
 		assert.Equal(t, title, n.Tittle)
 		assert.Equal(t, content, n.Content)
@@ -182,12 +182,13 @@ func TestCreateRouter(t *testing.T) {
 			"Authorization": util.TokenPrefix + " " + adminToken,
 		}
 
-		body, _ := json.Marshal(&notification.CreateParams{
-			Tittle:  title,
+		body, _ := json.Marshal(&news.CreateNewParams{
+			Title:   title,
 			Content: content,
+			Type:    model.NewsType_News,
 		})
 
-		r := tester.Http.Post("/v1/admin/notification/create", body, &header)
+		r := tester.Http.Post("/v1/admin/news/create", body, &header)
 		res := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, r.Code)

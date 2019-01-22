@@ -53,8 +53,8 @@ func TestGet(t *testing.T) {
 	// 创建一篇系统通知
 	{
 		var (
-			title   = "test"
-			content = "test"
+			title   = "TestGet"
+			content = "TestGet"
 		)
 
 		r := notification.Create(context, notification.CreateParams{
