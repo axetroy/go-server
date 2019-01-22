@@ -9,19 +9,21 @@ import (
 	"github.com/axetroy/go-server/src/service"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	"github.com/mitchellh/mapstructure"
 	"net/http"
+	"time"
 )
 
-type Wallets struct {
-	Cny  Wallet `json:"CNY"`
-	Usd  Wallet `json:"USD"`
-	Coin Wallet `json:"COIN"`
+type WalletMap struct {
+	Cny  schema.Wallet `json:"CNY"`
+	Usd  schema.Wallet `json:"USD"`
+	Coin schema.Wallet `json:"COIN"`
 }
 
 func GetWallets(context controller.Context) (res schema.Response) {
 	var (
 		err  error
-		data Wallet
+		data []schema.Wallet
 		tx   *gorm.DB
 	)
 
@@ -66,17 +68,26 @@ func GetWallets(context controller.Context) (res schema.Response) {
 		return
 	}
 
-	// TODO: 如何优雅的union查询
+	cnyQuery := tx.Table("wallet_cny").Where("id = ?", userInfo.Id)
+	usdQuery := tx.Table("wallet_usd").Where("id = ?", userInfo.Id)
+	coinQuery := tx.Table("wallet_coin").Where("id = ?", userInfo.Id)
 
-	//sqls := []string{""}
+	var list []model.Wallet
 
-	//for _, v := range model.Wallets {
-	//	sql := tx.New().Table("wallet_" + strings.ToLower(v)).Where("id = " + userInfo.Id).QueryExpr()
-	//
-	//	append(sqls, sql)
-	//}
-	//
-	//orm.DB.Raw("? UNION ?", q1.QueryExpr(), q2.QueryExpr())
+	// TODO: 如何动态UNION，防止以后有动态的币种
+	if err = tx.Raw("? UNION ? UNION ?", cnyQuery.QueryExpr(), usdQuery.QueryExpr(), coinQuery.QueryExpr()).Scan(&list).Error; err != nil {
+		return
+	}
+
+	for _, v := range list {
+		wallet := schema.Wallet{}
+		if err = mapstructure.Decode(v, &wallet.WalletPure); err != nil {
+			return
+		}
+		wallet.CreatedAt = v.CreatedAt.Format(time.RFC3339Nano)
+		wallet.UpdatedAt = v.UpdatedAt.Format(time.RFC3339Nano)
+		data = append(data, wallet)
+	}
 
 	return
 }

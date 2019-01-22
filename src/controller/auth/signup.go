@@ -201,23 +201,26 @@ func SignUp(input SignUpParams) (res schema.Response) {
 	// 创建用户对应的钱包账号
 	cny := model.WalletCny{
 		Wallet: model.Wallet{
-			Id:      userInfo.Id,
-			Balance: 0,
-			Frozen:  0,
+			Id:       userInfo.Id,
+			Currency: model.WalletCNY,
+			Balance:  0,
+			Frozen:   0,
 		},
 	}
 	usd := model.WalletUsd{
 		Wallet: model.Wallet{
-			Id:      userInfo.Id,
-			Balance: 0,
-			Frozen:  0,
+			Id:       userInfo.Id,
+			Currency: model.WalletUSD,
+			Balance:  0,
+			Frozen:   0,
 		},
 	}
 	coin := model.WalletCoin{
 		Wallet: model.Wallet{
-			Id:      userInfo.Id,
-			Balance: 0,
-			Frozen:  0,
+			Id:       userInfo.Id,
+			Currency: model.WalletCOIN,
+			Balance:  0,
+			Frozen:   0,
 		},
 	}
 

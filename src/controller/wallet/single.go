@@ -18,7 +18,7 @@ import (
 func GetWallet(context controller.Context, currencyName string) (res schema.Response) {
 	var (
 		err  error
-		data Wallet
+		data schema.Wallet
 		tx   *gorm.DB
 	)
 
@@ -73,7 +73,7 @@ func GetWallet(context controller.Context, currencyName string) (res schema.Resp
 		return
 	}
 
-	if err = mapstructure.Decode(userInfo, &data.Pure); err != nil {
+	if err = mapstructure.Decode(userInfo, &data.WalletPure); err != nil {
 		return
 	}
 

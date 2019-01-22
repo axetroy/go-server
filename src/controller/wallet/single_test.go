@@ -52,7 +52,7 @@ func TestGetWallet(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		walletInfo := wallet.Wallet{}
+		walletInfo := schema.Wallet{}
 
 		assert.Nil(t, tester.Decode(r.Data, &walletInfo))
 
