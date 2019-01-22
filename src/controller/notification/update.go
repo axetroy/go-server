@@ -8,19 +8,20 @@ import (
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service"
+	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
+	"net/http"
 	"time"
 )
 
 type UpdateParams struct {
-	Id      string  `json:"id" valid:"require~请输入公告ID"` // 通知ID
-	Tittle  *string `json:"tittle"`                     // 公告标题
-	Content *string `json:"content"`                    // 公告内容
-	Note    *string `json:"note"`                       // 备注
+	Tittle  *string `json:"tittle"`  // 公告标题
+	Content *string `json:"content"` // 公告内容
+	Note    *string `json:"note"`    // 备注
 }
 
-func Update(context controller.Context, input UpdateParams) (res schema.Response) {
+func Update(context controller.Context, notificationId string, input UpdateParams) (res schema.Response) {
 	var (
 		err          error
 		data         schema.Notification
@@ -79,7 +80,7 @@ func Update(context controller.Context, input UpdateParams) (res schema.Response
 	}
 
 	notificationInfo := model.Notification{
-		Id: input.Id,
+		Id: notificationId,
 	}
 
 	if err = tx.Where(&notificationInfo).Last(&notificationInfo).Error; err != nil {
@@ -115,4 +116,29 @@ func Update(context controller.Context, input UpdateParams) (res schema.Response
 	data.UpdatedAt = notificationInfo.UpdatedAt.Format(time.RFC3339Nano)
 
 	return
+}
+
+func UpdateRouter(context *gin.Context) {
+	var (
+		input UpdateParams
+		err   error
+		res   = schema.Response{}
+	)
+
+	defer func() {
+		if err != nil {
+			res.Data = nil
+			res.Message = err.Error()
+		}
+		context.JSON(http.StatusOK, res)
+	}()
+
+	if err = context.ShouldBindJSON(&input); err != nil {
+		err = exception.InvalidParams
+		return
+	}
+
+	res = Update(controller.Context{
+		Uid: context.GetString("uid"),
+	}, context.Param("id"), input)
 }

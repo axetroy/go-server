@@ -99,6 +99,7 @@ func init() {
 			notificationRouter := adminRouter.Group("/notification")
 			{
 				notificationRouter.POST("/create", notification.CreateRouter)
+				notificationRouter.POST("/update/:id", notification.UpdateRouter)
 			}
 		}
 
@@ -164,8 +165,8 @@ func init() {
 		notificationRouter := v1.Group("/notification")
 		{
 			// TODO: 写通知类
-			notificationRouter.GET("/")
-			notificationRouter.GET("/:news_id")
+			notificationRouter.GET("/list")
+			notificationRouter.GET("/detail/:id", notification.GetRouter)
 		}
 
 		// 用户的个人通知

@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-func TestUpdate(t *testing.T) {
+func TestGet(t *testing.T) {
 	var (
 		adminUid string
 	)
@@ -75,27 +75,17 @@ func TestUpdate(t *testing.T) {
 		assert.Equal(t, content, testNotification.Content)
 	}
 
-	// 更新系统通知
+	// 获取详情
 	{
-		var (
-			newTittle  = "123123"
-			newContent = "123123"
-			newNote    = "123123"
-		)
-
-		r := notification.Update(context, testNotification.Id, notification.UpdateParams{
-			Tittle:  &newTittle,
-			Content: &newContent,
-			Note:    &newNote,
-		})
+		r := notification.Get(context, testNotification.Id)
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
-
 		n := schema.Notification{}
 		assert.Nil(t, tester.Decode(r.Data, &n))
-		assert.Equal(t, n.Tittle, newTittle)
-		assert.Equal(t, n.Content, newContent)
-		assert.Equal(t, *n.Note, newNote)
+
+		assert.Equal(t, n.Id, testNotification.Id)
+		assert.Equal(t, n.Tittle, testNotification.Tittle)
+		assert.Equal(t, n.Content, testNotification.Content)
 	}
 }
