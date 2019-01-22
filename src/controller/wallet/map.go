@@ -68,9 +68,9 @@ func GetWallets(context controller.Context) (res schema.Response) {
 		return
 	}
 
-	cnyQuery := tx.Table("wallet_cny").Where("id = ?", userInfo.Id)
-	usdQuery := tx.Table("wallet_usd").Where("id = ?", userInfo.Id)
-	coinQuery := tx.Table("wallet_coin").Where("id = ?", userInfo.Id)
+	cnyQuery := tx.Table(GetTableName(model.WalletCNY)).Where("id = ?", userInfo.Id)
+	usdQuery := tx.Table(GetTableName(model.WalletUSD)).Where("id = ?", userInfo.Id)
+	coinQuery := tx.Table(GetTableName(model.WalletCOIN)).Where("id = ?", userInfo.Id)
 
 	var list []model.Wallet
 
