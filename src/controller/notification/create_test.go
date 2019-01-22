@@ -12,7 +12,6 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	t.Skip()
 	var (
 		adminUid string
 	)
