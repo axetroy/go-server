@@ -6,6 +6,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/admin"
 	"github.com/axetroy/go-server/src/controller/auth"
 	"github.com/axetroy/go-server/src/controller/news"
+	"github.com/axetroy/go-server/src/controller/notification"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
@@ -60,39 +61,31 @@ func TestCreate(t *testing.T) {
 		}
 	}
 
-	// 创建一篇新闻
+	// 创建一个公告
 	{
 		var (
-			title    = "test"
-			content  = "test"
-			newsType = model.NewsType_News
+			title   = "test"
+			content = "test"
 		)
 
-		r := news.Create(controller.Context{
+		r := notification.Create(controller.Context{
 			Uid: adminUid,
-		}, news.CreateNewParams{
-			Title:   title,
+		}, notification.CreateParams{
+			Tittle:  title,
 			Content: content,
-			Type:    newsType,
-			Tags:    []string{},
 		})
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		n := schema.News{}
+		n := schema.Notification{}
 
 		assert.Nil(t, tester.Decode(r.Data, &n))
 
-		defer func() {
-			news.DeleteNewsById(n.Id)
-		}()
+		defer notification.DeleteNotificationById(n.Id)
 
-		assert.Equal(t, adminUid, n.Author)
 		assert.Equal(t, title, n.Tittle)
 		assert.Equal(t, content, n.Content)
-		assert.Equal(t, newsType, n.Type)
-		assert.Len(t, n.Tags, 0)
 	}
 
 	// 非管理员的uid去创建，应该报错
@@ -144,7 +137,6 @@ func TestCreate(t *testing.T) {
 }
 
 func TestCreateRouter(t *testing.T) {
-
 	var (
 		adminUid   string
 		adminToken string
@@ -182,29 +174,26 @@ func TestCreateRouter(t *testing.T) {
 	// 登陆正确的管理员账号
 	{
 		var (
-			title    = "test"
-			content  = "test"
-			newsType = model.NewsType_News
+			title   = "test"
+			content = "test"
 		)
 
 		header := mocker.Header{
 			"Authorization": util.TokenPrefix + " " + adminToken,
 		}
 
-		body, _ := json.Marshal(&news.CreateNewParams{
-			Title:   title,
+		body, _ := json.Marshal(&notification.CreateParams{
+			Tittle:  title,
 			Content: content,
-			Type:    newsType,
-			Tags:    []string{},
 		})
 
-		r := tester.Http.Post("/v1/admin/news/create", body, &header)
+		r := tester.Http.Post("/v1/admin/notification/create", body, &header)
 		res := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, r.Code)
 		assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
 
-		n := schema.News{}
+		n := schema.Notification{}
 
 		assert.Nil(t, tester.Decode(res.Data, &n))
 
@@ -215,7 +204,5 @@ func TestCreateRouter(t *testing.T) {
 		assert.Equal(t, adminUid, n.Author)
 		assert.Equal(t, title, n.Tittle)
 		assert.Equal(t, content, n.Content)
-		assert.Equal(t, newsType, n.Type)
-		assert.Len(t, n.Tags, 0)
 	}
 }

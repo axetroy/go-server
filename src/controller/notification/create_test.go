@@ -67,9 +67,7 @@ func TestCreate(t *testing.T) {
 
 		assert.Nil(t, tester.Decode(r.Data, &n))
 
-		defer func() {
-			notification.DeleteNotificationById(n.Id)
-		}()
+		defer notification.DeleteNotificationById(n.Id)
 
 		assert.Equal(t, title, n.Tittle)
 		assert.Equal(t, content, n.Content)

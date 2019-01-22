@@ -65,11 +65,11 @@ func Create(context controller.Context, input CreateNewParams) (res schema.Respo
 
 	tx = service.Db.Begin()
 
-	adminINfo := model.Admin{
+	adminInfo := model.Admin{
 		Id: context.Uid,
 	}
 
-	if err = tx.First(&adminINfo).Error; err != nil {
+	if err = tx.First(&adminInfo).Error; err != nil {
 		// 没有找到管理员
 		if err == gorm.ErrRecordNotFound {
 			err = exception.AdminNotExist
@@ -77,7 +77,7 @@ func Create(context controller.Context, input CreateNewParams) (res schema.Respo
 		return
 	}
 
-	if !adminINfo.IsSuper {
+	if !adminInfo.IsSuper {
 		err = exception.AdminNotSuper
 		return
 	}
@@ -91,7 +91,9 @@ func Create(context controller.Context, input CreateNewParams) (res schema.Respo
 		Status:  model.NewsStatusActive,
 	}
 
-	tx.Create(&NewsInfo)
+	if err = tx.Create(&NewsInfo).Error; err != nil {
+		return
+	}
 
 	if er := mapstructure.Decode(NewsInfo, &data.NewsPure); er != nil {
 		err = er
