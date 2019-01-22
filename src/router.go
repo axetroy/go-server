@@ -84,6 +84,7 @@ func init() {
 			{
 				adRouter.Use(adminAuthMiddleware)
 				adRouter.POST("/create", admin.CreateAdminRouter)
+				adRouter.POST("/profile", admin.GetAdminInfoRouter)
 			}
 
 			// 新闻咨询类

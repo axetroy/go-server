@@ -26,6 +26,6 @@ func TestDeleteAdminByAccount(t *testing.T) {
 	}
 
 	{
-		// 获取管理员信息
+		// TODO: 获取管理员信息
 	}
 }
