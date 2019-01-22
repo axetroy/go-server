@@ -75,3 +75,28 @@ func init() {
 
 	Db = db
 }
+
+func DeleteRowByTable(tableName string, field string, value interface{}) {
+	var (
+		err error
+		tx  *gorm.DB
+	)
+
+	defer func() {
+		if tx != nil {
+			if err != nil {
+				_ = tx.Rollback()
+			} else {
+				_ = tx.Commit()
+			}
+		}
+	}()
+
+	tx = Db.Begin()
+
+	raw := fmt.Sprintf("DELETE FROM \"%v\" WHERE %s = '%v'", tableName, field, value)
+
+	if err = tx.Exec(raw).Error; err != nil {
+		return
+	}
+}
