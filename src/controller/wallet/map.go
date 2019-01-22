@@ -14,12 +14,6 @@ import (
 	"time"
 )
 
-type WalletMap struct {
-	Cny  schema.Wallet `json:"CNY"`
-	Usd  schema.Wallet `json:"USD"`
-	Coin schema.Wallet `json:"COIN"`
-}
-
 func GetWallets(context controller.Context) (res schema.Response) {
 	var (
 		err  error
