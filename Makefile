@@ -16,13 +16,13 @@ build:
 	echo "Build Success!"
 
 windows:
-	CGO_ENABLED=0 GOOS=windows GOARCH=386 go build -o ./bin/x_win_x86.exe main.go
-	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ./bin/x_win_x64.exe main.go
+	CGO_ENABLED=0 GOOS=windows GOARCH=386 go build -o ./bin/x_win_x86.exe ./cmd/server/server.go
+	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ./bin/x_win_x64.exe ./cmd/server/server.go
 
 linux:
-	CGO_ENABLED=0 GOOS=linux GOARCH=386 go build -o ./bin/x_linux_x86 main.go
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./bin/x_linux_x64 main.go
+	CGO_ENABLED=0 GOOS=linux GOARCH=386 go build -o ./bin/x_linux_x86 ./cmd/server/server.go
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./bin/x_linux_x64 ./cmd/server/server.go
 
 mac:
-	CGO_ENABLED=0 GOOS=darwin GOARCH=386 go build -o ./bin/x_osx_x86 main.go
-	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ./bin/x_osx_64 main.go
+	CGO_ENABLED=0 GOOS=darwin GOARCH=386 go build -o ./bin/x_osx_x86 ./cmd/server/server.go
+	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ./bin/x_osx_64 ./cmd/server/server.go
