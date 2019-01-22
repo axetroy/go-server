@@ -1,7 +1,6 @@
 package notification_test
 
 import (
-	"fmt"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/controller/admin"
 	"github.com/axetroy/go-server/src/controller/notification"
@@ -63,7 +62,7 @@ func TestCreate(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		n := notification.Notification{}
+		n := schema.Notification{}
 
 		assert.Nil(t, tester.Decode(r.Data, &n))
 
@@ -71,7 +70,5 @@ func TestCreate(t *testing.T) {
 
 		assert.Equal(t, title, n.Tittle)
 		assert.Equal(t, content, n.Content)
-
-		fmt.Printf("%+v\n", n)
 	}
 }

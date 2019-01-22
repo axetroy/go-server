@@ -12,7 +12,6 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
 	"net/http"
-	"runtime/debug"
 	"time"
 )
 
@@ -51,7 +50,6 @@ func Create(context controller.Context, input CreateParams) (res schema.Response
 		}
 
 		if err != nil {
-			debug.PrintStack()
 			res.Data = nil
 			res.Message = err.Error()
 		} else {
