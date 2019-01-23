@@ -153,7 +153,6 @@ func init() {
 		}
 
 		// 新闻咨询类
-		// @公开接口
 		newsRouter := v1.Group("/news")
 		{
 			newsRouter.Use(userAuthMiddleware)
@@ -166,6 +165,7 @@ func init() {
 		{
 			notificationRouter.GET("/list", notification.GetListRouter)
 			notificationRouter.GET("/detail/:id", notification.GetRouter)
+			notificationRouter.GET("/read/:id", notification.ReadRouter)
 		}
 
 		// 用户的个人通知

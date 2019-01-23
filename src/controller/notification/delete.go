@@ -7,3 +7,7 @@ import (
 func DeleteNotificationById(id string) {
 	service.DeleteRowByTable("notification", "id", id)
 }
+
+func DeleteNotificationMarkById(id string) {
+	service.DeleteRowByTable("notification_mark", "id", id)
+}

@@ -70,7 +70,8 @@ func init() {
 		new(model.FinanceLogCny), // 流水列表
 		new(model.FinanceLogUsd),
 		new(model.FinanceLogCoin),
-		new(model.Notification), // 系统消息
+		new(model.Notification),     // 系统消息
+		new(model.NotificationMark), // 系统消息的已读记录
 	)
 
 	Db = db

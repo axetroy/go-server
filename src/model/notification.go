@@ -26,10 +26,9 @@ type Notification struct {
 }
 
 type NotificationMark struct {
-	Id        string     `gorm:"primary_key;not null;unique(uid);index;type:varchar(32)" json:"id"` // 通知ID
-	Uid       string     `gorm:"notnull;index;unique(id)" json:"uid"`                               // 对应的用户ID, 联合通知ID唯一
-	Read      bool       `gorm:"notnull" json:"read"`                                               // 是否已读
-	ReadAt    *time.Time `gorm:"null" json:"read_at"`                                               // 阅读时间
+	Id        string `gorm:"primary_key;not null;unique(uid);index;type:varchar(32)" json:"id"` // 通知ID, 通知ID和UID为联合唯一
+	Uid       string `gorm:"not null;index;unique(id);type:varchar(32)" json:"uid"`             // 对应的用户ID, 联合通知ID唯一
+	Read      bool   `gorm:"not null" json:"read"`                                              // 是否已读
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt *time.Time `sql:"index"`
@@ -45,6 +44,18 @@ func (news *Notification) BeforeCreate(scope *gorm.Scope) error {
 	}
 	// 默认启用通知的状态
 	if err := scope.SetColumn("status", NotificationStatusActive); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (news *NotificationMark) TableName() string {
+	return "notification_mark"
+}
+
+func (news *NotificationMark) BeforeCreate(scope *gorm.Scope) error {
+	// 创建的时候则为已读的时候
+	if err := scope.SetColumn("read", true); err != nil {
 		return err
 	}
 	return nil
