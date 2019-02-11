@@ -139,10 +139,22 @@ func TestMarkRead(t *testing.T) {
 	}
 
 	{
-		// TODO: 用户再获取这个通知，会标记为已读
+		// 获取详情
+		r := notification.Get(context, testNotification.Id)
+
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
+		n := schema.Notification{}
+		assert.Nil(t, tester.Decode(r.Data, &n))
+
+		assert.Equal(t, n.Id, testNotification.Id)
+		assert.Equal(t, n.Tittle, testNotification.Tittle)
+		assert.Equal(t, n.Content, testNotification.Content)
+		assert.Equal(t, false, testNotification.Read)
 	}
 }
 
 func TestReadRouter(t *testing.T) {
 	// TODO: 完善HTTP的测试用例
+	t.Skip()
 }

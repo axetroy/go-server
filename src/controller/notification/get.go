@@ -2,6 +2,7 @@ package notification
 
 import (
 	"errors"
+	"fmt"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/model"
@@ -14,6 +15,7 @@ import (
 	"time"
 )
 
+// Get notification detail
 func Get(context controller.Context, id string) (res schema.Response) {
 	var (
 		err  error
@@ -52,11 +54,12 @@ func Get(context controller.Context, id string) (res schema.Response) {
 
 	tx = service.Db.Begin()
 
-	notificationInfo := model.Notification{
-		Id: id,
-	}
+	notificationInfo := model.Notification{}
+	NotificationMark := model.NotificationMark{Id: id}
 
-	if err = tx.Where(&notificationInfo).Last(&notificationInfo).Error; err != nil {
+	sql := fmt.Sprintf("LEFT JOIN notification_mark ON notification_mark.id = notification.id AND notification.id = '%s'", notificationInfo.Id)
+
+	if err = tx.Table(notificationInfo.TableName()).Joins(sql).Last(&notificationInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			err = exception.NoData
 		}
@@ -68,12 +71,24 @@ func Get(context controller.Context, id string) (res schema.Response) {
 		return
 	}
 
+	if err = tx.Where(&NotificationMark).Last(&NotificationMark).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			data.NotificationPure.Read = false
+			err = nil
+		} else {
+			return
+		}
+	} else {
+		data.NotificationPure.Read = NotificationMark.Read
+	}
+
 	data.CreatedAt = notificationInfo.CreatedAt.Format(time.RFC3339Nano)
 	data.UpdatedAt = notificationInfo.UpdatedAt.Format(time.RFC3339Nano)
 
 	return
 }
 
+// GetRouter get notification detail router
 func GetRouter(context *gin.Context) {
 	var (
 		err error

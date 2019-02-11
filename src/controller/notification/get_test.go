@@ -87,5 +87,6 @@ func TestGet(t *testing.T) {
 		assert.Equal(t, n.Id, testNotification.Id)
 		assert.Equal(t, n.Tittle, testNotification.Tittle)
 		assert.Equal(t, n.Content, testNotification.Content)
+		assert.Equal(t, false, testNotification.Read)
 	}
 }

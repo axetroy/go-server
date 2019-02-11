@@ -168,7 +168,7 @@ func init() {
 			notificationRouter.GET("/read/:id", notification.ReadRouter)
 		}
 
-		// 用户的个人通知
+		// 用户的个人通知, 用人通知是可以删除的
 		messageRouter := v1.Group("/message")
 		{
 			// TODO: 写个人通知

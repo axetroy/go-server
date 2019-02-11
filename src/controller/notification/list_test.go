@@ -20,7 +20,7 @@ func TestGetList(t *testing.T) {
 		query := schema.Query{
 			Limit: 20,
 		}
-		r := notification.GetList(notification.Query{
+		r := notification.GetList(controller.Context{}, notification.Query{
 			Query: query,
 		})
 
@@ -91,7 +91,7 @@ func TestGetList(t *testing.T) {
 			query := schema.Query{
 				Limit: 20,
 			}
-			r := notification.GetList(notification.Query{
+			r := notification.GetList(controller.Context{}, notification.Query{
 				Query: query,
 			})
 

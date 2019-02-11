@@ -13,6 +13,7 @@ func init() {
 	}
 }
 
+// Init 初始化一些动作
 func Init() {
 	// 确保超级管理员存在
 	r := admin.CreateAdmin(admin.CreateAdminParams{
@@ -27,6 +28,7 @@ func Init() {
 	}
 }
 
+// Server 运行服务器
 func Server() {
 	Init()
 	if err := Router.Run(":8080"); err != nil {

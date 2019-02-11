@@ -2,23 +2,30 @@ package notification
 
 import (
 	"errors"
+	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
+	"github.com/mitchellh/mapstructure"
 	"net/http"
+	"time"
 )
 
+// Query params
 type Query struct {
 	schema.Query
 }
 
-func GetList(input Query) (res schema.List) {
+// GetList get notification list
+func GetList(context controller.Context, input Query) (res schema.List) {
 	var (
 		err  error
-		data = make([]model.Notification, 0)
+		data = make([]schema.Notification, 0)
 		meta = &schema.Meta{}
+		tx   *gorm.DB
 	)
 
 	defer func() {
@@ -30,6 +37,14 @@ func GetList(input Query) (res schema.List) {
 				err = t
 			default:
 				err = exception.Unknown
+			}
+		}
+
+		if tx != nil {
+			if err != nil {
+				_ = tx.Rollback().Error
+			} else {
+				err = tx.Commit().Error
 			}
 		}
 
@@ -48,10 +63,43 @@ func GetList(input Query) (res schema.List) {
 
 	query.Normalize()
 
+	tx = service.Db.Begin()
+
 	var total int64
 
-	if err = service.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Find(&data).Count(&total).Error; err != nil {
+	list := make([]model.Notification, 0)
+
+	if err = tx.Table(new(model.Notification).TableName()).Limit(query.Limit).Offset(query.Limit * query.Page).Find(&list).Count(&total).Error; err != nil {
 		return
+	}
+
+	data = make([]schema.Notification, len(list))
+
+	// TODO: 优化这一块实现
+	for index, v := range list {
+		current := data[index]
+		if er := mapstructure.Decode(v, &current.NotificationPure); er != nil {
+			err = er
+			return
+		}
+		current.CreatedAt = v.CreatedAt.Format(time.RFC3339Nano)
+		current.UpdatedAt = v.UpdatedAt.Format(time.RFC3339Nano)
+		if len(context.Uid) != 0 {
+
+			mark := model.NotificationMark{
+				Id:  v.Id,
+				Uid: context.Uid,
+			}
+			if err = tx.Where(&mark).Last(&mark).Error; err != nil {
+				if err == gorm.ErrRecordNotFound {
+					current.Read = false
+					current.ReadAt = ""
+				}
+			} else {
+				current.Read = true
+				current.ReadAt = mark.CreatedAt.Format(time.RFC3339Nano)
+			}
+		}
 	}
 
 	meta.Total = total
@@ -62,6 +110,7 @@ func GetList(input Query) (res schema.List) {
 	return
 }
 
+// GetListRouter get list router
 func GetListRouter(context *gin.Context) {
 	var (
 		err   error
@@ -82,5 +131,7 @@ func GetListRouter(context *gin.Context) {
 		return
 	}
 
-	res = GetList(input)
+	res = GetList(controller.Context{
+		Uid: context.GetString("uid"),
+	}, input)
 }

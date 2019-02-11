@@ -12,7 +12,8 @@ import (
 	"net/http"
 )
 
-func MarkRead(context controller.Context, notificationId string) (res schema.Response) {
+// MarkRead mark notification as read
+func MarkRead(context controller.Context, notificationID string) (res schema.Response) {
 	var (
 		err error
 		tx  *gorm.DB
@@ -62,7 +63,7 @@ func MarkRead(context controller.Context, notificationId string) (res schema.Res
 	}
 
 	notificationInfo := model.Notification{
-		Id: notificationId,
+		Id: notificationID,
 	}
 
 	// 先获取通知
@@ -99,6 +100,7 @@ func MarkRead(context controller.Context, notificationId string) (res schema.Res
 	return
 }
 
+// ReadRouter read this notification router
 func ReadRouter(context *gin.Context) {
 	var (
 		err error
@@ -113,9 +115,9 @@ func ReadRouter(context *gin.Context) {
 		context.JSON(http.StatusOK, res)
 	}()
 
-	notificationId := context.Param("id")
+	notificationID := context.Param("id")
 
 	res = MarkRead(controller.Context{
 		Uid: context.GetString("uid"),
-	}, notificationId)
+	}, notificationID)
 }
