@@ -72,6 +72,7 @@ func init() {
 		new(model.FinanceLogCoin),
 		new(model.Notification),     // 系统消息
 		new(model.NotificationMark), // 系统消息的已读记录
+		new(model.Message),          // 个人消息
 	)
 
 	Db = db

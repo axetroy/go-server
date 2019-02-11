@@ -7,6 +7,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/email"
 	"github.com/axetroy/go-server/src/controller/finance"
 	"github.com/axetroy/go-server/src/controller/invite"
+	"github.com/axetroy/go-server/src/controller/message"
 	"github.com/axetroy/go-server/src/controller/news"
 	"github.com/axetroy/go-server/src/controller/notification"
 	"github.com/axetroy/go-server/src/controller/resource"
@@ -101,6 +102,12 @@ func init() {
 				notificationRouter.POST("/create", notification.CreateRouter)
 				notificationRouter.POST("/update/:id", notification.UpdateRouter)
 			}
+
+			// 个人消息
+			messageRouter := adminRouter.Group("/message")
+			{
+				messageRouter.POST("/create", message.CreateRouter)
+			}
 		}
 
 		// 认证类
@@ -163,6 +170,7 @@ func init() {
 		// 系统通知
 		notificationRouter := v1.Group("/notification")
 		{
+			walletRouter.Use(userAuthMiddleware)
 			notificationRouter.GET("/list", notification.GetListRouter)
 			notificationRouter.GET("/detail/:id", notification.GetRouter)
 			notificationRouter.GET("/read/:id", notification.ReadRouter)
@@ -171,9 +179,10 @@ func init() {
 		// 用户的个人通知, 用人通知是可以删除的
 		messageRouter := v1.Group("/message")
 		{
-			// TODO: 写个人通知
-			messageRouter.GET("/")
-			messageRouter.GET("/:id")
+			walletRouter.Use(userAuthMiddleware)
+			messageRouter.GET("/list", message.GetListRouter)
+			messageRouter.GET("/detail/:id", message.GetRouter)
+			messageRouter.GET("/read/:id", message.ReadRouter)
 		}
 
 		// 通用类
