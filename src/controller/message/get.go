@@ -53,12 +53,12 @@ func Get(context controller.Context, id string) (res schema.Response) {
 
 	tx = service.Db.Begin()
 
-	MessageInfo := model.Message{
-		Id:  id,
-		Uid: context.Uid,
-	}
+	MessageInfo := model.Message{}
 
-	if err = tx.Where(&MessageInfo).Last(&MessageInfo).Error; err != nil {
+	if err = tx.Where(map[string]interface{}{
+		"id":  id,
+		"uid": context.Uid,
+	}).Last(&MessageInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			err = exception.NoData
 		}

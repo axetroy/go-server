@@ -58,6 +58,7 @@ func TestGetMessage(t *testing.T) {
 			r := message.Create(controller.Context{
 				Uid: adminUid,
 			}, message.CreateMessageParams{
+				Uid:     adminUid,
 				Title:   title,
 				Content: content,
 			})
@@ -83,9 +84,7 @@ func TestGetMessage(t *testing.T) {
 			assert.Equal(t, schema.StatusSuccess, r.Status)
 			assert.Equal(t, "", r.Message)
 
-			messageInfo := schema.Message{}
-
-			assert.Nil(t, tester.Decode(r.Data, &messageInfo))
+			messageInfo := r.Data.(schema.Message)
 
 			assert.Equal(t, "test", messageInfo.Tittle)
 			assert.Equal(t, "test", messageInfo.Content)
