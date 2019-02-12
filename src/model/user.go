@@ -35,6 +35,8 @@ type User struct {
 	Avatar      string     `gorm:"not null;type:varchar(36)" json:"avatar"`                      // 头像
 	Level       int32      `gorm:"default(1)" json:"level"`                                      // 用户等级
 	Gender      Gender     `gorm:"default(0)" json:"gender"`                                     // 性别
+	EnableTOTP  bool       `gorm:"not null;" json:"enable_totp"`                                 // 是否启用双重身份认证
+	Secret      string     `gorm:"not null;type:varchar(32)" json:"secret"`                      // 用户自己的密钥
 	InviteCode  string     `gorm:"not null;unique;type:varchar(8)" json:"invite_code"`           // 邀请码
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
@@ -47,13 +49,28 @@ func (news *User) TableName() string {
 
 func (news *User) BeforeCreate(scope *gorm.Scope) error {
 	// 生成ID
-	if err := scope.SetColumn("id", util.GenerateId()); err != nil {
+	uid := util.GenerateId()
+	if err := scope.SetColumn("id", uid); err != nil {
 		return err
 	}
 
 	// 生成邀请码
 	if err := scope.SetColumn("invite_code", util.GenerateInviteCode()); err != nil {
 		return err
+	}
+
+	// 默认关闭启用谷歌验证码
+	if err := scope.SetColumn("enable_totp", false); err != nil {
+		return err
+	}
+
+	// 生成用户自己的密钥
+	if secret, err := util.Generate2FASecret(uid); err != nil {
+		return err
+	} else {
+		if err := scope.SetColumn("secret", secret); err != nil {
+			return err
+		}
 	}
 
 	return nil

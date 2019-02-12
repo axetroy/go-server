@@ -64,9 +64,7 @@ func TestSignUpSuccess(t *testing.T) {
 	assert.Equal(t, schema.StatusSuccess, res.Status)
 	assert.Equal(t, "", res.Message)
 
-	defer func() {
-		auth.DeleteUserByUserName(username)
-	}()
+	defer auth.DeleteUserByUserName(username)
 
 	profile := schema.Profile{}
 
@@ -106,9 +104,7 @@ func TestSignUpInviteCode(t *testing.T) {
 		inviteCode = profile.InviteCode
 		testerUid = profile.Id
 
-		defer func() {
-			auth.DeleteUserByUserName(testerUsername)
-		}()
+		defer auth.DeleteUserByUserName(testerUsername)
 	}
 
 	rand.Seed(1111) // 重置随机码，否则随机数会一样
@@ -122,11 +118,7 @@ func TestSignUpInviteCode(t *testing.T) {
 	assert.Equal(t, schema.StatusSuccess, res.Status)
 	assert.Equal(t, "", res.Message)
 
-	defer func() {
-		defer func() {
-			auth.DeleteUserByUserName(username)
-		}()
-	}()
+	defer auth.DeleteUserByUserName(username)
 
 	profile := schema.Profile{}
 
