@@ -14,7 +14,6 @@ var (
 	RequirePayPassword       = New("请输入交易密码")
 	InvalidPassword          = New("密码错误")
 	InvalidAccountOrPassword = New("账号或密码错误")
-	InvalidResetCode         = New("密码重置链接已超时")
 	InvalidActiveCode        = New("激活链接已超时")
 	UserHaveActive           = New("用户已激活")
 	PasswordDuplicate        = New("新密码和旧密码不能相同")

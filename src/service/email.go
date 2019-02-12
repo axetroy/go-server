@@ -27,13 +27,10 @@ type emailConfig struct {
 var config emailConfig
 
 const (
-	Prefix        = "[GOTEST]: "
-	TmpActivation = `
-<a href="javascript: void 0">点击这里激活</a>或使用激活码: %v
-`
-	TmpForgotPassword = `
-<a href="javascript: void 0">点击连接重置密码</a>或使用重置码: %v
-`
+	prefix                 = "[GOTEST]: "
+	tmpActivation          = `<a href="javascript: void 0">点击这里激活</a>或使用激活码: %v`
+	tmpForgotPassword      = `<a href="javascript: void 0">点击连接重置密码</a>或使用重置码: %v`
+	tmpForgotTradePassword = `<a href="javascript: void 0">点击连接重置交易密码</a>或使用重置码: %v`
 )
 
 type Mailer struct {
@@ -114,12 +111,12 @@ func (e *Mailer) Send(message *Message) (err error) {
 }
 
 // 发送激活邮件
-func (e *Mailer) SendActivationEmail(to string, code string) (err error) {
+func (e *Mailer) SendActivationEmail(toEmail string, code string) (err error) {
 	if err = e.Send(&Message{
-		To:      []string{to},
-		Subject: Prefix + "账号激活",
+		To:      []string{toEmail},
+		Subject: prefix + "账号激活",
 		Text:    []byte("请点击连接激活您的账号"),
-		HTML:    []byte(fmt.Sprintf(TmpActivation, code)),
+		HTML:    []byte(fmt.Sprintf(tmpActivation, code)),
 	}); err != nil {
 		return
 	}
@@ -128,12 +125,26 @@ func (e *Mailer) SendActivationEmail(to string, code string) (err error) {
 }
 
 // 发送忘记密码邮件
-func (e *Mailer) SendForgotPasswordEmail(to string, code string) (err error) {
+func (e *Mailer) SendForgotPasswordEmail(toEmail string, code string) (err error) {
 	if err = e.Send(&Message{
-		To:      []string{to},
-		Subject: Prefix + "忘记密码",
+		To:      []string{toEmail},
+		Subject: prefix + "忘记登陆密码",
+		Text:    []byte("请点击重置您的登陆密码"),
+		HTML:    []byte(fmt.Sprintf(tmpForgotPassword, code)),
+	}); err != nil {
+		return
+	}
+
+	return nil
+}
+
+// 发送忘记交易密码邮件
+func (e *Mailer) SendForgotTradePasswordEmail(toEmail string, code string) (err error) {
+	if err = e.Send(&Message{
+		To:      []string{toEmail},
+		Subject: prefix + "忘记交易密码",
 		Text:    []byte("请点击连接激活您的账号"),
-		HTML:    []byte(fmt.Sprintf(TmpForgotPassword, code)),
+		HTML:    []byte(fmt.Sprintf(tmpForgotTradePassword, code)),
 	}); err != nil {
 		return
 	}

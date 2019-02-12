@@ -1,11 +1,11 @@
 package util
 
 const (
-	PasswordPrefix = "gotest"
-	PasswordSuffix = "test"
+	passwordPrefix = "gotest"
+	passwordSuffix = "test"
 )
 
 func GeneratePassword(text string) string {
-	password := MD5(PasswordPrefix + text + PasswordSuffix)
+	password := MD5(passwordPrefix + text + passwordSuffix)
 	return password
 }

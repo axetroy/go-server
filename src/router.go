@@ -123,19 +123,21 @@ func init() {
 		userRouter := v1.Group("/user")
 		{
 			userRouter.Use(userAuthMiddleware)
-			userRouter.GET("/signout", user.SignOut)
-			userRouter.GET("/profile", user.GetProfileRouter)
-			userRouter.PUT("/profile", user.UpdateProfileRouter)
-			userRouter.PUT("/password/update", user.UpdatePasswordRouter)
-			userRouter.PUT("/trade_password/set", user.SetPayPasswordRouter)
-			userRouter.PUT("/trade_password/update", user.UpdatePayPasswordRouter)
+			userRouter.GET("/signout", user.SignOut)                                          // 用户登出
+			userRouter.GET("/profile", user.GetProfileRouter)                                 // 获取用户详细信息
+			userRouter.PUT("/profile", user.UpdateProfileRouter)                              // 更新用户资料
+			userRouter.PUT("/password/update", user.UpdatePasswordRouter)                     // 更新登陆密码
+			userRouter.PUT("/trade_password/set", user.SetPayPasswordRouter)                  // 设置交易密码
+			userRouter.PUT("/trade_password/update", user.UpdatePayPasswordRouter)            // 更新交易密码
+			userRouter.PUT("/trade_password/reset", user.ResetPayPasswordRouter)              // 重置交易密码
+			userRouter.POST("/trade_password/reset_request", user.SendResetPayPasswordRouter) // 发送重置交易密码的邮件/短信
 			// TODO: 上传头像
 			userRouter.POST("/avatar", user.UpdatePayPasswordRouter)
 			// 邀请人列表
 			inviteRouter := userRouter.Group("/invite")
 			{
-				inviteRouter.GET("/detail/:invite_id", invite.GetRouter)
-				inviteRouter.GET("/list", invite.GetListRouter)
+				inviteRouter.GET("/detail/:invite_id", invite.GetRouter) // 获取单条邀请记录详情
+				inviteRouter.GET("/list", invite.GetListRouter)          // 获取我已邀请的列表
 			}
 		}
 
@@ -144,12 +146,12 @@ func init() {
 		{
 			walletRouter.Use(userAuthMiddleware)
 			// 获取所有的钱包信息
-			walletRouter.GET("/map", wallet.GetWalletsRouter)
-			walletRouter.GET("/currency/:currency", wallet.GetWalletRouter)
+			walletRouter.GET("/map", wallet.GetWalletsRouter)               // 获取我的钱包map对象
+			walletRouter.GET("/currency/:currency", wallet.GetWalletRouter) // 获取单个钱包的详细信息
 			// 转账相关
-			walletRouter.GET("/transfer/history", transfer.GetHistory)
-			walletRouter.GET("/transfer/detail/:transfer_id", transfer.GetDetailRouter)
-			walletRouter.POST("/transfer", middleware.AuthPayPassword, transfer.ToRouter)
+			walletRouter.GET("/transfer/history", transfer.GetHistory)                    // 获取转账记录
+			walletRouter.GET("/transfer/detail/:transfer_id", transfer.GetDetailRouter)   // 获取单条转账详情
+			walletRouter.POST("/transfer", middleware.AuthPayPassword, transfer.ToRouter) // 转账给某人
 		}
 
 		// 财务日志
