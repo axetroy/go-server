@@ -8,10 +8,10 @@ import (
 
 type InviteStatus int
 
-var (
+const (
 	StatusInviteRegistered InviteStatus = 0  // 被邀请人刚注册
-	StatusInviteAuth                    = 10 // 被邀请人进行了实名认证
-	StatusInvitePay                     = 50 // 被邀请人已进行了一笔支付
+	StatusInviteAuth       InviteStatus = 10 // 被邀请人进行了实名认证
+	StatusInvitePay        InviteStatus = 50 // 被邀请人已进行了一笔支付
 )
 
 type InviteHistory struct {

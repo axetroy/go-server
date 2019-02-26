@@ -1,18 +1,18 @@
 package model
 
 import (
+	"time"
+
 	"github.com/axetroy/go-server/src/util"
 	"github.com/jinzhu/gorm"
-	"time"
 )
 
 type AdminStatus int32
 
 const (
-	// 管理员状态
 	AdminStatusBanned      AdminStatus = -100 // 账号被禁用
-	AdminStatusInactivated             = -1   // 账号未激活
-	AdminStatusInit                    = 0    // 初始化状态
+	AdminStatusInactivated AdminStatus = -1   // 账号未激活
+	AdminStatusInit        AdminStatus = 0    // 初始化状态
 )
 
 type Admin struct {

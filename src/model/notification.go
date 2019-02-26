@@ -26,7 +26,7 @@ type Notification struct {
 }
 
 type NotificationMark struct {
-	Id           string       `gorm:"primary_key;not null;unique(uid);index;type:varchar(32)" json:"id"` // 通知ID, 通知ID和UID为联合唯一
+	Id           string       `gorm:"primary_key;not null;unique(uid);index;type:varchar(32)" json:"id"` // 通知ID, 通知 ID 和 UID 为联合唯一
 	Uid          string       `gorm:"not null;index;unique(id);type:varchar(32)" json:"uid"`             // 对应的用户ID, 联合通知ID唯一
 	Read         bool         `gorm:"not null" json:"read"`                                              // 是否已读
 	Notification Notification `gorm:"foreign_key:Id;association_foreign_key:Id" json:"notification"`     // 关联外键
