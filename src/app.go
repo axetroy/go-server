@@ -1,6 +1,7 @@
 package src
 
 import (
+	"fmt"
 	"github.com/axetroy/go-server/src/controller/admin"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/schema"
@@ -31,7 +32,9 @@ func Init() {
 // Server 运行服务器
 func Server() {
 	Init()
-	if err := Router.Run(":8080"); err != nil {
+	port := "8080"
+	if err := Router.Run(":" + port); err != nil {
 		panic(err)
 	}
+	fmt.Println("Listen on port " + port)
 }

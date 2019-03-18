@@ -1,5 +1,6 @@
 version: '3'
 services:
+  # 数据库
   pg:
     image: postgres:9.6.6-alpine
     restart: always
@@ -7,6 +8,7 @@ services:
       - "./docker/volumes/pg:/var/lib/postgresql/data"
     ports:
       - 65432:5432
+  # 缓存
   redis:
     image: redis:5.0.2-alpine
     restart: always
@@ -17,3 +19,25 @@ services:
     environment:
       - REDIS_PASSWORD=password
     command: [ "redis-server", "--requirepass", "password" ]
+  # 消息队列
+  nsqlookupd:
+    image: nsqio/nsq
+    command: /nsqlookupd
+    ports:
+      - "4160"
+      - 31001:4161
+  nsqd:
+    image: nsqio/nsq
+    command: /nsqd --lookupd-tcp-address=nsqlookupd:4160
+    depends_on:
+      - nsqlookupd
+    ports:
+      - "4150"
+      - "4151"
+  nsqadmin:
+    image: nsqio/nsq
+    command: /nsqadmin --lookupd-http-address=nsqlookupd:4161
+    depends_on:
+      - nsqlookupd
+    ports:
+      - "4171"

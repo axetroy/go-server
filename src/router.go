@@ -10,6 +10,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/message"
 	"github.com/axetroy/go-server/src/controller/news"
 	"github.com/axetroy/go-server/src/controller/notification"
+	"github.com/axetroy/go-server/src/controller/oauth2"
 	"github.com/axetroy/go-server/src/controller/resource"
 	"github.com/axetroy/go-server/src/controller/static"
 	"github.com/axetroy/go-server/src/controller/transfer"
@@ -117,6 +118,13 @@ func init() {
 			authRouter.POST("/signin", auth.SignInRouter)
 			authRouter.POST("/activation", auth.ActivationRouter)
 			authRouter.PUT("/password/reset", auth.ResetPasswordRouter)
+
+		}
+
+		oauthRouter := v1.Group("/oauth2")
+		{
+			oauthRouter.GET("/google", oauth2.GoogleLoginRouter)
+			oauthRouter.GET("/google_callback", oauth2.GoogleCallbackRouter)
 		}
 
 		// 用户类

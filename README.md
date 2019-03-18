@@ -41,7 +41,7 @@
   - oAuth2 第三方登陆
     - [ ] 微信
     - [ ] QQ
-    - [ ] Google
+    - [x] Google
     - [ ] Github
 
 - [x] 钱包类
