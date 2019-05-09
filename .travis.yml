@@ -4,7 +4,7 @@ sudo: required
 
 go:
   - "1.11.2"
-  - "1.12"
+  - "1.12.5"
 
 dist: trusty
 
