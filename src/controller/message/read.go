@@ -74,10 +74,12 @@ func MarkRead(context controller.Context, id string) (res schema.Response) {
 
 	now := time.Now()
 
-	tx.Model(&MessageInfo).UpdateColumn(model.Message{
+	if err = tx.Model(&MessageInfo).UpdateColumn(model.Message{
 		Read:   true,
 		ReadAt: &now,
-	})
+	}).Error; err != nil {
+		return
+	}
 
 	return
 }

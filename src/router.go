@@ -1,6 +1,7 @@
 package src
 
 import (
+	"github.com/axetroy/go-server/src/controller/address"
 	"github.com/axetroy/go-server/src/controller/admin"
 	"github.com/axetroy/go-server/src/controller/auth"
 	"github.com/axetroy/go-server/src/controller/downloader"
@@ -145,6 +146,14 @@ func init() {
 			{
 				inviteRouter.GET("/detail/:invite_id", invite.GetRouter) // 获取单条邀请记录详情
 				inviteRouter.GET("/list", invite.GetListRouter)          // 获取我已邀请的列表
+			}
+			// 收货地址
+			addressRouter := userRouter.Group("/address")
+			{
+				addressRouter.POST("/create", address.CreateRouter)               // 添加收货地址
+				addressRouter.PUT("/update/:address_id", address.CreateRouter)    // 更新收货地址
+				addressRouter.DELETE("/delete/:address_id", address.CreateRouter) // 删除收货地址
+				addressRouter.GET("/detail/:address_id", address.CreateRouter)    // 获取地址详情
 			}
 		}
 

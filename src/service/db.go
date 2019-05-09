@@ -54,6 +54,8 @@ func init() {
 
 	db.LogMode(true)
 
+	// TODO: 根据环境变量决定是否同步数据库
+
 	// Migrate the schema
 	db.AutoMigrate(
 		new(model.Admin),     // 管理员表
@@ -73,6 +75,7 @@ func init() {
 		new(model.Notification),     // 系统消息
 		new(model.NotificationMark), // 系统消息的已读记录
 		new(model.Message),          // 个人消息
+		new(model.Address),          // 收货地址
 	)
 
 	Db = db
