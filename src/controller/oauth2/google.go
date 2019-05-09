@@ -42,7 +42,8 @@ const oauthStateString = "go-server"
 
 // 调用谷歌登陆，然后重定向到谷歌认证页面
 func GoogleLoginRouter(context *gin.Context) {
-	url := GetGoogleOAuthConfig().AuthCodeURL(oauthStateString)
+	c := GetGoogleOAuthConfig()
+	url := c.AuthCodeURL(oauthStateString)
 	context.Redirect(http.StatusTemporaryRedirect, url)
 }
 
@@ -79,7 +80,9 @@ func GoogleCallbackRouter(context *gin.Context) {
 		return
 	}
 
-	token, err := GetGoogleOAuthConfig().Exchange(oauth2.NoContext, query.Code)
+	c := GetGoogleOAuthConfig()
+
+	token, err := c.Exchange(oauth2.NoContext, query.Code)
 
 	if err != nil {
 		res := fmt.Sprintf("code exchange failed with '%s'\n", err)
@@ -90,10 +93,21 @@ func GoogleCallbackRouter(context *gin.Context) {
 	// 在中国有防火墙，访问不了Google
 	response, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
 
+	if err != nil {
+		context.String(http.StatusBadRequest, err.Error())
+		return
+	}
+
 	defer func() {
 		_ = response.Body.Close()
 	}()
+
 	contents, err := ioutil.ReadAll(response.Body)
+
+	if err != nil {
+		context.String(http.StatusBadRequest, err.Error())
+		return
+	}
 
 	res := &GoogleAuthResponse{}
 
