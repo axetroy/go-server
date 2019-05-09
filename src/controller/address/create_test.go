@@ -55,12 +55,12 @@ func TestCreate(t *testing.T) {
 	// 添加一个合法的地址
 	{
 		var (
-			Name               = "test"
-			Phone              = "13888888888"
-			ProvinceCode int32 = 100000
-			CityCode     int32 = 101000
-			AreaCode     int32 = 101010
-			Address            = "中关村28号526"
+			Name         = "test"
+			Phone        = "13888888888"
+			ProvinceCode = "100000"
+			CityCode     = "101000"
+			AreaCode     = "101010"
+			Address      = "中关村28号526"
 		)
 
 		r := address.Create(controller.Context{
@@ -142,9 +142,9 @@ func TestCreateRouter(t *testing.T) {
 	body, _ := json.Marshal(&address.CreateAddressParams{
 		Name:         "张三",
 		Phone:        "18888888888",
-		ProvinceCode: 100000,
-		CityCode:     101000,
-		AreaCode:     101010,
+		ProvinceCode: "100000",
+		CityCode:     "101000",
+		AreaCode:     "101010",
 		Address:      "中关村28号526",
 	})
 
