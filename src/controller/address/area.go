@@ -1,0 +1,81 @@
+package address
+
+import (
+	"errors"
+	"github.com/axetroy/go-server/src/controller"
+	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/schema"
+	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
+	"net/http"
+)
+
+type AreaListResponse struct {
+	Province map[string]string `json:"province"`
+	City     map[string]string `json:"city"`
+	Area     map[string]string `json:"area"`
+}
+
+func AreaList(context controller.Context) (res schema.Response) {
+	var (
+		err  error
+		data AreaListResponse
+		tx   *gorm.DB
+	)
+
+	defer func() {
+		if r := recover(); r != nil {
+			switch t := r.(type) {
+			case string:
+				err = errors.New(t)
+			case error:
+				err = t
+			default:
+				err = exception.Unknown
+			}
+		}
+
+		if tx != nil {
+			if err != nil {
+				_ = tx.Rollback().Error
+			} else {
+				err = tx.Commit().Error
+			}
+		}
+
+		if err != nil {
+			res.Data = nil
+			res.Message = err.Error()
+		} else {
+			res.Data = data
+			res.Status = schema.StatusSuccess
+		}
+	}()
+
+	data = AreaListResponse{
+		Province: ProvinceCode,
+		City:     CityCode,
+		Area:     CountryCode,
+	}
+
+	return
+}
+
+func AreaListRouter(context *gin.Context) {
+	var (
+		err error
+		res = schema.Response{}
+	)
+
+	defer func() {
+		if err != nil {
+			res.Data = nil
+			res.Message = err.Error()
+		}
+		context.JSON(http.StatusOK, res)
+	}()
+
+	res = AreaList(controller.Context{
+		Uid: context.GetString("uid"),
+	})
+}

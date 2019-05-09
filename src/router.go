@@ -228,6 +228,7 @@ func init() {
 			v1.GET("/public/:filename", static.Get)
 			v1.GET("/avatar/:filename", user.GetAvatarRouter) // 获取用户头像
 
+			v1.GET("/area", address.AreaListRouter) // 获取地址选择列表
 		}
 	}
 

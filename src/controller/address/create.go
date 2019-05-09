@@ -16,13 +16,13 @@ import (
 )
 
 type CreateAddressParams struct {
-	Name         string `json:"name" valid:"required~请填写收货人"`                                  // 收货人
-	Phone        string `json:"phone" valid:"required~请输入收货人电话号码,int~请输入合法的手机号,length(11)"`    // 收货人手机号
-	ProvinceCode string `json:"province_code" valid:"required~请选择省份,int~请输入合法的省份代码,length(6)"` // 省份代码
-	CityCode     string `json:"city_code" valid:"required~请选择城市,int~请输入合法的城市代码,length(6)"`     // 城市代码
-	AreaCode     string `json:"area_code" valid:"required~请选择区域"`                              // 区域代码
-	Address      string `json:"address" valid:"required~请输入详细地址"`                              // 详细的地址
-	IsDefault    *bool  `json:"is_default"`                                                    // 是否是默认地址
+	Name         string `json:"name" valid:"required~请填写收货人"`         // 收货人
+	Phone        string `json:"phone" valid:"required~请输入收货人电话号码"`    // 收货人手机号
+	ProvinceCode string `json:"province_code" valid:"required~请选择省份"` // 省份代码
+	CityCode     string `json:"city_code" valid:"required~请选择城市"`     // 城市代码
+	AreaCode     string `json:"area_code" valid:"required~请选择区域"`     // 区域代码
+	Address      string `json:"address" valid:"required~请输入详细地址"`     // 详细的地址
+	IsDefault    *bool  `json:"is_default"`                           // 是否是默认地址
 }
 
 func Create(context controller.Context, input CreateAddressParams) (res schema.Response) {
