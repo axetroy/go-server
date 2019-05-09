@@ -21,7 +21,7 @@ import (
 )
 
 type ImageResponse struct {
-	FileResponse
+	schema.FileResponse
 	Thumbnail bool `json:"thumbnail"` // 是否拥有缩略图
 }
 
@@ -71,7 +71,7 @@ func Image(context *gin.Context) {
 	}()
 
 	// Source
-	if file, err = context.FormFile(FIELD); err != nil {
+	if file, err = context.FormFile("file"); err != nil {
 		return
 	}
 
@@ -138,7 +138,7 @@ func Image(context *gin.Context) {
 	}
 
 	data = &ImageResponse{
-		FileResponse: FileResponse{
+		FileResponse: schema.FileResponse{
 			Hash:     md5string,
 			Filename: fileName,
 			Origin:   file.Filename,

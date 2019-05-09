@@ -32,7 +32,7 @@ type User struct {
 	Email         *string    `gorm:"null;type:varchar(36);index" json:"email"`                     // 邮箱
 	Status        UserStatus `gorm:"not null" json:"status"`                                       // 状态
 	Role          string     `gorm:"not null;type:varchar(36)" json:"role"`                        // 角色
-	Avatar        string     `gorm:"not null;type:varchar(36)" json:"avatar"`                      // 头像
+	Avatar        string     `gorm:"not null;type:varchar(128)" json:"avatar"`                     // 头像
 	Level         int32      `gorm:"default(1)" json:"level"`                                      // 用户等级
 	Gender        Gender     `gorm:"default(0)" json:"gender"`                                     // 性别
 	EnableTOTP    bool       `gorm:"not null;" json:"enable_totp"`                                 // 是否启用双重身份认证

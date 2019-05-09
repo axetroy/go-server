@@ -14,9 +14,10 @@ type FileConfig struct {
 }
 
 type ImageConfig struct {
-	Path      string `valid:"required,length(1|20)" json:"path"` // 图片存储路径
-	MaxSize   int    `valid:"required" json:"max_size"`          // 最大图片上传限制，单位byte
-	Thumbnail ThumbnailConfig
+	Path      string          `valid:"required,length(1|20)" json:"path"` // 图片存储路径
+	MaxSize   int             `valid:"required" json:"max_size"`          // 最大图片上传限制，单位byte
+	Thumbnail ThumbnailConfig // 缩略图配置
+	Avatar    AvatarConfig    // 用户头像的配置
 }
 
 type ThumbnailConfig struct {
@@ -25,10 +26,14 @@ type ThumbnailConfig struct {
 	MaxHeight int    `valid:"required" json:"max_height"`        // 缩略图最大高度
 }
 
+type AvatarConfig struct {
+	Path string // 头像存储的路径
+}
+
 type TConfig struct {
-	Path  string `valid:"required,length(1|20)"` //文件上传的根目录
-	File  FileConfig
-	Image ImageConfig
+	Path  string      `valid:"required,length(1|20)"` //文件上传的根目录
+	File  FileConfig  // 普通文件上传的配置
+	Image ImageConfig // 普通图片上传的配置
 }
 
 var Config = TConfig{
@@ -44,6 +49,9 @@ var Config = TConfig{
 			Path:      "thumbnail",
 			MaxWidth:  60,
 			MaxHeight: 60,
+		},
+		Avatar: AvatarConfig{
+			Path: "avatar",
 		},
 	},
 }
@@ -78,6 +86,10 @@ func init() {
 	}
 
 	if err = fs.EnsureDir(path.Join(Config.Path, Config.Image.Thumbnail.Path)); err != nil {
+		return
+	}
+
+	if err = fs.EnsureDir(path.Join(Config.Path, Config.Image.Avatar.Path)); err != nil {
 		return
 	}
 

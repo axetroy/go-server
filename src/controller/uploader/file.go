@@ -14,15 +14,6 @@ import (
 	"path"
 )
 
-const FIELD = "file"
-
-type FileResponse struct {
-	Hash     string `json:"hash"`
-	Filename string `json:"filename"`
-	Origin   string `json:"origin"`
-	Size     int64  `json:"size"`
-}
-
 func File(context *gin.Context) {
 	var (
 		isSupportFile bool
@@ -33,7 +24,7 @@ func File(context *gin.Context) {
 		file          *multipart.FileHeader
 		src           multipart.File
 		dist          *os.File
-		data          *FileResponse
+		data          *schema.FileResponse
 	)
 
 	defer func() {
@@ -69,7 +60,7 @@ func File(context *gin.Context) {
 	}()
 
 	// Source
-	if file, err = context.FormFile(FIELD); err != nil {
+	if file, err = context.FormFile("file"); err != nil {
 		return
 	}
 
@@ -136,7 +127,7 @@ func File(context *gin.Context) {
 		return
 	}
 
-	data = &FileResponse{
+	data = &schema.FileResponse{
 		Hash:     md5string,
 		Filename: fileName,
 		Origin:   file.Filename,

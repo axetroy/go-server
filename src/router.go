@@ -139,8 +139,7 @@ func init() {
 			userRouter.PUT("/trade_password/update", user.UpdatePayPasswordRouter)            // 更新交易密码
 			userRouter.PUT("/trade_password/reset", user.ResetPayPasswordRouter)              // 重置交易密码
 			userRouter.POST("/trade_password/reset_request", user.SendResetPayPasswordRouter) // 发送重置交易密码的邮件/短信
-			// TODO: 上传头像
-			userRouter.POST("/avatar", user.UpdatePayPasswordRouter)
+			userRouter.POST("/avatar", user.UploadAvatarRouter)                               // 上传用户头像
 			// 邀请人列表
 			inviteRouter := userRouter.Group("/invite")
 			{
@@ -218,6 +217,8 @@ func init() {
 			v1.GET("/download/thumbnail/:filename", downloader.Thumbnail)
 			// 公共资源目录
 			v1.GET("/public/:filename", static.Get)
+			v1.GET("/avatar/:filename", user.GetAvatarRouter) // 获取用户头像
+
 		}
 	}
 
