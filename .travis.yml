@@ -34,7 +34,7 @@ before_script:
   # start postgres
   - psql -c 'create database gotest;' -U postgres
 
-  - go get -t -v ./...
+  - go get -v ./...
 
 script:
   - make test
