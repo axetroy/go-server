@@ -18,6 +18,7 @@ env:
     - DB_USERNAME=postgres
     - DB_PASSWORD=postgres
     - DB_PORT=5432
+    - GO111MODULE=on # enable Golang modules
 
 services:
   - postgresql

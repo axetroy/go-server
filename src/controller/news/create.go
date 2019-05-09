@@ -1,6 +1,7 @@
 package news
 
 import (
+	"errors"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/model"
@@ -8,7 +9,6 @@ import (
 	"github.com/axetroy/go-server/src/service"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"github.com/kataras/iris/core/errors"
 	"github.com/mitchellh/mapstructure"
 	"net/http"
 	"time"
