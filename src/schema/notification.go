@@ -5,8 +5,8 @@ type NotificationPure struct {
 	Author  string  `json:"author"`
 	Tittle  string  `json:"tittle"`
 	Content string  `json:"content"`
-	Read    bool    `json:"read"` // 用户是否已读
-	ReadAt  string  `json:"read"` // 用户读取的时间
+	Read    bool    `json:"read"`    // 用户是否已读
+	ReadAt  string  `json:"read_at"` // 用户读取的时间
 	Note    *string `json:"note"`
 }
 

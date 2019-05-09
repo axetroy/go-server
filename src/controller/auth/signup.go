@@ -19,6 +19,7 @@ type SignUpParams struct {
 	Email      *string `json:"email"`
 	Phone      *string `json:"phone"`
 	Password   string  `json:"password"`
+	Captche    *string `json:"captche"`     // 图片验证码, 手机注册则不用
 	MCode      *string `json:"mcode"`       // 手机验证码
 	InviteCode *string `json:"invite_code"` // 邀请码
 }
@@ -81,6 +82,12 @@ func SignUp(input SignUpParams) (res schema.Response) {
 
 		// TODO: 验证短信验证码是否正确
 		// 因为现在没有引入短信服务, 所以暂时没有这一块的功能
+	} else {
+		if input.Captche == nil {
+			err = errors.New("请输入图片验证码")
+			return
+		}
+		// TODO: 验证图片验证码
 	}
 
 	tx = service.Db.Begin()
