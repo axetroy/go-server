@@ -4,7 +4,7 @@ require (
 	cloud.google.com/go v0.38.0 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a
 	github.com/axetroy/go-fs v1.0.0
-	github.com/axetroy/mocker v0.0.0-20181204151142-d5633d70bd1a
+	github.com/axetroy/mocker v1.0.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.4.0
 	github.com/go-redis/redis v6.15.2+incompatible
