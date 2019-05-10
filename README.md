@@ -510,7 +510,7 @@
 
 </details>
 
-### 文件下载
+### 上传类
 
 <details><summary>上传文件<code>[POST] /v1//upload/file</code></summary>
 <p>
@@ -538,6 +538,8 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 </details>
 
+### 下载类
+
 <details><summary>下载文件<code>[GET] /v1/download/file/:filename</code></summary>
 <p>
 
@@ -547,19 +549,48 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 </details>
 
-<details><summary>获取图片<code>[GET] /v1/download/image/:filename</code></summary>
+<details><summary>下载图片<code>[GET] /v1/download/image/:filename</code></summary>
 <p>
 
-获取图片, `filename` 为上传时返回的字段
+下载图片, `filename` 为上传时返回的字段
 
 </p>
 
 </details>
 
-<details><summary>获取缩略图<code>[GET] /v1/download/thumbnail/:filename</code></summary>
+<details><summary>下载缩略图<code>[GET] /v1/download/thumbnail/:filename</code></summary>
 <p>
 
-获取缩略图, `filename` 为上传时返回的字段
+下载缩略图, `filename` 为上传时返回的字段
+
+</p>
+
+</details>
+
+### 资源类
+
+<details><summary>获取上传文件的纯文本<code>[GET] /v1/resource/file/:filename</code></summary>
+<p>
+
+获取上传文件的纯文本, `filename` 为上传时返回的字段
+
+</p>
+
+</details>
+
+<details><summary>获取上传的图片<code>[GET] /v1/resource/image/:filename</code></summary>
+<p>
+
+获取上传的图片, `filename` 为上传时返回的字段
+
+</p>
+
+</details>
+
+<details><summary>获取上传的缩略图<code>[GET] /v1/resource/thumbnail/:filename</code></summary>
+<p>
+
+获取上传的缩略图, `filename` 为上传时返回的字段
 
 </p>
 
