@@ -2,7 +2,10 @@ package admin_test
 
 import (
 	"github.com/axetroy/go-server/src/controller/admin"
+	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
+	"github.com/axetroy/go-server/src/service"
+	"github.com/jinzhu/gorm"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -26,6 +29,13 @@ func TestDeleteAdminByAccount(t *testing.T) {
 	}
 
 	{
-		// TODO: 获取管理员信息
+		// 获取管理员信息
+		adminInfo := model.Admin{
+			Username: "admin123",
+		}
+
+		err := service.Db.Where(&adminInfo).First(&adminInfo).Error
+
+		assert.Equal(t, gorm.ErrRecordNotFound.Error(), err.Error())
 	}
 }
