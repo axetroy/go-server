@@ -138,15 +138,15 @@ func init() {
 		userRouter := v1.Group("/user")
 		{
 			userRouter.Use(userAuthMiddleware)
-			userRouter.GET("/signout", user.SignOut)                                          // 用户登出
-			userRouter.GET("/profile", user.GetProfileRouter)                                 // 获取用户详细信息
-			userRouter.PUT("/profile", user.UpdateProfileRouter)                              // 更新用户资料
-			userRouter.PUT("/password/update", user.UpdatePasswordRouter)                     // 更新登陆密码
-			userRouter.PUT("/trade_password/set", user.SetPayPasswordRouter)                  // 设置交易密码
-			userRouter.PUT("/trade_password/update", user.UpdatePayPasswordRouter)            // 更新交易密码
-			userRouter.PUT("/trade_password/reset", user.ResetPayPasswordRouter)              // 重置交易密码
-			userRouter.POST("/trade_password/reset_request", user.SendResetPayPasswordRouter) // 发送重置交易密码的邮件/短信
-			userRouter.POST("/avatar", user.UploadAvatarRouter)                               // 上传用户头像
+			userRouter.GET("/signout", user.SignOut)                             // 用户登出
+			userRouter.GET("/profile", user.GetProfileRouter)                    // 获取用户详细信息
+			userRouter.PUT("/profile", user.UpdateProfileRouter)                 // 更新用户资料
+			userRouter.PUT("/password", user.UpdatePasswordRouter)               // 更新登陆密码
+			userRouter.POST("/password2", user.SetPayPasswordRouter)             // 设置交易密码
+			userRouter.PUT("/password2", user.UpdatePayPasswordRouter)           // 更新交易密码
+			userRouter.PUT("/password2/reset", user.ResetPayPasswordRouter)      // 重置交易密码
+			userRouter.POST("/password2/reset", user.SendResetPayPasswordRouter) // 发送重置交易密码的邮件/短信
+			userRouter.POST("/avatar", user.UploadAvatarRouter)                  // 上传用户头像
 			// 邀请人列表
 			inviteRouter := userRouter.Group("/invite")
 			{
