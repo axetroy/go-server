@@ -139,6 +139,17 @@
 
 </details>
 
+### oAuth2
+
+<details><summary>Google 登陆 <code>[GET] /v1/oauth2/google</code></summary>
+<p>
+
+前端跳转到这个 URL 进行 Google 授权登陆
+
+</p>
+
+</details>
+
 ### 用户类
 
 <details><summary>获取用户信息<code>[GET] /v1/user/profile</code></summary>
