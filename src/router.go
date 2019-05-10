@@ -101,13 +101,15 @@ func init() {
 			notificationRouter := adminRouter.Group("/notification")
 			{
 				notificationRouter.POST("/create", notification.CreateRouter)
-				notificationRouter.POST("/update/:id", notification.UpdateRouter)
+				notificationRouter.PUT("/update/:id", notification.UpdateRouter)
+				notificationRouter.DELETE("/delete/:id", notification.UpdateRouter) // TODO: 删除系统消息
 			}
 
 			// 个人消息
 			messageRouter := adminRouter.Group("/message")
 			{
 				messageRouter.POST("/create", message.CreateRouter)
+				messageRouter.DELETE("/delete/:message_id", message.CreateRouter) // TODO: 删除个人消息
 			}
 
 			// Banner
@@ -208,6 +210,7 @@ func init() {
 			messageRouter.GET("/list", message.GetListRouter)
 			messageRouter.GET("/detail/:id", message.GetRouter)
 			messageRouter.GET("/read/:id", message.ReadRouter)
+			messageRouter.DELETE("/delete/:id", message.ReadRouter) // TODO: 个人删除通知
 		}
 
 		// 通用类
