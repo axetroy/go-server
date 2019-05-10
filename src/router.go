@@ -188,7 +188,6 @@ func init() {
 		// 新闻咨询类
 		newsRouter := v1.Group("/news")
 		{
-			newsRouter.Use(userAuthMiddleware)
 			newsRouter.GET("/list", news.GetListRouter)
 			newsRouter.GET("/detail/:id", news.GetNewsRouter)
 		}

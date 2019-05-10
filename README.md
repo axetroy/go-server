@@ -82,7 +82,7 @@
 - [ ] 提供 RPC 接口
 - [ ] 数据库动态分表
 
-## 接口
+## 用户接口
 
 ### 验证类
 
@@ -375,6 +375,192 @@
 <p>
 
 获取某一条转账记录的详情
+
+</p>
+
+</details>
+
+### 财务类
+
+<details><summary>财务日志<code>[GET] /v1/finance/history</code></summary>
+<p>
+
+获取财务日志
+
+</p>
+
+</details>
+
+### 系统通知类
+
+<details><summary>系统通知列表<code>[GET] /v1/notification/list</code></summary>
+<p>
+
+获取系统通知列表
+
+</p>
+
+</details>
+
+<details><summary>系统通知详情<code>[GET] /v1/notification/detail/:notification_id</code></summary>
+<p>
+
+获取某个系统通知详情
+
+</p>
+
+</details>
+
+<details><summary>标记系统通知已读<code>[GET] /v1/notification/read/:notification_id</code></summary>
+<p>
+
+标记系统通知为已读
+
+</p>
+
+</details>
+
+### 个人消息
+
+<details><summary>个人消息列表<code>[GET] /v1/message/list</code></summary>
+<p>
+
+获取个人列表
+
+</p>
+
+</details>
+
+<details><summary>个人消息详情<code>[GET] /v1/message/detail/:message_id</code></summary>
+<p>
+
+获取某个系统通知详情
+
+</p>
+
+</details>
+
+<details><summary>标记个人消息已读<code>[GET] /v1/message/read/:message_id</code></summary>
+<p>
+
+标记个人消息为已读
+
+</p>
+
+</details>
+
+### 新闻资讯类
+
+<details><summary>资讯列表<code>[GET] /v1/news/list</code></summary>
+<p>
+
+获取资讯列表
+
+</p>
+
+</details>
+
+<details><summary>资讯详情<code>[GET] /v1/news/detail/:news_id</code></summary>
+<p>
+
+获取某个资讯详情
+
+</p>
+
+</details>
+
+### 邮件服务
+
+> 要使用邮件服务，需要在 `.env` 文件中配置 SMTP 服务
+
+<details><summary>发送账号激活邮件<code>[POST] /v1//email/send/activation</code></summary>
+<p>
+
+发送账号激活邮件
+
+| 参数 | 说明             | 必选 |
+| ---- | ---------------- | ---- |
+| to   | 要激活的账号邮箱 | *    |
+
+</p>
+
+</details>
+
+<details><summary>发送登陆密码重置邮件<code>[POST] /v1//email/send/reset_password</code></summary>
+<p>
+
+发送账号激活邮件
+
+| 参数 | 说明             | 必选 |
+| ---- | ---------------- | ---- |
+| to   | 要激活的账号邮箱 | *    |
+
+</p>
+
+</details>
+
+### 文件下载
+
+<details><summary>上传文件<code>[POST] /v1//upload/file</code></summary>
+<p>
+
+Form 表单文件上传, 目前仅支持单个文件上传
+
+| 参数 | 说明         | 必选 |
+| ---- | ------------ | ---- |
+| file | 要上传的文件 | *    |
+
+</p>
+
+</details>
+
+<details><summary>上传图片<code>[POST] /v1//upload/image</code></summary>
+<p>
+
+Form 表单图片上传, 目前仅支持单张图片上传
+
+| 参数 | 说明         | 必选 |
+| ---- | ------------ | ---- |
+| file | 要上传的图片 | *    |
+
+</p>
+
+</details>
+
+<details><summary>下载文件<code>[GET] /v1/download/file/:filename</code></summary>
+<p>
+
+下载文件, `filename` 为上传时返回的字段
+
+</p>
+
+</details>
+
+<details><summary>下载图片<code>[GET] /v1/download/image/:filename</code></summary>
+<p>
+
+下载图片, `filename` 为上传时返回的字段
+
+</p>
+
+</details>
+
+<details><summary>下载缩略图<code>[GET] /v1/download/thumbnail/:filename</code></summary>
+<p>
+
+下载图片, `filename` 为上传时返回的字段
+
+</p>
+
+</details>
+
+### 静态文件服务
+
+<details><summary>静态文件<code>[GET] /v1/public/:filename</code></summary>
+
+<p>
+
+在 `public` 目录下的静态文件服务
 
 </p>
 
