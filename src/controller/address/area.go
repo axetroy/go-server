@@ -2,7 +2,6 @@ package address
 
 import (
 	"errors"
-	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/gin-gonic/gin"
@@ -16,7 +15,7 @@ type AreaListResponse struct {
 	Area     map[string]string `json:"area"`
 }
 
-func AreaList(context controller.Context) (res schema.Response) {
+func AreaList() (res schema.Response) {
 	var (
 		err  error
 		data AreaListResponse
@@ -75,7 +74,5 @@ func AreaListRouter(context *gin.Context) {
 		context.JSON(http.StatusOK, res)
 	}()
 
-	res = AreaList(controller.Context{
-		Uid: context.GetString("uid"),
-	})
+	res = AreaList()
 }
