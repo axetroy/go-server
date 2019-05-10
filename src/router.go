@@ -114,6 +114,7 @@ func init() {
 			bannerRouter := adminRouter.Group("banner")
 			{
 				bannerRouter.POST("/create", banner.CreateRouter)
+				bannerRouter.PUT("/update/:banner_id", banner.UpdateRouter)
 			}
 		}
 

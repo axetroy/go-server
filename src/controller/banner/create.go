@@ -16,13 +16,13 @@ import (
 )
 
 type CreateParams struct {
-	Image       string               `json:"image" valid:"required~请填写收货人"`    // 图片 URL
-	Href        string               `json:"href" valid:"required~请填写收货人"`     // 图片跳转的 URL
-	Platform    model.BannerPlatform `json:"platform" valid:"required~请填写收货人"` // 用于哪个平台, web/app
-	Description *string              `json:"description"`                      // Banner 描述
-	Priority    *int                 `json:"priority"`                         // 优先级，用于排序
-	Identifier  *string              `json:"identifier"`                       // APP 跳转标识符
-	FallbackUrl *string              `json:"fallback_url"`                     // APP 跳转标识符的备选方案
+	Image       string               `json:"image" valid:"required~请填写图片URL"` // 图片 URL
+	Href        string               `json:"href" valid:"required~请填写图片跳转链接"` // 图片跳转的 URL
+	Platform    model.BannerPlatform `json:"platform" valid:"required~请选择平台"` // 用于哪个平台, web/app
+	Description *string              `json:"description"`                     // Banner 描述
+	Priority    *int                 `json:"priority"`                        // 优先级，用于排序
+	Identifier  *string              `json:"identifier"`                      // APP 跳转标识符
+	FallbackUrl *string              `json:"fallback_url"`                    // APP 跳转标识符的备选方案
 }
 
 func Create(context controller.Context, input CreateParams) (res schema.Response) {

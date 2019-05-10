@@ -112,9 +112,7 @@ func TestCreate(t *testing.T) {
 
 			assert.Nil(t, tester.Decode(r.Data, &profile))
 
-			defer func() {
-				auth.DeleteUserByUserName(username)
-			}()
+			defer auth.DeleteUserByUserName(username)
 
 			uid = profile.Id
 		}
