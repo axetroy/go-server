@@ -44,7 +44,7 @@ func init() {
 
 	DataSourceName := fmt.Sprintf("%s://%s:%s@localhost:%s/%s?sslmode=disable", driverName, dbUsername, dbPassword, dbPort, dbName)
 
-	fmt.Println("正在同步数据库...")
+	fmt.Println("正在连接数据库...")
 
 	db, err := gorm.Open(driverName, DataSourceName)
 
@@ -55,6 +55,8 @@ func init() {
 	db.LogMode(true)
 
 	// TODO: 根据环境变量决定是否同步数据库
+
+	fmt.Println("正在同步数据库...")
 
 	// Migrate the schema
 	db.AutoMigrate(
@@ -77,6 +79,8 @@ func init() {
 		new(model.Message),          // 个人消息
 		new(model.Address),          // 收货地址
 	)
+
+	fmt.Println("数据库同步完成.")
 
 	Db = db
 }
