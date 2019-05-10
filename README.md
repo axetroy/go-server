@@ -420,7 +420,7 @@
 
 </details>
 
-### 个人消息
+### 个人消息类
 
 <details><summary>个人消息列表<code>[GET] /v1/message/list</code></summary>
 <p>
@@ -561,6 +561,131 @@ Form 表单图片上传, 目前仅支持单张图片上传
 <p>
 
 在 `public` 目录下的静态文件服务
+
+</p>
+
+</details>
+
+## 管理员接口
+
+### 用户类
+
+<details><summary>登陆<code>[POST] /v1/admin/login</code></summary>
+
+<p>
+
+| 参数     | 说明       | 必选 |
+| -------- | ---------- | ---- |
+| username | 管理员账号 | *    |
+| password | 账号密码   | *    |
+
+</p>
+
+</details>
+
+<details><summary>获取管理员信息<code>[GET] /v1/admin/profile</code></summary>
+
+
+<p>
+
+获取管理员的个人信息
+
+</p>
+
+</details>
+
+
+### 管理员类
+
+<details><summary>创建管理员<code>[POST] /v1/admin/create</code></summary>
+
+仅限于超级管理员
+
+<p>
+
+| 参数     | 说明                       | 必选 |
+| -------- | -------------------------- | ---- |
+| account  | 管理员账号                 | *    |
+| password | 账号密码                   | *    |
+| name     | 管理员名称，注册后不可修改 | *    |
+
+</p>
+
+</details>
+
+### 新闻资讯类
+
+<details><summary>添加新闻资讯<code>[POST] /v1/admin/news/create</code></summary>
+
+<p>
+
+| 参数    | 说明                                                          | 必选 |
+| ------- | ------------------------------------------------------------- | ---- |
+| title   | 资讯标题                                                      | *    |
+| content | 资讯内容                                                      | *    |
+| type    | 资讯的类型, 取值 `news`(新闻资讯) or `announcement`(官方公告) | *    |
+| tags    | 资讯标签，字符串数组                                          |      |
+
+</p>
+
+</details>
+
+<details><summary>更新新闻资讯<code>[PUT] /v1/admin/news/update/:news_id</code></summary>
+
+<p>
+
+| 参数    | 说明                                                          | 必选 |
+| ------- | ------------------------------------------------------------- | ---- |
+| title   | 资讯标题                                                      |      |
+| content | 资讯内容                                                      |      |
+| type    | 资讯的类型, 取值 `news`(新闻资讯) or `announcement`(官方公告) |      |
+| tags    | 资讯标签，字符串数组                                          |      |
+
+</p>
+
+</details>
+
+### 系统通知类
+
+<details><summary>新增系统通知<code>[POST] /v1/admin/notification/create</code></summary>
+
+<p>
+
+| 参数    | 说明     | 必选 |
+| ------- | -------- | ---- |
+| title   | 通知标题 | *    |
+| content | 通知内容 | *    |
+| note    | 备注     |      |
+
+</p>
+
+</details>
+
+<details><summary>修改系统通知<code>[PUT] /v1/admin/notification/update/:notification_id</code></summary>
+
+<p>
+
+| 参数    | 说明     | 必选 |
+| ------- | -------- | ---- |
+| title   | 通知标题 |      |
+| content | 通知内容 |      |
+| note    | 备注     |      |
+
+</p>
+
+</details>
+
+### 个人消息类
+
+<details><summary>新增个人消息<code>[POST] /v1/admin/message/create</code></summary>
+
+<p>
+
+| 参数    | 说明     | 必选 |
+| ------- | -------- | ---- |
+| uid     | 用户ID   |      |
+| title   | 通知标题 |      |
+| content | 通知内容 |      |
 
 </p>
 
