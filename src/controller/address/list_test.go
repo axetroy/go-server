@@ -99,15 +99,15 @@ func TestGetList(t *testing.T) {
 
 		assert.Len(t, addresses, 1)
 
-		assert.Len(t, 1, len(addresses))
+		//assert.Len(t, 1, len(addresses))
 
 		firstAddress := addresses[0]
 
 		assert.Equal(t, "test", firstAddress.Name)
 		assert.Equal(t, "13888888888", firstAddress.Phone)
-		assert.Equal(t, "100000", firstAddress.ProvinceCode)
-		assert.Equal(t, "101000", firstAddress.CityCode)
-		assert.Equal(t, "101010", firstAddress.AreaCode)
+		assert.Equal(t, "110000", firstAddress.ProvinceCode)
+		assert.Equal(t, "110100", firstAddress.CityCode)
+		assert.Equal(t, "110101", firstAddress.AreaCode)
 		assert.Equal(t, "中关村28号526", firstAddress.Address)
 		assert.Equal(t, true, firstAddress.IsDefault)
 	}

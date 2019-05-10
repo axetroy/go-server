@@ -11,7 +11,7 @@ type NewsType string
 type NewsStatus int
 
 const (
-	NewsType_News         NewsType = "news"         // 新闻咨询
+	NewsType_News         NewsType = "news"         // 新闻资讯
 	NewsType_Announcement NewsType = "announcement" // 官方公告
 
 	NewsStatusInActive NewsStatus = -1 // 未启用的状态

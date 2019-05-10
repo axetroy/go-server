@@ -62,9 +62,9 @@ func TestGetDefault(t *testing.T) {
 		var (
 			Name         = "test"
 			Phone        = "13888888888"
-			ProvinceCode = "100000"
-			CityCode     = "101000"
-			AreaCode     = "101010"
+			ProvinceCode = "110000"
+			CityCode     = "110100"
+			AreaCode     = "110101"
 			Address      = "中关村28号526"
 		)
 
@@ -169,9 +169,9 @@ func TestGetDefaultRouter(t *testing.T) {
 		body, _ := json.Marshal(&address.CreateAddressParams{
 			Name:         "张三",
 			Phone:        "18888888888",
-			ProvinceCode: "100000",
-			CityCode:     "101000",
-			AreaCode:     "101010",
+			ProvinceCode: "110000",
+			CityCode:     "110100",
+			AreaCode:     "110101",
 			Address:      "中关村28号526",
 		})
 
