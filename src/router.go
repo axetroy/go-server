@@ -4,6 +4,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/address"
 	"github.com/axetroy/go-server/src/controller/admin"
 	"github.com/axetroy/go-server/src/controller/auth"
+	"github.com/axetroy/go-server/src/controller/banner"
 	"github.com/axetroy/go-server/src/controller/downloader"
 	"github.com/axetroy/go-server/src/controller/email"
 	"github.com/axetroy/go-server/src/controller/finance"
@@ -67,9 +68,7 @@ func init() {
 
 	{
 		v1.GET("", func(context *gin.Context) {
-			context.JSON(http.StatusOK, gin.H{
-				"ping": "pong",
-			})
+			context.JSON(http.StatusOK, gin.H{"ping": "pong"})
 		})
 
 		userAuthMiddleware := middleware.Authenticate(false) // 用户Token的中间件
@@ -109,6 +108,12 @@ func init() {
 			messageRouter := adminRouter.Group("/message")
 			{
 				messageRouter.POST("/create", message.CreateRouter)
+			}
+
+			// Banner
+			bannerRouter := adminRouter.Group("banner")
+			{
+				bannerRouter.POST("/create", banner.CreateRouter)
 			}
 		}
 

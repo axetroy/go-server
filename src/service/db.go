@@ -78,6 +78,7 @@ func init() {
 		new(model.NotificationMark), // 系统消息的已读记录
 		new(model.Message),          // 个人消息
 		new(model.Address),          // 收货地址
+		new(model.Banner),           // Banner 表
 	)
 
 	fmt.Println("数据库同步完成.")
