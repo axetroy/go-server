@@ -6,6 +6,4 @@ import (
 
 func DeleteUserByUserName(username string) {
 	service.DeleteRowByTable("user", "username", username)
-
-	// TODO: 删除用户对应的钱包
 }

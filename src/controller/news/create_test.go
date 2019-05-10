@@ -109,9 +109,7 @@ func TestCreate(t *testing.T) {
 
 			assert.Nil(t, tester.Decode(r.Data, &profile))
 
-			defer func() {
-				auth.DeleteUserByUserName(username)
-			}()
+			defer auth.DeleteUserByUserName(username)
 
 			uid = profile.Id
 		}
@@ -198,9 +196,7 @@ func TestCreateRouter(t *testing.T) {
 
 		assert.Nil(t, tester.Decode(res.Data, &n))
 
-		defer func() {
-			news.DeleteNewsById(n.Id)
-		}()
+		defer news.DeleteNewsById(n.Id)
 
 		assert.Equal(t, adminUid, n.Author)
 		assert.Equal(t, title, n.Tittle)

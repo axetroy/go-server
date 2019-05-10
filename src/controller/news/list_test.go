@@ -84,9 +84,7 @@ func TestGetList(t *testing.T) {
 
 			assert.Nil(t, tester.Decode(r.Data, &n))
 
-			defer func() {
-				news.DeleteNewsById(n.Id)
-			}()
+			defer news.DeleteNewsById(n.Id)
 		}
 
 		// 3. 获取列表
