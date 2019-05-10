@@ -547,19 +547,19 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 </details>
 
-<details><summary>下载图片<code>[GET] /v1/download/image/:filename</code></summary>
+<details><summary>获取图片<code>[GET] /v1/download/image/:filename</code></summary>
 <p>
 
-下载图片, `filename` 为上传时返回的字段
+获取图片, `filename` 为上传时返回的字段
 
 </p>
 
 </details>
 
-<details><summary>下载缩略图<code>[GET] /v1/download/thumbnail/:filename</code></summary>
+<details><summary>获取缩略图<code>[GET] /v1/download/thumbnail/:filename</code></summary>
 <p>
 
-下载图片, `filename` 为上传时返回的字段
+获取缩略图, `filename` 为上传时返回的字段
 
 </p>
 
