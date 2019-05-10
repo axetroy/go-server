@@ -71,6 +71,24 @@ func Create(context controller.Context, input CreateAddressParams) (res schema.R
 		return
 	}
 
+	// 校验 省份代码
+	if _, ok := ProvinceCode[input.ProvinceCode]; !ok {
+		err = exception.AddressInvalidProvinceCode
+		return
+	}
+
+	// 校验 城市代码
+	if _, ok := CityCode[input.CityCode]; !ok {
+		err = exception.AddressInvalidCityCode
+		return
+	}
+
+	// 校验 区域代码
+	if _, ok := CountryCode[input.AreaCode]; !ok {
+		err = exception.AddressInvalidAreaCode
+		return
+	}
+
 	tx = service.Db.Begin()
 
 	userInfo := model.User{

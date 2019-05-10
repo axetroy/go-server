@@ -48,9 +48,9 @@ func TestGetList(t *testing.T) {
 		var (
 			Name         = "test"
 			Phone        = "13888888888"
-			ProvinceCode = "100000"
-			CityCode     = "101000"
-			AreaCode     = "101010"
+			ProvinceCode = "110000"
+			CityCode     = "110100"
+			AreaCode     = "110101"
 			Address      = "中关村28号526"
 		)
 
@@ -98,6 +98,8 @@ func TestGetList(t *testing.T) {
 		assert.Equal(t, int64(1), r.Meta.Total)
 
 		assert.Len(t, addresses, 1)
+
+		assert.Len(t, 1, len(addresses))
 
 		firstAddress := addresses[0]
 

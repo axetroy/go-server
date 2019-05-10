@@ -111,16 +111,35 @@ func Update(context controller.Context, addressId string, input UpdateParams) (r
 	}
 
 	if input.ProvinceCode != nil {
+		// 校验 省份代码
+		if _, ok := ProvinceCode[*input.ProvinceCode]; !ok {
+			err = exception.AddressInvalidProvinceCode
+			return
+		}
+
 		shouldUpdate = true
 		updateModel.ProvinceCode = *input.ProvinceCode
+
 	}
 
 	if input.CityCode != nil {
+		// 校验 城市代码
+		if _, ok := CityCode[*input.CityCode]; !ok {
+			err = exception.AddressInvalidCityCode
+			return
+		}
+
 		shouldUpdate = true
 		updateModel.CityCode = *input.CityCode
 	}
 
 	if input.AreaCode != nil {
+		// 校验 区域代码
+		if _, ok := CountryCode[*input.AreaCode]; !ok {
+			err = exception.AddressInvalidAreaCode
+			return
+		}
+
 		shouldUpdate = true
 		updateModel.AreaCode = *input.AreaCode
 	}
