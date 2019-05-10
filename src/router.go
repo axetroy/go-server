@@ -151,7 +151,7 @@ func init() {
 			addressRouter := userRouter.Group("/address")
 			{
 				addressRouter.POST("/create", address.CreateRouter)               // 添加收货地址
-				addressRouter.PUT("/update/:address_id", address.CreateRouter)    // 更新收货地址
+				addressRouter.PUT("/update/:address_id", address.UpdateRouter)    // 更新收货地址
 				addressRouter.DELETE("/delete/:address_id", address.CreateRouter) // 删除收货地址
 				addressRouter.GET("/detail/:address_id", address.CreateRouter)    // 获取地址详情
 			}

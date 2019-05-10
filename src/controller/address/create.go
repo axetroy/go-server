@@ -30,7 +30,7 @@ func Create(context controller.Context, input CreateAddressParams) (res schema.R
 		err          error
 		data         schema.Address
 		tx           *gorm.DB
-		isDefault    bool = false
+		isDefault    = false
 		isValidInput bool
 	)
 

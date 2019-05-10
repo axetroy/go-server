@@ -1,12 +1,12 @@
 package schema
 
 type Meta struct {
-	Limit    int     `json:"limit"`
-	Page     int     `json:"page"`
-	Total    int64   `json:"total"`
-	Num      int     `json:"num"`
-	Sort     string  `json:"sort"`
-	Platform *string `json:"platform"`
+	Limit    int     `json:"limit"`    // 当前请求获取多少条数据， 默认 10
+	Page     int     `json:"page"`     // 当前第几页，默认 0 开始
+	Total    int64   `json:"total"`    // 数据总量
+	Num      int     `json:"num"`      // 当前返回的数据流
+	Sort     string  `json:"sort"`     // 排序
+	Platform *string `json:"platform"` // 平台
 }
 
 const (
@@ -15,9 +15,9 @@ const (
 )
 
 type Response struct {
-	Message string      `json:"message"`
-	Data    interface{} `json:"data"`
-	Status  int         `json:"status"`
+	Message string      `json:"message"` // 附带的消息，接口请求错误时，一般都会有错误信息
+	Data    interface{} `json:"data"`    // 接口附带的数据
+	Status  int         `json:"status"`  // 状态码，非 0 状态码则为错误
 }
 
 type List struct {
