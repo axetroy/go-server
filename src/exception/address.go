@@ -1,5 +1,6 @@
 package exception
 
 var (
-	AddressNotExist = New("地址记录不存在")
+	AddressDefaultNotExist = New("默认地址不存在")
+	AddressNotExist        = New("地址记录不存在")
 )

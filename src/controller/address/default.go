@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func GetDetail(context controller.Context, id string) (res schema.Response) {
+func GetDefault(context controller.Context) (res schema.Response) {
 	var (
 		err  error
 		data = schema.Address{}
@@ -42,13 +42,13 @@ func GetDetail(context controller.Context, id string) (res schema.Response) {
 	}()
 
 	addressInfo := model.Address{
-		Id:  id,
-		Uid: context.Uid,
+		Uid:       context.Uid,
+		IsDefault: true,
 	}
 
 	if err = service.Db.Model(&addressInfo).Where(&addressInfo).First(&addressInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = exception.AddressNotExist
+			err = exception.AddressDefaultNotExist
 		}
 		return
 	}
@@ -63,7 +63,7 @@ func GetDetail(context controller.Context, id string) (res schema.Response) {
 	return
 }
 
-func GetDetailRouter(context *gin.Context) {
+func GetDefaultRouter(context *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -77,9 +77,7 @@ func GetDetailRouter(context *gin.Context) {
 		context.JSON(http.StatusOK, res)
 	}()
 
-	id := context.Param("address_id")
-
-	res = GetDetail(controller.Context{
+	res = GetDefault(controller.Context{
 		Uid: context.GetString("uid"),
-	}, id)
+	})
 }

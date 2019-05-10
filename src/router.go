@@ -155,7 +155,7 @@ func init() {
 				addressRouter.DELETE("/delete/:address_id", address.CreateRouter) // TODO: 删除收货地址
 				addressRouter.GET("/detail/:address_id", address.GetDetailRouter) // 获取地址详情
 				addressRouter.GET("/list", address.GetListRouter)                 // 获取地址列表
-				addressRouter.GET("/default", address.GetListRouter)              // TODO: 获取默认地址
+				addressRouter.GET("/default", address.GetDefaultRouter)           // 获取默认地址
 			}
 		}
 
