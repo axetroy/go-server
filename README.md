@@ -422,7 +422,7 @@
 
 </details>
 
-<details><summary>标记系统通知已读<code>[GET] /v1/notification/read/:notification_id</code></summary>
+<details><summary>标记系统通知已读<code>[PUT] /v1/notification/read/:notification_id</code></summary>
 <p>
 
 标记系统通知为已读
@@ -451,7 +451,7 @@
 
 </details>
 
-<details><summary>标记个人消息已读<code>[GET] /v1/message/read/:message_id</code></summary>
+<details><summary>标记个人消息已读<code>[PUT] /v1/message/read/:message_id</code></summary>
 <p>
 
 标记个人消息为已读
