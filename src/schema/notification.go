@@ -3,7 +3,7 @@ package schema
 type NotificationPure struct {
 	Id      string  `json:"id"`
 	Author  string  `json:"author"`
-	Tittle  string  `json:"tittle"`
+	Title   string  `json:"title"`
 	Content string  `json:"content"`
 	Read    bool    `json:"read"`    // 用户是否已读
 	ReadAt  string  `json:"read_at"` // 用户读取的时间

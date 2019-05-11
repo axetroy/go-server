@@ -71,7 +71,7 @@ func TestUpdate(t *testing.T) {
 
 		defer notification.DeleteNotificationById(testNotification.Id)
 
-		assert.Equal(t, title, testNotification.Tittle)
+		assert.Equal(t, title, testNotification.Title)
 		assert.Equal(t, content, testNotification.Content)
 	}
 
@@ -84,7 +84,7 @@ func TestUpdate(t *testing.T) {
 		)
 
 		r := notification.Update(context, testNotification.Id, notification.UpdateParams{
-			Tittle:  &newTittle,
+			Title:   &newTittle,
 			Content: &newContent,
 			Note:    &newNote,
 		})
@@ -94,8 +94,8 @@ func TestUpdate(t *testing.T) {
 
 		n := schema.Notification{}
 		assert.Nil(t, tester.Decode(r.Data, &n))
-		assert.Equal(t, n.Tittle, newTittle)
-		assert.Equal(t, n.Content, newContent)
-		assert.Equal(t, *n.Note, newNote)
+		assert.Equal(t, newTittle, n.Title)
+		assert.Equal(t, newContent, n.Content)
+		assert.Equal(t, newNote, *n.Note)
 	}
 }

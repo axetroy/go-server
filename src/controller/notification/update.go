@@ -16,7 +16,7 @@ import (
 )
 
 type UpdateParams struct {
-	Tittle  *string `json:"tittle"`  // 公告标题
+	Title   *string `json:"title"`   // 公告标题
 	Content *string `json:"content"` // 公告内容
 	Note    *string `json:"note"`    // 备注
 }
@@ -90,21 +90,21 @@ func Update(context controller.Context, notificationId string, input UpdateParam
 		return
 	}
 
-	updateMap := map[string]interface{}{}
+	updateModel := model.Notification{}
 
-	if input.Tittle != nil && len(*input.Tittle) != 0 {
-		updateMap["tittle"] = *input.Tittle
+	if input.Title != nil && len(*input.Title) != 0 {
+		updateModel.Title = *input.Title
 	}
 
 	if input.Content != nil && len(*input.Content) != 0 {
-		updateMap["content"] = *input.Content
+		updateModel.Content = *input.Content
 	}
 
 	if input.Note != nil {
-		updateMap["note"] = *input.Note
+		updateModel.Note = input.Note
 	}
 
-	if err = tx.Model(&notificationInfo).Updates(updateMap).Error; err != nil {
+	if err = tx.Model(&notificationInfo).UpdateColumns(&updateModel).Error; err != nil {
 		return
 	}
 

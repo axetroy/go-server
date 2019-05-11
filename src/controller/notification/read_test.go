@@ -76,7 +76,7 @@ func TestMarkRead(t *testing.T) {
 
 		defer notification.DeleteNotificationById(testNotification.Id)
 
-		assert.Equal(t, title, testNotification.Tittle)
+		assert.Equal(t, title, testNotification.Title)
 		assert.Equal(t, content, testNotification.Content)
 	}
 
@@ -148,7 +148,7 @@ func TestMarkRead(t *testing.T) {
 		assert.Nil(t, tester.Decode(r.Data, &n))
 
 		assert.Equal(t, n.Id, testNotification.Id)
-		assert.Equal(t, n.Tittle, testNotification.Tittle)
+		assert.Equal(t, n.Title, testNotification.Title)
 		assert.Equal(t, n.Content, testNotification.Content)
 		assert.Equal(t, false, testNotification.Read)
 	}

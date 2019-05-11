@@ -105,7 +105,7 @@ func TestUpdate(t *testing.T) {
 
 			assert.Nil(t, tester.Decode(r.Data, &newsInfo))
 
-			assert.Equal(t, newTittle, newsInfo.Tittle)
+			assert.Equal(t, newTittle, newsInfo.Title)
 			assert.Equal(t, newContent, newsInfo.Content)
 			assert.Equal(t, newType, newsInfo.Type)
 			assert.Equal(t, newTags, newsInfo.Tags)
@@ -129,7 +129,7 @@ func TestUpdate(t *testing.T) {
 
 			assert.Nil(t, tester.Decode(r2.Data, &newsInfo2))
 
-			assert.Equal(t, newTittle2, newsInfo2.Tittle)
+			assert.Equal(t, newTittle2, newsInfo2.Title)
 			assert.Equal(t, newContent, newsInfo2.Content)
 			assert.Equal(t, newType, newsInfo2.Type)
 			assert.Equal(t, newTags, newsInfo2.Tags)

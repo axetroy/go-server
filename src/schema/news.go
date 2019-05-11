@@ -5,7 +5,7 @@ import "github.com/axetroy/go-server/src/model"
 type NewsPure struct {
 	Id      string           `json:"id"`
 	Author  string           `json:"author"`
-	Tittle  string           `json:"tittle"`
+	Title   string           `json:"title"`
 	Content string           `json:"content"`
 	Type    model.NewsType   `json:"type"`
 	Tags    []string         `json:"tags"`

@@ -84,7 +84,7 @@ func TestCreate(t *testing.T) {
 
 		defer news.DeleteNewsById(n.Id)
 
-		assert.Equal(t, title, n.Tittle)
+		assert.Equal(t, title, n.Title)
 		assert.Equal(t, content, n.Content)
 	}
 
@@ -192,14 +192,14 @@ func TestCreateRouter(t *testing.T) {
 		assert.Equal(t, http.StatusOK, r.Code)
 		assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
 
-		n := schema.Notification{}
+		n := schema.News{}
 
 		assert.Nil(t, tester.Decode(res.Data, &n))
 
 		defer news.DeleteNewsById(n.Id)
 
 		assert.Equal(t, adminUid, n.Author)
-		assert.Equal(t, title, n.Tittle)
+		assert.Equal(t, title, n.Title)
 		assert.Equal(t, content, n.Content)
 	}
 }

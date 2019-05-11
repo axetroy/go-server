@@ -86,7 +86,7 @@ func Update(context controller.Context, newsId string, input UpdateParams) (res 
 
 	if input.Tittle != nil {
 		shouldUpdate = true
-		newsInfo.Tittle = *input.Tittle
+		newsInfo.Title = *input.Tittle
 	}
 
 	if input.Content != nil {

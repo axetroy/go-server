@@ -100,7 +100,7 @@ func TestGetNews(t *testing.T) {
 
 			assert.Nil(t, tester.Decode(r.Data, &newsInfo))
 
-			assert.Equal(t, "test", newsInfo.Tittle)
+			assert.Equal(t, "test", newsInfo.Title)
 			assert.Equal(t, "test", newsInfo.Content)
 			assert.Equal(t, model.NewsType_News, newsInfo.Type)
 		}

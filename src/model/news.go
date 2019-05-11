@@ -34,7 +34,7 @@ func IsValidNewsType(t NewsType) bool {
 type News struct {
 	Id        string         `gorm:"primary_key;unique;not null;index;type:varchar(32)" json:"id"` // 新闻公告类ID
 	Author    string         `gorm:"not null;index;type:varchar(32)" json:"author"`                // 公告的作者ID
-	Tittle    string         `gorm:"not null;index;type:varchar(32)" json:"tittle"`                // 公告标题
+	Title     string         `gorm:"not null;index;type:varchar(32)" json:"title"`                 // 公告标题
 	Content   string         `gorm:"not null;type:text" json:"content"`                            // 公告内容
 	Type      NewsType       `gorm:"not null;type:varchar(32)" json:"type"`                        // 公告类型
 	Tags      pq.StringArray `gorm:"type:varchar(32)[]" json:"tags"`                               // 公告的标签

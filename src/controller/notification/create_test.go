@@ -67,7 +67,7 @@ func TestCreate(t *testing.T) {
 
 		defer notification.DeleteNotificationById(n.Id)
 
-		assert.Equal(t, title, n.Tittle)
+		assert.Equal(t, title, n.Title)
 		assert.Equal(t, content, n.Content)
 	}
 }

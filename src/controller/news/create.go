@@ -84,7 +84,7 @@ func Create(context controller.Context, input CreateNewParams) (res schema.Respo
 
 	NewsInfo := model.News{
 		Author:  context.Uid,
-		Tittle:  input.Title,
+		Title:   input.Title,
 		Content: input.Content,
 		Type:    input.Type,
 		Tags:    input.Tags,

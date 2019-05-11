@@ -77,7 +77,7 @@ func TestDelete(t *testing.T) {
 
 		defer notification.DeleteNotificationById(testNotification.Id)
 
-		assert.Equal(t, title, testNotification.Tittle)
+		assert.Equal(t, title, testNotification.Title)
 		assert.Equal(t, content, testNotification.Content)
 	}
 
@@ -172,7 +172,7 @@ func TestDeleteRouter(t *testing.T) {
 
 		defer notification.DeleteNotificationById(notificationInfo.Id)
 
-		assert.Equal(t, title, notificationInfo.Tittle)
+		assert.Equal(t, title, notificationInfo.Title)
 		assert.Equal(t, content, notificationInfo.Content)
 	}
 
