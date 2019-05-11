@@ -1,8 +1,8 @@
-[![Build Status](https:/travis-ci.com/axetroy/go-server.svg?token=QMG6TLRNwECnaTsy6ssj&branch=master)](https:/travis-ci.com/axetroy/go-server)
-[![Coverage Status](https:/coveralls.io/repos/github/axetroy/go-server/badge.svg?branch=master)](https:/coveralls.io/github/axetroy/go-server?branch=master)
-[![Go Report Card](https:/goreportcard.com/badge/github.com/axetroy/go-server)](https:/goreportcard.com/report/github.com/axetroy/go-server)
-![License](https:/img.shields.io/github/license/axetroy/go-server.svg)
-![Repo Size](https:/img.shields.io/github/repo-size/axetroy/go-server.svg)
+[![Build Status](https://travis-ci.com/axetroy/go-server.svg?token=QMG6TLRNwECnaTsy6ssj&branch=master)](https://travis-ci.com/axetroy/go-server)
+[![Coverage Status](https://coveralls.io/repos/github/axetroy/go-server/badge.svg?branch=master)](https://coveralls.io/github/axetroy/go-server?branch=master)
+[![Go Report Card](https://goreportcard.com/badge/github.com/axetroy/go-server)](https://goreportcard.com/report/github.com/axetroy/go-server)
+![License](https://img.shields.io/github/license/axetroy/go-server.svg)
+![Repo Size](https://img.shields.io/github/repo-size/axetroy/go-server.svg)
 
 ### Golang 实现的基础服务
 
@@ -755,4 +755,4 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 ## License
 
-The [MIT License](https:/github.com/axetroy/go-server/blob/master/LICENSE)
+The [MIT License](https://github.com/axetroy/go-server/blob/master/LICENSE)
