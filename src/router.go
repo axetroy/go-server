@@ -109,7 +109,7 @@ func init() {
 			messageRouter := adminRouter.Group("/message")
 			{
 				messageRouter.POST("/create", message.CreateRouter)
-				messageRouter.DELETE("/delete/:message_id", message.CreateRouter) // TODO: 删除个人消息
+				messageRouter.DELETE("/delete/:message_id", message.DeleteRouter)
 			}
 
 			// Banner

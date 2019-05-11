@@ -1,10 +1,10 @@
-package notification_test
+package message_test
 
 import (
 	"encoding/json"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/controller/admin"
-	"github.com/axetroy/go-server/src/controller/notification"
+	"github.com/axetroy/go-server/src/controller/message"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service"
@@ -54,7 +54,7 @@ func TestDelete(t *testing.T) {
 		Uid: adminUid,
 	}
 
-	var testNotification schema.Notification
+	var testMessage schema.Message
 
 	// 创建一篇系统通知
 	{
@@ -63,28 +63,28 @@ func TestDelete(t *testing.T) {
 			content = "TestUpdate"
 		)
 
-		r := notification.Create(context, notification.CreateParams{
-			Tittle:  title,
+		r := message.Create(context, message.CreateMessageParams{
+			Title:   title,
 			Content: content,
 		})
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		testNotification = schema.Notification{}
+		testMessage = schema.Message{}
 
-		assert.Nil(t, tester.Decode(r.Data, &testNotification))
+		assert.Nil(t, tester.Decode(r.Data, &testMessage))
 
-		defer notification.DeleteNotificationById(testNotification.Id)
+		defer message.DeleteMessageById(testMessage.Id)
 
-		assert.Equal(t, title, testNotification.Tittle)
-		assert.Equal(t, content, testNotification.Content)
+		assert.Equal(t, title, testMessage.Tittle)
+		assert.Equal(t, content, testMessage.Content)
 	}
 
 	// 获取通知
 	{
-		n := model.Notification{
-			Id: testNotification.Id,
+		n := model.Message{
+			Id: testMessage.Id,
 		}
 
 		assert.Nil(t, service.Db.Model(&n).Where(&n).First(&n).Error)
@@ -92,7 +92,7 @@ func TestDelete(t *testing.T) {
 
 	// 删除通知
 	{
-		r := notification.Delete(context, testNotification.Id)
+		r := message.Delete(context, testMessage.Id)
 
 		assert.Equal(t, "", r.Message)
 		assert.Equal(t, schema.StatusSuccess, r.Status)
@@ -100,8 +100,8 @@ func TestDelete(t *testing.T) {
 
 	// 再次获取通知，这时候通知应该已经被删除了
 	{
-		n := model.Notification{
-			Id: testNotification.Id,
+		n := model.Message{
+			Id: testMessage.Id,
 		}
 
 		if err := service.Db.Model(&n).Where(&n).First(&n).Error; err != nil {
@@ -114,8 +114,8 @@ func TestDelete(t *testing.T) {
 
 func TestDeleteRouter(t *testing.T) {
 	var (
-		adminToken       string
-		notificationInfo = schema.Notification{}
+		adminToken  string
+		messageInfo = schema.Message{}
 	)
 	// 先登陆获取管理员的Token
 	{
@@ -157,28 +157,28 @@ func TestDeleteRouter(t *testing.T) {
 			content = "test content"
 		)
 
-		body, _ := json.Marshal(&notification.CreateParams{
-			Tittle:  title,
+		body, _ := json.Marshal(&message.CreateMessageParams{
+			Title:   title,
 			Content: content,
 		})
 
-		r := tester.Http.Post("/v1/admin/notification/create", body, &header)
+		r := tester.Http.Post("/v1/admin/message/create", body, &header)
 		res := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, r.Code)
 		assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
 
-		assert.Nil(t, tester.Decode(res.Data, &notificationInfo))
+		assert.Nil(t, tester.Decode(res.Data, &messageInfo))
 
-		defer notification.DeleteNotificationById(notificationInfo.Id)
+		defer message.DeleteMessageById(messageInfo.Id)
 
-		assert.Equal(t, title, notificationInfo.Tittle)
-		assert.Equal(t, content, notificationInfo.Content)
+		assert.Equal(t, title, messageInfo.Tittle)
+		assert.Equal(t, content, messageInfo.Content)
 	}
 
 	// 删除这条通知
 	{
-		r := tester.Http.Delete("/v1/admin/notification/delete/"+notificationInfo.Id, nil, &header)
+		r := tester.Http.Delete("/v1/admin/message/delete/"+messageInfo.Id, nil, &header)
 
 		res := schema.Response{}
 
@@ -187,7 +187,7 @@ func TestDeleteRouter(t *testing.T) {
 
 		// 再查找这条记录，应该是空的
 
-		n := model.Notification{Id: notificationInfo.Id}
+		n := model.Message{Id: messageInfo.Id}
 
 		err := service.Db.Where(&n).First(&n).Error
 
