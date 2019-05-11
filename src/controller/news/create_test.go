@@ -13,7 +13,6 @@ import (
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
-	"math/rand"
 	"net/http"
 	"testing"
 )
@@ -29,36 +28,23 @@ func init() {
 
 func TestCreate(t *testing.T) {
 	var (
-		adminUid string
+		adminInfo schema.AdminProfileWithToken
+		userInfo  schema.ProfileWithToken
+		err       error
 	)
-	// 先登陆获取管理员的Token
-	{
-		// 登陆超级管理员-成功
+	adminInfo, err = tester.LoginAdmin()
 
-		r := admin.Login(admin.SignInParams{
-			Username: "admin",
-			Password: "admin",
-		})
-
-		assert.Equal(t, schema.StatusSuccess, r.Status)
-		assert.Equal(t, "", r.Message)
-
-		adminInfo := schema.AdminProfileWithToken{}
-
-		if err := tester.Decode(r.Data, &adminInfo); err != nil {
-			t.Error(err)
-			return
-		}
-
-		assert.Equal(t, "admin", adminInfo.Username)
-		assert.True(t, len(adminInfo.Token) > 0)
-
-		if c, er := util.ParseToken(util.TokenPrefix+" "+adminInfo.Token, true); er != nil {
-			t.Error(er)
-		} else {
-			adminUid = c.Uid
-		}
+	if !assert.Nil(t, err) {
+		return
 	}
+
+	userInfo, err = tester.CreateUser()
+
+	if !assert.Nil(t, err) {
+		return
+	}
+
+	defer auth.DeleteUserByUserName(userInfo.Username)
 
 	// 创建一个公告
 	{
@@ -68,7 +54,7 @@ func TestCreate(t *testing.T) {
 		)
 
 		r := news.Create(controller.Context{
-			Uid: adminUid,
+			Uid: adminInfo.Id,
 		}, news.CreateNewParams{
 			Title:   title,
 			Content: content,
@@ -90,30 +76,6 @@ func TestCreate(t *testing.T) {
 
 	// 非管理员的uid去创建，应该报错
 	{
-		// 创建一个普通用户
-		var (
-			username = "tester-normal"
-			uid      string
-		)
-
-		{
-			rand.Seed(10331)
-			password := "123123"
-
-			r := auth.SignUp(auth.SignUpParams{
-				Username: &username,
-				Password: password,
-			})
-
-			profile := schema.Profile{}
-
-			assert.Nil(t, tester.Decode(r.Data, &profile))
-
-			defer auth.DeleteUserByUserName(username)
-
-			uid = profile.Id
-		}
-
 		var (
 			title    = "test"
 			content  = "test"
@@ -121,7 +83,7 @@ func TestCreate(t *testing.T) {
 		)
 
 		r := news.Create(controller.Context{
-			Uid: uid,
+			Uid: userInfo.Id,
 		}, news.CreateNewParams{
 			Title:   title,
 			Content: content,
@@ -136,37 +98,14 @@ func TestCreate(t *testing.T) {
 
 func TestCreateRouter(t *testing.T) {
 	var (
-		adminUid   string
-		adminToken string
+		adminInfo schema.AdminProfileWithToken
+		err       error
 	)
-	// 先登陆获取管理员的Token
-	{
-		// 登陆超级管理员-成功
 
-		r := admin.Login(admin.SignInParams{
-			Username: "admin",
-			Password: "admin",
-		})
+	adminInfo, err = tester.LoginAdmin()
 
-		assert.Equal(t, schema.StatusSuccess, r.Status)
-		assert.Equal(t, "", r.Message)
-
-		adminInfo := schema.AdminProfileWithToken{}
-
-		if err := tester.Decode(r.Data, &adminInfo); err != nil {
-			t.Error(err)
-			return
-		}
-
-		assert.Equal(t, "admin", adminInfo.Username)
-		assert.True(t, len(adminInfo.Token) > 0)
-
-		if c, er := util.ParseToken(util.TokenPrefix+" "+adminInfo.Token, true); er != nil {
-			t.Error(er)
-		} else {
-			adminUid = c.Uid
-			adminToken = adminInfo.Token
-		}
+	if !assert.Nil(t, err) {
+		return
 	}
 
 	// 登陆正确的管理员账号
@@ -177,7 +116,7 @@ func TestCreateRouter(t *testing.T) {
 		)
 
 		header := mocker.Header{
-			"Authorization": util.TokenPrefix + " " + adminToken,
+			"Authorization": util.TokenPrefix + " " + adminInfo.Token,
 		}
 
 		body, _ := json.Marshal(&news.CreateNewParams{
@@ -198,7 +137,7 @@ func TestCreateRouter(t *testing.T) {
 
 		defer news.DeleteNewsById(n.Id)
 
-		assert.Equal(t, adminUid, n.Author)
+		assert.Equal(t, adminInfo.Id, n.Author)
 		assert.Equal(t, title, n.Title)
 		assert.Equal(t, content, n.Content)
 	}

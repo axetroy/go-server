@@ -14,7 +14,6 @@ import (
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
-	"math/rand"
 	"net/http"
 	"testing"
 )
@@ -29,37 +28,7 @@ func init() {
 }
 
 func TestCreate(t *testing.T) {
-	var (
-		adminUid string
-	)
-	// 先登陆获取管理员的Token
-	{
-		// 登陆超级管理员-成功
-
-		r := admin.Login(admin.SignInParams{
-			Username: "admin",
-			Password: "admin",
-		})
-
-		assert.Equal(t, schema.StatusSuccess, r.Status)
-		assert.Equal(t, "", r.Message)
-
-		adminInfo := schema.AdminProfileWithToken{}
-
-		if err := tester.Decode(r.Data, &adminInfo); err != nil {
-			t.Error(err)
-			return
-		}
-
-		assert.Equal(t, "admin", adminInfo.Username)
-		assert.True(t, len(adminInfo.Token) > 0)
-
-		if c, er := util.ParseToken(util.TokenPrefix+" "+adminInfo.Token, true); er != nil {
-			t.Error(er)
-		} else {
-			adminUid = c.Uid
-		}
-	}
+	adminInfo, _ := tester.LoginAdmin()
 
 	// 创建一个 Banner
 	{
@@ -70,7 +39,7 @@ func TestCreate(t *testing.T) {
 		)
 
 		r := banner.Create(controller.Context{
-			Uid: adminUid,
+			Uid: adminInfo.Id,
 		}, banner.CreateParams{
 			Image:    image,
 			Href:     href,
@@ -93,29 +62,10 @@ func TestCreate(t *testing.T) {
 
 	// 非管理员的uid去创建，应该报错
 	{
-		// 创建一个普通用户
-		var (
-			username = "tester-normal"
-			uid      string
-		)
 
-		{
-			rand.Seed(10331)
-			password := "123123"
+		userInfo, _ := tester.CreateUser()
 
-			r := auth.SignUp(auth.SignUpParams{
-				Username: &username,
-				Password: password,
-			})
-
-			profile := schema.Profile{}
-
-			assert.Nil(t, tester.Decode(r.Data, &profile))
-
-			defer auth.DeleteUserByUserName(username)
-
-			uid = profile.Id
-		}
+		defer auth.DeleteUserByUserName(userInfo.Username)
 
 		var (
 			image    = "test.png"
@@ -124,7 +74,7 @@ func TestCreate(t *testing.T) {
 		)
 
 		r := banner.Create(controller.Context{
-			Uid: uid,
+			Uid: userInfo.Id,
 		}, banner.CreateParams{
 			Image:    image,
 			Href:     href,
@@ -137,37 +87,7 @@ func TestCreate(t *testing.T) {
 }
 
 func TestCreateRouter(t *testing.T) {
-	var (
-		adminToken string
-	)
-	// 先登陆获取管理员的Token
-	{
-		// 登陆超级管理员-成功
-
-		r := admin.Login(admin.SignInParams{
-			Username: "admin",
-			Password: "admin",
-		})
-
-		assert.Equal(t, schema.StatusSuccess, r.Status)
-		assert.Equal(t, "", r.Message)
-
-		adminInfo := schema.AdminProfileWithToken{}
-
-		if err := tester.Decode(r.Data, &adminInfo); err != nil {
-			t.Error(err)
-			return
-		}
-
-		assert.Equal(t, "admin", adminInfo.Username)
-		assert.True(t, len(adminInfo.Token) > 0)
-
-		if _, er := util.ParseToken(util.TokenPrefix+" "+adminInfo.Token, true); er != nil {
-			t.Error(er)
-		} else {
-			adminToken = adminInfo.Token
-		}
-	}
+	adminInfo, _ := tester.LoginAdmin()
 
 	// 创建 banner
 	{
@@ -178,7 +98,7 @@ func TestCreateRouter(t *testing.T) {
 		)
 
 		header := mocker.Header{
-			"Authorization": util.TokenPrefix + " " + adminToken,
+			"Authorization": util.TokenPrefix + " " + adminInfo.Token,
 		}
 
 		body, _ := json.Marshal(&banner.CreateParams{

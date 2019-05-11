@@ -13,28 +13,11 @@ import (
 )
 
 func TestGenerateResetCode(t *testing.T) {
-	testerUsername := "tester-TestGenerateResetCode"
-	testerUid := ""
+	user, _ := tester.CreateUser()
 
-	// 动态创建一个测试账号
-	{
-		r := auth.SignUp(auth.SignUpParams{
-			Username: &testerUsername,
-			Password: "123123",
-		})
+	defer auth.DeleteUserByUserName(user.Username)
 
-		profile := schema.Profile{}
-
-		assert.Nil(t, tester.Decode(r.Data, &profile))
-
-		testerUid = profile.Id
-
-		defer func() {
-			auth.DeleteUserByUserName(testerUsername)
-		}()
-	}
-
-	code := email.GenerateResetCode(testerUid)
+	code := email.GenerateResetCode(user.Id)
 
 	assert.IsType(t, "", code)
 }

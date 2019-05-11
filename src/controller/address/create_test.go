@@ -10,43 +10,23 @@ import (
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
-	"math/rand"
 	"net/http"
 	"testing"
 )
 
 func TestCreate(t *testing.T) {
+	testUser, err := tester.CreateUser()
 
-	var (
-		username = "tester-normal"
-		uid      string
-	)
-
-	// 创建一个普通用户
-	{
-		rand.Seed(10331198)
-		password := "123123"
-
-		r := auth.SignUp(auth.SignUpParams{
-			Username: &username,
-			Password: password,
-		})
-
-		profile := schema.Profile{}
-
-		assert.Nil(t, tester.Decode(r.Data, &profile))
-
-		defer func() {
-			auth.DeleteUserByUserName(username)
-		}()
-
-		uid = profile.Id
+	if !assert.Nil(t, err) {
+		return
 	}
 
+	defer auth.DeleteUserByUserName(testUser.Username)
+
+	context := controller.Context{Uid: testUser.Id}
+
 	// 添加一个失败的地址
-	r := address.Create(controller.Context{
-		Uid: uid,
-	}, address.CreateAddressParams{
+	r := address.Create(context, address.CreateAddressParams{
 		Name: "123",
 	})
 
@@ -63,9 +43,7 @@ func TestCreate(t *testing.T) {
 			Address      = "中关村28号526"
 		)
 
-		r := address.Create(controller.Context{
-			Uid: uid,
-		}, address.CreateAddressParams{
+		r := address.Create(context, address.CreateAddressParams{
 			Name:         Name,
 			Phone:        Phone,
 			ProvinceCode: ProvinceCode,
@@ -94,49 +72,16 @@ func TestCreate(t *testing.T) {
 }
 
 func TestCreateRouter(t *testing.T) {
-	var (
-		username    = "test-create-address"
-		password    = "123123"
-		tokenString string
-	)
-	if r := auth.SignUp(auth.SignUpParams{
-		Username: &username,
-		Password: password,
-	}); r.Status != schema.StatusSuccess {
-		t.Error(r.Message)
-		return
-	} else {
-		userInfo := schema.Profile{}
-		if err := tester.Decode(r.Data, &userInfo); err != nil {
-			t.Error(err)
-			return
-		}
-		defer func() {
-			auth.DeleteUserByUserName(username)
-		}()
+	testUser, err := tester.CreateUser()
 
-		// 登陆获取Token
-		if r := auth.SignIn(controller.Context{
-			UserAgent: "test",
-			Ip:        "0.0.0.0.0",
-		}, auth.SignInParams{
-			Account:  username,
-			Password: password,
-		}); r.Status != schema.StatusSuccess {
-			t.Error(r.Message)
-			return
-		} else {
-			userInfo := schema.ProfileWithToken{}
-			if err := tester.Decode(r.Data, &userInfo); err != nil {
-				t.Error(err)
-				return
-			}
-			tokenString = userInfo.Token
-		}
+	if !assert.Nil(t, err) {
+		return
 	}
 
+	defer auth.DeleteUserByUserName(testUser.Username)
+
 	header := mocker.Header{
-		"Authorization": util.TokenPrefix + " " + tokenString,
+		"Authorization": util.TokenPrefix + " " + testUser.Token,
 	}
 
 	body, _ := json.Marshal(&address.CreateAddressParams{

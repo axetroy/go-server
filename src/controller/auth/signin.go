@@ -30,7 +30,6 @@ func SignIn(context controller.Context, input SignInParams) (res schema.Response
 	)
 
 	defer func() {
-
 		if r := recover(); r != nil {
 			switch t := r.(type) {
 			case string:

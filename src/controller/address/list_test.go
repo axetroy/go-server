@@ -7,40 +7,20 @@ import (
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/tester"
 	"github.com/stretchr/testify/assert"
-	"math/rand"
 	"testing"
 )
 
 func TestGetList(t *testing.T) {
+	userInfo, err := tester.CreateUser()
 
-	var (
-		username = "tester-address-list"
-		uid      string
-	)
-
-	// 创建一个普通用户
-	{
-		rand.Seed(10331198)
-		password := "123123"
-
-		r := auth.SignUp(auth.SignUpParams{
-			Username: &username,
-			Password: password,
-		})
-
-		profile := schema.Profile{}
-
-		assert.Nil(t, tester.Decode(r.Data, &profile))
-
-		defer func() {
-			auth.DeleteUserByUserName(username)
-		}()
-
-		uid = profile.Id
+	if !assert.Nil(t, err) {
+		return
 	}
 
+	defer auth.DeleteUserByUserName(userInfo.Username)
+
 	context := controller.Context{
-		Uid: uid,
+		Uid: userInfo.Id,
 	}
 
 	// 添加一个合法的地址

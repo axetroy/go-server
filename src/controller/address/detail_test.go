@@ -10,7 +10,6 @@ import (
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
-	"math/rand"
 	"net/http"
 	"testing"
 )
@@ -18,34 +17,19 @@ import (
 func TestGetDetail(t *testing.T) {
 
 	var (
-		username    = "tester-normal-123"
-		uid         string
 		addressInfo = schema.Address{}
 	)
 
-	// 创建一个普通用户
-	{
-		rand.Seed(10331198)
-		password := "123123"
+	userInfo, err := tester.CreateUser()
 
-		r := auth.SignUp(auth.SignUpParams{
-			Username: &username,
-			Password: password,
-		})
-
-		profile := schema.Profile{}
-
-		assert.Nil(t, tester.Decode(r.Data, &profile))
-
-		defer func() {
-			auth.DeleteUserByUserName(username)
-		}()
-
-		uid = profile.Id
+	if !assert.Nil(t, err) {
+		return
 	}
 
+	defer auth.DeleteUserByUserName(userInfo.Username)
+
 	context := controller.Context{
-		Uid: uid,
+		Uid: userInfo.Id,
 	}
 
 	// 添加一个合法的地址
@@ -106,53 +90,19 @@ func TestGetDetail(t *testing.T) {
 
 func TestGetDetailRouter(t *testing.T) {
 	var (
-		username    = "test-create-address"
-		password    = "123123"
-		tokenString string
 		addressInfo = schema.Address{}
 	)
 
-	// 创建测试账号
-	{
-		if r := auth.SignUp(auth.SignUpParams{
-			Username: &username,
-			Password: password,
-		}); r.Status != schema.StatusSuccess {
-			t.Error(r.Message)
-			return
-		} else {
-			userInfo := schema.Profile{}
-			if err := tester.Decode(r.Data, &userInfo); err != nil {
-				t.Error(err)
-				return
-			}
-			defer func() {
-				auth.DeleteUserByUserName(username)
-			}()
+	userInfo, err := tester.CreateUser()
 
-			// 登陆获取Token
-			if r := auth.SignIn(controller.Context{
-				UserAgent: "test",
-				Ip:        "0.0.0.0.0",
-			}, auth.SignInParams{
-				Account:  username,
-				Password: password,
-			}); r.Status != schema.StatusSuccess {
-				t.Error(r.Message)
-				return
-			} else {
-				userInfo := schema.ProfileWithToken{}
-				if err := tester.Decode(r.Data, &userInfo); err != nil {
-					t.Error(err)
-					return
-				}
-				tokenString = userInfo.Token
-			}
-		}
-
+	if !assert.Nil(t, err) {
+		return
 	}
+
+	defer auth.DeleteUserByUserName(userInfo.Username)
+
 	header := mocker.Header{
-		"Authorization": util.TokenPrefix + " " + tokenString,
+		"Authorization": util.TokenPrefix + " " + userInfo.Token,
 	}
 
 	// 创建一个地址

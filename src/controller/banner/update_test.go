@@ -25,35 +25,14 @@ func init() {
 }
 
 func TestUpdate(t *testing.T) {
-
 	var (
-		adminUid   string
 		bannerInfo = schema.Banner{}
 	)
 
-	// 1. 先登陆获取管理员的Token
-	{
-		r := admin.Login(admin.SignInParams{
-			Username: "admin",
-			Password: "admin",
-		})
-
-		assert.Equal(t, schema.StatusSuccess, r.Status)
-		assert.Equal(t, "", r.Message)
-
-		adminInfo := schema.AdminProfileWithToken{}
-
-		assert.Nil(t, tester.Decode(r.Data, &adminInfo))
-
-		if c, er := util.ParseToken(util.TokenPrefix+" "+adminInfo.Token, true); er != nil {
-			t.Error(er)
-		} else {
-			adminUid = c.Uid
-		}
-	}
+	adminInfo, _ := tester.LoginAdmin()
 
 	context := controller.Context{
-		Uid: adminUid,
+		Uid: adminInfo.Id,
 	}
 
 	// 创建一个 Banner
@@ -124,33 +103,13 @@ func TestUpdate(t *testing.T) {
 
 func TestUpdateRouter(t *testing.T) {
 	var (
-		tokenString string
-		bannerInfo  = schema.Banner{}
+		bannerInfo = schema.Banner{}
 	)
 
-	// 1. 先登陆获取管理员的Token
-	{
-		r := admin.Login(admin.SignInParams{
-			Username: "admin",
-			Password: "admin",
-		})
-
-		assert.Equal(t, schema.StatusSuccess, r.Status)
-		assert.Equal(t, "", r.Message)
-
-		adminInfo := schema.AdminProfileWithToken{}
-
-		assert.Nil(t, tester.Decode(r.Data, &adminInfo))
-
-		if _, er := util.ParseToken(util.TokenPrefix+" "+adminInfo.Token, true); er != nil {
-			t.Error(er)
-		} else {
-			tokenString = adminInfo.Token
-		}
-	}
+	adminInfo, _ := tester.LoginAdmin()
 
 	header := mocker.Header{
-		"Authorization": util.TokenPrefix + " " + tokenString,
+		"Authorization": util.TokenPrefix + " " + adminInfo.Token,
 	}
 
 	// 创建一条 banner
