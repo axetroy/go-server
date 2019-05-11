@@ -102,7 +102,7 @@ func init() {
 			{
 				notificationRouter.POST("/create", notification.CreateRouter)
 				notificationRouter.PUT("/update/:id", notification.UpdateRouter)
-				notificationRouter.DELETE("/delete/:id", notification.UpdateRouter) // TODO: 删除系统消息
+				notificationRouter.DELETE("/delete/:id", notification.DeleteRouter)
 			}
 
 			// 个人消息

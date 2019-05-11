@@ -1,5 +1,5 @@
 package exception
 
 var (
-	NotificationMarkExist = New("")
+	NotificationNotExist = New("系统通知不存在")
 )

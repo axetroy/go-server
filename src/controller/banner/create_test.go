@@ -169,7 +169,7 @@ func TestCreateRouter(t *testing.T) {
 		}
 	}
 
-	// 登陆正确的管理员账号
+	// 创建 banner
 	{
 		var (
 			image    = "test.png"

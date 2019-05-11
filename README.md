@@ -717,6 +717,16 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 </details>
 
+<details><summary>删除系统通知<code>[DELETE] /v1/admin/notification/delete/:notification_id</code></summary>
+
+<p>
+
+管理员删除系统通知
+
+</p>
+
+</details>
+
 ### 个人消息类
 
 <details><summary>新增个人消息<code>[POST] /v1/admin/message/create</code></summary>
