@@ -63,7 +63,7 @@ func TestMarkRead(t *testing.T) {
 		)
 
 		r := notification.Create(context, notification.CreateParams{
-			Tittle:  title,
+			Title:   title,
 			Content: content,
 		})
 

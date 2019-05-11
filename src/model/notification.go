@@ -16,7 +16,7 @@ const (
 type Notification struct {
 	Id        string             `gorm:"primary_key;not null;unique;index;type:varchar(32)" json:"id"` // 通知ID
 	Author    string             `gorm:"not null;index;type:varchar(32)" json:"Author"`                // 发布这则公告的作者
-	Tittle    string             `gorm:"not null;index;type:varchar(32)" json:"tittle"`                // 公告标题
+	Title     string             `gorm:"not null;index;type:varchar(32)" json:"title"`                 // 公告标题
 	Content   string             `gorm:"not null;type:text" json:"content"`                            // 公告内容
 	Status    NotificationStatus `gorm:"not null" json:"status"`                                       // 公告状态
 	Note      *string            `gorm:"null;type:varchar(255)" json:"note"`                           // 这条通知的备注

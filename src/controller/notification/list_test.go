@@ -69,7 +69,7 @@ func TestGetList(t *testing.T) {
 			r := notification.Create(controller.Context{
 				Uid: adminUid,
 			}, notification.CreateParams{
-				Tittle:  title,
+				Title:   title,
 				Content: content,
 			})
 

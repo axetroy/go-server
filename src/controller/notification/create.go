@@ -16,7 +16,7 @@ import (
 )
 
 type CreateParams struct {
-	Tittle  string  `json:"tittle" valid:"required~请输入公告标题"`  // 公告标题
+	Title   string  `json:"title" valid:"required~请输入公告标题"`   // 公告标题
 	Content string  `json:"content" valid:"required~请输入公告内容"` // 公告内容
 	Note    *string `json:"note"`                             // 备注
 }
@@ -81,7 +81,7 @@ func Create(context controller.Context, input CreateParams) (res schema.Response
 
 	notificationInfo := model.Notification{
 		Author:  adminInfo.Id,
-		Tittle:  input.Tittle,
+		Title:   input.Title,
 		Content: input.Content,
 		Note:    input.Note,
 	}

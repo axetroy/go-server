@@ -64,7 +64,7 @@ func TestDelete(t *testing.T) {
 		)
 
 		r := notification.Create(context, notification.CreateParams{
-			Tittle:  title,
+			Title:   title,
 			Content: content,
 		})
 
@@ -158,7 +158,7 @@ func TestDeleteRouter(t *testing.T) {
 		)
 
 		body, _ := json.Marshal(&notification.CreateParams{
-			Tittle:  title,
+			Title:   title,
 			Content: content,
 		})
 
