@@ -12,10 +12,7 @@ func init() {
 	if err := util.LoadEnv(); err != nil {
 		panic(err)
 	}
-}
 
-// Init 初始化一些动作
-func Init() {
 	// 确保超级管理员存在
 	r := admin.CreateAdmin(admin.CreateAdminParams{
 		Account:  "admin",
@@ -31,7 +28,6 @@ func Init() {
 
 // Server 运行服务器
 func Server() {
-	Init()
 	port := "8080"
 	if err := Router.Run(":" + port); err != nil {
 		panic(err)
