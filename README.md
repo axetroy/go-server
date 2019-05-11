@@ -460,6 +460,15 @@
 
 </details>
 
+<details><summary>删除个人消息已读<code>[DELETE] /v1/message/delete/:message_id</code></summary>
+<p>
+
+删除一条个人消息
+
+</p>
+
+</details>
+
 ### 新闻资讯类
 
 <details><summary>资讯列表<code>[GET] /v1/news/list</code></summary>

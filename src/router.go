@@ -109,7 +109,7 @@ func init() {
 			messageRouter := adminRouter.Group("/message")
 			{
 				messageRouter.POST("/create", message.CreateRouter)
-				messageRouter.DELETE("/delete/:message_id", message.DeleteRouter)
+				messageRouter.DELETE("/delete/:message_id", message.DeleteByAdminRouter)
 			}
 
 			// Banner
@@ -210,7 +210,7 @@ func init() {
 			messageRouter.GET("/list", message.GetListRouter)
 			messageRouter.GET("/detail/:id", message.GetRouter)
 			messageRouter.GET("/read/:id", message.ReadRouter)
-			messageRouter.DELETE("/delete/:id", message.ReadRouter) // TODO: 个人删除通知
+			messageRouter.DELETE("/delete/:id", message.DeleteByUserRouter)
 		}
 
 		// 通用类

@@ -92,7 +92,7 @@ func TestUpdate(t *testing.T) {
 			r := news.Update(controller.Context{
 				Uid: adminUid,
 			}, newsId, news.UpdateParams{
-				Tittle:  &newTittle,
+				Title:   &newTittle,
 				Content: &newContent,
 				Type:    &newType,
 				Tags:    &newTags,
@@ -119,7 +119,7 @@ func TestUpdate(t *testing.T) {
 			r2 := news.Update(controller.Context{
 				Uid: adminUid,
 			}, newsId, news.UpdateParams{
-				Tittle: &newTittle2,
+				Title: &newTittle2,
 			})
 
 			assert.Equal(t, schema.StatusSuccess, r2.Status)

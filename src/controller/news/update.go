@@ -15,7 +15,7 @@ import (
 )
 
 type UpdateParams struct {
-	Tittle  *string           `json:"tittle"`
+	Title   *string           `json:"title"`
 	Content *string           `json:"content"`
 	Type    *model.NewsType   `json:"type"`
 	Tags    *[]string         `json:"tags"`
@@ -84,9 +84,9 @@ func Update(context controller.Context, newsId string, input UpdateParams) (res 
 		return
 	}
 
-	if input.Tittle != nil {
+	if input.Title != nil {
 		shouldUpdate = true
-		newsInfo.Title = *input.Tittle
+		newsInfo.Title = *input.Title
 	}
 
 	if input.Content != nil {

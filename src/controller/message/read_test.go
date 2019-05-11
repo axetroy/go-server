@@ -101,7 +101,7 @@ func TestMarkRead(t *testing.T) {
 
 		defer message.DeleteMessageById(testMessage.Id)
 
-		assert.Equal(t, title, testMessage.Tittle)
+		assert.Equal(t, title, testMessage.Title)
 		assert.Equal(t, content, testMessage.Content)
 	}
 
@@ -127,7 +127,7 @@ func TestMarkRead(t *testing.T) {
 		n := r.Data.(schema.Message)
 
 		assert.Equal(t, testMessage.Id, n.Id)
-		assert.Equal(t, testMessage.Tittle, n.Tittle)
+		assert.Equal(t, testMessage.Title, n.Title)
 		assert.Equal(t, testMessage.Content, n.Content)
 		assert.Equal(t, true, n.Read)
 		assert.IsType(t, "", *n.ReadAt)

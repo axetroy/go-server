@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/controller/admin"
+	"github.com/axetroy/go-server/src/controller/auth"
 	"github.com/axetroy/go-server/src/controller/message"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
@@ -13,15 +14,16 @@ import (
 	"github.com/axetroy/mocker"
 	"github.com/jinzhu/gorm"
 	"github.com/stretchr/testify/assert"
+	"math/rand"
 	"net/http"
 	"testing"
 )
 
-func TestDelete(t *testing.T) {
+func TestDeleteByAdmin(t *testing.T) {
 	var (
 		adminUid string
 	)
-	// 先登陆获取管理员的Token
+
 	{
 		// 登陆超级管理员-成功
 
@@ -56,7 +58,7 @@ func TestDelete(t *testing.T) {
 
 	var testMessage schema.Message
 
-	// 创建一篇系统通知
+	// 创建一条个人信息
 	{
 		var (
 			title   = "TestUpdate"
@@ -77,7 +79,7 @@ func TestDelete(t *testing.T) {
 
 		defer message.DeleteMessageById(testMessage.Id)
 
-		assert.Equal(t, title, testMessage.Tittle)
+		assert.Equal(t, title, testMessage.Title)
 		assert.Equal(t, content, testMessage.Content)
 	}
 
@@ -92,7 +94,7 @@ func TestDelete(t *testing.T) {
 
 	// 删除通知
 	{
-		r := message.Delete(context, testMessage.Id)
+		r := message.DeleteByAdmin(context, testMessage.Id)
 
 		assert.Equal(t, "", r.Message)
 		assert.Equal(t, schema.StatusSuccess, r.Status)
@@ -112,7 +114,7 @@ func TestDelete(t *testing.T) {
 	}
 }
 
-func TestDeleteRouter(t *testing.T) {
+func TestDeleteByAdminRouter(t *testing.T) {
 	var (
 		adminToken  string
 		messageInfo = schema.Message{}
@@ -172,13 +174,261 @@ func TestDeleteRouter(t *testing.T) {
 
 		defer message.DeleteMessageById(messageInfo.Id)
 
-		assert.Equal(t, title, messageInfo.Tittle)
+		assert.Equal(t, title, messageInfo.Title)
 		assert.Equal(t, content, messageInfo.Content)
 	}
 
 	// 删除这条通知
 	{
 		r := tester.Http.Delete("/v1/admin/message/delete/"+messageInfo.Id, nil, &header)
+
+		res := schema.Response{}
+
+		assert.Equal(t, http.StatusOK, r.Code)
+		assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+
+		// 再查找这条记录，应该是空的
+
+		n := model.Message{Id: messageInfo.Id}
+
+		err := service.Db.Where(&n).First(&n).Error
+
+		assert.NotNil(t, err)
+		assert.Equal(t, gorm.ErrRecordNotFound.Error(), err.Error())
+	}
+}
+
+func TestDeleteByUser(t *testing.T) {
+	var (
+		uid      string
+		adminUid string
+	)
+
+	{
+		// 登陆超级管理员-成功
+
+		r := admin.Login(admin.SignInParams{
+			Username: "admin",
+			Password: "admin",
+		})
+
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
+
+		adminInfo := schema.AdminProfileWithToken{}
+
+		if err := tester.Decode(r.Data, &adminInfo); err != nil {
+			t.Error(err)
+			return
+		}
+
+		assert.Equal(t, "admin", adminInfo.Username)
+		assert.True(t, len(adminInfo.Token) > 0)
+
+		if c, er := util.ParseToken(util.TokenPrefix+" "+adminInfo.Token, true); er != nil {
+			t.Error(er)
+		} else {
+			adminUid = c.Uid
+		}
+	}
+
+	// 创建一个普通用户
+	{
+		var username = "test-delete-message"
+		rand.Seed(10331198)
+		password := "123123"
+
+		r := auth.SignUp(auth.SignUpParams{
+			Username: &username,
+			Password: password,
+		})
+
+		profile := schema.Profile{}
+
+		assert.Nil(t, tester.Decode(r.Data, &profile))
+
+		defer auth.DeleteUserByUserName(username)
+
+		uid = profile.Id
+	}
+
+	context := controller.Context{
+		Uid: uid,
+	}
+
+	var testMessage schema.Message
+
+	// 创建一条个人信息
+	{
+		var (
+			title   = "TestUpdate"
+			content = "TestUpdate"
+		)
+
+		r := message.Create(controller.Context{
+			Uid: adminUid,
+		}, message.CreateMessageParams{
+			Title:   title,
+			Content: content,
+		})
+
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
+
+		testMessage = schema.Message{}
+
+		assert.Nil(t, tester.Decode(r.Data, &testMessage))
+
+		defer message.DeleteMessageById(testMessage.Id)
+
+		assert.Equal(t, title, testMessage.Title)
+		assert.Equal(t, content, testMessage.Content)
+	}
+
+	// 获取通知
+	{
+		n := model.Message{
+			Id: testMessage.Id,
+		}
+
+		assert.Nil(t, service.Db.Model(&n).Where(&n).First(&n).Error)
+	}
+
+	// 删除通知
+	{
+		r := message.DeleteByUser(context, testMessage.Id)
+
+		assert.Equal(t, "", r.Message)
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+	}
+
+	// 再次获取通知，这时候通知应该已经被删除了
+	{
+		n := model.Message{
+			Id: testMessage.Id,
+		}
+
+		if err := service.Db.Model(&n).Where(&n).First(&n).Error; err != nil {
+			assert.Equal(t, gorm.ErrRecordNotFound.Error(), err.Error())
+		} else {
+			assert.Fail(t, "通知应该已被删除")
+		}
+	}
+}
+
+func TestDeleteByUserRouter(t *testing.T) {
+	var (
+		username    = "test-create-address"
+		password    = "123123"
+		tokenString string
+		adminUid    string
+		messageInfo = schema.Message{}
+	)
+
+	// 普通用户的创建和登陆
+	{
+		if r := auth.SignUp(auth.SignUpParams{
+			Username: &username,
+			Password: password,
+		}); r.Status != schema.StatusSuccess {
+			t.Error(r.Message)
+			return
+		} else {
+			userInfo := schema.Profile{}
+			if err := tester.Decode(r.Data, &userInfo); err != nil {
+				t.Error(err)
+				return
+			}
+			defer func() {
+				auth.DeleteUserByUserName(username)
+			}()
+
+			// 登陆获取Token
+			if r := auth.SignIn(controller.Context{
+				UserAgent: "test",
+				Ip:        "0.0.0.0.0",
+			}, auth.SignInParams{
+				Account:  username,
+				Password: password,
+			}); r.Status != schema.StatusSuccess {
+				t.Error(r.Message)
+				return
+			} else {
+				userInfo := schema.ProfileWithToken{}
+				if err := tester.Decode(r.Data, &userInfo); err != nil {
+					t.Error(err)
+					return
+				}
+				tokenString = userInfo.Token
+			}
+		}
+	}
+
+	// 管理员登陆
+	{
+		{
+			// 登陆超级管理员-成功
+
+			r := admin.Login(admin.SignInParams{
+				Username: "admin",
+				Password: "admin",
+			})
+
+			assert.Equal(t, schema.StatusSuccess, r.Status)
+			assert.Equal(t, "", r.Message)
+
+			adminInfo := schema.AdminProfileWithToken{}
+
+			if err := tester.Decode(r.Data, &adminInfo); err != nil {
+				t.Error(err)
+				return
+			}
+
+			assert.Equal(t, "admin", adminInfo.Username)
+			assert.True(t, len(adminInfo.Token) > 0)
+
+			if c, er := util.ParseToken(util.TokenPrefix+" "+adminInfo.Token, true); er != nil {
+				t.Error(er)
+			} else {
+				adminUid = c.Uid
+			}
+		}
+	}
+
+	header := mocker.Header{
+		"Authorization": util.TokenPrefix + " " + tokenString,
+	}
+
+	// 创建一条个人信息
+	{
+		var (
+			title   = "TestUpdate"
+			content = "TestUpdate"
+		)
+
+		r := message.Create(controller.Context{
+			Uid: adminUid,
+		}, message.CreateMessageParams{
+			Title:   title,
+			Content: content,
+		})
+
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
+
+		messageInfo = schema.Message{}
+
+		assert.Nil(t, tester.Decode(r.Data, &messageInfo))
+
+		defer message.DeleteMessageById(messageInfo.Id)
+
+		assert.Equal(t, title, messageInfo.Title)
+		assert.Equal(t, content, messageInfo.Content)
+	}
+
+	// 删除这条通知
+	{
+		r := tester.Http.Delete("/v1/message/delete/"+messageInfo.Id, nil, &header)
 
 		res := schema.Response{}
 

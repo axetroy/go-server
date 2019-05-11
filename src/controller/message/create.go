@@ -79,7 +79,7 @@ func Create(context controller.Context, input CreateMessageParams) (res schema.R
 
 	MessageInfo := model.Message{
 		Uid:     input.Uid,
-		Tittle:  input.Title,
+		Title:   input.Title,
 		Content: input.Content,
 		Status:  model.MessageStatusActive,
 	}

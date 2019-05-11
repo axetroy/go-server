@@ -86,7 +86,7 @@ func TestGetMessage(t *testing.T) {
 
 			messageInfo := r.Data.(schema.Message)
 
-			assert.Equal(t, "test", messageInfo.Tittle)
+			assert.Equal(t, "test", messageInfo.Title)
 			assert.Equal(t, "test", messageInfo.Content)
 		}
 	}

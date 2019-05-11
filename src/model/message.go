@@ -15,7 +15,7 @@ const (
 type Message struct {
 	Id        string        `gorm:"primary_key;not null;unique;index;type:varchar(32)" json:"id"` // 消息ID
 	Uid       string        `gorm:"not null;index;type:varchar(32)" json:"uid"`                   // 这条消息的所有者
-	Tittle    string        `gorm:"not null;index;type:varchar(32)" json:"tittle"`                // 消息标题
+	Title     string        `gorm:"not null;index;type:varchar(32)" json:"title"`                 // 消息标题
 	Content   string        `gorm:"not null;type:text" json:"content"`                            // 消息内容
 	Read      bool          `gorm:"not null" json:"read"`                                         // 是否已读
 	ReadAt    *time.Time    `json:"read_at"`                                                      // 已读时间

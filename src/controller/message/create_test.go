@@ -83,7 +83,7 @@ func TestCreate(t *testing.T) {
 
 		defer message.DeleteMessageById(n.Id)
 
-		assert.Equal(t, title, n.Tittle)
+		assert.Equal(t, title, n.Title)
 		assert.Equal(t, content, n.Content)
 	}
 
@@ -193,7 +193,7 @@ func TestCreateRouter(t *testing.T) {
 
 		defer message.DeleteMessageById(n.Id)
 
-		assert.Equal(t, title, n.Tittle)
+		assert.Equal(t, title, n.Title)
 		assert.Equal(t, content, n.Content)
 	}
 }
