@@ -12,7 +12,11 @@ import (
 	"net/http"
 )
 
-// 验证交易密码的中间价
+var (
+	headerKey = "X-Pay-Password"
+)
+
+// 交易密码的验证中间件
 func AuthPayPassword(context *gin.Context) {
 	var (
 		err error
@@ -45,14 +49,14 @@ func AuthPayPassword(context *gin.Context) {
 		}
 	}()
 
-	payPassword := context.GetHeader("X-Pay-Password")
+	payPassword := context.GetHeader(headerKey)
 
 	if len(payPassword) == 0 {
 		err = exception.RequirePayPassword
 		return
 	}
 
-	uid := context.GetString("uid")
+	uid := context.GetString(ContextUidField)
 
 	if uid == "" {
 		err = exception.UserNotLogin

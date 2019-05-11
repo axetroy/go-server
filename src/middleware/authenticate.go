@@ -7,7 +7,11 @@ import (
 	"net/http"
 )
 
-// 普通用户的token验证
+var (
+	ContextUidField = "uid"
+)
+
+// Token 验证中间件
 func Authenticate(isAdmin bool) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		var (
@@ -44,7 +48,8 @@ func Authenticate(isAdmin bool) gin.HandlerFunc {
 			err = er
 			return
 		} else {
-			context.Set("uid", claims.Uid)
+			// 把 UID 挂载到上下文中国呢
+			context.Set(ContextUidField, claims.Uid)
 		}
 	}
 }
