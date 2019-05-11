@@ -60,7 +60,7 @@ func TestCreate(t *testing.T) {
 		}
 	}
 
-	// 创建一个公告
+	// 创建一个消息
 	{
 		var (
 			title   = "test"

@@ -762,6 +762,19 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 </details>
 
+<details><summary>更改个人消息<code>[PUT] /v1/admin/message/update/:message_id</code></summary>
+
+<p>
+
+| 参数    | 说明     | 必选 |
+| ------- | -------- | ---- |
+| title   | 消息标题 |      |
+| content | 消息内容 |      |
+
+</p>
+
+</details>
+
 ## License
 
 The [MIT License](https://github.com/axetroy/go-server/blob/master/LICENSE)

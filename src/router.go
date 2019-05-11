@@ -109,6 +109,7 @@ func init() {
 			messageRouter := adminRouter.Group("/message")
 			{
 				messageRouter.POST("/create", message.CreateRouter)
+				messageRouter.PUT("/update/:message_id", message.UpdateRouter)
 				messageRouter.DELETE("/delete/:message_id", message.DeleteByAdminRouter)
 			}
 
