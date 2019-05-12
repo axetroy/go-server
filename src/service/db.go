@@ -89,15 +89,20 @@ func init() {
 	// 确保超级管理员账号存在
 	if err := db.First(&model.Admin{Username: "admin", IsSuper: true}).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			db.Create(&model.Admin{
+			err = db.Create(&model.Admin{
 				Username: "admin",
 				Name:     "admin",
 				Password: util.GeneratePassword("admin"),
 				Status:   model.AdminStatusInit,
 				IsSuper:  true,
-			})
+			}).Error
+
+			if err != nil {
+				panic(err)
+			}
+		} else {
+			panic(err)
 		}
-		panic(err)
 	}
 }
 
