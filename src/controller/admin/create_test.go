@@ -90,7 +90,7 @@ func TestCreateAdminRouter(t *testing.T) {
 			Name:     username,
 		})
 
-		r := tester.Http.Post("/v1/admin/admin/create", body, &header)
+		r := tester.HttpAdmin.Post("/v1/admin", body, &header)
 
 		if !assert.Equal(t, http.StatusOK, r.Code) {
 			return

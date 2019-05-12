@@ -107,7 +107,7 @@ func TestCreateRouter(t *testing.T) {
 			Platform: platform,
 		})
 
-		r := tester.Http.Post("/v1/admin/banner/create", body, &header)
+		r := tester.HttpAdmin.Post("/v1/banner", body, &header)
 		res := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, r.Code)

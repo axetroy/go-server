@@ -621,7 +621,7 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 ### 用户类
 
-<details><summary>登陆<code>[POST] /v1/admin/login</code></summary>
+<details><summary>登陆<code>[POST] /v1/login</code></summary>
 
 <p>
 
@@ -634,7 +634,7 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 </details>
 
-<details><summary>获取管理员信息<code>[GET] /v1/admin/profile</code></summary>
+<details><summary>获取管理员信息<code>[GET] /v1/profile</code></summary>
 
 
 <p>
@@ -648,7 +648,7 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 ### 管理员类
 
-<details><summary>创建管理员<code>[POST] /v1/admin/create</code></summary>
+<details><summary>创建管理员<code>[POST] /v1/create</code></summary>
 
 仅限于超级管理员
 

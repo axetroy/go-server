@@ -17,6 +17,15 @@ import (
 	"testing"
 )
 
+func init() {
+	// 确保超级管理员存在
+	admin.CreateAdmin(admin.CreateAdminParams{
+		Account:  "admin",
+		Password: "admin",
+		Name:     "admin",
+	}, true)
+}
+
 func TestDelete(t *testing.T) {
 	var (
 		adminUid string
@@ -162,7 +171,7 @@ func TestDeleteRouter(t *testing.T) {
 			Content: content,
 		})
 
-		r := tester.Http.Post("/v1/admin/notification/create", body, &header)
+		r := tester.HttpAdmin.Post("/v1/notification", body, &header)
 		res := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, r.Code)
@@ -178,7 +187,7 @@ func TestDeleteRouter(t *testing.T) {
 
 	// 删除这条通知
 	{
-		r := tester.Http.Delete("/v1/admin/notification/delete/"+notificationInfo.Id, nil, &header)
+		r := tester.HttpAdmin.Delete("/v1/notification/n/"+notificationInfo.Id, nil, &header)
 
 		res := schema.Response{}
 

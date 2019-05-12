@@ -6,9 +6,11 @@ import (
 )
 
 var (
-	Http mocker.Mocker
+	Http      mocker.Mocker
+	HttpAdmin mocker.Mocker
 )
 
 func init() {
-	Http = mocker.New(src.Router)
+	Http = mocker.New(src.RouterUserClient)
+	HttpAdmin = mocker.New(src.RouterAdminClient)
 }

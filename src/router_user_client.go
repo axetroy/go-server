@@ -2,9 +2,7 @@ package src
 
 import (
 	"github.com/axetroy/go-server/src/controller/address"
-	"github.com/axetroy/go-server/src/controller/admin"
 	"github.com/axetroy/go-server/src/controller/auth"
-	"github.com/axetroy/go-server/src/controller/banner"
 	"github.com/axetroy/go-server/src/controller/downloader"
 	"github.com/axetroy/go-server/src/controller/email"
 	"github.com/axetroy/go-server/src/controller/finance"
@@ -24,7 +22,7 @@ import (
 	"net/http"
 )
 
-var Router *gin.Engine
+var RouterUserClient *gin.Engine
 
 func init() {
 	gin.SetMode(gin.ReleaseMode)
@@ -72,79 +70,6 @@ func init() {
 		})
 
 		userAuthMiddleware := middleware.Authenticate(false) // 用户Token的中间件
-		adminAuthMiddleware := middleware.Authenticate(true) // 管理员Token的中间件
-
-		// 管理员所有接口
-		// TODO: 管理员接口应该和用户接口分离
-		adminRouter := v1.Group("/admin")
-		{
-			// 登陆
-			adminRouter.POST("/login", admin.LoginRouter)
-
-			userRouter := adminRouter.Group("user")
-			{
-				userRouter.Use(adminAuthMiddleware)
-				userRouter.GET("/list", admin.GetAdminInfoRouter)            // TODO: 获取会员列表
-				userRouter.GET("/detail/:user_id", admin.GetAdminInfoRouter) // TODO: 获取单个会员的信息
-				userRouter.PUT("/update/:user_id", admin.GetAdminInfoRouter) // TODO: 更新会员信息
-				userRouter.PUT("/reset_password", admin.GetAdminInfoRouter)  // TODO: 修改会员密码
-			}
-
-			// 管理员类
-			adRouter := adminRouter.Group("admin")
-			{
-				adRouter.Use(adminAuthMiddleware)
-				adRouter.POST("/create", admin.CreateAdminRouter)
-				adRouter.GET("/profile", admin.GetAdminInfoRouter)
-				adRouter.DELETE("/delete/:admin_id", admin.GetAdminInfoRouter)      // TODO: 删除管理员
-				adRouter.GET("/detail/:admin_id", admin.GetAdminInfoRouter)         // TODO: 获取某个管理员的信息
-				adRouter.GET("/list/:admin_id", admin.GetAdminInfoRouter)           // TODO: 获取管理员列表
-				adRouter.GET("/reset_password/:admin_id", admin.GetAdminInfoRouter) // TODO: 修改管理员密码
-			}
-
-			// 新闻咨询类
-			newsRouter := adminRouter.Group("/news")
-			{
-				newsRouter.Use(adminAuthMiddleware)
-				newsRouter.POST("/create", news.CreateRouter)
-				newsRouter.PUT("/update/:news_id", news.UpdateRouter)
-				newsRouter.DELETE("/delete/:news_id", news.UpdateRouter) // TODO: 删除新闻
-				newsRouter.GET("/list", news.UpdateRouter)               // TODO: 获取新闻列表
-			}
-
-			// 系统通知
-			notificationRouter := adminRouter.Group("/notification")
-			{
-				notificationRouter.Use(adminAuthMiddleware)
-				notificationRouter.POST("/create", notification.CreateRouter)
-				notificationRouter.PUT("/update/:id", notification.UpdateRouter)
-				notificationRouter.DELETE("/delete/:id", notification.DeleteRouter)
-				notificationRouter.GET("/detail/:id", notification.DeleteRouter) // TODO: 获取单条系统通知
-				notificationRouter.GET("/list", notification.DeleteRouter)       // TODO: 获取系统通知列表
-			}
-
-			// 个人消息
-			messageRouter := adminRouter.Group("/message")
-			{
-				messageRouter.Use(adminAuthMiddleware)
-				messageRouter.POST("/create", message.CreateRouter)
-				messageRouter.PUT("/update/:message_id", message.UpdateRouter)
-				messageRouter.GET("/detail/:message_id", message.DeleteByAdminRouter) // TODO: 获取个人消息
-				messageRouter.GET("/list", message.DeleteByAdminRouter)               // TODO: 获取个人消息列表
-				messageRouter.DELETE("/delete/:message_id", message.DeleteByAdminRouter)
-			}
-
-			// Banner
-			bannerRouter := adminRouter.Group("banner")
-			{
-				bannerRouter.Use(adminAuthMiddleware)
-				bannerRouter.POST("/create", banner.CreateRouter)
-				bannerRouter.PUT("/update/:banner_id", banner.UpdateRouter)
-				bannerRouter.PUT("/detail/:banner_id", banner.UpdateRouter)    // TODO: 获取 banner 详情
-				bannerRouter.GET("/list", banner.UpdateRouter)                 // TODO: 获取 banner 列表
-				bannerRouter.DELETE("/delete/:banner_id", banner.UpdateRouter) // TODO: 删除 banner
-			}
-		}
 
 		// 认证类
 		authRouter := v1.Group("/auth")
@@ -268,5 +193,5 @@ func init() {
 		}
 	}
 
-	Router = router
+	RouterUserClient = router
 }

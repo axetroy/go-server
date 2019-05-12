@@ -27,9 +27,18 @@ func init() {
 }
 
 // Server 运行服务器
-func Server() {
+func ServerUserClient() {
 	port := "8080"
-	if err := Router.Run(":" + port); err != nil {
+	if err := RouterUserClient.Run(":" + port); err != nil {
+		panic(err)
+	}
+	fmt.Println("Listen on port " + port)
+}
+
+// Server 运行服务器
+func ServerAdminClient() {
+	port := "8081"
+	if err := RouterAdminClient.Run(":" + port); err != nil {
 		panic(err)
 	}
 	fmt.Println("Listen on port " + port)

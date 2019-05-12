@@ -121,7 +121,7 @@ func TestUpdateRouter(t *testing.T) {
 			Platform: model.BannerPlatformApp,
 		})
 
-		r := tester.Http.Post("/v1/admin/banner/create", body, &header)
+		r := tester.HttpAdmin.Post("/v1/banner", body, &header)
 
 		if !assert.Equal(t, http.StatusOK, r.Code) {
 			return
@@ -159,7 +159,7 @@ func TestUpdateRouter(t *testing.T) {
 			Description: &newDescription,
 		})
 
-		r := tester.Http.Put("/v1/admin/banner/update/"+bannerInfo.Id, body, &header)
+		r := tester.HttpAdmin.Put("/v1/banner/b/"+bannerInfo.Id, body, &header)
 
 		if !assert.Equal(t, http.StatusOK, r.Code) {
 			return

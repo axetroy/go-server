@@ -67,7 +67,7 @@ func TestUpdate(t *testing.T) {
 		assert.Equal(t, content, n.Content)
 	}
 
-	// 更新这个刚添加的地址
+	// 更新这个刚添加的消息
 	{
 
 		var (
@@ -76,7 +76,8 @@ func TestUpdate(t *testing.T) {
 		)
 
 		r := message.Update(context, messageInfo.Id, message.UpdateParams{
-			Title: &newTitle,
+			Title:   &newTitle,
+			Content: &newContent,
 		})
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
@@ -138,7 +139,7 @@ func TestUpdateRouter(t *testing.T) {
 			Content: &newContent,
 		})
 
-		r := tester.Http.Put("/v1/admin/message/update/"+messageInfo.Id, body, &header)
+		r := tester.HttpAdmin.Put("/v1/message/update/"+messageInfo.Id, body, &header)
 
 		if !assert.Equal(t, http.StatusOK, r.Code) {
 			return

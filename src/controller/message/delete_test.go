@@ -2,6 +2,7 @@ package message_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/controller/admin"
 	"github.com/axetroy/go-server/src/controller/auth"
@@ -18,6 +19,15 @@ import (
 	"net/http"
 	"testing"
 )
+
+func init() {
+	// 确保超级管理员存在
+	admin.CreateAdmin(admin.CreateAdminParams{
+		Account:  "admin",
+		Password: "admin",
+		Name:     "admin",
+	}, true)
+}
 
 func TestDeleteByAdmin(t *testing.T) {
 	var (
@@ -164,7 +174,7 @@ func TestDeleteByAdminRouter(t *testing.T) {
 			Content: content,
 		})
 
-		r := tester.Http.Post("/v1/admin/message/create", body, &header)
+		r := tester.HttpAdmin.Post("/v1/message/create", body, &header)
 		res := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, r.Code)
@@ -180,7 +190,7 @@ func TestDeleteByAdminRouter(t *testing.T) {
 
 	// 删除这条通知
 	{
-		r := tester.Http.Delete("/v1/admin/message/delete/"+messageInfo.Id, nil, &header)
+		r := tester.HttpAdmin.Delete("/v1/message/delete/"+messageInfo.Id, nil, &header)
 
 		res := schema.Response{}
 
@@ -318,86 +328,20 @@ func TestDeleteByUser(t *testing.T) {
 
 func TestDeleteByUserRouter(t *testing.T) {
 	var (
-		username    = "test-create-address"
-		password    = "123123"
-		tokenString string
-		adminUid    string
 		messageInfo = schema.Message{}
 	)
 
-	// 普通用户的创建和登陆
-	{
-		if r := auth.SignUp(auth.SignUpParams{
-			Username: &username,
-			Password: password,
-		}); r.Status != schema.StatusSuccess {
-			t.Error(r.Message)
-			return
-		} else {
-			userInfo := schema.Profile{}
-			if err := tester.Decode(r.Data, &userInfo); err != nil {
-				t.Error(err)
-				return
-			}
-			defer func() {
-				auth.DeleteUserByUserName(username)
-			}()
+	userInfo, _ := tester.CreateUser()
 
-			// 登陆获取Token
-			if r := auth.SignIn(controller.Context{
-				UserAgent: "test",
-				Ip:        "0.0.0.0.0",
-			}, auth.SignInParams{
-				Account:  username,
-				Password: password,
-			}); r.Status != schema.StatusSuccess {
-				t.Error(r.Message)
-				return
-			} else {
-				userInfo := schema.ProfileWithToken{}
-				if err := tester.Decode(r.Data, &userInfo); err != nil {
-					t.Error(err)
-					return
-				}
-				tokenString = userInfo.Token
-			}
-		}
-	}
+	defer auth.DeleteUserByUserName(userInfo.Username)
 
-	// 管理员登陆
-	{
-		{
-			// 登陆超级管理员-成功
-
-			r := admin.Login(admin.SignInParams{
-				Username: "admin",
-				Password: "admin",
-			})
-
-			assert.Equal(t, schema.StatusSuccess, r.Status)
-			assert.Equal(t, "", r.Message)
-
-			adminInfo := schema.AdminProfileWithToken{}
-
-			if err := tester.Decode(r.Data, &adminInfo); err != nil {
-				t.Error(err)
-				return
-			}
-
-			assert.Equal(t, "admin", adminInfo.Username)
-			assert.True(t, len(adminInfo.Token) > 0)
-
-			if c, er := util.ParseToken(util.TokenPrefix+" "+adminInfo.Token, true); er != nil {
-				t.Error(er)
-			} else {
-				adminUid = c.Uid
-			}
-		}
-	}
+	adminInfo, _ := tester.LoginAdmin()
 
 	header := mocker.Header{
-		"Authorization": util.TokenPrefix + " " + tokenString,
+		"Authorization": util.TokenPrefix + " " + adminInfo.Token,
 	}
+
+	fmt.Println(adminInfo)
 
 	// 创建一条个人信息
 	{
@@ -407,7 +351,7 @@ func TestDeleteByUserRouter(t *testing.T) {
 		)
 
 		r := message.Create(controller.Context{
-			Uid: adminUid,
+			Uid: adminInfo.Id,
 		}, message.CreateMessageParams{
 			Title:   title,
 			Content: content,
@@ -432,16 +376,30 @@ func TestDeleteByUserRouter(t *testing.T) {
 
 		res := schema.Response{}
 
-		assert.Equal(t, http.StatusOK, r.Code)
-		assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+		if !assert.Equal(t, http.StatusOK, r.Code) {
+			return
+		}
+
+		if !assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res)) {
+			return
+		}
+
+		assert.Equal(t, schema.StatusSuccess, res.Status)
+		assert.Equal(t, "", res.Message)
+
+		fmt.Println(res)
 
 		// 再查找这条记录，应该是空的
 
-		n := model.Message{Id: messageInfo.Id}
+		n := model.Message{}
 
-		err := service.Db.Where(&n).First(&n).Error
+		err := service.Db.Where("id = ?", messageInfo.Id).First(&n).Error
 
-		assert.NotNil(t, err)
-		assert.Equal(t, gorm.ErrRecordNotFound.Error(), err.Error())
+		if !assert.NotNil(t, err) {
+			return
+		}
+		if !assert.Equal(t, gorm.ErrRecordNotFound.Error(), err.Error()) {
+			return
+		}
 	}
 }

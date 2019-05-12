@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	src.Server()
+	src.ServerUserClient()
 }

@@ -13,6 +13,7 @@ require (
 	github.com/jinzhu/gorm v1.9.8
 	github.com/joho/godotenv v1.3.0
 	github.com/jordan-wright/email v0.0.0-20190218024454-3ea4d25e7cf8
+	github.com/kataras/iris v11.1.1+incompatible // indirect
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/lib/pq v1.1.1
 	github.com/mitchellh/mapstructure v1.1.2

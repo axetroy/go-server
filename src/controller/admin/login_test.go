@@ -72,7 +72,7 @@ func TestLoginRouter(t *testing.T) {
 			Password: "invalid_password",
 		})
 
-		r := tester.Http.Post("/v1/admin/login", body, nil)
+		r := tester.HttpAdmin.Post("/v1/login", body, nil)
 
 		assert.Equal(t, http.StatusOK, r.Code)
 
@@ -91,7 +91,7 @@ func TestLoginRouter(t *testing.T) {
 			Password: "admin",
 		})
 
-		r := tester.Http.Post("/v1/admin/login", body, nil)
+		r := tester.HttpAdmin.Post("/v1/login", body, nil)
 
 		assert.Equal(t, http.StatusOK, r.Code)
 

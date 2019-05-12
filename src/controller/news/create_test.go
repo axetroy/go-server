@@ -108,7 +108,6 @@ func TestCreateRouter(t *testing.T) {
 		return
 	}
 
-	// 登陆正确的管理员账号
 	{
 		var (
 			title   = "test"
@@ -125,7 +124,7 @@ func TestCreateRouter(t *testing.T) {
 			Type:    model.NewsType_News,
 		})
 
-		r := tester.Http.Post("/v1/admin/news/create", body, &header)
+		r := tester.HttpAdmin.Post("/v1/news", body, &header)
 		res := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, r.Code)
