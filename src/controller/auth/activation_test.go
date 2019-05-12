@@ -17,7 +17,7 @@ import (
 func TestActivationWithEmptyBody(t *testing.T) {
 
 	// empty body
-	r := tester.Http.Post("/v1/auth/activation", []byte(nil), nil)
+	r := tester.HttpUser.Post("/v1/auth/activation", []byte(nil), nil)
 
 	if ok := assert.Equal(t, http.StatusOK, r.Code); !ok {
 		return
@@ -40,7 +40,7 @@ func TestActivationWithInvalidCode(t *testing.T) {
 	})
 
 	// empty body
-	r := tester.Http.Post("/v1/auth/activation", body, nil)
+	r := tester.HttpUser.Post("/v1/auth/activation", body, nil)
 
 	assert.Equal(t, http.StatusOK, r.Code)
 
@@ -95,7 +95,7 @@ func TestActivationSuccess(t *testing.T) {
 	})
 
 	// empty body
-	r := tester.Http.Post("/v1/auth/activation", body, nil)
+	r := tester.HttpUser.Post("/v1/auth/activation", body, nil)
 
 	assert.Equal(t, http.StatusOK, r.Code)
 

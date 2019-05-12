@@ -21,7 +21,7 @@ func TestGetProfileWithInvalidAuth(t *testing.T) {
 		"Authorization": "Bearera 12312", // invalid Bearera
 	}
 
-	r := tester.Http.Get("/v1/user/profile", []byte(""), &header)
+	r := tester.HttpUser.Get("/v1/user/profile", []byte(""), &header)
 
 	if !assert.Equal(t, http.StatusOK, r.Code) {
 		return
@@ -46,7 +46,7 @@ func TestGetProfileWithInvalidToken(t *testing.T) {
 		"Authorization": util.TokenPrefix + " 12312",
 	}
 
-	r := tester.Http.Get("/v1/user/profile", []byte(""), &header)
+	r := tester.HttpUser.Get("/v1/user/profile", []byte(""), &header)
 
 	if !assert.Equal(t, http.StatusOK, r.Code) {
 		return
@@ -114,7 +114,7 @@ func TestGetProfile(t *testing.T) {
 		"Authorization": util.TokenPrefix + " " + tokenString,
 	}
 
-	r := tester.Http.Get("/v1/user/profile", []byte(""), &header)
+	r := tester.HttpUser.Get("/v1/user/profile", []byte(""), &header)
 
 	if !assert.Equal(t, http.StatusOK, r.Code) {
 		return

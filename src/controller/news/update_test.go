@@ -12,15 +12,6 @@ import (
 	"testing"
 )
 
-func init() {
-	// 确保超级管理员存在
-	admin.CreateAdmin(admin.CreateAdminParams{
-		Account:  "admin",
-		Password: "admin",
-		Name:     "admin",
-	}, true)
-}
-
 func TestUpdate(t *testing.T) {
 	// 更新成功
 	{

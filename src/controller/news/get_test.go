@@ -13,15 +13,6 @@ import (
 	"testing"
 )
 
-func init() {
-	// 确保超级管理员存在
-	admin.CreateAdmin(admin.CreateAdminParams{
-		Account:  "admin",
-		Password: "admin",
-		Name:     "admin",
-	}, true)
-}
-
 func TestGetNews(t *testing.T) {
 	// 获取一篇不存在的新闻公告
 	{

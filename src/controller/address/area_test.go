@@ -11,7 +11,7 @@ import (
 )
 
 func TestAreaRouter(t *testing.T) {
-	r := tester.Http.Get("/v1/area", nil, nil)
+	r := tester.HttpUser.Get("/v1/area", nil, nil)
 
 	if !assert.Equal(t, http.StatusOK, r.Code) {
 		return

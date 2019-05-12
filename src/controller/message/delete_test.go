@@ -20,15 +20,6 @@ import (
 	"testing"
 )
 
-func init() {
-	// 确保超级管理员存在
-	admin.CreateAdmin(admin.CreateAdminParams{
-		Account:  "admin",
-		Password: "admin",
-		Name:     "admin",
-	}, true)
-}
-
 func TestDeleteByAdmin(t *testing.T) {
 	var (
 		adminUid string
@@ -372,7 +363,7 @@ func TestDeleteByUserRouter(t *testing.T) {
 
 	// 删除这条通知
 	{
-		r := tester.Http.Delete("/v1/message/delete/"+messageInfo.Id, nil, &header)
+		r := tester.HttpUser.Delete("/v1/message/delete/"+messageInfo.Id, nil, &header)
 
 		res := schema.Response{}
 

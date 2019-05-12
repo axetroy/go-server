@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"github.com/axetroy/go-server/src/model"
+	"github.com/axetroy/go-server/src/util"
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
 	"os"
@@ -84,6 +85,20 @@ func init() {
 	fmt.Println("数据库同步完成.")
 
 	Db = db
+
+	// 确保超级管理员账号存在
+	if err := db.First(&model.Admin{Username: "admin", IsSuper: true}).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			db.Create(&model.Admin{
+				Username: "admin",
+				Name:     "admin",
+				Password: util.GeneratePassword("admin"),
+				Status:   model.AdminStatusInit,
+				IsSuper:  true,
+			})
+		}
+		panic(err)
+	}
 }
 
 func DeleteRowByTable(tableName string, field string, value interface{}) {

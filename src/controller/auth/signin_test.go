@@ -17,7 +17,7 @@ import (
 
 func TestSignInWithEmptyBody(t *testing.T) {
 	// empty body
-	r := tester.Http.Post("/v1/auth/signin", []byte(nil), nil)
+	r := tester.HttpUser.Post("/v1/auth/signin", []byte(nil), nil)
 
 	assert.Equal(t, http.StatusOK, r.Code)
 
@@ -37,7 +37,7 @@ func TestSignInWithInvalidPassword(t *testing.T) {
 	})
 
 	// empty body
-	r := tester.Http.Post("/v1/auth/signin", body, nil)
+	r := tester.HttpUser.Post("/v1/auth/signin", body, nil)
 
 	assert.Equal(t, http.StatusOK, r.Code)
 

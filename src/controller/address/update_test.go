@@ -180,7 +180,7 @@ func TestUpdateRouter(t *testing.T) {
 			Address:      "中关村28号526",
 		})
 
-		r := tester.Http.Post("/v1/user/address/create", body, &header)
+		r := tester.HttpUser.Post("/v1/user/address/create", body, &header)
 
 		if !assert.Equal(t, http.StatusOK, r.Code) {
 			return
@@ -218,7 +218,7 @@ func TestUpdateRouter(t *testing.T) {
 			Phone: &newPhone,
 		})
 
-		r := tester.Http.Put("/v1/user/address/update/"+addressInfo.Id, body, &header)
+		r := tester.HttpUser.Put("/v1/user/address/update/"+addressInfo.Id, body, &header)
 
 		if !assert.Equal(t, http.StatusOK, r.Code) {
 			return

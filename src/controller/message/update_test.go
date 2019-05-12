@@ -3,7 +3,6 @@ package message_test
 import (
 	"encoding/json"
 	"github.com/axetroy/go-server/src/controller"
-	"github.com/axetroy/go-server/src/controller/admin"
 	"github.com/axetroy/go-server/src/controller/auth"
 	"github.com/axetroy/go-server/src/controller/message"
 	"github.com/axetroy/go-server/src/model"
@@ -15,15 +14,6 @@ import (
 	"net/http"
 	"testing"
 )
-
-func init() {
-	// 确保超级管理员存在
-	admin.CreateAdmin(admin.CreateAdminParams{
-		Account:  "admin",
-		Password: "admin",
-		Name:     "admin",
-	}, true)
-}
 
 func TestUpdate(t *testing.T) {
 	var (

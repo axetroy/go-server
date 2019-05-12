@@ -16,7 +16,7 @@ import (
 
 func TestSignUpWithEmptyBody(t *testing.T) {
 	// empty body
-	r := tester.Http.Post("/v1/auth/signup", []byte(nil), nil)
+	r := tester.HttpUser.Post("/v1/auth/signup", []byte(nil), nil)
 
 	assert.Equal(t, http.StatusOK, r.Code)
 
@@ -38,7 +38,7 @@ func TestSignUpWithNotFullBody(t *testing.T) {
 	})
 
 	// empty body
-	r := tester.Http.Post("/v1/auth/signup", body, nil)
+	r := tester.HttpUser.Post("/v1/auth/signup", body, nil)
 
 	assert.Equal(t, http.StatusOK, r.Code)
 

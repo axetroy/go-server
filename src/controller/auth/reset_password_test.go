@@ -18,7 +18,7 @@ import (
 
 func TestResetPasswordWithEmptyBody(t *testing.T) {
 	// empty body
-	r := tester.Http.Put("/v1/auth/password/reset", []byte(nil), nil)
+	r := tester.HttpUser.Put("/v1/auth/password/reset", []byte(nil), nil)
 
 	assert.Equal(t, http.StatusOK, r.Code)
 
@@ -40,7 +40,7 @@ func TestResetPasswordWithInvalidPassword(t *testing.T) {
 	})
 
 	// empty body
-	r := tester.Http.Put("/v1/auth/password/reset", body, nil)
+	r := tester.HttpUser.Put("/v1/auth/password/reset", body, nil)
 
 	assert.Equal(t, http.StatusOK, r.Code)
 
@@ -95,7 +95,7 @@ func TestResetPasswordSuccess(t *testing.T) {
 	})
 
 	// empty body
-	r := tester.Http.Put("/v1/auth/password/reset", body, nil)
+	r := tester.HttpUser.Put("/v1/auth/password/reset", body, nil)
 
 	assert.Equal(t, http.StatusOK, r.Code)
 

@@ -29,7 +29,7 @@ func TestSendActivationEmail(t *testing.T) {
 		To: "123adsd@dasdad.com", // invalid email
 	})
 
-	r := tester.Http.Post("/v1/email/send/activation", body, nil)
+	r := tester.HttpUser.Post("/v1/email/send/activation", body, nil)
 
 	if !assert.Equal(t, http.StatusOK, r.Code) {
 		return
