@@ -74,6 +74,17 @@
 - [ ] 帮助中心
 - [ ] Banner 轮播图
 
+## 如何使用
+
+```bash
+# 拉取项目
+go get -v github.com/axetroy/go-server
+# 运行用户端的接口服务
+go run ./cmd/user/main.go
+# 运行管理员端的接口服务
+go run ./cmd/admin/main.go
+```
+
 ## TODO
 
 - [ ] i18n 的错误信息
@@ -665,7 +676,7 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 ### 新闻资讯类
 
-<details><summary>添加新闻资讯<code>[POST] /v1/admin/news/create</code></summary>
+<details><summary>添加新闻资讯<code>[POST] /v1/news/create</code></summary>
 
 <p>
 
@@ -680,7 +691,7 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 </details>
 
-<details><summary>更新新闻资讯<code>[PUT] /v1/admin/news/update/:news_id</code></summary>
+<details><summary>更新新闻资讯<code>[PUT] /v1/news/update/:news_id</code></summary>
 
 <p>
 
@@ -697,7 +708,7 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 ### 系统通知类
 
-<details><summary>新增系统通知<code>[POST] /v1/admin/notification/create</code></summary>
+<details><summary>新增系统通知<code>[POST] /v1/notification/create</code></summary>
 
 <p>
 
@@ -711,7 +722,7 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 </details>
 
-<details><summary>修改系统通知<code>[PUT] /v1/admin/notification/update/:notification_id</code></summary>
+<details><summary>修改系统通知<code>[PUT] /v1/notification/update/:notification_id</code></summary>
 
 <p>
 
@@ -725,7 +736,7 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 </details>
 
-<details><summary>删除系统通知<code>[DELETE] /v1/admin/notification/delete/:notification_id</code></summary>
+<details><summary>删除系统通知<code>[DELETE] /v1/notification/delete/:notification_id</code></summary>
 
 <p>
 
@@ -737,7 +748,7 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 ### 个人消息类
 
-<details><summary>新增个人消息<code>[POST] /v1/admin/message/create</code></summary>
+<details><summary>新增个人消息<code>[POST] /v1/message/create</code></summary>
 
 <p>
 
@@ -751,7 +762,7 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 </details>
 
-<details><summary>删除个人消息<code>[DELETE] /v1/admin/message/delete/:message_id</code></summary>
+<details><summary>删除个人消息<code>[DELETE] /v1/message/delete/:message_id</code></summary>
 
 <p>
 
@@ -761,7 +772,7 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 </details>
 
-<details><summary>更改个人消息<code>[PUT] /v1/admin/message/update/:message_id</code></summary>
+<details><summary>更改个人消息<code>[PUT] /v1/message/update/:message_id</code></summary>
 
 <p>
 
