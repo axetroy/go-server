@@ -306,7 +306,7 @@ func SendResetPayPassword(context controller.Context) (res schema.Response) {
 			return
 		}
 	} else if userInfo.Phone != nil {
-		// TODO: 发生手机验证码
+		// TODO: 发送手机验证码
 	} else {
 		// 无效的用户
 		err = exception.NoData

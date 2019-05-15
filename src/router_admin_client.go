@@ -129,11 +129,16 @@ func init() {
 		// 个人消息
 		messageRouter := v1.Group("/message")
 		{
-			messageRouter.POST("/create", message.CreateRouter)
-			messageRouter.PUT("/update/:message_id", message.UpdateRouter)
-			messageRouter.GET("/detail/:message_id", message.DeleteByAdminRouter) // TODO: 获取个人消息
-			messageRouter.GET("/list", message.DeleteByAdminRouter)               // TODO: 获取个人消息列表
-			messageRouter.DELETE("/delete/:message_id", message.DeleteByAdminRouter)
+			messageRouter.GET("/", message.DeleteByAdminRouter) // TODO: 获取个人消息列表
+			messageRouter.POST("/", message.CreateRouter)
+
+			m := messageRouter.Group("/m/:message_id")
+
+			{
+				m.PUT("/", message.UpdateRouter)
+				m.GET("/", message.DeleteByAdminRouter) // TODO: 获取个人消息
+				m.DELETE("/", message.DeleteByAdminRouter)
+			}
 		}
 
 		// Banner

@@ -148,7 +148,7 @@ func init() {
 		// 系统通知
 		notificationRouter := v1.Group("/notification")
 		{
-			walletRouter.Use(userAuthMiddleware)
+			notificationRouter.Use(userAuthMiddleware)
 			notificationRouter.GET("/list", notification.GetListRouter)
 			notificationRouter.GET("/detail/:id", notification.GetRouter)
 			notificationRouter.GET("/read/:id", notification.ReadRouter)
@@ -157,11 +157,17 @@ func init() {
 		// 用户的个人通知, 用人通知是可以删除的
 		messageRouter := v1.Group("/message")
 		{
-			walletRouter.Use(userAuthMiddleware)
-			messageRouter.GET("/list", message.GetListRouter)
-			messageRouter.GET("/detail/:id", message.GetRouter)
-			messageRouter.GET("/read/:id", message.ReadRouter)
-			messageRouter.DELETE("/delete/:id", message.DeleteByUserRouter)
+			messageRouter.Use(userAuthMiddleware)
+
+			messageRouter.GET("/", message.GetListRouter)
+
+			m := messageRouter.Group("m/:id")
+
+			{
+				m.GET("/", message.GetRouter)
+				m.PUT("/read", message.ReadRouter)
+				m.DELETE("/", message.DeleteByUserRouter)
+			}
 		}
 
 		// 通用类

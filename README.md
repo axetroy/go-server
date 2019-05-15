@@ -443,7 +443,7 @@ go run ./cmd/admin/main.go
 
 ### 个人消息类
 
-<details><summary>个人消息列表<code>[GET] /v1/message/list</code></summary>
+<details><summary>个人消息列表<code>[GET] /v1/message</code></summary>
 <p>
 
 获取个人列表
@@ -452,7 +452,7 @@ go run ./cmd/admin/main.go
 
 </details>
 
-<details><summary>个人消息详情<code>[GET] /v1/message/detail/:message_id</code></summary>
+<details><summary>个人消息详情<code>[GET] /v1/message/m/:message_id</code></summary>
 <p>
 
 获取某个系统通知详情
@@ -461,7 +461,7 @@ go run ./cmd/admin/main.go
 
 </details>
 
-<details><summary>标记个人消息已读<code>[PUT] /v1/message/read/:message_id</code></summary>
+<details><summary>标记个人消息已读<code>[PUT] /v1/message/m/:message_id/read</code></summary>
 <p>
 
 标记个人消息为已读
@@ -470,7 +470,7 @@ go run ./cmd/admin/main.go
 
 </details>
 
-<details><summary>删除个人消息<code>[DELETE] /v1/message/delete/:message_id</code></summary>
+<details><summary>删除个人消息<code>[DELETE] /v1/message/m/:message_id</code></summary>
 <p>
 
 删除一条个人消息
@@ -748,7 +748,7 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 ### 个人消息类
 
-<details><summary>新增个人消息<code>[POST] /v1/message/create</code></summary>
+<details><summary>新增个人消息<code>[POST] /v1/message</code></summary>
 
 <p>
 
@@ -762,7 +762,7 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 </details>
 
-<details><summary>删除个人消息<code>[DELETE] /v1/message/delete/:message_id</code></summary>
+<details><summary>删除个人消息<code>[DELETE] /v1/message/m/:message_id</code></summary>
 
 <p>
 
@@ -772,7 +772,7 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 </details>
 
-<details><summary>更改个人消息<code>[PUT] /v1/message/update/:message_id</code></summary>
+<details><summary>更改个人消息<code>[PUT] /v1/message/m/:message_id</code></summary>
 
 <p>
 

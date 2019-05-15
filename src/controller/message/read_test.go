@@ -1,82 +1,31 @@
 package message_test
 
 import (
+	"encoding/json"
 	"github.com/axetroy/go-server/src/controller"
-	"github.com/axetroy/go-server/src/controller/admin"
 	"github.com/axetroy/go-server/src/controller/auth"
 	"github.com/axetroy/go-server/src/controller/message"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/axetroy/go-server/tester"
+	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
-	"math/rand"
+	"net/http"
 	"testing"
 )
 
 func TestMarkRead(t *testing.T) {
 	var (
-		adminUid string
+		testMessage schema.Message
 	)
-	// 先登陆获取管理员的Token
-	{
-		// 登陆超级管理员-成功
 
-		r := admin.Login(admin.SignInParams{
-			Username: "admin",
-			Password: "admin",
-		})
+	adminInfo, _ := tester.LoginAdmin()
+	userInfo, _ := tester.CreateUser()
 
-		assert.Equal(t, schema.StatusSuccess, r.Status)
-		assert.Equal(t, "", r.Message)
-
-		adminInfo := schema.AdminProfileWithToken{}
-
-		if err := tester.Decode(r.Data, &adminInfo); err != nil {
-			t.Error(err)
-			return
-		}
-
-		assert.Equal(t, "admin", adminInfo.Username)
-		assert.True(t, len(adminInfo.Token) > 0)
-
-		if c, er := util.ParseToken(util.TokenPrefix+" "+adminInfo.Token, true); er != nil {
-			t.Error(er)
-		} else {
-			adminUid = c.Uid
-		}
-	}
+	defer auth.DeleteUserByUserName(userInfo.Username)
 
 	context := controller.Context{
-		Uid: adminUid,
-	}
-
-	var testMessage schema.Message
-
-	var testUser schema.Profile
-
-	{
-		// 创建一个测试用户
-		// 1。 创建测试账号
-		rand.Seed(111)
-		username := "test-TestMarkRead"
-		password := "123123"
-
-		r := auth.SignUp(auth.SignUpParams{
-			Username: &username,
-			Password: password,
-		})
-
-		assert.Equal(t, schema.StatusSuccess, r.Status)
-		assert.Equal(t, "", r.Message)
-
-		testUser = schema.Profile{}
-
-		if err := tester.Decode(r.Data, &testUser); err != nil {
-			t.Error(err)
-			return
-		}
-
-		defer auth.DeleteUserByUserName(username)
+		Uid: adminInfo.Id,
 	}
 
 	// 创建一篇个人消息
@@ -87,7 +36,7 @@ func TestMarkRead(t *testing.T) {
 		)
 
 		r := message.Create(context, message.CreateMessageParams{
-			Uid:     testUser.Id,
+			Uid:     userInfo.Id,
 			Title:   title,
 			Content: content,
 		})
@@ -108,7 +57,7 @@ func TestMarkRead(t *testing.T) {
 	{
 		// 用测试用户标记为已读
 		r := message.MarkRead(controller.Context{
-			Uid: testUser.Id,
+			Uid: userInfo.Id,
 		}, testMessage.Id)
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
@@ -118,7 +67,7 @@ func TestMarkRead(t *testing.T) {
 	{
 		// 用测试者的账号获取详情
 		r := message.Get(controller.Context{
-			Uid: testUser.Id,
+			Uid: userInfo.Id,
 		}, testMessage.Id)
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
@@ -135,6 +84,60 @@ func TestMarkRead(t *testing.T) {
 }
 
 func TestReadRouter(t *testing.T) {
-	// TODO: 完善HTTP的测试用例
-	t.Skip()
+	var (
+		testMessage schema.Message
+	)
+
+	adminInfo, _ := tester.LoginAdmin()
+	userInfo, _ := tester.CreateUser()
+
+	defer auth.DeleteUserByUserName(userInfo.Username)
+
+	context := controller.Context{
+		Uid: adminInfo.Id,
+	}
+
+	// 创建一篇个人消息
+	{
+		var (
+			title   = "TestUpdate"
+			content = "TestUpdate"
+		)
+
+		r := message.Create(context, message.CreateMessageParams{
+			Uid:     userInfo.Id,
+			Title:   title,
+			Content: content,
+		})
+
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
+
+		testMessage = schema.Message{}
+
+		assert.Nil(t, tester.Decode(r.Data, &testMessage))
+
+		defer message.DeleteMessageById(testMessage.Id)
+
+		assert.Equal(t, title, testMessage.Title)
+		assert.Equal(t, content, testMessage.Content)
+	}
+
+	// 用户标记为已读
+	{
+
+		header := mocker.Header{
+			"Authorization": util.TokenPrefix + " " + userInfo.Token,
+		}
+
+		r := tester.HttpUser.Put("/v1/message/m/"+testMessage.Id+"/read", nil, &header)
+		res := schema.Response{}
+
+		assert.Equal(t, http.StatusOK, r.Code)
+		assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+
+		n := schema.Message{}
+
+		assert.Nil(t, tester.Decode(res.Data, &n))
+	}
 }
