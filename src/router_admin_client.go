@@ -117,28 +117,20 @@ func init() {
 			notificationRouter.POST("", notification.CreateRouter)
 			notificationRouter.GET("", notification.DeleteRouter) // TODO: 获取系统通知列表
 
-			n := notificationRouter.Group("n")
-			{
-				n.PUT("/:id", notification.UpdateRouter)
-				n.DELETE("/:id", notification.DeleteRouter)
-				n.GET("/:id", notification.DeleteRouter) // TODO: 获取单条系统通知
-			}
-
+			notificationRouter.PUT("/n/:id", notification.UpdateRouter)
+			notificationRouter.DELETE("/n/:id", notification.DeleteRouter)
+			notificationRouter.GET("/n/:id", notification.DeleteRouter) // TODO: 获取单条系统通知
 		}
 
 		// 个人消息
 		messageRouter := v1.Group("/message")
 		{
-			messageRouter.GET("/", message.DeleteByAdminRouter) // TODO: 获取个人消息列表
-			messageRouter.POST("/", message.CreateRouter)
+			messageRouter.GET("", message.DeleteByAdminRouter) // TODO: 获取个人消息列表
+			messageRouter.POST("", message.CreateRouter)
 
-			m := messageRouter.Group("/m/:message_id")
-
-			{
-				m.PUT("/", message.UpdateRouter)
-				m.GET("/", message.DeleteByAdminRouter) // TODO: 获取个人消息
-				m.DELETE("/", message.DeleteByAdminRouter)
-			}
+			messageRouter.GET("/m/:message_id", message.UpdateRouter) // TODO: 获取个人消息
+			messageRouter.PUT("/m/:message_id", message.UpdateRouter)
+			messageRouter.DELETE("/m/:message_id", message.DeleteByAdminRouter)
 		}
 
 		// Banner

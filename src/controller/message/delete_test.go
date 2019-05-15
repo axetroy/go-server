@@ -165,7 +165,7 @@ func TestDeleteByAdminRouter(t *testing.T) {
 			Content: content,
 		})
 
-		r := tester.HttpAdmin.Post("/v1/message/create", body, &header)
+		r := tester.HttpAdmin.Post("/v1/message", body, &header)
 		res := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, r.Code)
@@ -181,7 +181,7 @@ func TestDeleteByAdminRouter(t *testing.T) {
 
 	// 删除这条通知
 	{
-		r := tester.HttpAdmin.Delete("/v1/message/delete/"+messageInfo.Id, nil, &header)
+		r := tester.HttpAdmin.Delete("/v1/message/m/"+messageInfo.Id, nil, &header)
 
 		res := schema.Response{}
 
@@ -328,11 +328,9 @@ func TestDeleteByUserRouter(t *testing.T) {
 
 	adminInfo, _ := tester.LoginAdmin()
 
-	header := mocker.Header{
-		"Authorization": util.TokenPrefix + " " + adminInfo.Token,
+	userHeader := mocker.Header{
+		"Authorization": util.TokenPrefix + " " + userInfo.Token,
 	}
-
-	fmt.Println(adminInfo)
 
 	// 创建一条个人信息
 	{
@@ -363,7 +361,7 @@ func TestDeleteByUserRouter(t *testing.T) {
 
 	// 删除这条通知
 	{
-		r := tester.HttpUser.Delete("/v1/message/delete/"+messageInfo.Id, nil, &header)
+		r := tester.HttpUser.Delete("/v1/message/m/"+messageInfo.Id, nil, &userHeader)
 
 		res := schema.Response{}
 

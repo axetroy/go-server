@@ -158,16 +158,10 @@ func init() {
 		messageRouter := v1.Group("/message")
 		{
 			messageRouter.Use(userAuthMiddleware)
-
-			messageRouter.GET("/", message.GetListRouter)
-
-			m := messageRouter.Group("m/:id")
-
-			{
-				m.GET("/", message.GetRouter)
-				m.PUT("/read", message.ReadRouter)
-				m.DELETE("/", message.DeleteByUserRouter)
-			}
+			messageRouter.GET("/", message.GetListRouter)                      // 获取我的消息列表
+			messageRouter.GET("/m/:message_id", message.GetRouter)             // 获取单个消息详情
+			messageRouter.PUT("/m/:message_id/read", message.ReadRouter)       // 标记消息为已读
+			messageRouter.DELETE("/m/:message_id", message.DeleteByUserRouter) // 删除消息
 		}
 
 		// 通用类

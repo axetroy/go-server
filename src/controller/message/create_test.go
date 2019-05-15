@@ -3,7 +3,6 @@ package message_test
 import (
 	"encoding/json"
 	"github.com/axetroy/go-server/src/controller"
-	"github.com/axetroy/go-server/src/controller/admin"
 	"github.com/axetroy/go-server/src/controller/auth"
 	"github.com/axetroy/go-server/src/controller/message"
 	"github.com/axetroy/go-server/src/exception"
@@ -19,37 +18,7 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	var (
-		adminUid string
-	)
-	// 先登陆获取管理员的Token
-	{
-		// 登陆超级管理员-成功
-
-		r := admin.Login(admin.SignInParams{
-			Username: "admin",
-			Password: "admin",
-		})
-
-		assert.Equal(t, schema.StatusSuccess, r.Status)
-		assert.Equal(t, "", r.Message)
-
-		adminInfo := schema.AdminProfileWithToken{}
-
-		if err := tester.Decode(r.Data, &adminInfo); err != nil {
-			t.Error(err)
-			return
-		}
-
-		assert.Equal(t, "admin", adminInfo.Username)
-		assert.True(t, len(adminInfo.Token) > 0)
-
-		if c, er := util.ParseToken(util.TokenPrefix+" "+adminInfo.Token, true); er != nil {
-			t.Error(er)
-		} else {
-			adminUid = c.Uid
-		}
-	}
+	adminInfo, _ := tester.LoginAdmin()
 
 	// 创建一个消息
 	{
@@ -59,7 +28,7 @@ func TestCreate(t *testing.T) {
 		)
 
 		r := message.Create(controller.Context{
-			Uid: adminUid,
+			Uid: adminInfo.Id,
 		}, message.CreateMessageParams{
 			Title:   title,
 			Content: content,
@@ -124,39 +93,9 @@ func TestCreate(t *testing.T) {
 }
 
 func TestCreateRouter(t *testing.T) {
-	var (
-		adminToken string
-	)
-	// 先登陆获取管理员的Token
-	{
-		// 登陆超级管理员-成功
+	adminInfo, _ := tester.LoginAdmin()
 
-		r := admin.Login(admin.SignInParams{
-			Username: "admin",
-			Password: "admin",
-		})
-
-		assert.Equal(t, schema.StatusSuccess, r.Status)
-		assert.Equal(t, "", r.Message)
-
-		adminInfo := schema.AdminProfileWithToken{}
-
-		if err := tester.Decode(r.Data, &adminInfo); err != nil {
-			t.Error(err)
-			return
-		}
-
-		assert.Equal(t, "admin", adminInfo.Username)
-		assert.True(t, len(adminInfo.Token) > 0)
-
-		if _, er := util.ParseToken(util.TokenPrefix+" "+adminInfo.Token, true); er != nil {
-			t.Error(er)
-		} else {
-			adminToken = adminInfo.Token
-		}
-	}
-
-	// 登陆正确的管理员账号
+	// 创建一条消息
 	{
 		var (
 			title   = "test"
@@ -164,7 +103,7 @@ func TestCreateRouter(t *testing.T) {
 		)
 
 		header := mocker.Header{
-			"Authorization": util.TokenPrefix + " " + adminToken,
+			"Authorization": util.TokenPrefix + " " + adminInfo.Token,
 		}
 
 		body, _ := json.Marshal(&message.CreateMessageParams{
@@ -172,7 +111,7 @@ func TestCreateRouter(t *testing.T) {
 			Content: content,
 		})
 
-		r := tester.HttpAdmin.Post("/v1/message/create", body, &header)
+		r := tester.HttpAdmin.Post("/v1/message", body, &header)
 		res := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, r.Code)

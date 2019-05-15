@@ -129,7 +129,7 @@ func TestUpdateRouter(t *testing.T) {
 			Content: &newContent,
 		})
 
-		r := tester.HttpAdmin.Put("/v1/message/update/"+messageInfo.Id, body, &header)
+		r := tester.HttpAdmin.Put("/v1/message/m/"+messageInfo.Id, body, &header)
 
 		if !assert.Equal(t, http.StatusOK, r.Code) {
 			return
