@@ -28,7 +28,7 @@ func TestSendResetPasswordEmail(t *testing.T) {
 		To: "123adsd@dasdad.com", // invalid email
 	})
 
-	r := tester.HttpUser.Post("/v1/email/send/reset_password", body, nil)
+	r := tester.HttpUser.Post("/v1/email/send/password/reset", body, nil)
 
 	assert.Equal(t, http.StatusOK, r.Code)
 

@@ -168,7 +168,7 @@ func init() {
 		{
 			// 邮件服务
 			v1.POST("/email/send/activation", email.SendActivationEmailRouter)
-			v1.POST("/email/send/reset_password", email.SendResetPasswordEmailRouter)
+			v1.POST("/email/send/password/reset", email.SendResetPasswordEmailRouter)
 
 			// 文件上传 (需要验证token)
 			uploadRouter := v1.Group("/upload")

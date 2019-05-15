@@ -516,7 +516,7 @@ go run ./cmd/admin/main.go
 
 </details>
 
-<details><summary>发送登陆密码重置邮件<code>[POST] /v1/email/send/reset_password</code></summary>
+<details><summary>发送登陆密码重置邮件<code>[POST] /v1/email/send/password/reset</code></summary>
 <p>
 
 发送账号激活邮件
