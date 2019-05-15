@@ -114,23 +114,21 @@ func init() {
 		// 系统通知
 		notificationRouter := v1.Group("/notification")
 		{
-			notificationRouter.POST("", notification.CreateRouter)
-			notificationRouter.GET("", notification.DeleteRouter) // TODO: 获取系统通知列表
-
-			notificationRouter.PUT("/n/:id", notification.UpdateRouter)
-			notificationRouter.DELETE("/n/:id", notification.DeleteRouter)
-			notificationRouter.GET("/n/:id", notification.DeleteRouter) // TODO: 获取单条系统通知
+			notificationRouter.POST("", notification.CreateRouter)         // 创建系统通知
+			notificationRouter.GET("", notification.DeleteRouter)          // TODO: 获取系统通知列表
+			notificationRouter.PUT("/n/:id", notification.UpdateRouter)    // 更新系统通知
+			notificationRouter.DELETE("/n/:id", notification.DeleteRouter) // 删除系统通知
+			notificationRouter.GET("/n/:id", notification.DeleteRouter)    // TODO: 获取单条系统通知
 		}
 
 		// 个人消息
 		messageRouter := v1.Group("/message")
 		{
-			messageRouter.GET("", message.DeleteByAdminRouter) // TODO: 获取个人消息列表
-			messageRouter.POST("", message.CreateRouter)
-
-			messageRouter.GET("/m/:message_id", message.UpdateRouter) // TODO: 获取个人消息
-			messageRouter.PUT("/m/:message_id", message.UpdateRouter)
-			messageRouter.DELETE("/m/:message_id", message.DeleteByAdminRouter)
+			messageRouter.POST("", message.CreateRouter)                        // 指定某个用户创建个人消息
+			messageRouter.GET("", message.DeleteByAdminRouter)                  // TODO: 获取个人消息列表
+			messageRouter.GET("/m/:message_id", message.UpdateRouter)           // TODO: 获取个人消息
+			messageRouter.PUT("/m/:message_id", message.UpdateRouter)           // 更新个人消息
+			messageRouter.DELETE("/m/:message_id", message.DeleteByAdminRouter) // 删除个人消息
 		}
 
 		// Banner

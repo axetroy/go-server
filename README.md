@@ -414,7 +414,7 @@ go run ./cmd/admin/main.go
 
 ### 系统通知类
 
-<details><summary>系统通知列表<code>[GET] /v1/notification/list</code></summary>
+<details><summary>系统通知列表<code>[GET] /v1/notification</code></summary>
 <p>
 
 获取系统通知列表
@@ -423,7 +423,7 @@ go run ./cmd/admin/main.go
 
 </details>
 
-<details><summary>系统通知详情<code>[GET] /v1/notification/detail/:notification_id</code></summary>
+<details><summary>系统通知详情<code>[GET] /v1/notification/n/:notification_id</code></summary>
 <p>
 
 获取某个系统通知详情
@@ -432,7 +432,7 @@ go run ./cmd/admin/main.go
 
 </details>
 
-<details><summary>标记系统通知已读<code>[PUT] /v1/notification/read/:notification_id</code></summary>
+<details><summary>标记系统通知已读<code>[PUT] /v1/notification/n/:notification_id/read</code></summary>
 <p>
 
 标记系统通知为已读
@@ -708,7 +708,7 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 ### 系统通知类
 
-<details><summary>新增系统通知<code>[POST] /v1/notification/create</code></summary>
+<details><summary>新增系统通知<code>[POST] /v1/notification</code></summary>
 
 <p>
 
@@ -722,7 +722,7 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 </details>
 
-<details><summary>修改系统通知<code>[PUT] /v1/notification/update/:notification_id</code></summary>
+<details><summary>修改系统通知<code>[PUT] /v1/notification/n/:notification_id</code></summary>
 
 <p>
 
@@ -736,7 +736,7 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 </details>
 
-<details><summary>删除系统通知<code>[DELETE] /v1/notification/delete/:notification_id</code></summary>
+<details><summary>删除系统通知<code>[DELETE] /v1/notification/n/:notification_id</code></summary>
 
 <p>
 

@@ -149,9 +149,9 @@ func init() {
 		notificationRouter := v1.Group("/notification")
 		{
 			notificationRouter.Use(userAuthMiddleware)
-			notificationRouter.GET("/list", notification.GetListRouter)
-			notificationRouter.GET("/detail/:id", notification.GetRouter)
-			notificationRouter.GET("/read/:id", notification.ReadRouter)
+			notificationRouter.GET("/", notification.GetListRouter)
+			notificationRouter.GET("/n/:id", notification.GetRouter)
+			notificationRouter.GET("/n/:id/read", notification.ReadRouter)
 		}
 
 		// 用户的个人通知, 用人通知是可以删除的
