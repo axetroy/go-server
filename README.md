@@ -481,7 +481,7 @@ go run ./cmd/admin/main.go
 
 ### 新闻资讯类
 
-<details><summary>资讯列表<code>[GET] /v1/news/list</code></summary>
+<details><summary>资讯列表<code>[GET] /v1/news</code></summary>
 <p>
 
 获取资讯列表
@@ -490,7 +490,7 @@ go run ./cmd/admin/main.go
 
 </details>
 
-<details><summary>资讯详情<code>[GET] /v1/news/detail/:news_id</code></summary>
+<details><summary>资讯详情<code>[GET] /v1/news/n/:news_id</code></summary>
 <p>
 
 获取某个资讯详情
@@ -676,7 +676,7 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 ### 新闻资讯类
 
-<details><summary>添加新闻资讯<code>[POST] /v1/news/create</code></summary>
+<details><summary>添加新闻资讯<code>[POST] /v1/news</code></summary>
 
 <p>
 
@@ -691,7 +691,7 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 </details>
 
-<details><summary>更新新闻资讯<code>[PUT] /v1/news/update/:news_id</code></summary>
+<details><summary>更新新闻资讯<code>[PUT] /v1/news/n/:news_id</code></summary>
 
 <p>
 

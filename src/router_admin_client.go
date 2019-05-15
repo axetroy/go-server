@@ -100,15 +100,11 @@ func init() {
 		// 新闻咨询类
 		newsRouter := v1.Group("/news")
 		{
-			newsRouter.POST("", news.CreateRouter)
-			newsRouter.GET("", news.UpdateRouter) // TODO: 获取新闻列表
-
-			n := newsRouter.Group("n")
-			{
-				n.PUT("/:news_id", news.UpdateRouter)
-				n.DELETE("/:news_id", news.UpdateRouter) // TODO: 删除新闻
-				n.GET("/:news_id", news.UpdateRouter)    // TODO: 获取新闻详情
-			}
+			newsRouter.POST("", news.CreateRouter)              // 新建新闻公告
+			newsRouter.GET("", news.UpdateRouter)               // TODO: 获取新闻列表
+			newsRouter.GET("/n/:news_id", news.UpdateRouter)    // TODO: 获取新闻详情
+			newsRouter.PUT("/n/:news_id", news.UpdateRouter)    // 更新新闻公告
+			newsRouter.DELETE("/n/:news_id", news.UpdateRouter) // TODO: 删除新闻
 		}
 
 		// 系统通知

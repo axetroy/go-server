@@ -141,8 +141,8 @@ func init() {
 		// 新闻咨询类
 		newsRouter := v1.Group("/news")
 		{
-			newsRouter.GET("/list", news.GetListRouter)
-			newsRouter.GET("/detail/:id", news.GetNewsRouter)
+			newsRouter.GET("/", news.GetListRouter)      // 获取新闻公告列表
+			newsRouter.GET("/n/:id", news.GetNewsRouter) // 获取单个新闻公告详情
 		}
 
 		// 系统通知
