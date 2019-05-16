@@ -87,6 +87,7 @@ go run ./cmd/admin/main.go
 
 ## TODO
 
+- [ ] RBAC 的权限控制模型
 - [ ] i18n 的错误信息
 - [ ] 启用消息队列
 - [ ] 提供 RPC 接口
