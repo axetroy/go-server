@@ -335,6 +335,8 @@ go run ./cmd/admin/main.go
 
 </p>
 
+</details>
+
 <details><summary>获取某一个地址<code>[GET] /v1/user/address/a/:address_id</code></summary>
 <p>
 
