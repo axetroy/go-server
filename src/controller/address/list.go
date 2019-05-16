@@ -79,11 +79,6 @@ func GetList(context controller.Context, input Query) (res schema.List) {
 	meta.Page = query.Page
 	meta.Limit = query.Limit
 
-	meta.Total = total
-	meta.Num = len(data)
-	meta.Page = query.Page
-	meta.Limit = query.Limit
-
 	return
 }
 

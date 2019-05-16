@@ -3,6 +3,7 @@ package src
 import (
 	"github.com/axetroy/go-server/src/controller/address"
 	"github.com/axetroy/go-server/src/controller/auth"
+	"github.com/axetroy/go-server/src/controller/banner"
 	"github.com/axetroy/go-server/src/controller/downloader"
 	"github.com/axetroy/go-server/src/controller/email"
 	"github.com/axetroy/go-server/src/controller/finance"
@@ -132,7 +133,7 @@ func init() {
 			notificationRouter.GET("/n/:id/read", notification.ReadRouter) // 标记通知为已读
 		}
 
-		// 用户的个人通知, 用人通知是可以删除的
+		// 用户的个人消息, 个人消息是可以删除的
 		messageRouter := v1.Group("/message")
 		{
 			messageRouter.Use(userAuthMiddleware)
@@ -140,6 +141,13 @@ func init() {
 			messageRouter.GET("/m/:message_id", message.GetRouter)             // 获取单个消息详情
 			messageRouter.PUT("/m/:message_id/read", message.ReadRouter)       // 标记消息为已读
 			messageRouter.DELETE("/m/:message_id", message.DeleteByUserRouter) // 删除消息
+		}
+
+		// Banner
+		bannerRouter := v1.Group("banner")
+		{
+			bannerRouter.GET("", banner.GetListRouter)                // 获取 banner 列表
+			bannerRouter.GET("/b/:banner_id", banner.GetBannerRouter) // 获取 banner 详情
 		}
 
 		// 通用类

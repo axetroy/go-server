@@ -1,23 +1,27 @@
-package invite
+package banner
 
 import (
 	"errors"
+	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service"
 	"github.com/gin-gonic/gin"
+	"github.com/mitchellh/mapstructure"
 	"net/http"
+	"time"
 )
 
 type Query struct {
 	schema.Query
+	//Status model.NewsStatus `json:"status" form:"status"`
 }
 
-func GetList(input Query) (res schema.List) {
+func GetList(context controller.Context, input Query) (res schema.List) {
 	var (
 		err  error
-		data = make([]model.InviteHistory, 0)
+		data = make([]schema.Banner, 0)
 		meta = &schema.Meta{}
 	)
 
@@ -48,14 +52,27 @@ func GetList(input Query) (res schema.List) {
 
 	query.Normalize()
 
+	list := make([]model.Banner, 0)
+
 	var total int64
 
-	if err = service.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Find(&data).Count(&total).Error; err != nil {
+	if err = service.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Find(&list).Count(&total).Error; err != nil {
 		return
 	}
 
+	for _, v := range list {
+		d := schema.Banner{}
+		if er := mapstructure.Decode(v, &d.BannerPure); er != nil {
+			err = er
+			return
+		}
+		d.CreatedAt = v.CreatedAt.Format(time.RFC3339Nano)
+		d.UpdatedAt = v.UpdatedAt.Format(time.RFC3339Nano)
+		data = append(data, d)
+	}
+
 	meta.Total = total
-	meta.Num = len(data)
+	meta.Num = len(list)
 	meta.Page = query.Page
 	meta.Limit = query.Limit
 
@@ -82,5 +99,7 @@ func GetListRouter(context *gin.Context) {
 		return
 	}
 
-	res = GetList(input)
+	res = GetList(controller.Context{
+		Uid: context.GetString("uid"),
+	}, input)
 }

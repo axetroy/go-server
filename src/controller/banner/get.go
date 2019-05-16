@@ -1,4 +1,4 @@
-package invite
+package banner
 
 import (
 	"errors"
@@ -7,18 +7,16 @@ import (
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
+	"github.com/mitchellh/mapstructure"
 	"net/http"
+	"time"
 )
 
-type Query struct {
-	schema.Query
-}
-
-func GetList(input Query) (res schema.List) {
+func GetBanner(id string) (res schema.Response) {
 	var (
 		err  error
-		data = make([]model.InviteHistory, 0)
-		meta = &schema.Meta{}
+		data = schema.Banner{}
 	)
 
 	defer func() {
@@ -34,39 +32,39 @@ func GetList(input Query) (res schema.List) {
 		}
 
 		if err != nil {
-			res.Message = err.Error()
 			res.Data = nil
-			res.Meta = nil
+			res.Message = err.Error()
 		} else {
 			res.Data = data
 			res.Status = schema.StatusSuccess
-			res.Meta = meta
 		}
 	}()
 
-	query := input.Query
+	bannerInfo := model.Banner{
+		Id: id,
+	}
 
-	query.Normalize()
-
-	var total int64
-
-	if err = service.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Find(&data).Count(&total).Error; err != nil {
+	if err = service.Db.First(&bannerInfo).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = exception.BannerNotExist
+		}
 		return
 	}
 
-	meta.Total = total
-	meta.Num = len(data)
-	meta.Page = query.Page
-	meta.Limit = query.Limit
+	if err = mapstructure.Decode(bannerInfo, &data.BannerPure); err != nil {
+		return
+	}
+
+	data.CreatedAt = bannerInfo.CreatedAt.Format(time.RFC3339Nano)
+	data.UpdatedAt = bannerInfo.UpdatedAt.Format(time.RFC3339Nano)
 
 	return
 }
 
-func GetListRouter(context *gin.Context) {
+func GetBannerRouter(context *gin.Context) {
 	var (
-		err   error
-		res   = schema.List{}
-		input Query
+		err error
+		res = schema.Response{}
 	)
 
 	defer func() {
@@ -77,10 +75,7 @@ func GetListRouter(context *gin.Context) {
 		context.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindQuery(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
+	id := context.Param("banner_id")
 
-	res = GetList(input)
+	res = GetBanner(id)
 }

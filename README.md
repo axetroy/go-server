@@ -72,7 +72,7 @@
 
 - [x] 静态文件服务
 - [ ] 帮助中心
-- [ ] Banner 轮播图
+- [x] Banner 轮播图
 
 ## 如何使用
 
@@ -627,6 +627,28 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 </details>
 
+### Banner 轮播图
+
+<details><summary>获取 banner 列表<code>[GET] /v1/banner</code></summary>
+
+<p>
+
+获取 banner 列表
+
+</p>
+
+</details>
+
+<details><summary>获取 banner 详情<code>[GET] /v1/banner/b/:banner_id</code></summary>
+
+<p>
+
+获取一条 banner 的详情
+
+</p>
+
+</details>
+
 ## 管理员接口
 
 ### 用户类
@@ -784,6 +806,75 @@ Form 表单图片上传, 目前仅支持单张图片上传
 </p>
 
 </details>
+
+### Banner 轮播图
+
+<details><summary>新增 banner<code>[POST] /v1/banner</code></summary>
+
+<p>
+
+| 参数         | 说明                                                    | 必选 |
+| ------------ | ------------------------------------------------------- | ---- |
+| image        | 图片URL                                                 | *    |
+| href         | 图片跳转的链接                                          | *    |
+| platform     | 该 banner 图片运用在哪个平台. 分别为 `PC` 或 `APP`      | *    |
+| description  | 该 banner 的描述信息                                    |      |
+| priority     | 优先级，用于排序                                        |      |
+| identifier   | APP 跳转标识符, 给 APP 跳转页面用的                     |      |
+| fallback_url | 当 APP  的 identifier 无效时的备选方案，跳转的 URL 地址 |      |
+
+</p>
+
+</details>
+
+<details><summary>修改 banner<code>[PUT] /v1/banner/b/:banner_id</code></summary>
+
+<p>
+
+| 参数         | 说明                                                    | 必选 |
+| ------------ | ------------------------------------------------------- | ---- |
+| image        | 图片URL                                                 |      |
+| href         | 图片跳转的链接                                          |      |
+| platform     | 该 banner 图片运用在哪个平台. 分别为 `PC` 或 `APP`      |      |
+| description  | 该 banner 的描述信息                                    |      |
+| priority     | 优先级，用于排序                                        |      |
+| identifier   | APP 跳转标识符, 给 APP 跳转页面用的                     |      |
+| fallback_url | 当 APP  的 identifier 无效时的备选方案，跳转的 URL 地址 |      |
+
+</p>
+
+</details>
+
+<details><summary>删除 banner<code>[DELETE] /v1/banner/b/:banner_id</code></summary>
+
+<p>
+
+删除一条 banner
+
+</p>
+
+</details>
+
+<details><summary>获取 banner 列表<code>[GET] /v1/banner</code></summary>
+
+<p>
+
+获取 banner 列表
+
+</p>
+
+</details>
+
+<details><summary>获取 banner 详情<code>[GET] /v1/banner/b/:banner_id</code></summary>
+
+<p>
+
+获取一条 banner 的详情
+
+</p>
+
+</details>
+
 
 ## License
 

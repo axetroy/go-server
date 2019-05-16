@@ -99,11 +99,11 @@ func init() {
 		// Banner
 		bannerRouter := v1.Group("banner")
 		{
-			bannerRouter.GET("", banner.UpdateRouter) // TODO: 获取 banner 列表
-			bannerRouter.POST("", banner.CreateRouter)
-			bannerRouter.PUT("/b/:banner_id", banner.UpdateRouter)
-			bannerRouter.GET("/b/:banner_id", banner.UpdateRouter)    // TODO: 获取 banner 详情
-			bannerRouter.DELETE("/b/:banner_id", banner.UpdateRouter) // TODO: 删除 banner
+			bannerRouter.GET("", banner.GetListRouter)                // 获取 banner 列表
+			bannerRouter.POST("", banner.CreateRouter)                // 创建 banner
+			bannerRouter.PUT("/b/:banner_id", banner.UpdateRouter)    // 更新 banner
+			bannerRouter.GET("/b/:banner_id", banner.GetBannerRouter) // 获取 banner 详情
+			bannerRouter.DELETE("/b/:banner_id", banner.DeleteRouter) // 删除 banner
 		}
 	}
 
