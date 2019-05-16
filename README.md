@@ -75,7 +75,7 @@
 - [用户端](docs/user_api.md)
 - [管理员端](docs/admin_api.md)
 
-## 如何运行
+## 如何运行?
 
 首选确保你安装有:
 
@@ -91,6 +91,20 @@
 > docker-compose up # 启动数据库和其他必要的依赖服务
 > go run ./cmd/user/main.go # 运行用户端的接口服务
 > go run ./cmd/admin/main.go # 运行管理员端的接口服务
+```
+
+## 如何构建?
+
+```bash
+make build
+```
+
+在生成的 bin 目录下查找对应平台的可执行文件运行即可
+
+## 如何测试?
+
+```bash
+make test
 ```
 
 ## TODO
