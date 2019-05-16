@@ -17,117 +17,115 @@ import (
 
 func TestUpdate(t *testing.T) {
 	// 更新成功
+	// 1. 先登陆获取管理员的Token
+	var (
+		adminUid string
+		newsId   string
+	)
 	{
-		// 1. 先登陆获取管理员的Token
+		r := admin.Login(admin.SignInParams{
+			Username: "admin",
+			Password: "admin",
+		})
+
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
+
+		adminInfo := schema.AdminProfileWithToken{}
+
+		assert.Nil(t, tester.Decode(r.Data, &adminInfo))
+
+		if c, er := util.ParseToken(util.TokenPrefix+" "+adminInfo.Token, true); er != nil {
+			t.Error(er)
+		} else {
+			adminUid = c.Uid
+		}
+	}
+
+	// 2. 先创建一篇新闻作为测试
+	{
 		var (
-			adminUid string
-			newsId   string
+			title    = "test"
+			content  = "test"
+			newsType = model.NewsType_News
 		)
-		{
-			r := admin.Login(admin.SignInParams{
-				Username: "admin",
-				Password: "admin",
-			})
 
-			assert.Equal(t, schema.StatusSuccess, r.Status)
-			assert.Equal(t, "", r.Message)
+		r := news.Create(controller.Context{
+			Uid: adminUid,
+		}, news.CreateNewParams{
+			Title:   title,
+			Content: content,
+			Type:    newsType,
+			Tags:    []string{},
+		})
 
-			adminInfo := schema.AdminProfileWithToken{}
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
 
-			assert.Nil(t, tester.Decode(r.Data, &adminInfo))
+		n := schema.News{}
 
-			if c, er := util.ParseToken(util.TokenPrefix+" "+adminInfo.Token, true); er != nil {
-				t.Error(er)
-			} else {
-				adminUid = c.Uid
-			}
-		}
+		assert.Nil(t, tester.Decode(r.Data, &n))
 
-		// 2. 先创建一篇新闻作为测试
-		{
-			var (
-				title    = "test"
-				content  = "test"
-				newsType = model.NewsType_News
-			)
+		newsId = n.Id
 
-			r := news.Create(controller.Context{
-				Uid: adminUid,
-			}, news.CreateNewParams{
-				Title:   title,
-				Content: content,
-				Type:    newsType,
-				Tags:    []string{},
-			})
+		defer func() {
+			news.DeleteNewsById(n.Id)
+		}()
+	}
 
-			assert.Equal(t, schema.StatusSuccess, r.Status)
-			assert.Equal(t, "", r.Message)
+	// 3. 更新这篇新闻公告
+	{
+		var (
+			newTittle  = "new title"
+			newContent = "new content"
+			newType    = model.NewsType_Announcement
+			newTags    = []string{newTittle}
+		)
 
-			n := schema.News{}
+		r := news.Update(controller.Context{
+			Uid: adminUid,
+		}, newsId, news.UpdateParams{
+			Title:   &newTittle,
+			Content: &newContent,
+			Type:    &newType,
+			Tags:    &newTags,
+		})
 
-			assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
 
-			newsId = n.Id
+		newsInfo := schema.News{}
 
-			defer func() {
-				news.DeleteNewsById(n.Id)
-			}()
-		}
+		assert.Nil(t, tester.Decode(r.Data, &newsInfo))
 
-		// 3. 更新这篇新闻公告
-		{
-			var (
-				newTittle  = "new title"
-				newContent = "new content"
-				newType    = model.NewsType_Announcement
-				newTags    = []string{newTittle}
-			)
+		assert.Equal(t, newTittle, newsInfo.Title)
+		assert.Equal(t, newContent, newsInfo.Content)
+		assert.Equal(t, newType, newsInfo.Type)
+		assert.Equal(t, newTags, newsInfo.Tags)
 
-			r := news.Update(controller.Context{
-				Uid: adminUid,
-			}, newsId, news.UpdateParams{
-				Title:   &newTittle,
-				Content: &newContent,
-				Type:    &newType,
-				Tags:    &newTags,
-			})
+		var (
+			newTittle2 = "new title 2"
+		)
 
-			assert.Equal(t, schema.StatusSuccess, r.Status)
-			assert.Equal(t, "", r.Message)
+		// 只更新部分字段
+		// 其余字段应该保持不变
+		r2 := news.Update(controller.Context{
+			Uid: adminUid,
+		}, newsId, news.UpdateParams{
+			Title: &newTittle2,
+		})
 
-			newsInfo := schema.News{}
+		assert.Equal(t, schema.StatusSuccess, r2.Status)
+		assert.Equal(t, "", r2.Message)
 
-			assert.Nil(t, tester.Decode(r.Data, &newsInfo))
+		newsInfo2 := schema.News{}
 
-			assert.Equal(t, newTittle, newsInfo.Title)
-			assert.Equal(t, newContent, newsInfo.Content)
-			assert.Equal(t, newType, newsInfo.Type)
-			assert.Equal(t, newTags, newsInfo.Tags)
+		assert.Nil(t, tester.Decode(r2.Data, &newsInfo2))
 
-			var (
-				newTittle2 = "new title 2"
-			)
-
-			// 只更新部分字段
-			// 其余字段应该保持不变
-			r2 := news.Update(controller.Context{
-				Uid: adminUid,
-			}, newsId, news.UpdateParams{
-				Title: &newTittle2,
-			})
-
-			assert.Equal(t, schema.StatusSuccess, r2.Status)
-			assert.Equal(t, "", r2.Message)
-
-			newsInfo2 := schema.News{}
-
-			assert.Nil(t, tester.Decode(r2.Data, &newsInfo2))
-
-			assert.Equal(t, newTittle2, newsInfo2.Title)
-			assert.Equal(t, newContent, newsInfo2.Content)
-			assert.Equal(t, newType, newsInfo2.Type)
-			assert.Equal(t, newTags, newsInfo2.Tags)
-		}
+		assert.Equal(t, newTittle2, newsInfo2.Title)
+		assert.Equal(t, newContent, newsInfo2.Content)
+		assert.Equal(t, newType, newsInfo2.Type)
+		assert.Equal(t, newTags, newsInfo2.Tags)
 	}
 }
 

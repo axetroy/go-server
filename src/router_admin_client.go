@@ -70,10 +70,10 @@ func init() {
 		newsRouter := v1.Group("/news")
 		{
 			newsRouter.POST("", news.CreateRouter)              // 新建新闻公告
-			newsRouter.GET("", news.UpdateRouter)               // TODO: 获取新闻列表
-			newsRouter.GET("/n/:news_id", news.UpdateRouter)    // TODO: 获取新闻详情
+			newsRouter.GET("", news.GetListRouter)              // 获取新闻列表
+			newsRouter.GET("/n/:news_id", news.GetNewsRouter)   // 获取新闻详情
 			newsRouter.PUT("/n/:news_id", news.UpdateRouter)    // 更新新闻公告
-			newsRouter.DELETE("/n/:news_id", news.UpdateRouter) // TODO: 删除新闻
+			newsRouter.DELETE("/n/:news_id", news.DeleteRouter) // 删除新闻
 		}
 
 		// 系统通知

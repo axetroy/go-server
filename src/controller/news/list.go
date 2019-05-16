@@ -7,7 +7,9 @@ import (
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service"
 	"github.com/gin-gonic/gin"
+	"github.com/mitchellh/mapstructure"
 	"net/http"
+	"time"
 )
 
 type Query struct {
@@ -18,7 +20,8 @@ type Query struct {
 func GetList(input Query) (res schema.List) {
 	var (
 		err  error
-		data = make([]model.News, 0)
+		data = make([]schema.News, 0) // 接口输出的数据
+		list = make([]model.News, 0)  // 数据库查询返回的原始数据
 		meta = &schema.Meta{}
 	)
 
@@ -51,8 +54,19 @@ func GetList(input Query) (res schema.List) {
 
 	var total int64
 
-	if err = service.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Find(&data).Count(&total).Error; err != nil {
+	if err = service.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Find(&list).Count(&total).Error; err != nil {
 		return
+	}
+
+	for _, v := range list {
+		d := schema.News{}
+		if er := mapstructure.Decode(v, &d.NewsPure); er != nil {
+			err = er
+			return
+		}
+		d.CreatedAt = v.CreatedAt.Format(time.RFC3339Nano)
+		d.UpdatedAt = v.UpdatedAt.Format(time.RFC3339Nano)
+		data = append(data, d)
 	}
 
 	meta.Total = total
