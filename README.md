@@ -72,8 +72,8 @@
 
 ## 提供了哪些接口？
 
-[用户端](docs/user_api.md)
-[管理员端](docs/admin_api.md)
+- [用户端](docs/user_api.md)
+- [管理员端](docs/admin_api.md)
 
 ## 如何运行
 
