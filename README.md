@@ -242,7 +242,7 @@ go run ./cmd/admin/main.go
 
 </details>
 
-<details><summary>我的邀请列表<code>[GET] /v1/user/invite/list</code></summary>
+<details><summary>我的邀请列表<code>[GET] /v1/user/invite</code></summary>
 <p>
 
 获取我的邀请列表
@@ -251,7 +251,7 @@ go run ./cmd/admin/main.go
 
 </details>
 
-<details><summary>获取单条邀请信息<code>[GET] /v1/user/invite/detail/:invite_id</code></summary>
+<details><summary>获取单条邀请信息<code>[GET] /v1/user/invite/i/:invite_id</code></summary>
 <p>
 
 | 参数      | 说明         | 必选 |

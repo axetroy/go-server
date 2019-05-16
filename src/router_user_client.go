@@ -82,8 +82,8 @@ func init() {
 			// 邀请人列表
 			inviteRouter := userRouter.Group("/invite")
 			{
-				inviteRouter.GET("/detail/:invite_id", invite.GetRouter) // 获取单条邀请记录详情
-				inviteRouter.GET("/list", invite.GetListRouter)          // 获取我已邀请的列表
+				inviteRouter.GET("", invite.GetListRouter)          // 获取我已邀请的列表
+				inviteRouter.GET("/i/:invite_id", invite.GetRouter) // 获取单条邀请记录详情
 			}
 			// 收货地址
 			addressRouter := userRouter.Group("/address")

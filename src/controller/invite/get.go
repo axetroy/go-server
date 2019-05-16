@@ -56,17 +56,12 @@ func Get(context controller.Context, id string) (res schema.Response) {
 
 	tx = service.Db.Begin()
 
-	if err = tx.Where(&inviteDetail).Last(&inviteDetail).Error; err != nil {
+	// 只能获取跟自己相关的
+	if err = tx.Where(model.InviteHistory{Inviter: context.Uid}).Or(model.InviteHistory{Invitee: context.Uid}).First(&inviteDetail).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			err = exception.InviteNotExist
 			return
 		}
-	}
-
-	// 只有跟自己有关的，才能获取详情
-	if inviteDetail.Inviter != context.Uid && inviteDetail.Invitee != context.Uid {
-		err = exception.NoPermission
-		return
 	}
 
 	if err = mapstructure.Decode(inviteDetail, &data.InvitePure); err != nil {
