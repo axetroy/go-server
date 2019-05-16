@@ -276,7 +276,7 @@ go run ./cmd/admin/main.go
 
 ### 收货地址
 
-<details><summary>添加收货地址<code>[POST] /v1/user/address/create</code></summary>
+<details><summary>添加收货地址<code>[POST] /v1/user/address</code></summary>
 <p>
 
 | 参数          | 说明                       | 必选 |
@@ -293,7 +293,7 @@ go run ./cmd/admin/main.go
 
 </details>
 
-<details><summary>更新收货地址<code>[PUT] /v1/user/address/update/:address_id</code></summary>
+<details><summary>更新收货地址<code>[PUT] /v1/user/address/a/:address_id</code></summary>
 <p>
 
 | 参数          | 说明                       | 必选 |
@@ -310,7 +310,7 @@ go run ./cmd/admin/main.go
 
 </details>
 
-<details><summary>删除收货地址<code>[DELETE] /v1/user/address/delete/:address_id</code></summary>
+<details><summary>删除收货地址<code>[DELETE] /v1/user/address/a/:address_id</code></summary>
 <p>
 
 删除收货地址
@@ -319,7 +319,7 @@ go run ./cmd/admin/main.go
 
 </details>
 
-<details><summary>收货地址列表<code>[GET] /v1/user/address/list</code></summary>
+<details><summary>收货地址列表<code>[GET] /v1/user/address</code></summary>
 <p>
 
 获取我的收货地址列表
@@ -332,6 +332,13 @@ go run ./cmd/admin/main.go
 <p>
 
 获取我的默认收货地址
+
+</p>
+
+<details><summary>获取某一个地址<code>[GET] /v1/user/address/a/:address_id</code></summary>
+<p>
+
+获取某一个地址的详细信息
 
 </p>
 

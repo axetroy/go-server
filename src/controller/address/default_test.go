@@ -125,7 +125,7 @@ func TestGetDefaultRouter(t *testing.T) {
 			Address:      "中关村28号526",
 		})
 
-		r := tester.HttpUser.Post("/v1/user/address/create", body, &header)
+		r := tester.HttpUser.Post("/v1/user/address", body, &header)
 
 		if !assert.Equal(t, http.StatusOK, r.Code) {
 			return
