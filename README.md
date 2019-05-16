@@ -86,16 +86,11 @@
 再根据以下命令运行
 
 ```bash
-# 拉取项目
-> go get -v github.com/axetroy/go-server
-# 切换到项目目录
-> cd $GOPATH/github/axetroy/go-server
-# 启动数据库和其他必要的依赖服务
-> docker-compose up
-# 运行用户端的接口服务
-> go run ./cmd/user/main.go
-# 运行管理员端的接口服务
-> go run ./cmd/admin/main.go
+> go get -v github.com/axetroy/go-server # 拉取项目
+> cd $GOPATH/github/axetroy/go-server # 切换到项目目录
+> docker-compose up # 启动数据库和其他必要的依赖服务
+> go run ./cmd/user/main.go # 运行用户端的接口服务
+> go run ./cmd/admin/main.go # 运行管理员端的接口服务
 ```
 
 ## TODO
