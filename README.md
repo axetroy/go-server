@@ -736,6 +736,8 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 </p>
 
+</details>
+
 <details><summary>获取单个资讯信息<code>[GET] /v1/news/n/:news_id</code></summary>
 
 <p>
