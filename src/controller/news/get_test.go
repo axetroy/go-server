@@ -1,15 +1,16 @@
 package news_test
 
 import (
+	"encoding/json"
 	"github.com/axetroy/go-server/src/controller"
-	"github.com/axetroy/go-server/src/controller/admin"
 	"github.com/axetroy/go-server/src/controller/news"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/util"
 	"github.com/axetroy/go-server/tester"
+	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
+	"net/http"
 	"testing"
 )
 
@@ -25,29 +26,10 @@ func TestGetNews(t *testing.T) {
 	// 获取一篇存在的新闻公告
 	{
 		var (
-			adminUid string
-			newsId   string
+			newsId string
 		)
-		// 1. 先登陆获取管理员的Token
-		{
-			r := admin.Login(admin.SignInParams{
-				Username: "admin",
-				Password: "admin",
-			})
 
-			assert.Equal(t, schema.StatusSuccess, r.Status)
-			assert.Equal(t, "", r.Message)
-
-			adminInfo := schema.AdminProfileWithToken{}
-
-			assert.Nil(t, tester.Decode(r.Data, &adminInfo))
-
-			if c, er := util.ParseToken(util.TokenPrefix+" "+adminInfo.Token, true); er != nil {
-				t.Error(er)
-			} else {
-				adminUid = c.Uid
-			}
-		}
+		adminInfo, _ := tester.LoginAdmin()
 
 		// 2. 先创建一篇新闻作为测试
 		{
@@ -58,7 +40,7 @@ func TestGetNews(t *testing.T) {
 			)
 
 			r := news.Create(controller.Context{
-				Uid: adminUid,
+				Uid: adminInfo.Id,
 			}, news.CreateNewParams{
 				Title:   title,
 				Content: content,
@@ -75,9 +57,7 @@ func TestGetNews(t *testing.T) {
 
 			newsId = n.Id
 
-			defer func() {
-				news.DeleteNewsById(n.Id)
-			}()
+			defer news.DeleteNewsById(n.Id)
 		}
 
 		// 3. 获取文章公告
@@ -95,5 +75,57 @@ func TestGetNews(t *testing.T) {
 			assert.Equal(t, "test", newsInfo.Content)
 			assert.Equal(t, model.NewsType_News, newsInfo.Type)
 		}
+	}
+}
+
+func TestGetNewsRouter(t *testing.T) {
+	var (
+		newsId string
+	)
+
+	adminInfo, _ := tester.LoginAdmin()
+
+	// 先创建一篇新闻作为测试
+	{
+		var (
+			title    = "test"
+			content  = "test"
+			newsType = model.NewsType_News
+		)
+
+		r := news.Create(controller.Context{
+			Uid: adminInfo.Id,
+		}, news.CreateNewParams{
+			Title:   title,
+			Content: content,
+			Type:    newsType,
+			Tags:    []string{},
+		})
+
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
+
+		n := schema.News{}
+
+		assert.Nil(t, tester.Decode(r.Data, &n))
+
+		newsId = n.Id
+
+		defer news.DeleteNewsById(n.Id)
+	}
+
+	// 获取详情
+	{
+		header := mocker.Header{}
+
+		r := tester.HttpUser.Get("/v1/news/n/"+newsId, nil, &header)
+		res := schema.Response{}
+
+		assert.Equal(t, http.StatusOK, r.Code)
+		assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+
+		n := schema.News{}
+
+		assert.Nil(t, tester.Decode(res.Data, &n))
 	}
 }

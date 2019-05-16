@@ -1,6 +1,7 @@
 package news_test
 
 import (
+	"encoding/json"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/controller/admin"
 	"github.com/axetroy/go-server/src/controller/news"
@@ -8,7 +9,9 @@ import (
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/axetroy/go-server/tester"
+	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
+	"net/http"
 	"testing"
 )
 
@@ -125,5 +128,85 @@ func TestUpdate(t *testing.T) {
 			assert.Equal(t, newType, newsInfo2.Type)
 			assert.Equal(t, newTags, newsInfo2.Tags)
 		}
+	}
+}
+
+func TestUpdateRouter(t *testing.T) {
+	var (
+		newsId string
+	)
+
+	adminInfo, _ := tester.LoginAdmin()
+
+	// 先创建一篇新闻作为测试
+	{
+		var (
+			title    = "test"
+			content  = "test"
+			newsType = model.NewsType_News
+		)
+
+		r := news.Create(controller.Context{
+			Uid: adminInfo.Id,
+		}, news.CreateNewParams{
+			Title:   title,
+			Content: content,
+			Type:    newsType,
+			Tags:    []string{},
+		})
+
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
+
+		n := schema.News{}
+
+		assert.Nil(t, tester.Decode(r.Data, &n))
+
+		newsId = n.Id
+
+		defer news.DeleteNewsById(n.Id)
+	}
+
+	var (
+		newTitle   = "new title"
+		newContent = "new content"
+	)
+
+	// 更新
+	{
+
+		header := mocker.Header{
+			"Authorization": util.TokenPrefix + " " + adminInfo.Token,
+		}
+
+		body, _ := json.Marshal(&news.UpdateParams{
+			Title:   &newTitle,
+			Content: &newContent,
+		})
+
+		r := tester.HttpAdmin.Put("/v1/news/n/"+newsId, body, &header)
+		res := schema.Response{}
+
+		assert.Equal(t, http.StatusOK, r.Code)
+		assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+
+		n := schema.News{}
+
+		assert.Nil(t, tester.Decode(res.Data, &n))
+
+		assert.Equal(t, newTitle, n.Title)
+		assert.Equal(t, newContent, n.Content)
+	}
+
+	// 获取详情查看是否更改成功
+	{
+		res := news.GetNews(newsId)
+
+		n := schema.News{}
+
+		assert.Nil(t, tester.Decode(res.Data, &n))
+
+		assert.Equal(t, newTitle, n.Title)
+		assert.Equal(t, newContent, n.Content)
 	}
 }

@@ -40,29 +40,7 @@ func init() {
 	// Simple group: v1
 	v1 := router.Group("/v1")
 
-	v1.Use(func(context *gin.Context) {
-		header := context.Writer.Header()
-		// alone dns prefect
-		header.Set("X-DNS-Prefetch-Control", "on")
-		// IE No Open
-		header.Set("X-Download-Options", "noopen")
-		// not cache
-		header.Set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
-		header.Set("Expires", "max-age=0")
-		// Content Security Policy
-		header.Set("Content-Security-Policy", "default-src 'self'")
-		// xss protect
-		// it will caught some problems is old IE
-		header.Set("X-XSS-Protection", "1; mode=block")
-		// Referrer Policy
-		header.Set("Referrer-Header", "no-referrer")
-		// cros frame, allow same origin
-		header.Set("X-Frame-Options", "SAMEORIGIN")
-		// HSTS
-		header.Set("Strict-Transport-Security", "max-age=5184000;includeSubDomains")
-		// no sniff
-		header.Set("X-Content-Type-Options", "nosniff")
-	})
+	v1.Use(middleware.Common)
 
 	{
 		v1.GET("", func(context *gin.Context) {
@@ -141,7 +119,7 @@ func init() {
 		// 新闻咨询类
 		newsRouter := v1.Group("/news")
 		{
-			newsRouter.GET("/", news.GetListRouter)      // 获取新闻公告列表
+			newsRouter.GET("", news.GetListRouter)       // 获取新闻公告列表
 			newsRouter.GET("/n/:id", news.GetNewsRouter) // 获取单个新闻公告详情
 		}
 
@@ -149,16 +127,16 @@ func init() {
 		notificationRouter := v1.Group("/notification")
 		{
 			notificationRouter.Use(userAuthMiddleware)
-			notificationRouter.GET("/", notification.GetListRouter)
-			notificationRouter.GET("/n/:id", notification.GetRouter)
-			notificationRouter.GET("/n/:id/read", notification.ReadRouter)
+			notificationRouter.GET("", notification.GetListRouter)         // 获取系统通知列表
+			notificationRouter.GET("/n/:id", notification.GetRouter)       // 获取某一条系统通知详情
+			notificationRouter.GET("/n/:id/read", notification.ReadRouter) // 标记通知为已读
 		}
 
 		// 用户的个人通知, 用人通知是可以删除的
 		messageRouter := v1.Group("/message")
 		{
 			messageRouter.Use(userAuthMiddleware)
-			messageRouter.GET("/", message.GetListRouter)                      // 获取我的消息列表
+			messageRouter.GET("", message.GetListRouter)                       // 获取我的消息列表
 			messageRouter.GET("/m/:message_id", message.GetRouter)             // 获取单个消息详情
 			messageRouter.PUT("/m/:message_id/read", message.ReadRouter)       // 标记消息为已读
 			messageRouter.DELETE("/m/:message_id", message.DeleteByUserRouter) // 删除消息
