@@ -50,29 +50,20 @@ func init() {
 			adRouter.GET("", admin.GetAdminInfoRouter)         // TODO: 获取管理员列表
 			adRouter.GET("/profile", admin.GetAdminInfoRouter) // 获取管理员信息
 
-			u := v1.Group("u")
-			{
-				u2 := u.Group(":admin_id")
-				{
-					u2.GET("", admin.GetAdminInfoRouter)          // TODO: 获取某个管理员的信息
-					u2.PUT("", admin.GetAdminInfoRouter)          // TODO: 修改管理员信息
-					u2.DELETE("", admin.GetAdminInfoRouter)       // TODO: 删除管理员
-					u2.PUT("/password", admin.GetAdminInfoRouter) // TODO: 修改管理员密码
-				}
-			}
+			adRouter.GET("/u/:admin_id", admin.GetAdminInfoRouter)          // TODO: 获取某个管理员的信息
+			adRouter.PUT("/u/:admin_id", admin.GetAdminInfoRouter)          // TODO: 修改管理员信息
+			adRouter.DELETE("/u/:admin_id", admin.GetAdminInfoRouter)       // TODO: 删除管理员
+			adRouter.PUT("/u/:admin_id/password", admin.GetAdminInfoRouter) // TODO: 修改管理员密码
 		}
 
 		// 用户类
 		userRouter := v1.Group("user")
 		{
-			u := userRouter.Group("u")
-			{
-				u.GET("/:user_id", admin.GetAdminInfoRouter)    // TODO: 获取单个会员的信息
-				u.PUT("/:user_id", admin.GetAdminInfoRouter)    // TODO: 更新会员信息
-				u.DELETE("/:user_id", admin.GetAdminInfoRouter) // TODO: 删除会员信息
-			}
-			userRouter.GET("/", admin.GetAdminInfoRouter)         // TODO: 获取会员列表
-			userRouter.PUT("/password", admin.GetAdminInfoRouter) // TODO: 修改会员密码
+			userRouter.GET("/", admin.GetAdminInfoRouter)              // TODO: 获取会员列表
+			userRouter.PUT("/password", admin.GetAdminInfoRouter)      // TODO: 修改会员密码
+			userRouter.GET("/u/:user_id", admin.GetAdminInfoRouter)    // TODO: 获取单个会员的信息
+			userRouter.PUT("/u/:user_id", admin.GetAdminInfoRouter)    // TODO: 更新会员信息
+			userRouter.DELETE("/u/:user_id", admin.GetAdminInfoRouter) // TODO: 删除会员信息
 		}
 
 		// 新闻咨询类
@@ -110,13 +101,9 @@ func init() {
 		{
 			bannerRouter.GET("", banner.UpdateRouter) // TODO: 获取 banner 列表
 			bannerRouter.POST("", banner.CreateRouter)
-
-			b := bannerRouter.Group("b")
-			{
-				b.PUT("/:banner_id", banner.UpdateRouter)
-				b.GET("/:banner_id", banner.UpdateRouter)    // TODO: 获取 banner 详情
-				b.DELETE("/:banner_id", banner.UpdateRouter) // TODO: 删除 banner
-			}
+			bannerRouter.PUT("/b/:banner_id", banner.UpdateRouter)
+			bannerRouter.GET("/b/:banner_id", banner.UpdateRouter)    // TODO: 获取 banner 详情
+			bannerRouter.DELETE("/b/:banner_id", banner.UpdateRouter) // TODO: 删除 banner
 		}
 	}
 
