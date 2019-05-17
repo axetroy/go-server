@@ -40,6 +40,7 @@ func TestUpdate(t *testing.T) {
 		r := message.Create(controller.Context{
 			Uid: adminInfo.Id,
 		}, message.CreateMessageParams{
+			Uid:     userInfo.Id,
 			Title:   title,
 			Content: content,
 		})
@@ -87,6 +88,10 @@ func TestUpdateRouter(t *testing.T) {
 
 	adminInfo, _ := tester.LoginAdmin()
 
+	userInfo, _ := tester.CreateUser()
+
+	defer auth.DeleteUserByUserName(userInfo.Username)
+
 	header := mocker.Header{
 		"Authorization": util.TokenPrefix + " " + adminInfo.Token,
 	}
@@ -101,6 +106,7 @@ func TestUpdateRouter(t *testing.T) {
 		r := message.Create(controller.Context{
 			Uid: adminInfo.Id,
 		}, message.CreateMessageParams{
+			Uid:     userInfo.Id,
 			Title:   title,
 			Content: content,
 		})

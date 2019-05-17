@@ -83,7 +83,7 @@ func init() {
 			notificationRouter.GET("", notification.DeleteRouter)          // TODO: 获取系统通知列表
 			notificationRouter.PUT("/n/:id", notification.UpdateRouter)    // 更新系统通知
 			notificationRouter.DELETE("/n/:id", notification.DeleteRouter) // 删除系统通知
-			notificationRouter.GET("/n/:id", notification.DeleteRouter)    // TODO: 获取单条系统通知
+			notificationRouter.GET("/n/:id", notification.GetRouter)       // 获取单条系统通知
 		}
 
 		// 个人消息

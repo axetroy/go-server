@@ -90,3 +90,8 @@ func TestGet(t *testing.T) {
 		assert.Equal(t, false, testNotification.Read)
 	}
 }
+
+func TestGetRouter(t *testing.T) {
+	// TODO: 添加测试用例
+	t.Skip()
+}
