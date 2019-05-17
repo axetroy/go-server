@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service"
@@ -118,7 +119,7 @@ func CreateAdminRouter(context *gin.Context) {
 		return
 	}
 
-	uid := context.GetString("uid")
+	uid := context.GetString(middleware.ContextUidField)
 
 	adminInfo := model.Admin{
 		Id: uid,

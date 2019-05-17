@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service"
@@ -118,6 +119,6 @@ func GetDetailRouter(context *gin.Context) {
 	}()
 
 	res = GetDetail(controller.Context{
-		Uid: context.GetString("uid"),
+		Uid: context.GetString(middleware.ContextUidField),
 	}, context.Param("transfer_id"))
 }

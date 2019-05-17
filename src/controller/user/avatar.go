@@ -7,6 +7,7 @@ import (
 	"github.com/axetroy/go-fs"
 	"github.com/axetroy/go-server/src/controller/uploader"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service"
@@ -189,7 +190,7 @@ func UploadAvatarRouter(context *gin.Context) {
 		return
 	}
 
-	res = UploadAvatar(context.GetString("uid"), input, file)
+	res = UploadAvatar(context.GetString(middleware.ContextUidField), input, file)
 }
 
 func GetAvatarRouter(context *gin.Context) {

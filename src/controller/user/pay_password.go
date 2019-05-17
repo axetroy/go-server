@@ -5,6 +5,7 @@ import (
 	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service"
@@ -131,7 +132,7 @@ func SetPayPasswordRouter(context *gin.Context) {
 	}
 
 	res = SetPayPassword(controller.Context{
-		Uid: context.GetString("uid"),
+		Uid: context.GetString(middleware.ContextUidField),
 	}, input)
 }
 
@@ -240,7 +241,7 @@ func UpdatePayPasswordRouter(context *gin.Context) {
 	}
 
 	res = UpdatePayPassword(controller.Context{
-		Uid: context.GetString("uid"),
+		Uid: context.GetString(middleware.ContextUidField),
 	}, input)
 }
 
@@ -330,7 +331,7 @@ func SendResetPayPasswordRouter(context *gin.Context) {
 	}()
 
 	res = SendResetPayPassword(controller.Context{
-		Uid: context.GetString("uid"),
+		Uid: context.GetString(middleware.ContextUidField),
 	})
 }
 
@@ -441,6 +442,6 @@ func ResetPayPasswordRouter(context *gin.Context) {
 	}
 
 	res = ResetPayPassword(controller.Context{
-		Uid: context.GetString("uid"),
+		Uid: context.GetString(middleware.ContextUidField),
 	}, input)
 }

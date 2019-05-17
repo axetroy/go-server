@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service"
@@ -166,7 +167,7 @@ func GetListRouter(context *gin.Context) {
 	}
 
 	res = GetList(controller.Context{
-		Uid: context.GetString("uid"),
+		Uid: context.GetString(middleware.ContextUidField),
 	}, input)
 }
 
@@ -191,6 +192,6 @@ func GetListAdminRouter(context *gin.Context) {
 	}
 
 	res = GetListByAdmin(controller.Context{
-		Uid: context.GetString("uid"),
+		Uid: context.GetString(middleware.ContextUidField),
 	}, input)
 }

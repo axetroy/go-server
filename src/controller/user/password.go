@@ -3,6 +3,7 @@ package user
 import (
 	"errors"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service"
@@ -103,5 +104,5 @@ func UpdatePasswordRouter(context *gin.Context) {
 		return
 	}
 
-	res = UpdatePassword(context.GetString("uid"), input)
+	res = UpdatePassword(context.GetString(middleware.ContextUidField), input)
 }

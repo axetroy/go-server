@@ -3,6 +3,7 @@ package user
 import (
 	"errors"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service"
@@ -92,7 +93,7 @@ func GetProfileRouter(context *gin.Context) {
 		context.JSON(http.StatusOK, res)
 	}()
 
-	res = GetProfile(context.GetString("uid"))
+	res = GetProfile(context.GetString(middleware.ContextUidField))
 }
 
 func UpdateProfile(uid string, input UpdateProfileParams) (res schema.Response) {
@@ -193,5 +194,5 @@ func UpdateProfileRouter(context *gin.Context) {
 		return
 	}
 
-	res = UpdateProfile(context.GetString("uid"), input)
+	res = UpdateProfile(context.GetString(middleware.ContextUidField), input)
 }

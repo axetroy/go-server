@@ -8,6 +8,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/finance"
 	"github.com/axetroy/go-server/src/controller/wallet"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service"
@@ -241,6 +242,6 @@ func ToRouter(context *gin.Context) {
 	}
 
 	res = To(controller.Context{
-		Uid: context.GetString("uid"),
+		Uid: context.GetString(middleware.ContextUidField),
 	}, input)
 }

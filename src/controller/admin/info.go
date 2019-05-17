@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service"
@@ -87,5 +88,5 @@ func GetAdminInfoRouter(context *gin.Context) {
 		context.JSON(http.StatusOK, res)
 	}()
 
-	res = GetAdminInfo(controller.Context{Uid: context.GetString("uid")})
+	res = GetAdminInfo(controller.Context{Uid: context.GetString(middleware.ContextUidField)})
 }
