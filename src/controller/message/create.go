@@ -2,6 +2,7 @@ package message
 
 import (
 	"errors"
+	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/model"
@@ -15,16 +16,17 @@ import (
 )
 
 type CreateMessageParams struct {
-	Uid     string `json:"uid"`
-	Title   string `json:"title"`
-	Content string `json:"content"`
+	Uid     string `json:"uid" valid:"required~请添加用户ID"`
+	Title   string `json:"title" valid:"required~请填写消息标题"`
+	Content string `json:"content" valid:"required~请填写消息内容"`
 }
 
 func Create(context controller.Context, input CreateMessageParams) (res schema.Response) {
 	var (
-		err  error
-		data schema.Message
-		tx   *gorm.DB
+		err          error
+		data         schema.Message
+		tx           *gorm.DB
+		isValidInput bool
 	)
 
 	defer func() {
@@ -57,6 +59,12 @@ func Create(context controller.Context, input CreateMessageParams) (res schema.R
 	}()
 
 	// 参数校验
+	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		return
+	} else if isValidInput == false {
+		err = exception.InvalidParams
+		return
+	}
 
 	tx = service.Db.Begin()
 
@@ -74,6 +82,18 @@ func Create(context controller.Context, input CreateMessageParams) (res schema.R
 
 	if !adminInfo.IsSuper {
 		err = exception.AdminNotSuper
+		return
+	}
+
+	userInfo := model.User{
+		Id: input.Uid,
+	}
+
+	if err = tx.First(&userInfo).Error; err != nil {
+		// 没有找到用户
+		if err == gorm.ErrRecordNotFound {
+			err = exception.UserNotExist
+		}
 		return
 	}
 

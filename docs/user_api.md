@@ -361,7 +361,7 @@
 <details><summary>个人消息列表<code>[GET] /v1/message</code></summary>
 <p>
 
-获取个人列表
+获取我的消息列表
 
 </p>
 

@@ -53,12 +53,90 @@ func Get(context controller.Context, id string) (res schema.Response) {
 
 	tx = service.Db.Begin()
 
-	MessageInfo := model.Message{}
+	MessageInfo := model.Message{
+		Id:  id,
+		Uid: context.Uid,
+	}
 
-	if err = tx.Where(map[string]interface{}{
-		"id":  id,
-		"uid": context.Uid,
-	}).Last(&MessageInfo).Error; err != nil {
+	if err = tx.Last(&MessageInfo).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = exception.NoData
+		}
+		return
+	}
+
+	if err = mapstructure.Decode(MessageInfo, &data.MessagePure); err != nil {
+		return
+	}
+
+	if MessageInfo.ReadAt != nil {
+		readAt := MessageInfo.ReadAt.Format(time.RFC3339Nano)
+		data.Read = true
+		data.ReadAt = &readAt
+	}
+
+	data.CreatedAt = MessageInfo.CreatedAt.Format(time.RFC3339Nano)
+	data.UpdatedAt = MessageInfo.UpdatedAt.Format(time.RFC3339Nano)
+
+	return
+}
+
+// Get Message detail
+func GetAdmin(context controller.Context, id string) (res schema.Response) {
+	var (
+		err  error
+		data schema.Message
+		tx   *gorm.DB
+	)
+
+	defer func() {
+		if r := recover(); r != nil {
+			switch t := r.(type) {
+			case string:
+				err = errors.New(t)
+			case error:
+				err = t
+			default:
+				err = exception.Unknown
+			}
+		}
+
+		if tx != nil {
+			if err != nil {
+				_ = tx.Rollback().Error
+			} else {
+				err = tx.Commit().Error
+			}
+		}
+
+		if err != nil {
+			res.Data = nil
+			res.Message = err.Error()
+		} else {
+			res.Data = data
+			res.Status = schema.StatusSuccess
+		}
+	}()
+
+	tx = service.Db.Begin()
+
+	adminInfo := model.Admin{
+		Id: context.Uid,
+	}
+
+	if err = tx.First(&adminInfo).Error; err != nil {
+		// 没有找到管理员
+		if err == gorm.ErrRecordNotFound {
+			err = exception.AdminNotExist
+		}
+		return
+	}
+
+	MessageInfo := model.Message{
+		Id: id,
+	}
+
+	if err = tx.Last(&MessageInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			err = exception.NoData
 		}
@@ -99,6 +177,28 @@ func GetRouter(context *gin.Context) {
 	id := context.Param("id")
 
 	res = Get(controller.Context{
+		Uid: context.GetString("uid"),
+	}, id)
+}
+
+// 管理员获取个人消息详情
+func GetAdminRouter(context *gin.Context) {
+	var (
+		err error
+		res = schema.Response{}
+	)
+
+	defer func() {
+		if err != nil {
+			res.Data = nil
+			res.Message = err.Error()
+		}
+		context.JSON(http.StatusOK, res)
+	}()
+
+	id := context.Param("id")
+
+	res = GetAdmin(controller.Context{
 		Uid: context.GetString("uid"),
 	}, id)
 }

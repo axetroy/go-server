@@ -89,9 +89,9 @@ func init() {
 		// 个人消息
 		messageRouter := v1.Group("/message")
 		{
-			messageRouter.POST("", message.CreateRouter)                        // 指定某个用户创建个人消息
-			messageRouter.GET("", message.DeleteByAdminRouter)                  // TODO: 获取个人消息列表
-			messageRouter.GET("/m/:message_id", message.UpdateRouter)           // TODO: 获取个人消息
+			messageRouter.POST("", message.CreateRouter)                        // 创建个人消息
+			messageRouter.GET("", message.GetListAdminRouter)                   // 获取消息列表
+			messageRouter.GET("/m/:message_id", message.GetAdminRouter)         // 获取个人消息
 			messageRouter.PUT("/m/:message_id", message.UpdateRouter)           // 更新个人消息
 			messageRouter.DELETE("/m/:message_id", message.DeleteByAdminRouter) // 删除个人消息
 		}

@@ -1,84 +1,254 @@
 package message_test
 
 import (
+	"encoding/json"
 	"github.com/axetroy/go-server/src/controller"
-	"github.com/axetroy/go-server/src/controller/admin"
+	"github.com/axetroy/go-server/src/controller/auth"
 	"github.com/axetroy/go-server/src/controller/message"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/axetroy/go-server/tester"
+	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
+	"net/http"
 	"testing"
 )
 
 func TestGetMessage(t *testing.T) {
-	// 获取一篇存在的消息公告
+	var (
+		messageId string
+	)
+
+	adminInfo, _ := tester.LoginAdmin()
+
+	userInfo, _ := tester.CreateUser()
+
+	defer auth.DeleteUserByUserName(userInfo.Username)
+
+	// 2. 先创建一篇消息作为测试
 	{
 		var (
-			adminUid  string
-			messageId string
+			title   = "test"
+			content = "test"
 		)
-		// 1. 先登陆获取管理员的Token
-		{
-			r := admin.Login(admin.SignInParams{
-				Username: "admin",
-				Password: "admin",
-			})
 
-			assert.Equal(t, schema.StatusSuccess, r.Status)
-			assert.Equal(t, "", r.Message)
+		r := message.Create(controller.Context{
+			Uid: adminInfo.Id,
+		}, message.CreateMessageParams{
+			Uid:     userInfo.Id,
+			Title:   title,
+			Content: content,
+		})
 
-			adminInfo := schema.AdminProfileWithToken{}
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
 
-			assert.Nil(t, tester.Decode(r.Data, &adminInfo))
+		n := schema.Message{}
 
-			if c, er := util.ParseToken(util.TokenPrefix+" "+adminInfo.Token, true); er != nil {
-				t.Error(er)
-			} else {
-				adminUid = c.Uid
-			}
+		assert.Nil(t, tester.Decode(r.Data, &n))
+
+		messageId = n.Id
+
+		defer message.DeleteMessageById(n.Id)
+	}
+
+	// 3. 获取文章公告
+	{
+		r := message.Get(controller.Context{
+			Uid: userInfo.Id,
+		}, messageId)
+
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
+
+		messageInfo := r.Data.(schema.Message)
+
+		assert.Equal(t, "test", messageInfo.Title)
+		assert.Equal(t, "test", messageInfo.Content)
+	}
+
+}
+
+func TestGetAdmin(t *testing.T) {
+	var (
+		messageId string
+	)
+
+	adminInfo, _ := tester.LoginAdmin()
+
+	userInfo, _ := tester.CreateUser()
+
+	defer auth.DeleteUserByUserName(userInfo.Username)
+
+	// 2. 先创建一篇消息作为测试
+	{
+		var (
+			title   = "test"
+			content = "test"
+		)
+
+		r := message.Create(controller.Context{
+			Uid: adminInfo.Id,
+		}, message.CreateMessageParams{
+			Uid:     userInfo.Id,
+			Title:   title,
+			Content: content,
+		})
+
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
+
+		n := schema.Message{}
+
+		assert.Nil(t, tester.Decode(r.Data, &n))
+
+		messageId = n.Id
+
+		defer message.DeleteMessageById(n.Id)
+	}
+
+	// 3. 获取文章公告
+	{
+		r := message.GetAdmin(controller.Context{
+			Uid: adminInfo.Id,
+		}, messageId)
+
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
+
+		messageInfo := r.Data.(schema.Message)
+
+		assert.Equal(t, "test", messageInfo.Title)
+		assert.Equal(t, "test", messageInfo.Content)
+	}
+
+}
+
+func TestGetRouter(t *testing.T) {
+	var (
+		messageId string
+	)
+
+	adminInfo, _ := tester.LoginAdmin()
+
+	userInfo, _ := tester.CreateUser()
+
+	defer auth.DeleteUserByUserName(userInfo.Username)
+
+	// 2. 先创建一篇消息作为测试
+	{
+		var (
+			title   = "test"
+			content = "test"
+		)
+
+		r := message.Create(controller.Context{
+			Uid: adminInfo.Id,
+		}, message.CreateMessageParams{
+			Uid:     userInfo.Id,
+			Title:   title,
+			Content: content,
+		})
+
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
+
+		n := schema.Message{}
+
+		assert.Nil(t, tester.Decode(r.Data, &n))
+
+		messageId = n.Id
+
+		defer message.DeleteMessageById(n.Id)
+	}
+
+	// 用户接口获取
+	{
+		header := mocker.Header{
+			"Authorization": util.TokenPrefix + " " + userInfo.Token,
 		}
 
-		// 2. 先创建一篇消息作为测试
-		{
-			var (
-				title   = "test"
-				content = "test"
-			)
+		r := tester.HttpUser.Get("/v1/message/m/"+messageId, nil, &header)
+		res := schema.Response{}
 
-			r := message.Create(controller.Context{
-				Uid: adminUid,
-			}, message.CreateMessageParams{
-				Uid:     adminUid,
-				Title:   title,
-				Content: content,
-			})
+		assert.Equal(t, http.StatusOK, r.Code)
+		assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
 
-			assert.Equal(t, schema.StatusSuccess, r.Status)
-			assert.Equal(t, "", r.Message)
+		assert.Equal(t, schema.StatusSuccess, res.Status)
+		assert.Equal(t, "", res.Message)
 
-			n := schema.Message{}
+		n := schema.Message{}
 
-			assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, tester.Decode(res.Data, &n))
 
-			messageId = n.Id
+		assert.Equal(t, "test", n.Title)
+		assert.Equal(t, "test", n.Content)
+		assert.IsType(t, "string", n.CreatedAt)
+		assert.IsType(t, "string", n.UpdatedAt)
+	}
 
-			defer message.DeleteMessageById(n.Id)
+}
+
+func TestGetAdminRouter(t *testing.T) {
+	var (
+		messageId string
+	)
+
+	adminInfo, _ := tester.LoginAdmin()
+
+	userInfo, _ := tester.CreateUser()
+
+	defer auth.DeleteUserByUserName(userInfo.Username)
+
+	// 2. 先创建一篇消息作为测试
+	{
+		var (
+			title   = "test"
+			content = "test"
+		)
+
+		r := message.Create(controller.Context{
+			Uid: adminInfo.Id,
+		}, message.CreateMessageParams{
+			Uid:     userInfo.Id,
+			Title:   title,
+			Content: content,
+		})
+
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
+
+		n := schema.Message{}
+
+		assert.Nil(t, tester.Decode(r.Data, &n))
+
+		messageId = n.Id
+
+		defer message.DeleteMessageById(n.Id)
+	}
+
+	// 管理员接口获取
+	{
+		header := mocker.Header{
+			"Authorization": util.TokenPrefix + " " + adminInfo.Token,
 		}
 
-		// 3. 获取文章公告
-		{
-			r := message.Get(controller.Context{
-				Uid: adminUid,
-			}, messageId)
+		r := tester.HttpAdmin.Get("/v1/message/m/"+messageId, nil, &header)
+		res := schema.Response{}
 
-			assert.Equal(t, schema.StatusSuccess, r.Status)
-			assert.Equal(t, "", r.Message)
+		assert.Equal(t, http.StatusOK, r.Code)
+		assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
 
-			messageInfo := r.Data.(schema.Message)
+		assert.Equal(t, schema.StatusSuccess, res.Status)
+		assert.Equal(t, "", res.Message)
 
-			assert.Equal(t, "test", messageInfo.Title)
-			assert.Equal(t, "test", messageInfo.Content)
-		}
+		n := schema.Message{}
+
+		assert.Nil(t, tester.Decode(res.Data, &n))
+
+		assert.Equal(t, "test", n.Title)
+		assert.Equal(t, "test", n.Content)
+		assert.IsType(t, "string", n.CreatedAt)
+		assert.IsType(t, "string", n.UpdatedAt)
 	}
 }

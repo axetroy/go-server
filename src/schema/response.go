@@ -21,6 +21,6 @@ type Response struct {
 }
 
 type List struct {
-	Response
-	Meta *Meta `json:"meta"`
+	Response       // 常规的接口返回结构
+	Meta     *Meta `json:"meta"` // 数据列表多了一个 Meta 字段
 }

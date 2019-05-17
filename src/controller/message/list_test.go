@@ -1,27 +1,31 @@
 package message_test
 
 import (
+	"encoding/json"
 	"github.com/axetroy/go-server/src/controller"
-	"github.com/axetroy/go-server/src/controller/admin"
+	"github.com/axetroy/go-server/src/controller/auth"
 	"github.com/axetroy/go-server/src/controller/message"
-	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/axetroy/go-server/tester"
+	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
+	"net/http"
 	"testing"
 )
 
 func TestGetList(t *testing.T) {
-	// 现在没有任何文章，获取到的应该是0个长度的
+
 	{
 		var (
-			data = make([]model.Message, 0)
+			data = make([]schema.Message, 0)
 		)
 		query := schema.Query{
 			Limit: 20,
 		}
-		r := message.GetList(message.Query{
+		r := message.GetList(controller.Context{
+			Uid: "123123",
+		}, message.Query{
 			Query: query,
 		})
 
@@ -35,77 +39,281 @@ func TestGetList(t *testing.T) {
 		assert.Equal(t, int64(0), r.Meta.Total)
 	}
 
+	adminInfo, _ := tester.LoginAdmin()
+
+	userInfo, _ := tester.CreateUser()
+
+	defer auth.DeleteUserByUserName(userInfo.Username)
+
 	{
 		var (
-			adminUid string
+			title   = "test"
+			content = "test"
 		)
-		// 1. 先登陆获取管理员的Token
-		{
-			r := admin.Login(admin.SignInParams{
-				Username: "admin",
-				Password: "admin",
-			})
 
-			assert.Equal(t, schema.StatusSuccess, r.Status)
-			assert.Equal(t, "", r.Message)
+		r := message.Create(controller.Context{
+			Uid: adminInfo.Id,
+		}, message.CreateMessageParams{
+			Uid:     userInfo.Id,
+			Title:   title,
+			Content: content,
+		})
 
-			adminInfo := schema.AdminProfileWithToken{}
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
 
-			assert.Nil(t, tester.Decode(r.Data, &adminInfo))
+		n := schema.Message{}
 
-			if c, er := util.ParseToken(util.TokenPrefix+" "+adminInfo.Token, true); er != nil {
-				t.Error(er)
-			} else {
-				adminUid = c.Uid
-			}
+		assert.Nil(t, tester.Decode(r.Data, &n))
+
+		defer message.DeleteMessageById(n.Id)
+	}
+
+	// 3. 获取列表
+	{
+		data := make([]schema.Message, 0)
+
+		query := schema.Query{
+			Limit: 20,
 		}
+		r := message.GetList(controller.Context{
+			Uid: userInfo.Id,
+		}, message.Query{
+			Query: query,
+		})
 
-		// 2. 先创建一篇新闻作为测试
-		{
-			var (
-				title   = "test"
-				content = "test"
-			)
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
 
-			r := message.Create(controller.Context{
-				Uid: adminUid,
-			}, message.CreateMessageParams{
-				Title:   title,
-				Content: content,
-			})
+		assert.Nil(t, tester.Decode(r.Data, &data))
 
-			assert.Equal(t, schema.StatusSuccess, r.Status)
-			assert.Equal(t, "", r.Message)
+		assert.Equal(t, query.Limit, r.Meta.Limit)
+		assert.Equal(t, schema.DefaultPage, r.Meta.Page)
+		assert.Equal(t, 1, r.Meta.Num)
+		assert.Equal(t, int64(1), r.Meta.Total)
 
-			n := schema.Message{}
+		assert.Len(t, data, 1)
+	}
+}
 
-			assert.Nil(t, tester.Decode(r.Data, &n))
+func TestGetListByAdmin(t *testing.T) {
 
-			defer message.DeleteMessageById(n.Id)
+	{
+		var (
+			data = make([]schema.Message, 0)
+		)
+		query := schema.Query{
+			Limit: 20,
 		}
+		r := message.GetList(controller.Context{
+			Uid: "123123",
+		}, message.Query{
+			Query: query,
+		})
 
-		// 3. 获取列表
-		{
-			var (
-				data = make([]model.Message, 0)
-			)
-			query := schema.Query{
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
+
+		assert.Nil(t, tester.Decode(r.Data, &data))
+		assert.Equal(t, query.Limit, r.Meta.Limit)
+		assert.Equal(t, schema.DefaultPage, r.Meta.Page)
+		assert.Equal(t, 0, r.Meta.Num)
+		assert.Equal(t, int64(0), r.Meta.Total)
+	}
+
+	adminInfo, _ := tester.LoginAdmin()
+
+	userInfo, _ := tester.CreateUser()
+
+	defer auth.DeleteUserByUserName(userInfo.Username)
+
+	{
+		var (
+			title   = "test"
+			content = "test"
+		)
+
+		r := message.Create(controller.Context{
+			Uid: adminInfo.Id,
+		}, message.CreateMessageParams{
+			Uid:     userInfo.Id,
+			Title:   title,
+			Content: content,
+		})
+
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
+
+		n := schema.Message{}
+
+		assert.Nil(t, tester.Decode(r.Data, &n))
+
+		defer message.DeleteMessageById(n.Id)
+	}
+
+	// 3. 获取列表
+	{
+		data := make([]schema.Message, 0)
+
+		query := message.Query{
+			Query: schema.Query{
 				Limit: 20,
-			}
-			r := message.GetList(message.Query{
-				Query: query,
-			})
+			},
+		}
+		r := message.GetListByAdmin(controller.Context{
+			Uid: adminInfo.Id,
+		}, message.QueryAdmin{
+			Query: query,
+		})
 
-			assert.Equal(t, schema.StatusSuccess, r.Status)
-			assert.Equal(t, "", r.Message)
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
 
-			assert.Nil(t, tester.Decode(r.Data, &data))
-			assert.Equal(t, query.Limit, r.Meta.Limit)
-			assert.Equal(t, schema.DefaultPage, r.Meta.Page)
-			assert.Equal(t, 1, r.Meta.Num)
-			assert.Equal(t, int64(1), r.Meta.Total)
+		assert.Nil(t, tester.Decode(r.Data, &data))
 
-			assert.Len(t, data, 1)
+		assert.Equal(t, query.Limit, r.Meta.Limit)
+		assert.Equal(t, schema.DefaultPage, r.Meta.Page)
+		assert.Equal(t, 1, r.Meta.Num)
+		assert.Equal(t, int64(1), r.Meta.Total)
+
+		assert.Len(t, data, 1)
+	}
+}
+
+func TestGetListRouter(t *testing.T) {
+	adminInfo, _ := tester.LoginAdmin()
+
+	userInfo, _ := tester.CreateUser()
+
+	defer auth.DeleteUserByUserName(userInfo.Username)
+
+	{
+		var (
+			title   = "test"
+			content = "test"
+		)
+
+		r := message.Create(controller.Context{
+			Uid: adminInfo.Id,
+		}, message.CreateMessageParams{
+			Uid:     userInfo.Id,
+			Title:   title,
+			Content: content,
+		})
+
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
+
+		n := schema.Message{}
+
+		assert.Nil(t, tester.Decode(r.Data, &n))
+
+		//defer message.DeleteMessageById(n.Id)
+	}
+
+	header := mocker.Header{
+		"Authorization": util.TokenPrefix + " " + userInfo.Token,
+	}
+
+	{
+		r := tester.HttpUser.Get("/v1/message", nil, &header)
+
+		res := schema.Response{}
+
+		assert.Equal(t, http.StatusOK, r.Code)
+
+		if !assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res)) {
+			return
+		}
+
+		if !assert.Equal(t, schema.StatusSuccess, res.Status) {
+			return
+		}
+
+		if !assert.Equal(t, "", res.Message) {
+			return
+		}
+
+		messages := make([]schema.Message, 0)
+
+		assert.Nil(t, tester.Decode(res.Data, &messages))
+
+		assert.True(t, len(messages) > 0)
+
+		for _, b := range messages {
+			assert.IsType(t, "string", b.Title)
+			assert.IsType(t, "string", b.Content)
+			assert.IsType(t, "string", b.CreatedAt)
+			assert.IsType(t, "string", b.UpdatedAt)
+		}
+	}
+}
+
+func TestGetListAdminRouter(t *testing.T) {
+	adminInfo, _ := tester.LoginAdmin()
+
+	userInfo, _ := tester.CreateUser()
+
+	defer auth.DeleteUserByUserName(userInfo.Username)
+
+	{
+		var (
+			title   = "test"
+			content = "test"
+		)
+
+		r := message.Create(controller.Context{
+			Uid: adminInfo.Id,
+		}, message.CreateMessageParams{
+			Uid:     userInfo.Id,
+			Title:   title,
+			Content: content,
+		})
+
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
+
+		n := schema.Message{}
+
+		assert.Nil(t, tester.Decode(r.Data, &n))
+
+		//defer message.DeleteMessageById(n.Id)
+	}
+
+	header := mocker.Header{
+		"Authorization": util.TokenPrefix + " " + adminInfo.Token,
+	}
+
+	{
+		r := tester.HttpAdmin.Get("/v1/message", nil, &header)
+
+		res := schema.Response{}
+
+		assert.Equal(t, http.StatusOK, r.Code)
+
+		if !assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res)) {
+			return
+		}
+
+		if !assert.Equal(t, schema.StatusSuccess, res.Status) {
+			return
+		}
+
+		if !assert.Equal(t, "", res.Message) {
+			return
+		}
+
+		messages := make([]schema.Message, 0)
+
+		assert.Nil(t, tester.Decode(res.Data, &messages))
+
+		assert.True(t, len(messages) > 0)
+
+		for _, b := range messages {
+			assert.IsType(t, "string", b.Title)
+			assert.IsType(t, "string", b.Content)
+			assert.IsType(t, "string", b.CreatedAt)
+			assert.IsType(t, "string", b.UpdatedAt)
 		}
 	}
 }

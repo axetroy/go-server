@@ -186,6 +186,24 @@
 
 </details>
 
+<details><summary>消息列表<code>[GET] /v1/message</code></summary>
+<p>
+
+获取我的消息列表
+
+</p>
+
+</details>
+
+<details><summary>消息详情<code>[GET] /v1/message/m/:message_id</code></summary>
+<p>
+
+获取某个系统通知详情
+
+</p>
+
+</details>
+
 ### Banner 轮播图
 
 <details><summary>新增 banner<code>[POST] /v1/banner</code></summary>
