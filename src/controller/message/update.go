@@ -144,7 +144,7 @@ func UpdateRouter(context *gin.Context) {
 		context.JSON(http.StatusOK, res)
 	}()
 
-	id := context.Param("message_id")
+	id := context.Param(ParamsIdName)
 
 	if err = context.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams

@@ -105,7 +105,7 @@ func DeleteByAdminRouter(context *gin.Context) {
 		context.JSON(http.StatusOK, res)
 	}()
 
-	id := context.Param("message_id")
+	id := context.Param(ParamsIdName)
 
 	res = DeleteByAdmin(controller.Context{
 		Uid: context.GetString("uid"),
@@ -191,7 +191,7 @@ func DeleteByUserRouter(context *gin.Context) {
 		context.JSON(http.StatusOK, res)
 	}()
 
-	id := context.Param("message_id")
+	id := context.Param(ParamsIdName)
 
 	res = DeleteByUser(controller.Context{
 		Uid: context.GetString("uid"),

@@ -98,7 +98,7 @@ func ReadRouter(context *gin.Context) {
 		context.JSON(http.StatusOK, res)
 	}()
 
-	id := context.Param("id")
+	id := context.Param(ParamsIdName)
 
 	res = MarkRead(controller.Context{
 		Uid: context.GetString("uid"),

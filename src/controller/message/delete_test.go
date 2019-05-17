@@ -286,13 +286,13 @@ func TestDeleteByUserRouter(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, res.Status)
 		assert.Equal(t, "", res.Message)
 
-		fmt.Println(res)
-
 		// 再查找这条记录，应该是空的
 
-		n := model.Message{}
+		n := model.Message{
+			Id: messageInfo.Id,
+		}
 
-		err := service.Db.Where("id = ?", messageInfo.Id).First(&n).Error
+		err := service.Db.First(&n).Error
 
 		if !assert.NotNil(t, err) {
 			return

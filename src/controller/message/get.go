@@ -174,7 +174,7 @@ func GetRouter(context *gin.Context) {
 		context.JSON(http.StatusOK, res)
 	}()
 
-	id := context.Param("id")
+	id := context.Param(ParamsIdName)
 
 	res = Get(controller.Context{
 		Uid: context.GetString("uid"),
@@ -196,7 +196,7 @@ func GetAdminRouter(context *gin.Context) {
 		context.JSON(http.StatusOK, res)
 	}()
 
-	id := context.Param("id")
+	id := context.Param(ParamsIdName)
 
 	res = GetAdmin(controller.Context{
 		Uid: context.GetString("uid"),
