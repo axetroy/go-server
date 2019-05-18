@@ -16,6 +16,15 @@ import (
 	"time"
 )
 
+func IsValidWallet(walletName string) bool {
+	for _, validWallet := range model.Wallets {
+		if validWallet == walletName {
+			return true
+		}
+	}
+	return false
+}
+
 func GetWallet(context controller.Context, currencyName string) (res schema.Response) {
 	var (
 		err  error
@@ -68,13 +77,17 @@ func GetWallet(context controller.Context, currencyName string) (res schema.Resp
 		Id: userInfo.Id,
 	}
 
-	// TODO: 校验currencyName是否合法
+	// 检查是否是有效的钱包
+	if IsValidWallet(strings.ToUpper(currencyName)) {
+		err = exception.InvalidWallet
+		return
+	}
 
 	if err = tx.Table("wallet_" + strings.ToLower(currencyName)).Scan(&walletInfo).Error; err != nil {
 		return
 	}
 
-	if err = mapstructure.Decode(userInfo, &data.WalletPure); err != nil {
+	if err = mapstructure.Decode(walletInfo, &data.WalletPure); err != nil {
 		return
 	}
 

@@ -273,7 +273,7 @@
 
 </details>
 
-<details><summary>获取单个钱包信息<code>[GET] /v1/wallet/currency/:currency</code></summary>
+<details><summary>获取单个钱包信息<code>[GET] /v1/wallet/w/:currency</code></summary>
 <p>
 
 获取指定一个钱包的详细信息.

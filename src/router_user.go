@@ -101,10 +101,8 @@ func init() {
 		walletRouter := v1.Group("/wallet")
 		{
 			walletRouter.Use(userAuthMiddleware)
-			// 获取所有的钱包信息
-			walletRouter.GET("/map", wallet.GetWalletsRouter)               // 获取我的钱包map对象
-			walletRouter.GET("/currency/:currency", wallet.GetWalletRouter) // 获取单个钱包的详细信息
-			// 转账相关
+			walletRouter.GET("/map", wallet.GetWalletsRouter)                             // 获取我的钱包map对象
+			walletRouter.GET("/w/:currency", wallet.GetWalletRouter)                      // 获取单个钱包的详细信息
 			walletRouter.GET("/transfer/history", transfer.GetHistory)                    // 获取转账记录
 			walletRouter.GET("/transfer/detail/:transfer_id", transfer.GetDetailRouter)   // 获取单条转账详情
 			walletRouter.POST("/transfer", middleware.AuthPayPassword, transfer.ToRouter) // 转账给某人
