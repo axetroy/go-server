@@ -1,51 +1,24 @@
 package notification_test
 
 import (
+	"encoding/json"
 	"github.com/axetroy/go-server/src/controller"
-	"github.com/axetroy/go-server/src/controller/admin"
+	"github.com/axetroy/go-server/src/controller/auth"
 	"github.com/axetroy/go-server/src/controller/notification"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/axetroy/go-server/tester"
+	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
+	"net/http"
 	"testing"
 )
 
 func TestGet(t *testing.T) {
-	var (
-		adminUid string
-	)
-	// 先登陆获取管理员的Token
-	{
-		// 登陆超级管理员-成功
-
-		r := admin.Login(admin.SignInParams{
-			Username: "admin",
-			Password: "admin",
-		})
-
-		assert.Equal(t, schema.StatusSuccess, r.Status)
-		assert.Equal(t, "", r.Message)
-
-		adminInfo := schema.AdminProfileWithToken{}
-
-		if err := tester.Decode(r.Data, &adminInfo); err != nil {
-			t.Error(err)
-			return
-		}
-
-		assert.Equal(t, "admin", adminInfo.Username)
-		assert.True(t, len(adminInfo.Token) > 0)
-
-		if c, er := util.ParseToken(util.TokenPrefix+" "+adminInfo.Token, true); er != nil {
-			t.Error(er)
-		} else {
-			adminUid = c.Uid
-		}
-	}
+	adminInfo, _ := tester.LoginAdmin()
 
 	context := controller.Context{
-		Uid: adminUid,
+		Uid: adminInfo.Id,
 	}
 
 	var testNotification schema.Notification
@@ -92,6 +65,92 @@ func TestGet(t *testing.T) {
 }
 
 func TestGetRouter(t *testing.T) {
-	// TODO: 添加测试用例
-	t.Skip()
+	var notificationId string
+	adminInfo, _ := tester.LoginAdmin()
+	userInfo, _ := tester.CreateUser()
+
+	defer auth.DeleteUserByUserName(userInfo.Username)
+
+	context := controller.Context{
+		Uid: adminInfo.Id,
+	}
+
+	var testNotification schema.Notification
+
+	// 创建一篇系统通知
+	{
+		var (
+			title   = "test"
+			content = "test"
+		)
+
+		r := notification.Create(context, notification.CreateParams{
+			Title:   title,
+			Content: content,
+		})
+
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
+
+		testNotification = schema.Notification{}
+
+		assert.Nil(t, tester.Decode(r.Data, &testNotification))
+
+		notificationId = testNotification.Id
+
+		defer notification.DeleteNotificationById(testNotification.Id)
+
+		assert.Equal(t, title, testNotification.Title)
+		assert.Equal(t, content, testNotification.Content)
+	}
+
+	// 管理员接口获取
+	{
+		header := mocker.Header{
+			"Authorization": util.TokenPrefix + " " + adminInfo.Token,
+		}
+
+		r := tester.HttpAdmin.Get("/v1/notification/n/"+notificationId, nil, &header)
+		res := schema.Response{}
+
+		assert.Equal(t, http.StatusOK, r.Code)
+		assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+
+		assert.Equal(t, schema.StatusSuccess, res.Status)
+		assert.Equal(t, "", res.Message)
+
+		n := schema.Notification{}
+
+		assert.Nil(t, tester.Decode(res.Data, &n))
+
+		assert.Equal(t, "test", n.Title)
+		assert.Equal(t, "test", n.Content)
+		assert.IsType(t, "string", n.CreatedAt)
+		assert.IsType(t, "string", n.UpdatedAt)
+	}
+
+	// 普通用户获取通知
+	{
+		header := mocker.Header{
+			"Authorization": util.TokenPrefix + " " + userInfo.Token,
+		}
+
+		r := tester.HttpUser.Get("/v1/notification/n/"+notificationId, nil, &header)
+		res := schema.Response{}
+
+		assert.Equal(t, http.StatusOK, r.Code)
+		assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+
+		assert.Equal(t, schema.StatusSuccess, res.Status)
+		assert.Equal(t, "", res.Message)
+
+		n := schema.Notification{}
+
+		assert.Nil(t, tester.Decode(res.Data, &n))
+
+		assert.Equal(t, "test", n.Title)
+		assert.Equal(t, "test", n.Content)
+		assert.IsType(t, "string", n.CreatedAt)
+		assert.IsType(t, "string", n.UpdatedAt)
+	}
 }
