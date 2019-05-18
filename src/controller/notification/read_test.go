@@ -1,8 +1,8 @@
 package notification_test
 
 import (
+	"encoding/json"
 	"github.com/axetroy/go-server/src/controller"
-	"github.com/axetroy/go-server/src/controller/admin"
 	"github.com/axetroy/go-server/src/controller/auth"
 	"github.com/axetroy/go-server/src/controller/notification"
 	"github.com/axetroy/go-server/src/exception"
@@ -11,46 +11,19 @@ import (
 	"github.com/axetroy/go-server/src/service"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/axetroy/go-server/tester"
+	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
-	"math/rand"
 	"testing"
 )
 
 func TestMarkRead(t *testing.T) {
-	var (
-		adminUid string
-	)
-	// 先登陆获取管理员的Token
-	{
-		// 登陆超级管理员-成功
+	adminInfo, _ := tester.LoginAdmin()
+	userInfo, _ := tester.CreateUser()
 
-		r := admin.Login(admin.SignInParams{
-			Username: "admin",
-			Password: "admin",
-		})
-
-		assert.Equal(t, schema.StatusSuccess, r.Status)
-		assert.Equal(t, "", r.Message)
-
-		adminInfo := schema.AdminProfileWithToken{}
-
-		if err := tester.Decode(r.Data, &adminInfo); err != nil {
-			t.Error(err)
-			return
-		}
-
-		assert.Equal(t, "admin", adminInfo.Username)
-		assert.True(t, len(adminInfo.Token) > 0)
-
-		if c, er := util.ParseToken(util.TokenPrefix+" "+adminInfo.Token, true); er != nil {
-			t.Error(er)
-		} else {
-			adminUid = c.Uid
-		}
-	}
+	defer auth.DeleteUserByUserName(userInfo.Username)
 
 	context := controller.Context{
-		Uid: adminUid,
+		Uid: adminInfo.Id,
 	}
 
 	var testNotification schema.Notification
@@ -90,37 +63,10 @@ func TestMarkRead(t *testing.T) {
 		assert.Equal(t, exception.UserNotExist.Error(), r.Message)
 	}
 
-	var testUser schema.Profile
-
-	{
-		// 创建一个测试用户
-		// 1。 创建测试账号
-		rand.Seed(111)
-		username := "test-TestMarkRead"
-		password := "123123"
-
-		r := auth.SignUp(auth.SignUpParams{
-			Username: &username,
-			Password: password,
-		})
-
-		assert.Equal(t, schema.StatusSuccess, r.Status)
-		assert.Equal(t, "", r.Message)
-
-		testUser = schema.Profile{}
-
-		if err := tester.Decode(r.Data, &testUser); err != nil {
-			t.Error(err)
-			return
-		}
-
-		defer auth.DeleteUserByUserName(username)
-	}
-
 	{
 		// 用测试用户标记为已读
 		r := notification.MarkRead(controller.Context{
-			Uid: testUser.Id,
+			Uid: userInfo.Id,
 		}, testNotification.Id)
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
@@ -135,7 +81,7 @@ func TestMarkRead(t *testing.T) {
 		notificationMarkInfo := model.NotificationMark{}
 
 		assert.Nil(t, service.Db.Where("id = ?", testNotification.Id).Last(&notificationMarkInfo).Error)
-		assert.Equal(t, testUser.Id, notificationMarkInfo.Uid)
+		assert.Equal(t, userInfo.Id, notificationMarkInfo.Uid)
 	}
 
 	{
@@ -155,6 +101,72 @@ func TestMarkRead(t *testing.T) {
 }
 
 func TestReadRouter(t *testing.T) {
-	// TODO: 完善HTTP的测试用例
-	t.Skip()
+	var notificationId string
+	adminInfo, _ := tester.LoginAdmin()
+	userInfo, _ := tester.CreateUser()
+
+	defer auth.DeleteUserByUserName(userInfo.Username)
+
+	context := controller.Context{
+		Uid: adminInfo.Id,
+	}
+
+	var testNotification schema.Notification
+
+	// 创建一篇系统通知
+	{
+		var (
+			title   = "TestUpdate"
+			content = "TestUpdate"
+		)
+
+		r := notification.Create(context, notification.CreateParams{
+			Title:   title,
+			Content: content,
+		})
+
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
+
+		testNotification = schema.Notification{}
+
+		assert.Nil(t, tester.Decode(r.Data, &testNotification))
+
+		notificationId = testNotification.Id
+
+		defer notification.DeleteNotificationById(testNotification.Id)
+
+		assert.Equal(t, title, testNotification.Title)
+		assert.Equal(t, content, testNotification.Content)
+	}
+
+	// 标记为已读
+	{
+		header := mocker.Header{
+			"Authorization": util.TokenPrefix + " " + userInfo.Token,
+		}
+
+		r := tester.HttpUser.Put("/v1/notification/n/"+notificationId+"/read", nil, &header)
+		res := schema.Response{}
+
+		if !assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res)) {
+			return
+		}
+
+		if !assert.Equal(t, "", res.Message) {
+			return
+		}
+
+		if !assert.Equal(t, schema.StatusSuccess, res.Status) {
+			return
+		}
+
+		assert.True(t, res.Data.(bool))
+
+		// 再读取这条系统通知
+		notificationMarkInfo := model.NotificationMark{}
+
+		assert.Nil(t, service.Db.Where("id = ?", testNotification.Id).Last(&notificationMarkInfo).Error)
+		assert.Equal(t, userInfo.Id, notificationMarkInfo.Uid)
+	}
 }

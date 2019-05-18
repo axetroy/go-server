@@ -130,7 +130,7 @@ func init() {
 			notificationRouter.Use(userAuthMiddleware)
 			notificationRouter.GET("", notification.GetListUserRouter)     // 获取系统通知列表
 			notificationRouter.GET("/n/:id", notification.GetRouter)       // 获取某一条系统通知详情
-			notificationRouter.GET("/n/:id/read", notification.ReadRouter) // 标记通知为已读
+			notificationRouter.PUT("/n/:id/read", notification.ReadRouter) // 标记通知为已读
 		}
 
 		// 用户的个人消息, 个人消息是可以删除的
