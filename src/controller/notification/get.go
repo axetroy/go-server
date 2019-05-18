@@ -81,6 +81,7 @@ func Get(context controller.Context, id string) (res schema.Response) {
 		}
 	} else {
 		data.NotificationPure.Read = NotificationMark.Read
+		data.ReadAt = NotificationMark.CreatedAt.Format(time.RFC3339Nano)
 	}
 
 	data.CreatedAt = notificationInfo.CreatedAt.Format(time.RFC3339Nano)
