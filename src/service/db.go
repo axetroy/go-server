@@ -21,6 +21,7 @@ func init() {
 		dbUsername = os.Getenv("DB_USERNAME")
 		dbPassword = os.Getenv("DB_PASSWORD")
 		dbPort     = os.Getenv("DB_PORT")
+		sync       = os.Getenv("DB_SYNC")
 	)
 
 	if len(driverName) == 0 {
@@ -43,6 +44,10 @@ func init() {
 		dbPort = "65432"
 	}
 
+	if len(sync) == 0 {
+		sync = "on"
+	}
+
 	DataSourceName := fmt.Sprintf("%s://%s:%s@localhost:%s/%s?sslmode=disable", driverName, dbUsername, dbPassword, dbPort, dbName)
 
 	fmt.Println("正在连接数据库...")
@@ -55,34 +60,34 @@ func init() {
 
 	db.LogMode(true)
 
-	// TODO: 根据环境变量决定是否同步数据库
+	if sync == "on" {
+		fmt.Println("正在同步数据库...")
 
-	fmt.Println("正在同步数据库...")
+		// Migrate the schema
+		db.AutoMigrate(
+			new(model.Admin),     // 管理员表
+			new(model.News),      // 新闻公告
+			new(model.User),      // 用户表
+			new(model.WalletCny), // 钱包
+			new(model.WalletUsd),
+			new(model.WalletCoin),
+			new(model.InviteHistory),  // 邀请表
+			new(model.LoginLog),       // 登陆成功表
+			new(model.TransferLogCny), // 钱包转账地址
+			new(model.TransferLogUsd),
+			new(model.TransferLogCoin),
+			new(model.FinanceLogCny), // 流水列表
+			new(model.FinanceLogUsd),
+			new(model.FinanceLogCoin),
+			new(model.Notification),     // 系统消息
+			new(model.NotificationMark), // 系统消息的已读记录
+			new(model.Message),          // 个人消息
+			new(model.Address),          // 收货地址
+			new(model.Banner),           // Banner 表
+		)
 
-	// Migrate the schema
-	db.AutoMigrate(
-		new(model.Admin),     // 管理员表
-		new(model.News),      // 新闻公告
-		new(model.User),      // 用户表
-		new(model.WalletCny), // 钱包
-		new(model.WalletUsd),
-		new(model.WalletCoin),
-		new(model.InviteHistory),  // 邀请表
-		new(model.LoginLog),       // 登陆成功表
-		new(model.TransferLogCny), // 钱包转账地址
-		new(model.TransferLogUsd),
-		new(model.TransferLogCoin),
-		new(model.FinanceLogCny), // 流水列表
-		new(model.FinanceLogUsd),
-		new(model.FinanceLogCoin),
-		new(model.Notification),     // 系统消息
-		new(model.NotificationMark), // 系统消息的已读记录
-		new(model.Message),          // 个人消息
-		new(model.Address),          // 收货地址
-		new(model.Banner),           // Banner 表
-	)
-
-	fmt.Println("数据库同步完成.")
+		fmt.Println("数据库同步完成.")
+	}
 
 	Db = db
 
