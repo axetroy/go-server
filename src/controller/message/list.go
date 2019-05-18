@@ -16,12 +16,13 @@ import (
 
 type Query struct {
 	schema.Query
-	Status model.MessageStatus `json:"status" form:"status"` // TODO: 添加条件筛选
+	Status *model.MessageStatus `json:"status" form:"status"`
+	Read   *bool                `json:"read" form:"read"`
 }
 
 type QueryAdmin struct {
 	Query
-	Uid string `json:"uid" form:"uid"` // 指定某个用户ID
+	Uid *string `json:"uid" form:"uid"` // 指定某个用户ID
 }
 
 // 用户获取自己的消息列表
@@ -62,7 +63,19 @@ func GetList(context controller.Context, input Query) (res schema.List) {
 
 	var total int64
 
-	if err = service.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Where(model.Message{Uid: context.Uid}).Find(&list).Count(&total).Error; err != nil {
+	filter := model.Message{
+		Uid: context.Uid,
+	}
+
+	if input.Read != nil {
+		filter.Read = *input.Read
+	}
+
+	if input.Status != nil {
+		filter.Status = *input.Status
+	}
+
+	if err = service.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Where(filter).Find(&list).Count(&total).Error; err != nil {
 		return
 	}
 
@@ -123,7 +136,21 @@ func GetListByAdmin(context controller.Context, input QueryAdmin) (res schema.Li
 
 	var total int64
 
-	if err = service.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Find(&list).Count(&total).Error; err != nil {
+	filter := model.Message{}
+
+	if input.Uid != nil {
+		filter.Uid = *input.Uid
+	}
+
+	if input.Read != nil {
+		filter.Read = *input.Read
+	}
+
+	if input.Status != nil {
+		filter.Status = *input.Status
+	}
+
+	if err = service.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Where(filter).Find(&list).Count(&total).Error; err != nil {
 		return
 	}
 
