@@ -78,7 +78,7 @@ func GetWallet(context controller.Context, currencyName string) (res schema.Resp
 	}
 
 	// 检查是否是有效的钱包
-	if IsValidWallet(strings.ToUpper(currencyName)) {
+	if IsValidWallet(strings.ToUpper(currencyName)) == false {
 		err = exception.InvalidWallet
 		return
 	}
