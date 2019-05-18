@@ -80,7 +80,7 @@ func init() {
 		notificationRouter := v1.Group("/notification")
 		{
 			notificationRouter.POST("", notification.CreateRouter)         // 创建系统通知
-			notificationRouter.GET("", notification.DeleteRouter)          // TODO: 获取系统通知列表
+			notificationRouter.GET("", notification.GetListAdminRouter)    // 获取系统通知列表
 			notificationRouter.PUT("/n/:id", notification.UpdateRouter)    // 更新系统通知
 			notificationRouter.DELETE("/n/:id", notification.DeleteRouter) // 删除系统通知
 			notificationRouter.GET("/n/:id", notification.GetRouter)       // 获取单条系统通知

@@ -21,7 +21,7 @@ type Query struct {
 }
 
 // GetList get notification list
-func GetList(context controller.Context, input Query) (res schema.List) {
+func GetListUser(context controller.Context, input Query) (res schema.List) {
 	var (
 		err  error
 		data = make([]schema.Notification, 0)
@@ -74,33 +74,108 @@ func GetList(context controller.Context, input Query) (res schema.List) {
 		return
 	}
 
-	data = make([]schema.Notification, len(list))
-
-	// TODO: 优化这一块实现
-	for index, v := range list {
-		current := data[index]
-		if er := mapstructure.Decode(v, &current.NotificationPure); er != nil {
+	for _, v := range list {
+		d := schema.Notification{}
+		if er := mapstructure.Decode(v, &d.NotificationPure); er != nil {
 			err = er
 			return
 		}
-		current.CreatedAt = v.CreatedAt.Format(time.RFC3339Nano)
-		current.UpdatedAt = v.UpdatedAt.Format(time.RFC3339Nano)
-		if len(context.Uid) != 0 {
+		d.CreatedAt = v.CreatedAt.Format(time.RFC3339Nano)
+		d.UpdatedAt = v.UpdatedAt.Format(time.RFC3339Nano)
 
-			mark := model.NotificationMark{
-				Id:  v.Id,
-				Uid: context.Uid,
-			}
-			if err = tx.Where(&mark).Last(&mark).Error; err != nil {
-				if err == gorm.ErrRecordNotFound {
-					current.Read = false
-					current.ReadAt = ""
-				}
+		// 查询用户是否已读通知
+		mark := model.NotificationMark{
+			Id:  v.Id,
+			Uid: context.Uid,
+		}
+
+		if err = tx.Last(&mark).Error; err != nil {
+			if err == gorm.ErrRecordNotFound {
+				d.Read = false
+				d.ReadAt = ""
+				err = nil
 			} else {
-				current.Read = true
-				current.ReadAt = mark.CreatedAt.Format(time.RFC3339Nano)
+				break
+			}
+		} else {
+			d.Read = true
+			d.ReadAt = mark.CreatedAt.Format(time.RFC3339Nano)
+		}
+
+		data = append(data, d)
+	}
+
+	meta.Total = total
+	meta.Num = len(data)
+	meta.Page = query.Page
+	meta.Limit = query.Limit
+
+	return
+}
+
+// GetList get notification list
+func GetListAdmin(context controller.Context, input Query) (res schema.List) {
+	var (
+		err  error
+		data = make([]schema.Notification, 0)
+		meta = &schema.Meta{}
+		tx   *gorm.DB
+	)
+
+	defer func() {
+		if r := recover(); r != nil {
+			switch t := r.(type) {
+			case string:
+				err = errors.New(t)
+			case error:
+				err = t
+			default:
+				err = exception.Unknown
 			}
 		}
+
+		if tx != nil {
+			if err != nil {
+				_ = tx.Rollback().Error
+			} else {
+				err = tx.Commit().Error
+			}
+		}
+
+		if err != nil {
+			res.Message = err.Error()
+			res.Data = nil
+			res.Meta = nil
+		} else {
+			res.Data = data
+			res.Status = schema.StatusSuccess
+			res.Meta = meta
+		}
+	}()
+
+	query := input.Query
+
+	query.Normalize()
+
+	tx = service.Db.Begin()
+
+	var total int64
+
+	list := make([]model.Notification, 0)
+
+	if err = tx.Table(new(model.Notification).TableName()).Limit(query.Limit).Offset(query.Limit * query.Page).Find(&list).Count(&total).Error; err != nil {
+		return
+	}
+
+	for _, v := range list {
+		d := schema.Notification{}
+		if er := mapstructure.Decode(v, &d.NotificationPure); er != nil {
+			err = er
+			return
+		}
+		d.CreatedAt = v.CreatedAt.Format(time.RFC3339Nano)
+		d.UpdatedAt = v.UpdatedAt.Format(time.RFC3339Nano)
+		data = append(data, d)
 	}
 
 	meta.Total = total
@@ -112,7 +187,7 @@ func GetList(context controller.Context, input Query) (res schema.List) {
 }
 
 // GetListRouter get list router
-func GetListRouter(context *gin.Context) {
+func GetListUserRouter(context *gin.Context) {
 	var (
 		err   error
 		res   = schema.List{}
@@ -132,7 +207,33 @@ func GetListRouter(context *gin.Context) {
 		return
 	}
 
-	res = GetList(controller.Context{
+	res = GetListUser(controller.Context{
+		Uid: context.GetString(middleware.ContextUidField),
+	}, input)
+}
+
+// GetListRouter get list router
+func GetListAdminRouter(context *gin.Context) {
+	var (
+		err   error
+		res   = schema.List{}
+		input Query
+	)
+
+	defer func() {
+		if err != nil {
+			res.Data = nil
+			res.Message = err.Error()
+		}
+		context.JSON(http.StatusOK, res)
+	}()
+
+	if err = context.ShouldBindQuery(&input); err != nil {
+		err = exception.InvalidParams
+		return
+	}
+
+	res = GetListAdmin(controller.Context{
 		Uid: context.GetString(middleware.ContextUidField),
 	}, input)
 }

@@ -147,6 +147,26 @@
 
 </details>
 
+<details><summary>获取系统通知列表<code>[GET] /v1/notification</code></summary>
+
+<p>
+
+管理员获取系统通知列表
+
+</p>
+
+</details>
+
+<details><summary>获取系统通知详情<code>[GET] /v1/notification/n/:notification_id</code></summary>
+
+<p>
+
+管理员获取系统通知详情
+
+</p>
+
+</details>
+
 ### 个人消息类
 
 <details><summary>新增个人消息<code>[POST] /v1/message</code></summary>

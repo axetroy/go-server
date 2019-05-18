@@ -1,12 +1,15 @@
 package notification_test
 
 import (
+	"encoding/json"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/controller/admin"
+	"github.com/axetroy/go-server/src/controller/auth"
 	"github.com/axetroy/go-server/src/controller/notification"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/axetroy/go-server/tester"
+	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -20,7 +23,7 @@ func TestGetList(t *testing.T) {
 		query := schema.Query{
 			Limit: 20,
 		}
-		r := notification.GetList(controller.Context{}, notification.Query{
+		r := notification.GetListUser(controller.Context{}, notification.Query{
 			Query: query,
 		})
 
@@ -91,7 +94,7 @@ func TestGetList(t *testing.T) {
 			query := schema.Query{
 				Limit: 20,
 			}
-			r := notification.GetList(controller.Context{}, notification.Query{
+			r := notification.GetListUser(controller.Context{}, notification.Query{
 				Query: query,
 			})
 
@@ -110,6 +113,105 @@ func TestGetList(t *testing.T) {
 }
 
 func TestGetListRouter(t *testing.T) {
-	// TODO: 添加路由测试
-	t.Skip()
+	adminInfo, _ := tester.LoginAdmin()
+	userInfo, _ := tester.CreateUser()
+
+	defer auth.DeleteUserByUserName(userInfo.Username)
+
+	context := controller.Context{
+		Uid: adminInfo.Id,
+	}
+
+	var testNotification schema.Notification
+
+	// 创建一篇系统通知
+	{
+		var (
+			title   = "test"
+			content = "test"
+		)
+
+		r := notification.Create(context, notification.CreateParams{
+			Title:   title,
+			Content: content,
+		})
+
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
+
+		testNotification = schema.Notification{}
+
+		assert.Nil(t, tester.Decode(r.Data, &testNotification))
+
+		defer notification.DeleteNotificationById(testNotification.Id)
+
+		assert.Equal(t, title, testNotification.Title)
+		assert.Equal(t, content, testNotification.Content)
+	}
+
+	// 管理员接口获取
+	{
+		header := mocker.Header{
+			"Authorization": util.TokenPrefix + " " + adminInfo.Token,
+		}
+
+		r := tester.HttpAdmin.Get("/v1/notification", nil, &header)
+		res := schema.Response{}
+
+		if !assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res)) {
+			return
+		}
+
+		if !assert.Equal(t, "", res.Message) {
+			return
+		}
+
+		if !assert.Equal(t, schema.StatusSuccess, res.Status) {
+			return
+		}
+
+		banners := make([]schema.Notification, 0)
+
+		assert.Nil(t, tester.Decode(res.Data, &banners))
+
+		for _, b := range banners {
+			assert.IsType(t, "string", b.Title)
+			assert.IsType(t, "string", b.Content)
+			assert.IsType(t, "string", b.CreatedAt)
+			assert.IsType(t, "string", b.UpdatedAt)
+		}
+	}
+
+	// 普通用户获取通知
+	{
+		header := mocker.Header{
+			"Authorization": util.TokenPrefix + " " + userInfo.Token,
+		}
+
+		r := tester.HttpUser.Get("/v1/notification", nil, &header)
+		res := schema.Response{}
+
+		if !assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res)) {
+			return
+		}
+
+		if !assert.Equal(t, "", res.Message) {
+			return
+		}
+
+		if !assert.Equal(t, schema.StatusSuccess, res.Status) {
+			return
+		}
+
+		list := make([]schema.Notification, 0)
+
+		assert.Nil(t, tester.Decode(res.Data, &list))
+
+		for _, b := range list {
+			assert.IsType(t, "string", b.Title)
+			assert.IsType(t, "string", b.Content)
+			assert.IsType(t, "string", b.CreatedAt)
+			assert.IsType(t, "string", b.UpdatedAt)
+		}
+	}
 }

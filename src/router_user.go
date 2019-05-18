@@ -128,7 +128,7 @@ func init() {
 		notificationRouter := v1.Group("/notification")
 		{
 			notificationRouter.Use(userAuthMiddleware)
-			notificationRouter.GET("", notification.GetListRouter)         // 获取系统通知列表
+			notificationRouter.GET("", notification.GetListUserRouter)     // 获取系统通知列表
 			notificationRouter.GET("/n/:id", notification.GetRouter)       // 获取某一条系统通知详情
 			notificationRouter.GET("/n/:id/read", notification.ReadRouter) // 标记通知为已读
 		}
