@@ -45,15 +45,15 @@ func init() {
 		v1.Use(adminAuthMiddleware)
 
 		// 管理员类
-		adRouter := v1.Group("admin")
+		adminRouter := v1.Group("admin")
 		{
-			adRouter.POST("", admin.CreateAdminRouter)                      // 创建管理员
-			adRouter.GET("", admin.GetAdminInfoRouter)                      // TODO: 获取管理员列表
-			adRouter.GET("/profile", admin.GetAdminInfoRouter)              // 获取管理员信息
-			adRouter.GET("/u/:admin_id", admin.GetAdminInfoRouter)          // TODO: 获取某个管理员的信息
-			adRouter.PUT("/u/:admin_id", admin.GetAdminInfoRouter)          // TODO: 修改管理员信息
-			adRouter.DELETE("/u/:admin_id", admin.GetAdminInfoRouter)       // TODO: 删除管理员
-			adRouter.PUT("/u/:admin_id/password", admin.GetAdminInfoRouter) // TODO: 修改管理员密码
+			adminRouter.POST("", admin.CreateAdminRouter)                      // 创建管理员
+			adminRouter.GET("", admin.GetAdminInfoRouter)                      // TODO: 获取管理员列表
+			adminRouter.GET("/profile", admin.GetAdminInfoRouter)              // 获取管理员信息
+			adminRouter.GET("/u/:admin_id", admin.GetAdminInfoRouter)          // TODO: 获取某个管理员的信息
+			adminRouter.PUT("/u/:admin_id", admin.GetAdminInfoRouter)          // TODO: 修改管理员信息
+			adminRouter.DELETE("/u/:admin_id", admin.GetAdminInfoRouter)       // TODO: 删除管理员
+			adminRouter.PUT("/u/:admin_id/password", admin.GetAdminInfoRouter) // TODO: 修改管理员密码
 		}
 
 		// 用户类
