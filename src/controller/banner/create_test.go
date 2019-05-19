@@ -5,7 +5,6 @@ import (
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/controller/auth"
 	"github.com/axetroy/go-server/src/controller/banner"
-	"github.com/axetroy/go-server/src/controller/news"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
@@ -107,9 +106,7 @@ func TestCreateRouter(t *testing.T) {
 
 		assert.Nil(t, tester.Decode(res.Data, &n))
 
-		defer func() {
-			news.DeleteNewsById(n.Id)
-		}()
+		defer banner.DeleteBannerById(n.Id)
 
 		assert.Equal(t, image, n.Image)
 		assert.Equal(t, href, n.Href)

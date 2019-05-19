@@ -90,11 +90,21 @@
 
 </details>
 
-<details><summary>获取管理员自己的信息<code>[GET] /v1/profile</code></summary>
+<details><summary>获取管理员自己的信息<code>[GET] /v1/admin/profile</code></summary>
 
 <p>
 
 获取管理员的个人信息
+
+</p>
+
+</details>
+
+<details><summary>获取指定管理员信息<code>[GET] /v1/admin/a/:admin_id</code></summary>
+
+<p>
+
+获取指定管理员信息
 
 </p>
 
