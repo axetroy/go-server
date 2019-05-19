@@ -15,17 +15,6 @@
 
 </details>
 
-<details><summary>获取管理员信息<code>[GET] /v1/profile</code></summary>
-
-
-<p>
-
-获取管理员的个人信息
-
-</p>
-
-</details>
-
 <details><summary>获取会员列表<code>[GET] /v1/user</code></summary>
 
 
@@ -79,7 +68,7 @@
 
 ### 管理员类
 
-<details><summary>创建管理员<code>[POST] /v1/create</code></summary>
+<details><summary>创建管理员<code>[POST] /v1/admin</code></summary>
 
 仅限于超级管理员
 
@@ -90,6 +79,22 @@
 | account  | 管理员账号                 | *    |
 | password | 账号密码                   | *    |
 | name     | 管理员名称，注册后不可修改 | *    |
+
+</p>
+
+</details>
+
+<details><summary>管理员列表<code>[GET] /v1/admin</code></summary>
+
+获取管理员列表
+
+</details>
+
+<details><summary>获取管理员自己的信息<code>[GET] /v1/profile</code></summary>
+
+<p>
+
+获取管理员的个人信息
 
 </p>
 
