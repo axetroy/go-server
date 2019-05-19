@@ -37,6 +37,17 @@
 
 </details>
 
+<details><summary>获取指定会员详情<code>[GET] /v1/user/u/:user_id</code></summary>
+
+
+<p>
+
+获取指定会员详情
+
+</p>
+
+</details>
+
 <details><summary>修改会员密码<code>[PUT] /v1/user/u/:user_id/password</code></summary>
 
 

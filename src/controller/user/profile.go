@@ -61,7 +61,76 @@ func GetProfile(context controller.Context) (res schema.Response) {
 
 	user := model.User{Id: context.Uid}
 
-	if err = tx.Where(&user).Last(&user).Error; err != nil {
+	if err = tx.Last(&user).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = exception.UserNotExist
+		}
+		return
+	}
+
+	if err = mapstructure.Decode(user, &data.ProfilePure); err != nil {
+		return
+	}
+
+	data.PayPassword = user.PayPassword != nil && len(*user.PayPassword) != 0
+	data.CreatedAt = user.CreatedAt.Format(time.RFC3339Nano)
+	data.UpdatedAt = user.UpdatedAt.Format(time.RFC3339Nano)
+
+	return
+}
+
+func GetProfileByAdmin(context controller.Context, userId string) (res schema.Response) {
+	var (
+		err  error
+		data schema.Profile
+		tx   *gorm.DB
+	)
+
+	defer func() {
+		if r := recover(); r != nil {
+			switch t := r.(type) {
+			case string:
+				err = errors.New(t)
+			case error:
+				err = t
+			default:
+				err = exception.Unknown
+			}
+		}
+
+		if tx != nil {
+			if err != nil {
+				_ = tx.Rollback().Error
+			} else {
+				err = tx.Commit().Error
+			}
+		}
+
+		if err != nil {
+			res.Message = err.Error()
+			res.Data = nil
+		} else {
+			res.Data = data
+			res.Status = schema.StatusSuccess
+		}
+	}()
+
+	tx = service.Db.Begin()
+
+	adminInfo := model.Admin{
+		Id: context.Uid,
+	}
+
+	if err = tx.Last(&adminInfo).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = exception.AdminNotExist
+		}
+		return
+	}
+
+	user := model.User{Id: userId}
+
+	if err = tx.Last(&user).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			err = exception.UserNotExist
 		}
@@ -96,6 +165,27 @@ func GetProfileRouter(context *gin.Context) {
 	res = GetProfile(controller.Context{
 		Uid: context.GetString(middleware.ContextUidField),
 	})
+}
+
+func GetProfileByAdminRouter(context *gin.Context) {
+	var (
+		err error
+		res = schema.Response{}
+	)
+
+	defer func() {
+		if err != nil {
+			res.Data = nil
+			res.Message = err.Error()
+		}
+		context.JSON(http.StatusOK, res)
+	}()
+
+	userId := context.Param("user_id")
+
+	res = GetProfileByAdmin(controller.Context{
+		Uid: context.GetString(middleware.ContextUidField),
+	}, userId)
 }
 
 func UpdateProfile(context controller.Context, input UpdateProfileParams) (res schema.Response) {
