@@ -2,7 +2,7 @@
 
 ### 用户类
 
-<details><summary>登陆<code>[POST] /v1/login</code></summary>
+<details><summary>管理员登陆<code>[POST] /v1/login</code></summary>
 
 <p>
 
@@ -21,6 +21,17 @@
 <p>
 
 获取管理员的个人信息
+
+</p>
+
+</details>
+
+<details><summary>获取会员列表<code>[GET] /v1/user</code></summary>
+
+
+<p>
+
+获取所有的会员列表
 
 </p>
 

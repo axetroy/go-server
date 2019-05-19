@@ -6,6 +6,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/message"
 	"github.com/axetroy/go-server/src/controller/news"
 	"github.com/axetroy/go-server/src/controller/notification"
+	"github.com/axetroy/go-server/src/controller/user"
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -59,7 +60,7 @@ func init() {
 		// 用户类
 		userRouter := v1.Group("user")
 		{
-			userRouter.GET("/", admin.GetAdminInfoRouter)              // TODO: 获取会员列表
+			userRouter.GET("", user.GetListRouter)                     // 获取会员列表
 			userRouter.PUT("/password", admin.GetAdminInfoRouter)      // TODO: 修改会员密码
 			userRouter.GET("/u/:user_id", admin.GetAdminInfoRouter)    // TODO: 获取单个会员的信息
 			userRouter.PUT("/u/:user_id", admin.GetAdminInfoRouter)    // TODO: 更新会员信息
