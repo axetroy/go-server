@@ -28,7 +28,6 @@ func GetProfile(uid string) (res schema.Response) {
 	)
 
 	defer func() {
-
 		if r := recover(); r != nil {
 			switch t := r.(type) {
 			case string:
@@ -138,7 +137,7 @@ func UpdateProfile(uid string, input UpdateProfileParams) (res schema.Response) 
 		Id: uid,
 	}
 
-	if err = tx.Where(&userInfo).Last(&userInfo).Error; err != nil {
+	if err = tx.Where(&userInfo).First(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			err = exception.UserNotExist
 		}

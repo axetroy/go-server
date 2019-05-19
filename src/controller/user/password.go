@@ -2,6 +2,8 @@ package user
 
 import (
 	"errors"
+	"github.com/asaskevich/govalidator"
+	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
@@ -14,14 +16,19 @@ import (
 )
 
 type UpdatePasswordParams struct {
-	OldPassword string `json:"old_password"`
-	NewPassword string `json:"new_password"`
+	OldPassword string `json:"old_password" valid:"required~请输入旧密码"`
+	NewPassword string `json:"new_password" valid:"required~请输入新密码"`
 }
 
-func UpdatePassword(uid string, input UpdatePasswordParams) (res schema.Response) {
+type UpdatePasswordByAdminParams struct {
+	NewPassword string `json:"new_password" valid:"required~请输入新密码"`
+}
+
+func UpdatePassword(context controller.Context, input UpdatePasswordParams) (res schema.Response) {
 	var (
-		err error
-		tx  *gorm.DB
+		err          error
+		tx           *gorm.DB
+		isValidInput bool
 	)
 
 	defer func() {
@@ -53,16 +60,24 @@ func UpdatePassword(uid string, input UpdatePasswordParams) (res schema.Response
 		}
 	}()
 
+	// 参数校验
+	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		return
+	} else if isValidInput == false {
+		err = exception.InvalidParams
+		return
+	}
+
 	if input.OldPassword == input.NewPassword {
 		err = exception.PasswordDuplicate
 		return
 	}
 
-	userInfo := model.User{Id: uid}
-
 	tx = service.Db.Begin()
 
-	if err = tx.Where(&userInfo).First(&userInfo).Error; err != nil {
+	userInfo := model.User{Id: context.Uid}
+
+	if err = tx.First(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			err = exception.UserNotExist
 		}
@@ -77,7 +92,87 @@ func UpdatePassword(uid string, input UpdatePasswordParams) (res schema.Response
 
 	newPassword := util.GeneratePassword(input.NewPassword)
 
-	if err = tx.Model(&userInfo).Update("password", newPassword).Error; err != nil {
+	if err = tx.Model(&userInfo).Update(model.User{Password: newPassword}).Error; err != nil {
+		return
+	}
+
+	return
+}
+
+func UpdatePasswordByAdmin(context controller.Context, userId string, input UpdatePasswordByAdminParams) (res schema.Response) {
+	var (
+		err          error
+		tx           *gorm.DB
+		isValidInput bool
+	)
+
+	defer func() {
+		if r := recover(); r != nil {
+			switch t := r.(type) {
+			case string:
+				err = errors.New(t)
+			case error:
+				err = t
+			default:
+				err = exception.Unknown
+			}
+		}
+
+		if tx != nil {
+			if err != nil {
+				_ = tx.Rollback().Error
+			} else {
+				err = tx.Commit().Error
+			}
+		}
+
+		if err != nil {
+			res.Message = err.Error()
+			res.Data = false
+		} else {
+			res.Data = true
+			res.Status = schema.StatusSuccess
+		}
+	}()
+
+	// 参数校验
+	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		return
+	} else if isValidInput == false {
+		err = exception.InvalidParams
+		return
+	}
+
+	tx = service.Db.Begin()
+
+	// 检查是否是管理员
+	adminInfo := model.Admin{Id: context.Uid}
+
+	if err = tx.First(&adminInfo).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = exception.AdminNotExist
+		}
+		return
+	}
+
+	// 只有超级管理员才能操作
+	if adminInfo.IsSuper == false {
+		err = exception.NoPermission
+		return
+	}
+
+	userInfo := model.User{Id: userId}
+
+	if err = tx.First(&userInfo).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = exception.UserNotExist
+		}
+		return
+	}
+
+	newPassword := util.GeneratePassword(input.NewPassword)
+
+	if err = tx.Model(&userInfo).Update(model.User{Password: newPassword}).Error; err != nil {
 		return
 	}
 
@@ -104,5 +199,34 @@ func UpdatePasswordRouter(context *gin.Context) {
 		return
 	}
 
-	res = UpdatePassword(context.GetString(middleware.ContextUidField), input)
+	res = UpdatePassword(controller.Context{
+		Uid: context.GetString(middleware.ContextUidField),
+	}, input)
+}
+
+func UpdatePasswordByAdminRouter(context *gin.Context) {
+	var (
+		err   error
+		res   = schema.Response{}
+		input UpdatePasswordByAdminParams
+	)
+
+	defer func() {
+		if err != nil {
+			res.Data = nil
+			res.Message = err.Error()
+		}
+		context.JSON(http.StatusOK, res)
+	}()
+
+	userId := context.Param("user_id")
+
+	if err = context.ShouldBindJSON(&input); err != nil {
+		err = exception.InvalidParams
+		return
+	}
+
+	res = UpdatePasswordByAdmin(controller.Context{
+		Uid: context.GetString(middleware.ContextUidField),
+	}, userId, input)
 }

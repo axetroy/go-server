@@ -47,10 +47,9 @@ func init() {
 		// 管理员类
 		adRouter := v1.Group("admin")
 		{
-			adRouter.POST("", admin.CreateAdminRouter)         // 创建管理员
-			adRouter.GET("", admin.GetAdminInfoRouter)         // TODO: 获取管理员列表
-			adRouter.GET("/profile", admin.GetAdminInfoRouter) // 获取管理员信息
-
+			adRouter.POST("", admin.CreateAdminRouter)                      // 创建管理员
+			adRouter.GET("", admin.GetAdminInfoRouter)                      // TODO: 获取管理员列表
+			adRouter.GET("/profile", admin.GetAdminInfoRouter)              // 获取管理员信息
 			adRouter.GET("/u/:admin_id", admin.GetAdminInfoRouter)          // TODO: 获取某个管理员的信息
 			adRouter.PUT("/u/:admin_id", admin.GetAdminInfoRouter)          // TODO: 修改管理员信息
 			adRouter.DELETE("/u/:admin_id", admin.GetAdminInfoRouter)       // TODO: 删除管理员
@@ -60,11 +59,11 @@ func init() {
 		// 用户类
 		userRouter := v1.Group("user")
 		{
-			userRouter.GET("", user.GetListRouter)                     // 获取会员列表
-			userRouter.PUT("/password", admin.GetAdminInfoRouter)      // TODO: 修改会员密码
-			userRouter.GET("/u/:user_id", admin.GetAdminInfoRouter)    // TODO: 获取单个会员的信息
-			userRouter.PUT("/u/:user_id", admin.GetAdminInfoRouter)    // TODO: 更新会员信息
-			userRouter.DELETE("/u/:user_id", admin.GetAdminInfoRouter) // TODO: 删除会员信息
+			userRouter.GET("", user.GetListRouter)                                   // 获取会员列表
+			userRouter.PUT("/u/:user_id/password", user.UpdatePasswordByAdminRouter) // 修改会员密码
+			userRouter.GET("/u/:user_id", admin.GetAdminInfoRouter)                  // TODO: 获取单个会员的信息
+			userRouter.PUT("/u/:user_id", admin.GetAdminInfoRouter)                  // TODO: 更新会员信息
+			userRouter.DELETE("/u/:user_id", admin.GetAdminInfoRouter)               // TODO: 删除会员信息
 		}
 
 		// 新闻咨询类

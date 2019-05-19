@@ -37,6 +37,19 @@
 
 </details>
 
+<details><summary>修改会员密码<code>[PUT] /v1/user/u/:user_id/password</code></summary>
+
+
+<p>
+
+| 参数         | 说明   | 必选 |
+| ------------ | ------ | ---- |
+| new_password | 新密码 | *    |
+
+
+</p>
+
+</details>
 
 ### 管理员类
 
