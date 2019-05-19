@@ -2,6 +2,7 @@ package user
 
 import (
 	"errors"
+	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
@@ -20,7 +21,7 @@ type UpdateProfileParams struct {
 	Avatar   *string       `json:"avatar"`
 }
 
-func GetProfile(uid string) (res schema.Response) {
+func GetProfile(context controller.Context) (res schema.Response) {
 	var (
 		err  error
 		data schema.Profile
@@ -58,7 +59,7 @@ func GetProfile(uid string) (res schema.Response) {
 
 	tx = service.Db.Begin()
 
-	user := model.User{Id: uid}
+	user := model.User{Id: context.Uid}
 
 	if err = tx.Where(&user).Last(&user).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -92,10 +93,12 @@ func GetProfileRouter(context *gin.Context) {
 		context.JSON(http.StatusOK, res)
 	}()
 
-	res = GetProfile(context.GetString(middleware.ContextUidField))
+	res = GetProfile(controller.Context{
+		Uid: context.GetString(middleware.ContextUidField),
+	})
 }
 
-func UpdateProfile(uid string, input UpdateProfileParams) (res schema.Response) {
+func UpdateProfile(context controller.Context, input UpdateProfileParams) (res schema.Response) {
 	var (
 		err  error
 		data schema.Profile
@@ -134,7 +137,7 @@ func UpdateProfile(uid string, input UpdateProfileParams) (res schema.Response) 
 	tx = service.Db.Begin()
 
 	userInfo := model.User{
-		Id: uid,
+		Id: context.Uid,
 	}
 
 	if err = tx.Where(&userInfo).First(&userInfo).Error; err != nil {
@@ -193,5 +196,7 @@ func UpdateProfileRouter(context *gin.Context) {
 		return
 	}
 
-	res = UpdateProfile(context.GetString(middleware.ContextUidField), input)
+	res = UpdateProfile(controller.Context{
+		Uid: context.GetString(middleware.ContextUidField),
+	}, input)
 }

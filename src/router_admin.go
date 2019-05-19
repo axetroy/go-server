@@ -49,7 +49,7 @@ func init() {
 		{
 			adminRouter.POST("", admin.CreateAdminRouter)                      // 创建管理员
 			adminRouter.GET("", admin.GetAdminInfoRouter)                      // TODO: 获取管理员列表
-			adminRouter.GET("/profile", admin.GetAdminInfoRouter)              // 获取管理员信息
+			adminRouter.GET("/profile", admin.GetAdminInfoRouter)              // 获取管理员自己的信息
 			adminRouter.GET("/u/:admin_id", admin.GetAdminInfoRouter)          // TODO: 获取某个管理员的信息
 			adminRouter.PUT("/u/:admin_id", admin.GetAdminInfoRouter)          // TODO: 修改管理员信息
 			adminRouter.DELETE("/u/:admin_id", admin.GetAdminInfoRouter)       // TODO: 删除管理员
