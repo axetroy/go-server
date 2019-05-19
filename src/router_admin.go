@@ -59,10 +59,11 @@ func init() {
 		// 用户类
 		userRouter := v1.Group("user")
 		{
-			userRouter.GET("", user.GetListRouter)                                   // 获取会员列表
-			userRouter.PUT("/u/:user_id/password", user.UpdatePasswordByAdminRouter) // 修改会员密码
-			userRouter.GET("/u/:user_id", user.GetProfileByAdminRouter)              // 获取单个会员的信息
-			userRouter.PUT("/u/:user_id", user.UpdateProfileByAdminRouter)           // 更新会员信息
+			userRouter.GET("", user.GetListRouter)                                    // 获取会员列表
+			userRouter.GET("/u/:user_id", user.GetProfileByAdminRouter)               // 获取单个会员的信息
+			userRouter.PUT("/u/:user_id", user.UpdateProfileByAdminRouter)            // 更新会员信息
+			userRouter.PUT("/u/:user_id/password", user.UpdatePasswordByAdminRouter)  // 修改会员密码
+			userRouter.PUT("/u/:user_id/password2", user.UpdatePasswordByAdminRouter) // TODO:修改会员二级/交易密码
 		}
 
 		// 新闻咨询类
