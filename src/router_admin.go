@@ -63,7 +63,6 @@ func init() {
 			userRouter.PUT("/u/:user_id/password", user.UpdatePasswordByAdminRouter) // 修改会员密码
 			userRouter.GET("/u/:user_id", user.GetProfileByAdminRouter)              // 获取单个会员的信息
 			userRouter.PUT("/u/:user_id", user.UpdateProfileByAdminRouter)           // 更新会员信息
-			userRouter.DELETE("/u/:user_id", admin.GetAdminInfoRouter)               // TODO: 删除会员信息
 		}
 
 		// 新闻咨询类
