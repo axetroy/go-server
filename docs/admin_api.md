@@ -48,6 +48,21 @@
 
 </details>
 
+<details><summary>修改会员资料<code>[PUT] /v1/user/u/:user_id</code></summary>
+
+
+<p>
+
+| 参数     | 说明         | 必选 |
+| -------- | ------------ | ---- |
+| nickname | 用户昵称     |      |
+| gender   | 用户性别     |      |
+| avatar   | 用户头像 URL |      |
+
+</p>
+
+</details>
+
 <details><summary>修改会员密码<code>[PUT] /v1/user/u/:user_id/password</code></summary>
 
 

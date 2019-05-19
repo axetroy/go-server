@@ -2,7 +2,6 @@ package user_test
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/controller/auth"
 	"github.com/axetroy/go-server/src/controller/user"
@@ -22,7 +21,7 @@ func TestGetProfileWithInvalidAuth(t *testing.T) {
 		"Authorization": "Bearera 12312", // invalid Bearera
 	}
 
-	r := tester.HttpUser.Get("/v1/user/profile", []byte(""), &header)
+	r := tester.HttpUser.Get("/v1/user/profile", nil, &header)
 
 	if !assert.Equal(t, http.StatusOK, r.Code) {
 		return
@@ -30,16 +29,9 @@ func TestGetProfileWithInvalidAuth(t *testing.T) {
 
 	res := schema.Response{}
 
-	if !assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res)) {
-		return
-	}
-
-	if !assert.Equal(t, schema.StatusFail, res.Status) {
-		return
-	}
-	if !assert.Equal(t, exception.InvalidAuth.Error(), res.Message) {
-		return
-	}
+	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+	assert.Equal(t, schema.StatusFail, res.Status)
+	assert.Equal(t, exception.InvalidAuth.Error(), res.Message)
 }
 
 func TestGetProfileWithInvalidToken(t *testing.T) {
@@ -47,7 +39,7 @@ func TestGetProfileWithInvalidToken(t *testing.T) {
 		"Authorization": util.TokenPrefix + " 12312",
 	}
 
-	r := tester.HttpUser.Get("/v1/user/profile", []byte(""), &header)
+	r := tester.HttpUser.Get("/v1/user/profile", nil, &header)
 
 	if !assert.Equal(t, http.StatusOK, r.Code) {
 		return
@@ -55,16 +47,9 @@ func TestGetProfileWithInvalidToken(t *testing.T) {
 
 	res := schema.Response{}
 
-	if !assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res)) {
-		return
-	}
-
-	if !assert.Equal(t, schema.StatusFail, res.Status) {
-		return
-	}
-	if !assert.Equal(t, exception.InvalidToken.Error(), res.Message) {
-		return
-	}
+	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+	assert.Equal(t, schema.StatusFail, res.Status)
+	assert.Equal(t, exception.InvalidToken.Error(), res.Message)
 }
 
 func TestGetProfile(t *testing.T) {
@@ -109,7 +94,7 @@ func TestGetProfileRouter(t *testing.T) {
 		"Authorization": util.TokenPrefix + " " + userInfo.Token,
 	}
 
-	r := tester.HttpUser.Get("/v1/user/profile", []byte(""), &header)
+	r := tester.HttpUser.Get("/v1/user/profile", nil, &header)
 
 	if !assert.Equal(t, http.StatusOK, r.Code) {
 		return
@@ -117,30 +102,15 @@ func TestGetProfileRouter(t *testing.T) {
 
 	res := schema.Response{}
 
-	if !assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res)) {
-		return
-	}
-
-	if !assert.Equal(t, schema.StatusSuccess, res.Status) {
-		fmt.Println(res.Message)
-		return
-	}
-	if !assert.Equal(t, "", res.Message) {
-		return
-	}
+	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+	assert.Equal(t, schema.StatusSuccess, res.Status)
+	assert.Equal(t, "", res.Message)
 
 	profile := schema.Profile{}
 
-	if assert.Nil(t, tester.Decode(res.Data, &profile)) {
-		return
-	}
-
-	if !assert.Equal(t, userInfo.Id, profile.Id) {
-		return
-	}
-	if !assert.Equal(t, userInfo.Username, *profile.Email) {
-		return
-	}
+	assert.Nil(t, tester.Decode(res.Data, &profile))
+	assert.Equal(t, userInfo.Id, profile.Id)
+	assert.Equal(t, userInfo.Username, profile.Username)
 }
 
 func TestGetProfileByAdminRouter(t *testing.T) {
@@ -161,28 +131,135 @@ func TestGetProfileByAdminRouter(t *testing.T) {
 
 	res := schema.Response{}
 
-	if !assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res)) {
-		return
-	}
-
-	if !assert.Equal(t, schema.StatusSuccess, res.Status) {
-		fmt.Println(res.Message)
-		return
-	}
-	if !assert.Equal(t, "", res.Message) {
-		return
-	}
+	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+	assert.Equal(t, schema.StatusSuccess, res.Status)
+	assert.Equal(t, "", res.Message)
 
 	profile := schema.Profile{}
 
-	if assert.Nil(t, tester.Decode(res.Data, &profile)) {
+	assert.Nil(t, tester.Decode(res.Data, &profile))
+	assert.Equal(t, userInfo.Id, profile.Id)
+	assert.Equal(t, userInfo.Username, profile.Username)
+}
+
+func TestUpdateProfile(t *testing.T) {
+	var (
+		nickName = "nickname"
+	)
+	userInfo, _ := tester.CreateUser()
+
+	defer auth.DeleteUserByUserName(userInfo.Username)
+
+	r := user.UpdateProfile(controller.Context{Uid: userInfo.Id}, user.UpdateProfileParams{
+		Nickname: &nickName,
+	})
+
+	profile := schema.Profile{}
+
+	assert.Nil(t, tester.Decode(r.Data, &profile))
+
+	assert.Equal(t, userInfo.Id, profile.Id)
+	assert.Equal(t, userInfo.Username, profile.Username)
+	assert.Equal(t, nickName, *profile.Nickname)
+	assert.Equal(t, userInfo.CreatedAt, profile.CreatedAt)
+}
+
+func TestUpdateProfileRouter(t *testing.T) {
+	var (
+		nickName = "nickname"
+	)
+	userInfo, _ := tester.CreateUser()
+
+	defer auth.DeleteUserByUserName(userInfo.Username)
+
+	header := mocker.Header{
+		"Authorization": util.TokenPrefix + " " + userInfo.Token,
+	}
+
+	body, _ := json.Marshal(&user.UpdateProfileParams{
+		Nickname: &nickName,
+	})
+
+	r := tester.HttpUser.Put("/v1/user/profile", body, &header)
+
+	if !assert.Equal(t, http.StatusOK, r.Code) {
 		return
 	}
 
-	if !assert.Equal(t, userInfo.Id, profile.Id) {
+	res := schema.Response{}
+
+	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+	assert.Equal(t, schema.StatusSuccess, res.Status)
+	assert.Equal(t, "", res.Message)
+
+	profile := schema.Profile{}
+
+	assert.Equal(t, schema.StatusSuccess, res.Status)
+	assert.Equal(t, "", res.Message)
+	assert.Nil(t, tester.Decode(res.Data, &profile))
+
+	assert.Equal(t, nickName, *profile.Nickname)
+}
+
+func TestUpdateProfileByAdmin(t *testing.T) {
+	var (
+		nickName = "nickname"
+	)
+	userInfo, _ := tester.CreateUser()
+	adminInfo, _ := tester.LoginAdmin()
+
+	defer auth.DeleteUserByUserName(userInfo.Username)
+
+	res := user.UpdateProfileByAdmin(controller.Context{Uid: adminInfo.Id}, userInfo.Id, user.UpdateProfileParams{
+		Nickname: &nickName,
+	})
+
+	profile := schema.Profile{}
+
+	assert.Equal(t, schema.StatusSuccess, res.Status)
+	assert.Equal(t, "", res.Message)
+	assert.Nil(t, tester.Decode(res.Data, &profile))
+
+	assert.Equal(t, userInfo.Id, profile.Id)
+	assert.Equal(t, userInfo.Username, profile.Username)
+	assert.Equal(t, nickName, *profile.Nickname)
+	assert.Equal(t, userInfo.CreatedAt, profile.CreatedAt)
+}
+
+func TestUpdateProfileByAdminRouter(t *testing.T) {
+	var (
+		nickName = "nickname"
+	)
+	userInfo, _ := tester.CreateUser()
+	adminInfo, _ := tester.LoginAdmin()
+
+	defer auth.DeleteUserByUserName(userInfo.Username)
+
+	header := mocker.Header{
+		"Authorization": util.TokenPrefix + " " + adminInfo.Token,
+	}
+
+	body, _ := json.Marshal(&user.UpdateProfileParams{
+		Nickname: &nickName,
+	})
+
+	r := tester.HttpAdmin.Put("/v1/user/u/"+userInfo.Id, body, &header)
+
+	if !assert.Equal(t, http.StatusOK, r.Code) {
 		return
 	}
-	if !assert.Equal(t, userInfo.Username, *profile.Email) {
-		return
-	}
+
+	res := schema.Response{}
+
+	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+	assert.Equal(t, schema.StatusSuccess, res.Status)
+	assert.Equal(t, "", res.Message)
+
+	profile := schema.Profile{}
+
+	assert.Equal(t, schema.StatusSuccess, res.Status)
+	assert.Equal(t, "", res.Message)
+	assert.Nil(t, tester.Decode(res.Data, &profile))
+
+	assert.Equal(t, nickName, *profile.Nickname)
 }
