@@ -53,17 +53,17 @@ func init() {
 		// 认证类
 		authRouter := v1.Group("/auth")
 		{
-			authRouter.POST("/signup", auth.SignUpRouter)
-			authRouter.POST("/signin", auth.SignInRouter)
-			authRouter.POST("/activation", auth.ActivationRouter)
-			authRouter.PUT("/password/reset", auth.ResetPasswordRouter)
+			authRouter.POST("/signup", auth.SignUpRouter)               // 注册账号
+			authRouter.POST("/signin", auth.SignInRouter)               // 登陆账号
+			authRouter.POST("/activation", auth.ActivationRouter)       // 激活账号
+			authRouter.PUT("/password/reset", auth.ResetPasswordRouter) // 密码重置
 
 		}
 
 		oauthRouter := v1.Group("/oauth2")
 		{
-			oauthRouter.GET("/google", oauth2.GoogleLoginRouter)
-			oauthRouter.GET("/google_callback", oauth2.GoogleCallbackRouter)
+			oauthRouter.GET("/google", oauth2.GoogleLoginRouter)             // 用 Google 登陆
+			oauthRouter.GET("/google_callback", oauth2.GoogleCallbackRouter) // Google 认证完成后跳转到这里，用户不应该访问这个地址
 		}
 
 		// 用户类
@@ -151,15 +151,15 @@ func init() {
 		// 通用类
 		{
 			// 邮件服务
-			v1.POST("/email/send/activation", email.SendActivationEmailRouter)
-			v1.POST("/email/send/password/reset", email.SendResetPasswordEmailRouter)
+			v1.POST("/email/send/activation", email.SendActivationEmailRouter)        // 发送激活邮件
+			v1.POST("/email/send/password/reset", email.SendResetPasswordEmailRouter) // 发送密码重置邮件
 
 			// 文件上传 (需要验证token)
 			uploadRouter := v1.Group("/upload")
 			{
 				uploadRouter.Use(userAuthMiddleware)
-				uploadRouter.POST("/file", uploader.File)
-				uploadRouter.POST("/image", uploader.Image)
+				uploadRouter.POST("/file", uploader.File)   // 上传文件
+				uploadRouter.POST("/image", uploader.Image) // 上传图片
 			}
 			// 单纯获取资源文本
 			v1.GET("/resource/file/:filename", resource.File)
