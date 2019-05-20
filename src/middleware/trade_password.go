@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	headerKey = "X-Pay-Password"
+	PayPasswordHeader = "X-Pay-Password"
 )
 
 // 交易密码的验证中间件
@@ -49,7 +49,7 @@ func AuthPayPassword(context *gin.Context) {
 		}
 	}()
 
-	payPassword := context.GetHeader(headerKey)
+	payPassword := context.GetHeader(PayPasswordHeader)
 
 	if len(payPassword) == 0 {
 		err = exception.RequirePayPassword
