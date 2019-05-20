@@ -12,25 +12,28 @@ import (
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/util"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	"github.com/mitchellh/mapstructure"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type ToParams struct {
-	Currency string  `json:"currency" valid:"required~请选择币种"`                     // 币种
-	To       string  `json:"to" valid:"required~请输入转账对象,numeric~请输入正确的接受人ID"`     // 转账给谁
-	Amount   string  `json:"amount" valid:"required~请输入转账数量,numeric~请输入纯数字的转账数量"` // 转账数量
-	Note     *string `json:"note"`                                                // 转账备注
+	Currency string  `json:"currency" valid:"required~请选择币种"`                   // 币种
+	To       string  `json:"to" valid:"required~请输入转账对象,numeric~请输入正确的接受人ID"`   // 转账给谁
+	Amount   string  `json:"amount" valid:"required~请输入转账数量,float~请输入纯数字的转账数量"` // 转账数量
+	Note     *string `json:"note"`                                              // 转账备注
 }
 
 func To(context controller.Context, input ToParams) (res schema.Response) {
 	var (
 		err          error
 		tx           *gorm.DB
-		data         = model.TransferLog{}
+		data         = schema.TransferLog{}
 		isValidInput bool
 	)
 
@@ -71,16 +74,13 @@ func To(context controller.Context, input ToParams) (res schema.Response) {
 		return
 	}
 
-	uid := context.Uid
-
 	tx = service.Db.Begin()
 
-	fromUserInfo := model.User{Id: uid}
+	fromUserInfo := model.User{Id: context.Uid}
 	toUserInfo := model.User{Id: input.To}
 
 	if err = tx.Where(&fromUserInfo).Last(&fromUserInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			// TODO: 完善错误信息
 			err = exception.UserNotExist
 		}
 		return
@@ -88,7 +88,6 @@ func To(context controller.Context, input ToParams) (res schema.Response) {
 
 	if err = tx.Where(&toUserInfo).Last(&toUserInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			// TODO: 完善错误信息
 			err = exception.UserNotExist
 		}
 		return
@@ -99,8 +98,9 @@ func To(context controller.Context, input ToParams) (res schema.Response) {
 	financeLogTableName := finance.GetTableName(input.Currency) // 对应的财务日志表名
 
 	fromUserWallet := model.Wallet{
-		Id: uid,
+		Id: context.Uid,
 	}
+
 	toUserWallet := model.Wallet{
 		Id: input.To,
 	}
@@ -164,10 +164,10 @@ func To(context controller.Context, input ToParams) (res schema.Response) {
 
 	transferLog := model.TransferLog{
 		Currency: strings.ToUpper(input.Currency),
-		From:     uid,
+		From:     context.Uid,
 		To:       input.To,
 		Status:   model.TransferStatusConfirmed,
-		Amount:   amount,
+		Amount:   util.FloatToStr(amount), // 保留 8 未小数
 		Note:     input.Note,
 	}
 
@@ -175,7 +175,12 @@ func To(context controller.Context, input ToParams) (res schema.Response) {
 		return
 	}
 
-	data = transferLog
+	if err = mapstructure.Decode(transferLog, &data.TransferLogPure); err != nil {
+		return
+	}
+
+	data.CreatedAt = transferLog.CreatedAt.Format(time.RFC3339Nano)
+	data.UpdatedAt = transferLog.UpdatedAt.Format(time.RFC3339Nano)
 
 	// 如果财务日志表不存在的话, 那么就生成这个表
 	if tx.HasTable(financeLogTableName) == false {
@@ -187,7 +192,7 @@ func To(context controller.Context, input ToParams) (res schema.Response) {
 	// 生成我的财务日志
 	fromUserFinanceLog := model.FinanceLog{
 		OrderId:         transferLog.Id, // 可用余额的变动
-		Uid:             uid,
+		Uid:             context.Uid,
 		BeforeBalance:   fromUserBeforeBalance,
 		BalanceMutation: -amount,
 		AfterBalance:    fromUserAfterBalance,

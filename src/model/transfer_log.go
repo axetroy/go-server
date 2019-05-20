@@ -1,6 +1,10 @@
 package model
 
-import "time"
+import (
+	"github.com/axetroy/go-server/src/util"
+	"github.com/jinzhu/gorm"
+	"time"
+)
 
 type TransferStatus int
 
@@ -21,7 +25,7 @@ type TransferLog struct {
 	Currency     string         `gorm:"not null;index;" json:"currency"`                              // 转账币种
 	From         string         `gorm:"not null;index;type:varchar(32)" json:"from"`                  // 汇款人
 	To           string         `gorm:"not null;index;type:varchar(32)" json:"to"`                    // 收款人
-	Amount       float64        `gorm:"not null;" json:"amount"`                                      // 转账数量
+	Amount       string         `gorm:"not null;type:numeric" json:"amount"`                          // 转账数量
 	Status       TransferStatus `gorm:"not null" json:"status"`                                       // 转账状态
 	Note         *string        `gorm:"null;type:varchar(128)" json:"note"`                           // 转账备注
 	SnapshotFrom *string        `gorm:"null" json:"-"`                                                // 转账者的钱包快照
@@ -41,6 +45,10 @@ type TransferLogUsd struct {
 
 type TransferLogCoin struct {
 	TransferLog
+}
+
+func (news *TransferLog) BeforeCreate(scope *gorm.Scope) error {
+	return scope.SetColumn("id", util.GenerateId())
 }
 
 func (news *TransferLogCny) TableName() string {

@@ -15,11 +15,7 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	testUser, err := tester.CreateUser()
-
-	if !assert.Nil(t, err) {
-		return
-	}
+	testUser, _ := tester.CreateUser()
 
 	defer auth.DeleteUserByUserName(testUser.Username)
 
@@ -72,11 +68,7 @@ func TestCreate(t *testing.T) {
 }
 
 func TestCreateRouter(t *testing.T) {
-	testUser, err := tester.CreateUser()
-
-	if !assert.Nil(t, err) {
-		return
-	}
+	testUser, _ := tester.CreateUser()
 
 	defer auth.DeleteUserByUserName(testUser.Username)
 

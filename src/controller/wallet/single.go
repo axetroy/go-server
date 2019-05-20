@@ -10,10 +10,8 @@ import (
 	"github.com/axetroy/go-server/src/service"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"github.com/mitchellh/mapstructure"
 	"net/http"
 	"strings"
-	"time"
 )
 
 func IsValidWallet(walletName string) bool {
@@ -66,7 +64,7 @@ func GetWallet(context controller.Context, currencyName string) (res schema.Resp
 
 	tx = service.Db.Begin()
 
-	if err = tx.Where(userInfo).Last(&userInfo).Error; err != nil {
+	if err = tx.Last(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			err = exception.UserNotExist
 		}
@@ -83,16 +81,11 @@ func GetWallet(context controller.Context, currencyName string) (res schema.Resp
 		return
 	}
 
-	if err = tx.Table("wallet_" + strings.ToLower(currencyName)).Scan(&walletInfo).Error; err != nil {
+	if err = tx.Table("wallet_"+strings.ToLower(currencyName)).Where("id = ?", context.Uid).Scan(&walletInfo).Error; err != nil {
 		return
 	}
 
-	if err = mapstructure.Decode(walletInfo, &data.WalletPure); err != nil {
-		return
-	}
-
-	data.CreatedAt = walletInfo.CreatedAt.Format(time.RFC3339Nano)
-	data.UpdatedAt = walletInfo.UpdatedAt.Format(time.RFC3339Nano)
+	mapToSchema(walletInfo, &data)
 
 	return
 }

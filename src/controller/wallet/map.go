@@ -10,9 +10,7 @@ import (
 	"github.com/axetroy/go-server/src/service"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"github.com/mitchellh/mapstructure"
 	"net/http"
-	"time"
 )
 
 func GetWallets(context controller.Context) (res schema.Response) {
@@ -76,11 +74,7 @@ func GetWallets(context controller.Context) (res schema.Response) {
 
 	for _, v := range list {
 		wallet := schema.Wallet{}
-		if err = mapstructure.Decode(v, &wallet.WalletPure); err != nil {
-			return
-		}
-		wallet.CreatedAt = v.CreatedAt.Format(time.RFC3339Nano)
-		wallet.UpdatedAt = v.UpdatedAt.Format(time.RFC3339Nano)
+		mapToSchema(v, &wallet)
 		data = append(data, wallet)
 	}
 

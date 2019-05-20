@@ -35,8 +35,8 @@ func TestGetWallet(t *testing.T) {
 
 		assert.Equal(t, userInfo.Id, walletInfo.Id)
 		assert.Equal(t, model.WalletCNY, walletInfo.Currency)
-		assert.Equal(t, float64(0), walletInfo.Balance)
-		assert.Equal(t, float64(0), walletInfo.Frozen)
+		assert.Equal(t, "0.00000000", walletInfo.Balance)
+		assert.Equal(t, "0.00000000", walletInfo.Frozen)
 		assert.NotEmpty(t, walletInfo.CreatedAt)
 		assert.NotEmpty(t, walletInfo.UpdatedAt)
 	}
@@ -68,9 +68,9 @@ func TestGetWalletRouter(t *testing.T) {
 
 		assert.Equal(t, userInfo.Id, n.Id)
 		assert.Equal(t, model.WalletCNY, n.Currency)
-		assert.Equal(t, float64(0), n.Balance)
-		assert.Equal(t, float64(0), n.Frozen)
-		assert.Equal(t, float64(0), n.Frozen)
+		assert.Equal(t, "0.00000000", n.Balance)
+		assert.Equal(t, "0.00000000", n.Frozen)
+		assert.Equal(t, "0.00000000", n.Frozen)
 		assert.NotEmpty(t, n.CreatedAt)
 		assert.NotEmpty(t, n.UpdatedAt)
 	}

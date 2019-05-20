@@ -49,6 +49,10 @@ type FinanceLogCoin struct {
 	FinanceLog
 }
 
+func (news *FinanceLog) BeforeCreate(scope *gorm.Scope) error {
+	return scope.SetColumn("id", util.GenerateId())
+}
+
 func (news *FinanceLogCny) TableName() string {
 	return "finance_log_cny"
 }

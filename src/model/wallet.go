@@ -13,9 +13,9 @@ var (
 
 type Wallet struct {
 	Id        string  `gorm:"primary_key;unique;notnull;index;type:varchar(32)" json:"id"` // 用户ID
-	Currency  string  `gorm:"not null;type:varchar(12)" json:"currency"`
-	Balance   float64 `gorm:"not null;" json:"balance"` // 可用余额
-	Frozen    float64 `gorm:"not null;" json:"frozen"`  // 冻结余额
+	Currency  string  `gorm:"not null;type:varchar(12)" json:"currency"`                   // 钱包币种
+	Balance   float64 `gorm:"not null;type:numeric" json:"balance"`                        // 可用余额
+	Frozen    float64 `gorm:"not null;type:numeric" json:"frozen"`                         // 冻结余额
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt *time.Time `sql:"index"`
