@@ -3,12 +3,12 @@ package admin
 import (
 	"errors"
 	"github.com/asaskevich/govalidator"
+	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service"
-	"github.com/axetroy/go-server/src/util"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
@@ -16,18 +16,17 @@ import (
 	"time"
 )
 
-type CreateAdminParams struct {
-	Account  string `json:"account" valid:"required~请输入管理员账号"`  // 管理员账号，登陆凭证
-	Password string `json:"password" valid:"required~请输入管理员密码"` // 管理员密码
-	Name     string `json:"name" valid:"required~请输入管理员名称"`     // 管理员名称，注册后不可修改
+type UpdateParams struct {
+	Status *model.AdminStatus `json:"status"` // 管理员状态
+	Name   *string            `json:"name"`   // 管理员名字
 }
 
-// 创建管理员
-func CreateAdmin(input CreateAdminParams, isSuper bool) (res schema.Response) {
+func Update(context controller.Context, adminId string, input UpdateParams) (res schema.Response) {
 	var (
 		err          error
 		data         schema.AdminProfile
 		tx           *gorm.DB
+		shouldUpdate bool
 		isValidInput bool
 	)
 
@@ -44,7 +43,7 @@ func CreateAdmin(input CreateAdminParams, isSuper bool) (res schema.Response) {
 		}
 
 		if tx != nil {
-			if err != nil {
+			if err != nil || !shouldUpdate {
 				_ = tx.Rollback().Error
 			} else {
 				err = tx.Commit().Error
@@ -52,15 +51,15 @@ func CreateAdmin(input CreateAdminParams, isSuper bool) (res schema.Response) {
 		}
 
 		if err != nil {
-			res.Data = nil
 			res.Message = err.Error()
+			res.Data = nil
 		} else {
 			res.Data = data
 			res.Status = schema.StatusSuccess
 		}
-
 	}()
 
+	// 参数校验
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
 		return
 	} else if isValidInput == false {
@@ -70,23 +69,57 @@ func CreateAdmin(input CreateAdminParams, isSuper bool) (res schema.Response) {
 
 	tx = service.Db.Begin()
 
-	n := model.Admin{Username: input.Account}
+	myInfo := model.Admin{
+		Id: context.Uid,
+	}
 
-	if tx.Where(&n).First(&n).RecordNotFound() == false {
-		err = exception.AdminExist
+	if err = tx.First(&myInfo).Error; err != nil {
+		// 没有找到管理员
+		if err == gorm.ErrRecordNotFound {
+			err = exception.AdminNotExist
+		}
+		return
+	}
+
+	if !myInfo.IsSuper {
+		err = exception.AdminNotSuper
 		return
 	}
 
 	adminInfo := model.Admin{
-		Username: input.Account,
-		Name:     input.Name,
-		Password: util.GeneratePassword(input.Password),
-		Status:   model.AdminStatusInit,
-		IsSuper:  isSuper,
+		Id: adminId,
 	}
 
-	if err = tx.Create(&adminInfo).Error; err != nil {
+	if err = tx.First(&adminInfo).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = exception.AdminNotExist
+			return
+		}
 		return
+	}
+
+	updateModel := model.Admin{}
+
+	if input.Status != nil {
+		shouldUpdate = true
+		updateModel.Status = *input.Status
+		adminInfo.Status = *input.Status
+	}
+
+	if input.Name != nil {
+		shouldUpdate = true
+		updateModel.Name = *input.Name
+		adminInfo.Name = *input.Name
+	}
+
+	if shouldUpdate {
+		if err = tx.Model(&adminInfo).UpdateColumns(&updateModel).Error; err != nil {
+			if err == gorm.ErrRecordNotFound {
+				err = exception.AdminNotExist
+				return
+			}
+			return
+		}
 	}
 
 	if err = mapstructure.Decode(adminInfo, &data.AdminProfilePure); err != nil {
@@ -99,11 +132,11 @@ func CreateAdmin(input CreateAdminParams, isSuper bool) (res schema.Response) {
 	return
 }
 
-func CreateAdminRouter(context *gin.Context) {
+func UpdateRouter(context *gin.Context) {
 	var (
-		input CreateAdminParams
 		err   error
 		res   = schema.Response{}
+		input UpdateParams
 	)
 
 	defer func() {
@@ -114,29 +147,14 @@ func CreateAdminRouter(context *gin.Context) {
 		context.JSON(http.StatusOK, res)
 	}()
 
+	id := context.Param("admin_id")
+
 	if err = context.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
-	uid := context.GetString(middleware.ContextUidField)
-
-	adminInfo := model.Admin{
-		Id: uid,
-	}
-
-	if err = service.Db.Where(&adminInfo).First(&adminInfo).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			err = exception.AdminNotExist
-			return
-		}
-		return
-	}
-
-	if adminInfo.IsSuper == false {
-		err = exception.AdminNotSuper
-		return
-	}
-
-	res = CreateAdmin(input, false)
+	res = Update(controller.Context{
+		Uid: context.GetString(middleware.ContextUidField),
+	}, id, input)
 }

@@ -84,6 +84,21 @@
 
 </details>
 
+<details><summary>修改管理员信息<code>[PUT] /v1/admin/a/:admin_id</code></summary>
+
+仅限于超级管理员
+
+<p>
+
+| 参数   | 说明                                                         | 必选 |
+| ------ | ------------------------------------------------------------ | ---- |
+| name   | 管理员名字                                                   |      |
+| status | 管理员状态, 可选 `-1`(未激活)/`0`(默认状态)/`-100`(已被禁用) |      |
+
+</p>
+
+</details>
+
 <details><summary>管理员列表<code>[GET] /v1/admin</code></summary>
 
 获取管理员列表
