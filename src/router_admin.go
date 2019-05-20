@@ -47,22 +47,20 @@ func init() {
 		// 管理员类
 		adminRouter := v1.Group("admin")
 		{
-			adminRouter.POST("", admin.CreateAdminRouter)                      // 创建管理员
-			adminRouter.GET("", admin.GetListRouter)                           // 获取管理员列表
-			adminRouter.GET("/profile", admin.GetAdminInfoRouter)              // 获取管理员自己的信息
-			adminRouter.GET("/a/:admin_id", admin.GetAdminInfoByIdRouter)      // 获取某个管理员的信息
-			adminRouter.PUT("/a/:admin_id", admin.UpdateRouter)                // 修改某个管理员的信息
-			adminRouter.PUT("/a/:admin_id/password", admin.GetAdminInfoRouter) // TODO: 修改管理员密码
+			adminRouter.POST("", admin.CreateAdminRouter)                 // 创建管理员
+			adminRouter.GET("", admin.GetListRouter)                      // 获取管理员列表
+			adminRouter.GET("/profile", admin.GetAdminInfoRouter)         // 获取管理员自己的信息
+			adminRouter.GET("/a/:admin_id", admin.GetAdminInfoByIdRouter) // 获取某个管理员的信息
+			adminRouter.PUT("/a/:admin_id", admin.UpdateRouter)           // 修改某个管理员的信息
 		}
 
 		// 用户类
 		userRouter := v1.Group("user")
 		{
-			userRouter.GET("", user.GetListRouter)                                    // 获取会员列表
-			userRouter.GET("/u/:user_id", user.GetProfileByAdminRouter)               // 获取单个会员的信息
-			userRouter.PUT("/u/:user_id", user.UpdateProfileByAdminRouter)            // 更新会员信息
-			userRouter.PUT("/u/:user_id/password", user.UpdatePasswordByAdminRouter)  // 修改会员密码
-			userRouter.PUT("/u/:user_id/password2", user.UpdatePasswordByAdminRouter) // TODO:修改会员二级/交易密码
+			userRouter.GET("", user.GetListRouter)                                   // 获取会员列表
+			userRouter.GET("/u/:user_id", user.GetProfileByAdminRouter)              // 获取单个会员的信息
+			userRouter.PUT("/u/:user_id", user.UpdateProfileByAdminRouter)           // 更新会员信息
+			userRouter.PUT("/u/:user_id/password", user.UpdatePasswordByAdminRouter) // 修改会员密码
 		}
 
 		// 新闻咨询类
