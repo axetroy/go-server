@@ -101,11 +101,17 @@ func init() {
 		walletRouter := v1.Group("/wallet")
 		{
 			walletRouter.Use(userAuthMiddleware)
-			walletRouter.GET("/map", wallet.GetWalletsRouter)                             // 获取我的钱包map对象
-			walletRouter.GET("/w/:currency", wallet.GetWalletRouter)                      // 获取单个钱包的详细信息
-			walletRouter.GET("/transfer/history", transfer.GetHistory)                    // 获取转账记录
-			walletRouter.GET("/transfer/detail/:transfer_id", transfer.GetDetailRouter)   // 获取单条转账详情
-			walletRouter.POST("/transfer", middleware.AuthPayPassword, transfer.ToRouter) // 转账给某人
+			walletRouter.GET("/map", wallet.GetWalletsRouter)        // 获取我的钱包map对象
+			walletRouter.GET("/w/:currency", wallet.GetWalletRouter) // 获取单个钱包的详细信息
+
+		}
+
+		transferRouter := v1.Group("/transfer")
+		{
+			transferRouter.Use(userAuthMiddleware)
+			transferRouter.GET("", transfer.GetHistory)                            // 获取我的转账记录
+			transferRouter.POST("", middleware.AuthPayPassword, transfer.ToRouter) // 转账给某人
+			transferRouter.GET("/t/:transfer_id", transfer.GetDetailRouter)        // 获取单条转账详情
 		}
 
 		// 财务日志

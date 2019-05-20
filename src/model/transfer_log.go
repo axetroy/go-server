@@ -13,6 +13,12 @@ var (
 	TransferStatusWaitForConfirm TransferStatus = 0  // 等待收款方确认
 	TransferStatusConfirmed      TransferStatus = 1  // 收款方已确认
 
+	TransferTableNames = []string{
+		"transfer_log_cny",
+		"transfer_log_usd",
+		"transfer_log_coin",
+	}
+
 	TransferLogMap = map[string]interface{}{
 		"cny":  TransferLogCny{},
 		"usd":  TransferLogUsd{},

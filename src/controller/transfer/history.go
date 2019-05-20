@@ -1,9 +1,7 @@
 package transfer
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"strings"
 )
 
 func GetHistory(context *gin.Context) {
@@ -125,24 +123,4 @@ func GetHistory(context *gin.Context) {
 	//		data = append(data, log)
 	//	}
 	//}
-}
-
-func GenerateSql(FromField string, selected string) string {
-	cnyTableName := GetTransferTableName("cny")
-	usdTableName := GetTransferTableName("usd")
-	coinTableName := GetTransferTableName("coin")
-
-	suffix := `("deleted_at" IS NULL OR "deleted_at"='0001-01-01 00:00:00')`
-
-	tables := []string{cnyTableName, usdTableName, coinTableName}
-
-	sqlList := make([]string, 0)
-
-	for _, tableName := range tables {
-		sql := fmt.Sprintf(`SELECT %v FROM "%v" WHERE "from"='%v' AND %v`, selected, tableName, FromField, suffix)
-		sqlList = append(sqlList, sql)
-	}
-
-	sql := strings.Join(sqlList[:], " UNION ")
-	return sql
 }

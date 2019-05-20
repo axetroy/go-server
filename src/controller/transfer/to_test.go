@@ -115,7 +115,7 @@ func TestToRouter(t *testing.T) {
 			Amount:   "20",
 		})
 
-		r := tester.HttpUser.Post("/v1/wallet/transfer", body, &header)
+		r := tester.HttpUser.Post("/v1/transfer", body, &header)
 
 		res := schema.Response{}
 

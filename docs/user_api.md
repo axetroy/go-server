@@ -298,7 +298,7 @@
 
 </details>
 
-<details><summary>获取转账记录<code>[GET] /v1/transfer/history</code></summary>
+<details><summary>获取转账记录<code>[GET] /v1/transfer</code></summary>
 <p>
 
 获取我的转账记录
@@ -307,7 +307,7 @@
 
 </details>
 
-<details><summary>获取转账记录详情<code>[GET] /v1/transfer/detail/:transfer_id</code></summary>
+<details><summary>获取转账记录详情<code>[GET] /v1/transfer/t/:transfer_id</code></summary>
 <p>
 
 获取某一条转账记录的详情

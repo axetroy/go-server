@@ -2,24 +2,24 @@ package transfer
 
 import (
 	"errors"
-	"fmt"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service"
-	"github.com/axetroy/go-server/src/util"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	"github.com/mitchellh/mapstructure"
 	"net/http"
+	"time"
 )
 
 func GetDetail(context controller.Context, transferId string) (res schema.Response) {
 	var (
 		err  error
 		tx   *gorm.DB
-		data = Log{}
+		data = schema.TransferLog{}
 	)
 
 	defer func() {
@@ -51,56 +51,43 @@ func GetDetail(context controller.Context, transferId string) (res schema.Respon
 		}
 	}()
 
-	uid := context.Uid
-
-	if util.IsValidIdStr(transferId) != true {
-		err = exception.InvalidId
-		return
-	}
-
 	tx = service.Db.Begin()
 
-	userInfo := model.User{Id: uid}
+	userInfo := model.User{Id: context.Uid}
 
-	if err = tx.Where(&userInfo).Last(&userInfo).Error; err != nil {
+	if err = tx.Last(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			err = exception.UserNotExist
 		}
 		return
 	}
 
+	log := model.TransferLog{}
+
 	// 联表查询
-	sql := GenerateSql(uid, "*") + " LIMIT 1"
+	// 只能获取自己转给别人的
+	sql := GenerateTransferLogSQL(QueryParams{
+		Id: &transferId,
+	}, 1)
 
-	r := tx.Exec(sql)
-
-	if r.Error != nil {
+	if err = tx.Raw(sql).Scan(&log).Error; err != nil {
 		return
 	}
 
-	// TODO: 解析row
+	if log.From != context.Uid {
+		if log.To != context.Uid {
+			// 既不是转账人，也不是收款人, 没有权限获取这条记录
+			err = exception.NoPermission
+			return
+		}
+	}
 
-	fmt.Println(r.Row())
+	if err = mapstructure.Decode(log, &data.TransferLogPure); err != nil {
+		return
+	}
 
-	//if res, er := session.QueryInterface(sql + " LIMIT 1"); er != nil {
-	//	err = er
-	//	return
-	//} else {
-	//	if len(res) == 0 {
-	//		err = exception.NoData
-	//		return
-	//	}
-	//	var v = res[0]
-	//	if err = mapstructure.Decode(v, &data); err != nil {
-	//		return
-	//	}
-	//	createdAt := v["created_at"].(time.Time)
-	//	updatedAt := v["updated_at"].(time.Time)
-	//
-	//	data.CreatedAt = createdAt.Format(time.RFC3339Nano)
-	//	data.UpdatedAt = updatedAt.Format(time.RFC3339Nano)
-	//}
-
+	data.CreatedAt = log.CreatedAt.Format(time.RFC3339Nano)
+	data.UpdatedAt = log.UpdatedAt.Format(time.RFC3339Nano)
 	return
 }
 
