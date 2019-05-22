@@ -32,14 +32,4 @@ func TestGetList(t *testing.T) {
 		assert.IsType(t, int64(0), r.Meta.Total)
 		assert.True(t, r.Meta.Total >= int64(r.Meta.Num))
 	}
-
-	// TODO: 插入一个数据
-	{
-
-	}
-
-	// TODO: 再重新获取列表
-	{
-
-	}
 }
