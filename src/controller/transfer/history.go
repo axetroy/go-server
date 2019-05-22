@@ -1,126 +1,138 @@
 package transfer
 
 import (
+	"errors"
+	"github.com/axetroy/go-server/src/controller"
+	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/middleware"
+	"github.com/axetroy/go-server/src/model"
+	"github.com/axetroy/go-server/src/schema"
+	"github.com/axetroy/go-server/src/service"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
+	"github.com/mitchellh/mapstructure"
+	"net/http"
+	"time"
 )
 
-func GetHistory(context *gin.Context) {
-	//var (
-	//	err     error
-	//	session *xorm.Session
-	//	tx      bool
-	//	data    []Log
-	//	meta    = response.Meta{}
-	//	query   = request.Query{}
-	//)
-	//
-	//defer func() {
-	//	if r := recover(); r != nil {
-	//		switch t := r.(type) {
-	//		case string:
-	//			err = errors.New(t)
-	//		case error:
-	//			err = t
-	//		default:
-	//			err = exception.Unknown
-	//		}
-	//	}
-	//
-	//	if tx {
-	//		if err != nil {
-	//			_ = session.Rollback()
-	//		} else {
-	//			err = session.Commit()
-	//		}
-	//	}
-	//
-	//	if session != nil {
-	//		session.Close()
-	//	}
-	//
-	//	if err != nil {
-	//		context.JSON(http.StatusOK, response.Response{
-	//			Status:  response.StatusFail,
-	//			Message: err.Error(),
-	//			Data:    nil,
-	//		})
-	//	} else {
-	//		context.JSON(http.StatusOK, response.List{
-	//			Response: response.Response{
-	//				Status:  response.StatusSuccess,
-	//				Message: "",
-	//				Data:    data,
-	//			},
-	//			Meta: &meta,
-	//		})
-	//	}
-	//}()
-	//
-	//uid := context.GetString("uid")
-	//
-	//if err = context.ShouldBindQuery(&query); err != nil {
-	//	return
-	//}
-	//
-	//query.Normalize()
-	//
-	//session = orm.Db.NewSession()
-	//
-	//if err = session.Begin(); err != nil {
-	//	return
-	//}
-	//
-	//tx = true
-	//
-	//sql := GenerateSql(uid, "*")
-	//
-	//session = session.SQL(sql + fmt.Sprintf(" LIMIT %v", query.Limit))
-	//
-	//// TODO: 用GORM重构连表查询
-	//
-	//if res, er := session.QueryInterface(); er != nil {
-	//	err = er
-	//	return
-	//} else {
-	//	var (
-	//		length = len(res)
-	//		total  int64
-	//	)
-	//
-	//	meta.Num = length
-	//	meta.Page = query.Page
-	//	meta.Limit = query.Limit
-	//	meta.Sort = query.Sort
-	//	meta.Platform = query.Platform
-	//
-	//	// 如果查出来的总数
-	//	if length >= query.Limit {
-	//		// 统计总数
-	//		countSql := GenerateSql(uid, "COUNT(*)")
-	//
-	//		if total, err = session.SQL(countSql).Count(); err != nil {
-	//			return
-	//		}
-	//
-	//		meta.Total = total
-	//	} else {
-	//		meta.Total = int64(length)
-	//	}
-	//
-	//	data = make([]Log, 0)
-	//
-	//	for _, v := range res {
-	//		log := Log{}
-	//		if err = mapstructure.Decode(v, &log); err != nil {
-	//			return
-	//		}
-	//
-	//		createdAt := v["created_at"].(time.Time)
-	//		updatedAt := v["updated_at"].(time.Time)
-	//
-	//		log.CreatedAt = createdAt.Format(time.RFC3339Nano)
-	//		log.UpdatedAt = updatedAt.Format(time.RFC3339Nano)
-	//		data = append(data, log)
-	//	}
-	//}
+type Query struct {
+	schema.Query
+}
+
+func GetHistory(context controller.Context, input Query) (res schema.List) {
+	var (
+		err  error
+		tx   *gorm.DB
+		data = make([]schema.TransferLog, 0)
+		meta = &schema.Meta{}
+	)
+
+	defer func() {
+		if r := recover(); r != nil {
+			switch t := r.(type) {
+			case string:
+				err = errors.New(t)
+			case error:
+				err = t
+			default:
+				err = exception.Unknown
+			}
+		}
+
+		if tx != nil {
+			if err != nil {
+				_ = tx.Rollback().Error
+			} else {
+				err = tx.Commit().Error
+			}
+		}
+
+		if err != nil {
+			res.Message = err.Error()
+			res.Data = nil
+			res.Meta = nil
+		} else {
+			res.Status = schema.StatusSuccess
+			res.Data = data
+			res.Meta = meta
+		}
+	}()
+
+	tx = service.Db.Begin()
+
+	userInfo := model.User{Id: context.Uid}
+
+	if err = tx.Last(&userInfo).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = exception.UserNotExist
+		}
+		return
+	}
+
+	query := input.Query
+
+	query.Normalize()
+
+	list := make([]model.TransferLog, 0)
+
+	condition := QueryParams{
+		From: &context.Uid,
+	}
+
+	// 联表查询
+	countSQL := GenerateTransferLogSQL(condition, query.Limit, true)
+	listSQL := GenerateTransferLogSQL(condition, query.Limit, false)
+
+	var total int64
+
+	if err = tx.Raw(countSQL).Count(&total).Error; err != nil {
+		return
+	}
+
+	if err = tx.Raw(listSQL).Scan(&list).Error; err != nil {
+		return
+	}
+
+	for _, v := range list {
+		d := schema.TransferLog{}
+		if er := mapstructure.Decode(v, &d.TransferLogPure); er != nil {
+			err = er
+			return
+		}
+		d.CreatedAt = v.CreatedAt.Format(time.RFC3339Nano)
+		d.UpdatedAt = v.UpdatedAt.Format(time.RFC3339Nano)
+		data = append(data, d)
+	}
+
+	meta.Total = total
+	meta.Num = len(list)
+	meta.Page = query.Page
+	meta.Limit = query.Limit
+
+	return
+}
+
+func GetHistoryRouter(context *gin.Context) {
+	var (
+		err   error
+		res   = schema.List{}
+		input Query
+	)
+
+	defer func() {
+		if err != nil {
+			res.Data = nil
+			res.Message = err.Error()
+		}
+		context.JSON(http.StatusOK, res)
+	}()
+
+	if err = context.ShouldBindQuery(&input); err != nil {
+		err = exception.InvalidParams
+		return
+	}
+
+	res = GetHistory(controller.Context{
+		Uid: context.GetString(middleware.ContextUidField),
+	}, input)
 }

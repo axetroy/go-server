@@ -68,7 +68,7 @@ func GetDetail(context controller.Context, transferId string) (res schema.Respon
 	// 只能获取自己转给别人的
 	sql := GenerateTransferLogSQL(QueryParams{
 		Id: &transferId,
-	}, 1)
+	}, 1, false)
 
 	if err = tx.Raw(sql).Scan(&log).Error; err != nil {
 		return

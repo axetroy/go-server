@@ -34,7 +34,7 @@ type QueryParams struct {
 	Status   *model.TransferStatus `json:"status"`   // 转账状态
 }
 
-func GenerateTransferLogSQL(filter QueryParams, limit int) string {
+func GenerateTransferLogSQL(filter QueryParams, limit int, count bool) string {
 	suffix := `("deleted_at" IS NULL OR "deleted_at"='0001-01-01 00:00:00')`
 
 	filterArray := make([]string, 0)
@@ -71,16 +71,22 @@ func GenerateTransferLogSQL(filter QueryParams, limit int) string {
 		}
 	}
 
-	filterStr := strings.Join(filterArray[:], " AND ")
+	filterStr := "WHERE " + strings.Join(filterArray[:], " AND ")
 
 	if len(filterArray) != 0 {
-		filterStr = "WHERE " + filterStr + " AND"
+		filterStr = filterStr + " AND"
 	}
 
 	SQLs := make([]string, 0)
 
+	selected := "*"
+
+	if count {
+		selected = "COUNT(*)"
+	}
+
 	for _, tableName := range model.TransferTableNames {
-		sql := fmt.Sprintf(`SELECT * FROM "%s" %s %s`, tableName, filterStr, suffix)
+		sql := fmt.Sprintf(`SELECT %s FROM "%s" %s %s`, selected, tableName, filterStr, suffix)
 		SQLs = append(SQLs, sql)
 	}
 

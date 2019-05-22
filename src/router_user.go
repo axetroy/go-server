@@ -109,7 +109,7 @@ func init() {
 		transferRouter := v1.Group("/transfer")
 		{
 			transferRouter.Use(userAuthMiddleware)
-			transferRouter.GET("", transfer.GetHistory)                            // 获取我的转账记录
+			transferRouter.GET("", transfer.GetHistoryRouter)                      // 获取我的转账记录
 			transferRouter.POST("", middleware.AuthPayPassword, transfer.ToRouter) // 转账给某人
 			transferRouter.GET("/t/:transfer_id", transfer.GetDetailRouter)        // 获取单条转账详情
 		}
