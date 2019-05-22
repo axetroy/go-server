@@ -17,16 +17,17 @@ import (
 )
 
 type SignInParams struct {
-	Account  string  `json:"account"`
-	Password string  `json:"password"`
+	Account  string  `json:"account" valid:"required~请输入登陆账号"`
+	Password string  `json:"password" valid:"required~请输入密码"`
 	Code     *string `json:"code"` // 手机验证码
 }
 
 func SignIn(context controller.Context, input SignInParams) (res schema.Response) {
 	var (
-		err  error
-		data = &schema.ProfileWithToken{}
-		tx   *gorm.DB
+		err          error
+		data         = &schema.ProfileWithToken{}
+		tx           *gorm.DB
+		isValidInput bool
 	)
 
 	defer func() {
@@ -58,6 +59,14 @@ func SignIn(context controller.Context, input SignInParams) (res schema.Response
 		}
 
 	}()
+
+	// 参数校验
+	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		return
+	} else if isValidInput == false {
+		err = exception.InvalidParams
+		return
+	}
 
 	userInfo := model.User{Password: util.GeneratePassword(input.Password)}
 
