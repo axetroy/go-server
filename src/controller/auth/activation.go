@@ -2,6 +2,7 @@ package auth
 
 import (
 	"errors"
+	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
@@ -12,14 +13,15 @@ import (
 )
 
 type ActivationParams struct {
-	Code string `valid:"Required;" json:"code"`
+	Code string `json:"code" valid:"required~请输入激活码;"`
 }
 
 func Activation(input ActivationParams) (res schema.Response) {
 	var (
-		err error
-		tx  *gorm.DB
-		uid string // 激活码对应的用户ID
+		err          error
+		tx           *gorm.DB
+		uid          string // 激活码对应的用户ID
+		isValidInput bool
 	)
 
 	defer func() {
@@ -48,6 +50,14 @@ func Activation(input ActivationParams) (res schema.Response) {
 			res.Status = schema.StatusSuccess
 		}
 	}()
+
+	// 参数校验
+	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		return
+	} else if isValidInput == false {
+		err = exception.InvalidParams
+		return
+	}
 
 	if uid, err = service.RedisActivationCodeClient.Get(input.Code).Result(); err != nil {
 		err = exception.InvalidActiveCode
