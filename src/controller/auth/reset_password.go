@@ -2,6 +2,7 @@ package auth
 
 import (
 	"errors"
+	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
@@ -13,19 +14,19 @@ import (
 )
 
 type ResetPasswordParams struct {
-	Code        string `json:"code"`
-	NewPassword string `json:"new_password"`
+	Code        string `json:"code" valid:"required~请输入激活码"`
+	NewPassword string `json:"new_password" valid:"required~请输入新密码"`
 }
 
 func ResetPassword(input ResetPasswordParams) (res schema.Response) {
 	var (
-		err error
-		tx  *gorm.DB
-		uid string // 重置码对应的uid
+		err          error
+		tx           *gorm.DB
+		uid          string // 重置码对应的uid
+		isValidInput bool
 	)
 
 	defer func() {
-
 		if r := recover(); r != nil {
 			switch t := r.(type) {
 			case string:
@@ -53,6 +54,14 @@ func ResetPassword(input ResetPasswordParams) (res schema.Response) {
 			res.Data = true
 		}
 	}()
+
+	// 参数校验
+	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		return
+	} else if isValidInput == false {
+		err = exception.InvalidParams
+		return
+	}
 
 	if uid, err = service.RedisResetCodeClient.Get(input.Code).Result(); err != nil {
 		err = exception.InvalidResetCode
