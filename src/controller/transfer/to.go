@@ -157,7 +157,7 @@ func To(context controller.Context, input ToParams) (res schema.Response) {
 
 	// 如果转账记录的表不存在的话，那么就生成这个表
 	if tx.HasTable(transferTableName) == false {
-		if err = tx.CreateTable(model.TransferLogMap[input.Currency]).Error; err != nil {
+		if err = tx.CreateTable(model.TransferLogMap[strings.ToUpper(input.Currency)]).Error; err != nil {
 			return
 		}
 	}

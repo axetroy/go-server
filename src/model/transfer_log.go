@@ -3,26 +3,32 @@ package model
 import (
 	"github.com/axetroy/go-server/src/util"
 	"github.com/jinzhu/gorm"
+	"strings"
 	"time"
 )
 
 type TransferStatus int
 
 var (
+	transferLogTablePrefix                      = "transfer_log_"
 	TransferStatusReject         TransferStatus = -1 // 收款方拒接接受
 	TransferStatusWaitForConfirm TransferStatus = 0  // 等待收款方确认
 	TransferStatusConfirmed      TransferStatus = 1  // 收款方已确认
 
-	TransferTableNames = []string{
-		"transfer_log_cny",
-		"transfer_log_usd",
-		"transfer_log_coin",
+	TransferLogCnyTableName  = transferLogTablePrefix + strings.ToLower(WalletCNY)  // 人民币表名
+	TransferLogUsdTableName  = transferLogTablePrefix + strings.ToLower(WalletUSD)  // 美元表名
+	TransferLogCoinTableName = transferLogTablePrefix + strings.ToLower(WalletCOIN) // 积分表名
+
+	TransferTableNames = []string{ // 所有的表名
+		TransferLogCnyTableName,
+		TransferLogUsdTableName,
+		TransferLogCoinTableName,
 	}
 
 	TransferLogMap = map[string]interface{}{
-		"cny":  TransferLogCny{},
-		"usd":  TransferLogUsd{},
-		"coin": TransferLogCoin{},
+		WalletCNY:  TransferLogCny{},
+		WalletUSD:  TransferLogUsd{},
+		WalletCOIN: TransferLogCoin{},
 	}
 )
 
@@ -58,13 +64,13 @@ func (news *TransferLog) BeforeCreate(scope *gorm.Scope) error {
 }
 
 func (news *TransferLogCny) TableName() string {
-	return "transfer_log_cny"
+	return TransferLogCnyTableName
 }
 
 func (news *TransferLogUsd) TableName() string {
-	return "transfer_log_usd"
+	return TransferLogUsdTableName
 }
 
 func (news *TransferLogCoin) TableName() string {
-	return "transfer_log_coin"
+	return TransferLogCoinTableName
 }

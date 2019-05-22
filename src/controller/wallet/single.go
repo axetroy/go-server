@@ -16,7 +16,8 @@ import (
 
 func IsValidWallet(walletName string) bool {
 	for _, validWallet := range model.Wallets {
-		if validWallet == walletName {
+		// 有效币种验证忽略大小写
+		if validWallet == strings.ToUpper(walletName) {
 			return true
 		}
 	}
@@ -104,7 +105,9 @@ func GetWalletRouter(context *gin.Context) {
 		context.JSON(http.StatusOK, res)
 	}()
 
+	currency := context.Param("currency")
+
 	res = GetWallet(controller.Context{
 		Uid: context.GetString(middleware.ContextUidField),
-	}, context.Param("currency"))
+	}, currency)
 }

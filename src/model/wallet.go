@@ -1,14 +1,26 @@
 package model
 
 import (
+	"strings"
 	"time"
 )
 
 var (
-	WalletCNY  = "CNY"
-	WalletUSD  = "USD"
-	WalletCOIN = "COIN"
-	Wallets    = []string{WalletCNY, WalletUSD, WalletCOIN}
+	walletTablePrefix = "wallet_"
+	WalletCNY         = "CNY"
+	WalletUSD         = "USD"
+	WalletCOIN        = "COIN"
+	Wallets           = []string{WalletCNY, WalletUSD, WalletCOIN}
+
+	WalletCnyTableName  = walletTablePrefix + strings.ToLower(WalletCNY)  // 人民币表名
+	WalletUsdTableName  = walletTablePrefix + strings.ToLower(WalletUSD)  // 美元表名
+	WalletCoinTableName = walletTablePrefix + strings.ToLower(WalletCOIN) // 积分表名
+
+	//WalletTableNames = []string{ // 所有的表名
+	//	WalletCnyTableName,
+	//	WalletUsdTableName,
+	//	WalletCoinTableName,
+	//}
 )
 
 type Wallet struct {
@@ -37,13 +49,13 @@ type WalletCoin struct {
 }
 
 func (news *WalletCny) TableName() string {
-	return "wallet_cny"
+	return WalletCnyTableName
 }
 
 func (news *WalletUsd) TableName() string {
-	return "wallet_usd"
+	return WalletUsdTableName
 }
 
 func (news *WalletCoin) TableName() string {
-	return "wallet_coin"
+	return WalletCoinTableName
 }
