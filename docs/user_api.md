@@ -264,7 +264,7 @@
 ### 钱包类
 
 
-<details><summary>获取我的钱包<code>[GET] /v1/wallet/map</code></summary>
+<details><summary>获取我的钱包<code>[GET] /v1/wallet</code></summary>
 <p>
 
 获取我的钱包 Map.

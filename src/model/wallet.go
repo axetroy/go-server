@@ -16,11 +16,11 @@ var (
 	WalletUsdTableName  = walletTablePrefix + strings.ToLower(WalletUSD)  // 美元表名
 	WalletCoinTableName = walletTablePrefix + strings.ToLower(WalletCOIN) // 积分表名
 
-	//WalletTableNames = []string{ // 所有的表名
-	//	WalletCnyTableName,
-	//	WalletUsdTableName,
-	//	WalletCoinTableName,
-	//}
+	WalletTableNames = []string{ // 所有的表名
+		WalletCnyTableName,
+		WalletUsdTableName,
+		WalletCoinTableName,
+	}
 )
 
 type Wallet struct {

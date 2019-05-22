@@ -101,7 +101,7 @@ func init() {
 		walletRouter := v1.Group("/wallet")
 		{
 			walletRouter.Use(userAuthMiddleware)
-			walletRouter.GET("/map", wallet.GetWalletsRouter)        // 获取我的钱包map对象
+			walletRouter.GET("", wallet.GetWalletsRouter)            // 获取所有钱包列表
 			walletRouter.GET("/w/:currency", wallet.GetWalletRouter) // 获取单个钱包的详细信息
 
 		}

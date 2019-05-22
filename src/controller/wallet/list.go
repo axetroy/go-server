@@ -17,6 +17,7 @@ func GetWallets(context controller.Context) (res schema.Response) {
 	var (
 		err  error
 		data []schema.Wallet
+		list []model.Wallet
 		tx   *gorm.DB
 	)
 
@@ -61,14 +62,11 @@ func GetWallets(context controller.Context) (res schema.Response) {
 		return
 	}
 
-	cnyQuery := tx.Table(GetTableName(model.WalletCNY)).Where("id = ?", userInfo.Id)
-	usdQuery := tx.Table(GetTableName(model.WalletUSD)).Where("id = ?", userInfo.Id)
-	coinQuery := tx.Table(GetTableName(model.WalletCOIN)).Where("id = ?", userInfo.Id)
+	sql := GenerateWalletSQL(QueryParams{
+		Id: &userInfo.Id,
+	}, 100, false)
 
-	var list []model.Wallet
-
-	// TODO: 如何动态UNION，防止以后有动态的币种
-	if err = tx.Raw("? UNION ? UNION ?", cnyQuery.QueryExpr(), usdQuery.QueryExpr(), coinQuery.QueryExpr()).Scan(&list).Error; err != nil {
+	if err = tx.Raw(sql).Scan(&list).Error; err != nil {
 		return
 	}
 
