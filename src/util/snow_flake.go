@@ -15,11 +15,3 @@ func init() {
 func GenerateId() string {
 	return fmt.Sprintf("%v", worker.GetId())
 }
-
-func IsValidIdStr(id string) bool {
-	if len(id) != 17 {
-		return false
-	}
-
-	return true
-}
