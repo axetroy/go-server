@@ -3,6 +3,7 @@ package auth
 import (
 	"encoding/json"
 	"errors"
+	"github.com/axetroy/go-server/src/controller/wallet"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/message_queue"
 	"github.com/axetroy/go-server/src/message_queue/producer"
@@ -200,43 +201,16 @@ func SignUp(input SignUpParams) (res schema.Response) {
 	data.CreatedAt = userInfo.CreatedAt.Format(time.RFC3339Nano)
 	data.UpdatedAt = userInfo.UpdatedAt.Format(time.RFC3339Nano)
 
-	// TODO: 循环创建
 	// 创建用户对应的钱包账号
-	cny := model.WalletCny{
-		Wallet: model.Wallet{
+	for _, walletName := range model.Wallets {
+		if err = tx.Table(wallet.GetTableName(walletName)).Create(&model.Wallet{
 			Id:       userInfo.Id,
-			Currency: model.WalletCNY,
+			Currency: walletName,
 			Balance:  0,
 			Frozen:   0,
-		},
-	}
-	usd := model.WalletUsd{
-		Wallet: model.Wallet{
-			Id:       userInfo.Id,
-			Currency: model.WalletUSD,
-			Balance:  0,
-			Frozen:   0,
-		},
-	}
-	coin := model.WalletCoin{
-		Wallet: model.Wallet{
-			Id:       userInfo.Id,
-			Currency: model.WalletCOIN,
-			Balance:  0,
-			Frozen:   0,
-		},
-	}
-
-	if err = tx.Create(&cny).Error; err != nil {
-		return
-	}
-
-	if err = tx.Create(&usd).Error; err != nil {
-		return
-	}
-
-	if err = tx.Create(&coin).Error; err != nil {
-		return
+		}).Error; err != nil {
+			return
+		}
 	}
 
 	// 如果是以邮箱注册的，那么发送激活链接
