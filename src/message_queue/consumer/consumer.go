@@ -18,6 +18,7 @@ func CreateConsumer(topic message_queue.Topic, channel message_queue.Chanel, han
 	c.AddHandler(handler)
 
 	// TODO: 从环境变量中读取
+	// TODO: 断线重连机制
 	err = c.ConnectToNSQD("127.0.0.1:4150")
 
 	if err != nil {

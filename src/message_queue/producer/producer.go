@@ -15,6 +15,7 @@ func init() {
 	// TODO: 从环境变量中读取
 	addr := "127.0.0.1:4150"
 
+	// TODO: 断线重连机制
 	err := CreateProducer(addr)
 
 	if err != nil {
