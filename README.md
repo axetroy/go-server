@@ -14,6 +14,17 @@
 
 > 为什么不写成微服务形式，模块分离? 项目体量没有达到。
 
+### 技术栈
+
+- [x] Web 框架 [Gin](https://github.com/gin-gonic/gin)
+- [x] 数据库 Postgres
+- [x] 缓存 Redis
+- [x] 身份认证机制 [JWT](http://jwt.io)/[oAuth2](https://oauth.net/2/)
+- [x] 数据库操作 [GORM](https://github.com/jinzhu/gorm)
+- [x] 消息队列 [nsq](https://github.com/nsqio/nsq)
+- [x] RBAC 的权限模型
+- [x] Docker 一键启动应用
+
 ### 包含哪些模块?
 
 | 模块         | 说明                                                                                       |
