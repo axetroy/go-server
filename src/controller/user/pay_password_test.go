@@ -6,7 +6,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/user"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/redis"
 	"github.com/axetroy/go-server/tester"
 	"github.com/stretchr/testify/assert"
 	"math/rand"
@@ -210,7 +210,7 @@ func TestResetPayPassword(t *testing.T) {
 	resetCode := user.GenerateResetPayPasswordCode(testUser.Id)
 
 	// redis缓存重置码
-	assert.Nil(t, service.RedisResetCodeClient.Set(resetCode, testUser.Id, time.Minute*10).Err())
+	assert.Nil(t, redis.ResetCodeClient.Set(resetCode, testUser.Id, time.Minute*10).Err())
 
 	{
 		// 2. 重置交易密码失败, 因为此时还没有交易密码

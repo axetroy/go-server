@@ -9,8 +9,8 @@ import (
 	"github.com/axetroy/go-server/src/message_queue/producer"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
 	"github.com/axetroy/go-server/src/service/database"
+	"github.com/axetroy/go-server/src/service/redis"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -220,7 +220,7 @@ func SignUp(input SignUpParams) (res schema.Response) {
 		activationCode := "activation-" + userInfo.Id
 
 		// 把激活码存到 redis
-		if err = service.RedisActivationCodeClient.Set(activationCode, userInfo.Id, time.Minute*30).Err(); err != nil {
+		if err = redis.ActivationCodeClient.Set(activationCode, userInfo.Id, time.Minute*30).Err(); err != nil {
 			return
 		}
 

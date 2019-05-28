@@ -5,9 +5,9 @@ import (
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
 	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/service/email"
+	"github.com/axetroy/go-server/src/service/redis"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"net/http"
@@ -80,7 +80,7 @@ func SendActivationEmail(input SendActivationEmailParams) (res schema.Response) 
 	activationCode := GenerateActivationCode(userInfo.Id)
 
 	// set activationCode to redis
-	if err = service.RedisActivationCodeClient.Set(activationCode, userInfo.Id, time.Minute*30).Err(); err != nil {
+	if err = redis.ActivationCodeClient.Set(activationCode, userInfo.Id, time.Minute*30).Err(); err != nil {
 		return
 	}
 
@@ -89,7 +89,7 @@ func SendActivationEmail(input SendActivationEmailParams) (res schema.Response) 
 	// send email
 	if err = e.SendActivationEmail(input.To, activationCode); err != nil {
 		// 邮件没发出去的话，删除redis的key
-		_ = service.RedisActivationCodeClient.Del(activationCode).Err()
+		_ = redis.ActivationCodeClient.Del(activationCode).Err()
 		return
 	}
 

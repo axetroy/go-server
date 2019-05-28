@@ -1,4 +1,4 @@
-package service
+package redis
 
 import (
 	"github.com/axetroy/go-server/src/util"
@@ -7,9 +7,9 @@ import (
 )
 
 var (
-	RedisClient               *redis.Client // 默认的redis存储
-	RedisActivationCodeClient *redis.Client // 存储激活码的
-	RedisResetCodeClient      *redis.Client // 存储重置密码的
+	Client               *redis.Client // 默认的redis存储
+	ActivationCodeClient *redis.Client // 存储激活码的
+	ResetCodeClient      *redis.Client // 存储重置密码的
 )
 
 type redisConfig struct {
@@ -35,19 +35,19 @@ func init() {
 	)
 
 	// 初始化3个DB连接
-	RedisClient = redis.NewClient(&redis.Options{
+	Client = redis.NewClient(&redis.Options{
 		Addr:     addr,
 		Password: password,
 		DB:       0, // use default DB
 	})
 
-	RedisActivationCodeClient = redis.NewClient(&redis.Options{
+	ActivationCodeClient = redis.NewClient(&redis.Options{
 		Addr:     addr,
 		Password: password,
 		DB:       1,
 	})
 
-	RedisResetCodeClient = redis.NewClient(&redis.Options{
+	ResetCodeClient = redis.NewClient(&redis.Options{
 		Addr:     addr,
 		Password: password,
 		DB:       2,

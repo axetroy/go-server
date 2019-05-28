@@ -6,8 +6,8 @@ import (
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
 	"github.com/axetroy/go-server/src/service/database"
+	"github.com/axetroy/go-server/src/service/redis"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -64,7 +64,7 @@ func ResetPassword(input ResetPasswordParams) (res schema.Response) {
 		return
 	}
 
-	if uid, err = service.RedisResetCodeClient.Get(input.Code).Result(); err != nil {
+	if uid, err = redis.ResetCodeClient.Get(input.Code).Result(); err != nil {
 		err = exception.InvalidResetCode
 		return
 	}
@@ -84,7 +84,7 @@ func ResetPassword(input ResetPasswordParams) (res schema.Response) {
 	tx.Model(&userInfo).Update("password", util.GeneratePassword(input.NewPassword))
 
 	// delete reset code from redis
-	if err = service.RedisResetCodeClient.Del(input.Code).Err(); err != nil {
+	if err = redis.ResetCodeClient.Del(input.Code).Err(); err != nil {
 		return
 	}
 

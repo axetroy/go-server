@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"github.com/axetroy/go-server/src/message_queue"
 	"github.com/axetroy/go-server/src/message_queue/consumer"
-	"github.com/axetroy/go-server/src/service"
 	"github.com/axetroy/go-server/src/service/email"
+	"github.com/axetroy/go-server/src/service/redis"
 	"github.com/nsqio/go-nsq"
 	"log"
 	"sync"
@@ -30,7 +30,7 @@ func main() {
 		// 发送邮件
 		if err := mailer.SendActivationEmail(body.Email, body.Code); err != nil {
 			// 邮件没发出去的话，删除 redis 的 key
-			_ = service.RedisActivationCodeClient.Del(body.Code).Err()
+			_ = redis.ActivationCodeClient.Del(body.Code).Err()
 		}
 
 		fmt.Printf("发送验证码 %s 到 %s\n", body.Code, body.Email)

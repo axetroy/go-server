@@ -6,8 +6,8 @@ import (
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
 	"github.com/axetroy/go-server/src/service/database"
+	"github.com/axetroy/go-server/src/service/redis"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"net/http"
@@ -60,7 +60,7 @@ func Activation(input ActivationParams) (res schema.Response) {
 		return
 	}
 
-	if uid, err = service.RedisActivationCodeClient.Get(input.Code).Result(); err != nil {
+	if uid, err = redis.ActivationCodeClient.Get(input.Code).Result(); err != nil {
 		err = exception.InvalidActiveCode
 		return
 	}
@@ -86,7 +86,7 @@ func Activation(input ActivationParams) (res schema.Response) {
 	tx.Model(&userInfo).Update("status", model.UserStatusInit)
 
 	// delete code from redis
-	if err = service.RedisActivationCodeClient.Del(input.Code).Err(); err != nil {
+	if err = redis.ActivationCodeClient.Del(input.Code).Err(); err != nil {
 		return
 	}
 	return

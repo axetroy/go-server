@@ -6,7 +6,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/email"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/redis"
 	"github.com/axetroy/go-server/tester"
 	"github.com/stretchr/testify/assert"
 	"net/http"
@@ -80,14 +80,14 @@ func TestActivationSuccess(t *testing.T) {
 	activationCode := email.GenerateActivationCode(testerUid)
 
 	// set activationCode to redis
-	if err := service.RedisActivationCodeClient.Set(activationCode, testerUid, time.Minute*30).Err(); err != nil {
+	if err := redis.ActivationCodeClient.Set(activationCode, testerUid, time.Minute*30).Err(); err != nil {
 		t.Error(err)
 		return
 	}
 
 	defer func() {
 		// remove activation code
-		_ = service.RedisActivationCodeClient.Del(activationCode).Err()
+		_ = redis.ActivationCodeClient.Del(activationCode).Err()
 	}()
 
 	body, _ := json.Marshal(&auth.ActivationParams{

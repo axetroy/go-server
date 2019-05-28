@@ -7,8 +7,8 @@ import (
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
 	"github.com/axetroy/go-server/src/service/database"
+	"github.com/axetroy/go-server/src/service/redis"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/axetroy/go-server/tester"
 	"github.com/stretchr/testify/assert"
@@ -85,7 +85,7 @@ func TestResetPasswordSuccess(t *testing.T) {
 
 	// set to redis
 	// set activationCode to redis
-	if err := service.RedisResetCodeClient.Set(resetCode, uid, time.Minute*30).Err(); err != nil {
+	if err := redis.ResetCodeClient.Set(resetCode, uid, time.Minute*30).Err(); err != nil {
 		t.Error(err)
 		return
 	}

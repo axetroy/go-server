@@ -5,9 +5,9 @@ import (
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
 	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/service/email"
+	"github.com/axetroy/go-server/src/service/redis"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -78,7 +78,7 @@ func SendResetPasswordEmail(input SendResetPasswordEmailParams) (res schema.Resp
 	var code = GenerateResetCode(userInfo.Id)
 
 	// set activationCode to redis
-	if err = service.RedisResetCodeClient.Set(code, userInfo.Id, time.Minute*30).Err(); err != nil {
+	if err = redis.ResetCodeClient.Set(code, userInfo.Id, time.Minute*30).Err(); err != nil {
 		return
 	}
 
@@ -87,7 +87,7 @@ func SendResetPasswordEmail(input SendResetPasswordEmailParams) (res schema.Resp
 	// send email
 	if err = e.SendForgotPasswordEmail(input.To, code); err != nil {
 		// 邮件没发出去的话，删除redis的key
-		_ = service.RedisResetCodeClient.Del(code).Err()
+		_ = redis.ResetCodeClient.Del(code).Err()
 		return
 	}
 
