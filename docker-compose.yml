@@ -19,25 +19,3 @@ services:
     environment:
       - REDIS_PASSWORD=password
     command: [ "redis-server", "--requirepass", "password" ]
-  # # 消息队列
-  # nsqlookupd:
-  #   image: nsqio/nsq
-  #   command: /nsqlookupd
-  #   ports:
-  #     - "4160"
-  #     - 31001:4161
-  # nsqd:
-  #   image: nsqio/nsq
-  #   command: /nsqd --lookupd-tcp-address=nsqlookupd:4160
-  #   depends_on:
-  #     - nsqlookupd
-  #   ports:
-  #     - "4150"
-  #     - "4151"
-  # nsqadmin:
-  #   image: nsqio/nsq
-  #   command: /nsqadmin --lookupd-http-address=nsqlookupd:4161
-  #   depends_on:
-  #     - nsqlookupd
-  #   ports:
-  #     - "4171"

@@ -1,8 +1,11 @@
 package auth
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/message_queue"
+	"github.com/axetroy/go-server/src/message_queue/producer"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service"
@@ -238,25 +241,27 @@ func SignUp(input SignUpParams) (res schema.Response) {
 
 	// 如果是以邮箱注册的，那么发送激活链接
 	if userInfo.Email != nil && len(*userInfo.Email) != 0 {
-		// generate activation code
+		// 生成激活码
 		activationCode := "activation-" + userInfo.Id
 
-		// set activationCode to redis
+		// 把激活码存到 redis
 		if err = service.RedisActivationCodeClient.Set(activationCode, userInfo.Id, time.Minute*30).Err(); err != nil {
 			return
 		}
 
-		// send email
-		mailer := service.NewEmailer()
+		// 把 "发送激活码" 加入消息队列
+		var body []byte
 
-		go func() {
-			// TODO: 把这个激活码放进队列, 因为发送邮箱实在是太慢了
-			if err = mailer.SendActivationEmail(*input.Email, activationCode); err != nil {
-				// 邮件没发出去的话，删除redis的key
-				_ = service.RedisActivationCodeClient.Del(activationCode).Err()
-				return
-			}
-		}()
+		if body, err = json.Marshal(message_queue.SendEmailBody{
+			Email: *input.Email,
+			Code:  activationCode,
+		}); err != nil {
+			return
+		}
+
+		if err = producer.Publish(message_queue.TopicSendEmail, body); err != nil {
+			return
+		}
 
 		return
 	}

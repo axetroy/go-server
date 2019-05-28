@@ -52,7 +52,8 @@
 ```bash
 > go get -v github.com/axetroy/go-server # 拉取项目
 > cd $GOPATH/github/axetroy/go-server # 切换到项目目录
-> docker-compose up # 启动数据库和其他必要的依赖服务
+> docker-compose -f docker-compose.mq.yml up # 启动消息队列
+> docker-compose up # 启动数据库和HTTP服务
 > go run ./cmd/user/main.go # 运行用户端的接口服务
 > go run ./cmd/admin/main.go # 运行管理员端的接口服务
 ```
@@ -65,6 +66,22 @@ make build
 
 在生成的 bin 目录下查找对应平台的可执行文件运行即可
 
+文件说明:
+
+1. user_${platform}_${arch}
+
+用户端的可执行文件
+
+2. admin_${platform}_${arch}
+
+管理员端的可执行文件
+
+3. message_queue_${platform}_${arch}
+
+消息队列的可执行文件
+
+消息队列与其他分开独立部署
+
 ## 如何测试?
 
 ```bash
@@ -75,7 +92,6 @@ make test
 
 - [ ] RBAC 的权限控制模型
 - [ ] i18n 的错误信息
-- [ ] 启用消息队列
 - [ ] 提供 RPC 接口
 - [ ] 数据库动态分表
 

@@ -147,6 +147,14 @@ func init() {
 			messageRouter.DELETE("/m/:message_id", message.DeleteByUserRouter) // 删除消息
 		}
 
+		reportRouter := v1.Group("/report")
+		{
+			reportRouter.Use(userAuthMiddleware)
+			reportRouter.GET("", message.GetRouter)              // TODO: 获取我的反馈列表
+			reportRouter.POST("", message.GetRouter)             // TODO: 添加一条反馈
+			reportRouter.GET("/r/:report_id", message.GetRouter) // TODO: 获取反馈详情
+		}
+
 		// Banner
 		bannerRouter := v1.Group("banner")
 		{

@@ -18,6 +18,8 @@ env:
     - DB_PASSWORD=postgres
     - DB_PORT=5432
     - GO111MODULE=on # enable Golang modules
+    # NSQ message queue
+    - NSQ_DOWNLOAD=nsq-1.1.0.linux-amd64.go1.12.5 GOARCH=amd64
 
 services:
   - postgresql
@@ -32,6 +34,12 @@ before_script:
   - sudo /etc/init.d/postgresql start
   # start postgres
   - psql -c 'create database gotest;' -U postgres
+
+  # download nsq
+  - wget http://bitly-downloads.s3.amazonaws.com/nsq/$NSQ_DOWNLOAD.tar.gz
+  - tar zxvf $NSQ_DOWNLOAD.tar.gz
+  - export PATH=$NSQ_DOWNLOAD/bin:$PATH
+  - nsqlookupd & nsqd --lookupd-tcp-address=nsqlookupd:4160 & nsqadmin --lookupd-http-address=nsqlookupd:4161
 
   - go get -v ./...
 
