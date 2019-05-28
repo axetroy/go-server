@@ -7,7 +7,7 @@ import (
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
@@ -47,7 +47,7 @@ func GetDetail(context controller.Context, id string) (res schema.Response) {
 		Uid: context.Uid,
 	}
 
-	if err = service.Db.Model(&addressInfo).Where(&addressInfo).First(&addressInfo).Error; err != nil {
+	if err = database.Db.Model(&addressInfo).Where(&addressInfo).First(&addressInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			err = exception.AddressNotExist
 		}

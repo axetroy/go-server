@@ -5,7 +5,7 @@ import (
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
@@ -44,7 +44,7 @@ func GetNews(id string) (res schema.Response) {
 		Id: id,
 	}
 
-	if err = service.Db.First(&newsInfo).Error; err != nil {
+	if err = database.Db.First(&newsInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			err = exception.NewsNotExist
 		}

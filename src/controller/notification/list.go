@@ -7,7 +7,7 @@ import (
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
@@ -64,7 +64,7 @@ func GetListUser(context controller.Context, input Query) (res schema.List) {
 
 	query.Normalize()
 
-	tx = service.Db.Begin()
+	tx = database.Db.Begin()
 
 	var total int64
 
@@ -157,7 +157,7 @@ func GetListAdmin(context controller.Context, input Query) (res schema.List) {
 
 	query.Normalize()
 
-	tx = service.Db.Begin()
+	tx = database.Db.Begin()
 
 	var total int64
 

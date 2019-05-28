@@ -8,7 +8,7 @@ import (
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -73,7 +73,7 @@ func UpdatePassword(context controller.Context, input UpdatePasswordParams) (res
 		return
 	}
 
-	tx = service.Db.Begin()
+	tx = database.Db.Begin()
 
 	userInfo := model.User{Id: context.Uid}
 
@@ -143,7 +143,7 @@ func UpdatePasswordByAdmin(context controller.Context, userId string, input Upda
 		return
 	}
 
-	tx = service.Db.Begin()
+	tx = database.Db.Begin()
 
 	// 检查是否是管理员
 	adminInfo := model.Admin{Id: context.Uid}

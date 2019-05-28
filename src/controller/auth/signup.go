@@ -10,6 +10,7 @@ import (
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -87,7 +88,7 @@ func SignUp(input SignUpParams) (res schema.Response) {
 		// 因为现在没有引入短信服务, 所以暂时没有这一块的功能
 	}
 
-	tx = service.Db.Begin()
+	tx = database.Db.Begin()
 
 	var (
 		username string

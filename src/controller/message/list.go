@@ -7,7 +7,7 @@ import (
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/gin-gonic/gin"
 	"github.com/mitchellh/mapstructure"
 	"net/http"
@@ -75,7 +75,7 @@ func GetList(context controller.Context, input Query) (res schema.List) {
 		filter.Status = *input.Status
 	}
 
-	if err = service.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Where(filter).Find(&list).Count(&total).Error; err != nil {
+	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Where(filter).Find(&list).Count(&total).Error; err != nil {
 		return
 	}
 
@@ -150,7 +150,7 @@ func GetListByAdmin(context controller.Context, input QueryAdmin) (res schema.Li
 		filter.Status = *input.Status
 	}
 
-	if err = service.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Where(filter).Find(&list).Count(&total).Error; err != nil {
+	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Where(filter).Find(&list).Count(&total).Error; err != nil {
 		return
 	}
 

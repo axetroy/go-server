@@ -1,9 +1,9 @@
 package admin
 
 import (
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 )
 
 func DeleteAdminByAccount(account string) {
-	service.DeleteRowByTable("admin", "username", account)
+	database.DeleteRowByTable("admin", "username", account)
 }

@@ -7,7 +7,7 @@ import (
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
@@ -58,7 +58,7 @@ func GetList(context controller.Context, input Query) (res schema.List) {
 
 	var total int64
 
-	tx = service.Db.Begin()
+	tx = database.Db.Begin()
 
 	if err = tx.Limit(query.Limit).Offset(query.Limit*query.Page).Where(model.Address{Uid: context.Uid}, context.Uid).Find(&list).Count(&total).Error; err != nil {
 		return

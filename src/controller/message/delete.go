@@ -7,7 +7,7 @@ import (
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
@@ -16,7 +16,7 @@ import (
 )
 
 func DeleteMessageById(id string) {
-	service.DeleteRowByTable("message", "id", id)
+	database.DeleteRowByTable("message", "id", id)
 }
 
 func DeleteByAdmin(context controller.Context, messageId string) (res schema.Response) {
@@ -55,7 +55,7 @@ func DeleteByAdmin(context controller.Context, messageId string) (res schema.Res
 		}
 	}()
 
-	tx = service.Db.Begin()
+	tx = database.Db.Begin()
 
 	adminInfo := model.Admin{Id: context.Uid}
 
@@ -149,7 +149,7 @@ func DeleteByUser(context controller.Context, messageId string) (res schema.Resp
 		}
 	}()
 
-	tx = service.Db.Begin()
+	tx = database.Db.Begin()
 
 	messageInfo := model.Message{
 		Id:  messageId,

@@ -5,7 +5,7 @@ import (
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -55,14 +55,14 @@ func Login(input SignInParams) (res schema.Response) {
 		}
 	}()
 
-	tx = service.Db.Begin()
+	tx = database.Db.Begin()
 
 	adminInfo := model.Admin{
 		Username: input.Username,
 		Password: util.GeneratePassword(input.Password),
 	}
 
-	if err = service.Db.Where(&adminInfo).First(&adminInfo).Error; err != nil {
+	if err = database.Db.Where(&adminInfo).First(&adminInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			err = exception.InvalidAccountOrPassword
 		}

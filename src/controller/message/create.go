@@ -8,7 +8,7 @@ import (
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
@@ -67,7 +67,7 @@ func Create(context controller.Context, input CreateMessageParams) (res schema.R
 		return
 	}
 
-	tx = service.Db.Begin()
+	tx = database.Db.Begin()
 
 	adminInfo := model.Admin{
 		Id: context.Uid,

@@ -8,7 +8,7 @@ import (
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
@@ -73,7 +73,7 @@ func Update(context controller.Context, addressId string, input UpdateParams) (r
 		return
 	}
 
-	tx = service.Db.Begin()
+	tx = database.Db.Begin()
 
 	userInfo := model.User{
 		Id: context.Uid,

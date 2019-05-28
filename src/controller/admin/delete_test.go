@@ -4,7 +4,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/admin"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/jinzhu/gorm"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -34,7 +34,7 @@ func TestDeleteAdminByAccount(t *testing.T) {
 			Username: "admin123",
 		}
 
-		err := service.Db.Where(&adminInfo).First(&adminInfo).Error
+		err := database.Db.Where(&adminInfo).First(&adminInfo).Error
 
 		assert.Equal(t, gorm.ErrRecordNotFound.Error(), err.Error())
 	}

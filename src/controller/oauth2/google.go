@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/axetroy/go-server/src/model"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -120,7 +120,7 @@ func GoogleCallbackRouter(context *gin.Context) {
 	// 查询是否有这个用户存在
 	user := model.User{OauthGoogleId: &res.Id}
 
-	if err = service.Db.Where(&user).Last(&user).Error; err != nil {
+	if err = database.Db.Where(&user).Last(&user).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			// 如果用户不存在，则创建一个用户
 			userInfo := model.User{
@@ -132,7 +132,7 @@ func GoogleCallbackRouter(context *gin.Context) {
 				Gender:   model.GenderUnknown,
 			}
 
-			if err = service.Db.Create(&userInfo).Error; err != nil {
+			if err = database.Db.Create(&userInfo).Error; err != nil {
 				return
 			}
 		}

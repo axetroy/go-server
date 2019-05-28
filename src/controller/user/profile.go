@@ -8,7 +8,7 @@ import (
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
@@ -58,7 +58,7 @@ func GetProfile(context controller.Context) (res schema.Response) {
 		}
 	}()
 
-	tx = service.Db.Begin()
+	tx = database.Db.Begin()
 
 	user := model.User{Id: context.Uid}
 
@@ -116,7 +116,7 @@ func GetProfileByAdmin(context controller.Context, userId string) (res schema.Re
 		}
 	}()
 
-	tx = service.Db.Begin()
+	tx = database.Db.Begin()
 
 	adminInfo := model.Admin{
 		Id: context.Uid,
@@ -195,7 +195,7 @@ func UpdateProfile(context controller.Context, input UpdateProfileParams) (res s
 		return
 	}
 
-	tx = service.Db.Begin()
+	tx = database.Db.Begin()
 
 	updated := model.User{}
 
@@ -288,7 +288,7 @@ func UpdateProfileByAdmin(context controller.Context, userId string, input Updat
 		return
 	}
 
-	tx = service.Db.Begin()
+	tx = database.Db.Begin()
 
 	// 检查是不是管理员
 	adminInfo := model.Admin{

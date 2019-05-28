@@ -6,7 +6,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/admin"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/mocker"
@@ -46,7 +46,7 @@ func TestUpdate(t *testing.T) {
 
 	m := model.Admin{Id: testAdminInfo.Id}
 
-	assert.Nil(t, service.Db.First(&m).Error)
+	assert.Nil(t, database.Db.First(&m).Error)
 	assert.Equal(t, status1, m.Status)
 }
 

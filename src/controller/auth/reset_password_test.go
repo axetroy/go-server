@@ -8,6 +8,7 @@ import (
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/axetroy/go-server/tester"
 	"github.com/stretchr/testify/assert"
@@ -109,7 +110,7 @@ func TestResetPasswordSuccess(t *testing.T) {
 		ormErr error
 	)
 
-	tx := service.Db.Begin()
+	tx := database.Db.Begin()
 
 	defer func() {
 		// 重置密码回旧密码

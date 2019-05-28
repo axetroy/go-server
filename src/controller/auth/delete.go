@@ -1,9 +1,9 @@
 package auth
 
 import (
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 )
 
 func DeleteUserByUserName(username string) {
-	service.DeleteRowByTable("user", "username", username)
+	database.DeleteRowByTable("user", "username", username)
 }

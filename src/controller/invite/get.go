@@ -7,7 +7,7 @@ import (
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
@@ -55,7 +55,7 @@ func Get(context controller.Context, id string) (res schema.Response) {
 		Id: id,
 	}
 
-	tx = service.Db.Begin()
+	tx = database.Db.Begin()
 
 	// 只能获取跟自己相关的
 	if err = tx.Where(model.InviteHistory{Inviter: context.Uid}).Or(model.InviteHistory{Invitee: context.Uid}).First(&inviteDetail).Error; err != nil {
@@ -112,7 +112,7 @@ func GetByStruct(m *model.InviteHistory) (res schema.Response) {
 		}
 	}()
 
-	tx = service.Db.Begin()
+	tx = database.Db.Begin()
 
 	if err = tx.Where(m).Last(m).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {

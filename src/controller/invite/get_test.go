@@ -8,7 +8,7 @@ import (
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/mocker"
@@ -40,7 +40,7 @@ func TestGet(t *testing.T) {
 
 	// 创建一条记录
 	{
-		tx := service.Db.Begin()
+		tx := database.Db.Begin()
 
 		v1 := model.InviteHistory{
 			Inviter:       "123123",
@@ -128,7 +128,7 @@ func TestGetRouter(t *testing.T) {
 
 	// 创建一条记录
 	{
-		tx := service.Db.Begin()
+		tx := database.Db.Begin()
 
 		v1 := model.InviteHistory{
 			Inviter:       "123123",

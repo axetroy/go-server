@@ -2,7 +2,7 @@ package invite
 
 import (
 	"fmt"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/jinzhu/gorm"
 )
 
@@ -22,7 +22,7 @@ func DeleteByField(field, value string) {
 		}
 	}()
 
-	tx = service.Db.Begin()
+	tx = database.Db.Begin()
 
 	raw := fmt.Sprintf("DELETE FROM \"%v\" WHERE %s = '%v'", "invite_history", field, value)
 

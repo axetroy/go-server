@@ -7,6 +7,7 @@ import (
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"net/http"
@@ -64,7 +65,7 @@ func Activation(input ActivationParams) (res schema.Response) {
 		return
 	}
 
-	tx = service.Db.Begin()
+	tx = database.Db.Begin()
 
 	userInfo := model.User{Id: uid}
 

@@ -7,7 +7,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/notification"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/mocker"
@@ -87,7 +87,7 @@ func TestDelete(t *testing.T) {
 			Id: testNotification.Id,
 		}
 
-		assert.Nil(t, service.Db.Model(&n).Where(&n).First(&n).Error)
+		assert.Nil(t, database.Db.Model(&n).Where(&n).First(&n).Error)
 	}
 
 	// 删除通知
@@ -104,7 +104,7 @@ func TestDelete(t *testing.T) {
 			Id: testNotification.Id,
 		}
 
-		if err := service.Db.Model(&n).Where(&n).First(&n).Error; err != nil {
+		if err := database.Db.Model(&n).Where(&n).First(&n).Error; err != nil {
 			assert.Equal(t, gorm.ErrRecordNotFound.Error(), err.Error())
 		} else {
 			assert.Fail(t, "通知应该已被删除")
@@ -189,7 +189,7 @@ func TestDeleteRouter(t *testing.T) {
 
 		n := model.Notification{Id: notificationInfo.Id}
 
-		err := service.Db.Where(&n).First(&n).Error
+		err := database.Db.Where(&n).First(&n).Error
 
 		assert.NotNil(t, err)
 		assert.Equal(t, gorm.ErrRecordNotFound.Error(), err.Error())

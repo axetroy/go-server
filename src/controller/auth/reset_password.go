@@ -7,6 +7,7 @@ import (
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -68,7 +69,7 @@ func ResetPassword(input ResetPasswordParams) (res schema.Response) {
 		return
 	}
 
-	tx = service.Db.Begin()
+	tx = database.Db.Begin()
 
 	userInfo := model.User{Id: uid}
 

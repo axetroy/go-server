@@ -5,7 +5,7 @@ import (
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -50,7 +50,7 @@ func GetList(input Query) (res schema.List) {
 
 	var total int64
 
-	if err = service.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Find(&data).Count(&total).Error; err != nil {
+	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Find(&data).Count(&total).Error; err != nil {
 		return
 	}
 

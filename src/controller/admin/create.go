@@ -7,7 +7,7 @@ import (
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -68,7 +68,7 @@ func CreateAdmin(input CreateAdminParams, isSuper bool) (res schema.Response) {
 		return
 	}
 
-	tx = service.Db.Begin()
+	tx = database.Db.Begin()
 
 	n := model.Admin{Username: input.Account}
 
@@ -125,7 +125,7 @@ func CreateAdminRouter(context *gin.Context) {
 		Id: uid,
 	}
 
-	if err = service.Db.Where(&adminInfo).First(&adminInfo).Error; err != nil {
+	if err = database.Db.Where(&adminInfo).First(&adminInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			err = exception.AdminNotExist
 			return

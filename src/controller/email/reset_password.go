@@ -6,6 +6,7 @@ import (
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/service/email"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/gin-gonic/gin"
@@ -64,7 +65,7 @@ func SendResetPasswordEmail(input SendResetPasswordEmailParams) (res schema.Resp
 		Email: &input.To,
 	}
 
-	tx = service.Db.Begin()
+	tx = database.Db.Begin()
 
 	if err = tx.Where(&userInfo).First(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {

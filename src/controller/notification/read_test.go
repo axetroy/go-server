@@ -8,7 +8,7 @@ import (
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/mocker"
@@ -80,7 +80,7 @@ func TestMarkRead(t *testing.T) {
 		// 再读取这条系统通知
 		notificationMarkInfo := model.NotificationMark{}
 
-		assert.Nil(t, service.Db.Where("id = ?", testNotification.Id).Last(&notificationMarkInfo).Error)
+		assert.Nil(t, database.Db.Where("id = ?", testNotification.Id).Last(&notificationMarkInfo).Error)
 		assert.Equal(t, userInfo.Id, notificationMarkInfo.Uid)
 	}
 
@@ -166,7 +166,7 @@ func TestReadRouter(t *testing.T) {
 		// 再读取这条系统通知
 		notificationMarkInfo := model.NotificationMark{}
 
-		assert.Nil(t, service.Db.Where("id = ?", testNotification.Id).Last(&notificationMarkInfo).Error)
+		assert.Nil(t, database.Db.Where("id = ?", testNotification.Id).Last(&notificationMarkInfo).Error)
 		assert.Equal(t, userInfo.Id, notificationMarkInfo.Uid)
 	}
 }

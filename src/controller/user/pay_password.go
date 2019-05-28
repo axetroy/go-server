@@ -9,6 +9,7 @@ import (
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/service/email"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/gin-gonic/gin"
@@ -88,7 +89,7 @@ func SetPayPassword(context controller.Context, input SetPayPasswordParams) (res
 
 	userInfo := model.User{Id: context.Uid}
 
-	tx = service.Db.Begin()
+	tx = database.Db.Begin()
 
 	if err = tx.Where(&userInfo).Last(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -105,7 +106,7 @@ func SetPayPassword(context controller.Context, input SetPayPasswordParams) (res
 	newPassword := util.GeneratePassword(input.Password)
 
 	// 更新交易密码
-	if err = service.Db.Model(userInfo).Update("pay_password", newPassword).Error; err != nil {
+	if err = database.Db.Model(userInfo).Update("pay_password", newPassword).Error; err != nil {
 		return
 	}
 
@@ -188,7 +189,7 @@ func UpdatePayPassword(context controller.Context, input UpdatePayPasswordParams
 
 	userInfo := model.User{Id: context.Uid}
 
-	tx = service.Db.Begin()
+	tx = database.Db.Begin()
 
 	if err = tx.Where(&userInfo).First(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -214,7 +215,7 @@ func UpdatePayPassword(context controller.Context, input UpdatePayPasswordParams
 	newPwd := util.GeneratePassword(input.NewPassword)
 
 	// 更新交易密码
-	if err = service.Db.Model(userInfo).Update("pay_password", newPwd).Error; err != nil {
+	if err = database.Db.Model(userInfo).Update("pay_password", newPwd).Error; err != nil {
 		return
 	}
 
@@ -284,7 +285,7 @@ func SendResetPayPassword(context controller.Context) (res schema.Response) {
 
 	userInfo := model.User{Id: context.Uid}
 
-	tx = service.Db.Begin()
+	tx = database.Db.Begin()
 
 	if err = tx.Where(&userInfo).Last(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -383,7 +384,7 @@ func ResetPayPassword(context controller.Context, input ResetPayPasswordParams) 
 
 	userInfo := model.User{Id: context.Uid}
 
-	tx = service.Db.Begin()
+	tx = database.Db.Begin()
 
 	if err = tx.Where(&userInfo).First(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -410,7 +411,7 @@ func ResetPayPassword(context controller.Context, input ResetPayPasswordParams) 
 	}
 
 	// 更新交易密码
-	if err = service.Db.Model(userInfo).Update("pay_password", input.NewPassword).Error; err != nil {
+	if err = database.Db.Model(userInfo).Update("pay_password", input.NewPassword).Error; err != nil {
 		return
 	}
 

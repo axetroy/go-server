@@ -8,7 +8,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/message"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/mocker"
@@ -63,7 +63,7 @@ func TestDeleteByAdmin(t *testing.T) {
 			Id: testMessage.Id,
 		}
 
-		assert.Nil(t, service.Db.Model(&n).Where(&n).First(&n).Error)
+		assert.Nil(t, database.Db.Model(&n).Where(&n).First(&n).Error)
 	}
 
 	// 删除通知
@@ -80,7 +80,7 @@ func TestDeleteByAdmin(t *testing.T) {
 			Id: testMessage.Id,
 		}
 
-		if err := service.Db.First(&n).Error; err != nil {
+		if err := database.Db.First(&n).Error; err != nil {
 			assert.Equal(t, gorm.ErrRecordNotFound.Error(), err.Error())
 		} else {
 			assert.Fail(t, "通知应该已被删除")
@@ -149,7 +149,7 @@ func TestDeleteByAdminRouter(t *testing.T) {
 
 		n := model.Message{Id: messageId}
 
-		err := service.Db.First(&n).Error
+		err := database.Db.First(&n).Error
 
 		assert.NotNil(t, err)
 		assert.Equal(t, gorm.ErrRecordNotFound.Error(), err.Error())
@@ -201,7 +201,7 @@ func TestDeleteByUser(t *testing.T) {
 			Id: testMessage.Id,
 		}
 
-		assert.Nil(t, service.Db.Model(&n).Where(&n).First(&n).Error)
+		assert.Nil(t, database.Db.Model(&n).Where(&n).First(&n).Error)
 	}
 
 	// 删除消息
@@ -218,7 +218,7 @@ func TestDeleteByUser(t *testing.T) {
 			Id: testMessage.Id,
 		}
 
-		if err := service.Db.First(&n).Error; err != nil {
+		if err := database.Db.First(&n).Error; err != nil {
 			assert.Equal(t, gorm.ErrRecordNotFound.Error(), err.Error())
 		} else {
 			assert.Fail(t, "通知应该已被删除")
@@ -292,7 +292,7 @@ func TestDeleteByUserRouter(t *testing.T) {
 			Id: messageInfo.Id,
 		}
 
-		err := service.Db.First(&n).Error
+		err := database.Db.First(&n).Error
 
 		if !assert.NotNil(t, err) {
 			return

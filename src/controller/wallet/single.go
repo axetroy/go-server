@@ -7,7 +7,7 @@ import (
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"net/http"
@@ -63,7 +63,7 @@ func GetWallet(context controller.Context, currencyName string) (res schema.Resp
 	// 获取用户信息
 	userInfo := model.User{Id: context.Uid}
 
-	tx = service.Db.Begin()
+	tx = database.Db.Begin()
 
 	if err = tx.Last(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {

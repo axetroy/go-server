@@ -6,7 +6,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/banner"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/mocker"
@@ -70,7 +70,7 @@ func TestDelete(t *testing.T) {
 		assert.Equal(t, href, bannerInfo.Href)
 		assert.Equal(t, platform, bannerInfo.Platform)
 
-		if err := service.Db.First(&model.Banner{
+		if err := database.Db.First(&model.Banner{
 			Id: bannerInfo.Id,
 		}).Error; err != nil {
 			if err != gorm.ErrRecordNotFound {

@@ -7,7 +7,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/wallet"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/tester"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -23,7 +23,7 @@ func TestGetDetail(t *testing.T) {
 
 	// 给账户充钱
 	{
-		assert.Nil(t, service.Db.Table(wallet.GetTableName("CNY")).Where("id = ?", userFrom.Id).Update(model.Wallet{
+		assert.Nil(t, database.Db.Table(wallet.GetTableName("CNY")).Where("id = ?", userFrom.Id).Update(model.Wallet{
 			Balance:  100,
 			Currency: model.WalletCNY,
 		}).Error)

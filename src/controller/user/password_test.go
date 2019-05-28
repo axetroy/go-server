@@ -8,7 +8,7 @@ import (
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/mocker"
@@ -130,7 +130,7 @@ func TestUpdatePasswordRouter(t *testing.T) {
 		// 验证密码是否已修改
 		user := model.User{Id: userInfo.Id}
 
-		assert.Nil(t, service.Db.First(&user).Error)
+		assert.Nil(t, database.Db.First(&user).Error)
 		assert.Equal(t, util.GeneratePassword("321321"), user.Password)
 	}
 }
@@ -177,7 +177,7 @@ func TestUpdatePasswordByAdminRouter(t *testing.T) {
 		// 验证密码是否已修改
 		user := model.User{Id: userInfo.Id}
 
-		assert.Nil(t, service.Db.First(&user).Error)
+		assert.Nil(t, database.Db.First(&user).Error)
 		assert.Equal(t, util.GeneratePassword("321321"), user.Password)
 	}
 }
