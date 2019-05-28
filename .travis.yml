@@ -40,8 +40,8 @@ before_script:
   - tar zxvf $NSQ_DOWNLOAD.tar.gz
   - export PATH=$NSQ_DOWNLOAD/bin:$PATH
   - nsqlookupd
-  - nsqd --lookupd-tcp-address=nsqlookupd:4160
-  - nsqadmin --lookupd-http-address=nsqlookupd:4161
+  - nsqd --lookupd-tcp-address=127.0.0.1:4160
+  - nsqadmin --lookupd-http-address=127.0.0.1:4161
 
   - go get -v ./...
 
