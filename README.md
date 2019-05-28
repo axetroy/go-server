@@ -54,13 +54,14 @@
 
 首选确保你安装有:
 
-- [Golang](https://golang.org/)
+- [Golang](https://golang.org/) >= 1.11.x
 - [Docker](https://www.docker.com/)
 - [Docker Compose](https://docs.docker.com/compose/)
 
 再根据以下命令运行
 
 ```bash
+> export GO111MODULE=on # 开启 Go modules 模式
 > go get -v github.com/axetroy/go-server # 拉取项目
 > cd $GOPATH/github/axetroy/go-server # 切换到项目目录
 > docker-compose -f docker-compose.mq.yml up # 启动消息队列
