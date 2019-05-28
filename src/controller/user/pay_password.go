@@ -300,7 +300,7 @@ func SendResetPayPassword(context controller.Context) (res schema.Response) {
 		return
 	}
 
-	e := service.NewEmailer()
+	e := service.NewMailer()
 
 	if userInfo.Email != nil {
 		if err = e.SendForgotTradePasswordEmail(*userInfo.Email, resetCode); err != nil {

@@ -24,7 +24,7 @@ func main() {
 			return err
 		}
 
-		mailer := service.NewEmailer()
+		mailer := service.NewMailer()
 
 		// 发送邮件
 		if err := mailer.SendActivationEmail(body.Email, body.Code); err != nil {

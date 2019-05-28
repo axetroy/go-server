@@ -80,7 +80,7 @@ func SendResetPasswordEmail(input SendResetPasswordEmailParams) (res schema.Resp
 		return
 	}
 
-	e := service.NewEmailer()
+	e := service.NewMailer()
 
 	// send email
 	if err = e.SendForgotPasswordEmail(input.To, code); err != nil {

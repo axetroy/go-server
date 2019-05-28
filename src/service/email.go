@@ -68,7 +68,7 @@ func init() {
 	}
 }
 
-func NewEmailer() *Mailer {
+func NewMailer() *Mailer {
 	// Set up authentication information.
 	auth := smtp.PlainAuth(
 		"",

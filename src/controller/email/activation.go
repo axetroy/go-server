@@ -82,7 +82,7 @@ func SendActivationEmail(input SendActivationEmailParams) (res schema.Response) 
 		return
 	}
 
-	e := service.NewEmailer()
+	e := service.NewMailer()
 
 	// send email
 	if err = e.SendActivationEmail(input.To, activationCode); err != nil {
