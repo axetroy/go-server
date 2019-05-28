@@ -78,21 +78,34 @@ make build
 
 在生成的 bin 目录下查找对应平台的可执行文件运行即可
 
+```bash
+> cd $GOPATH/github/axetroy/go-server
+> tree ./bin
+```
+
 文件说明:
 
-1. user_${platform}_${arch}
-
-用户端的可执行文件
-
-2. admin_${platform}_${arch}
-
-管理员端的可执行文件
-
-3. message_queue_${platform}_${arch}
-
-消息队列的可执行文件
-
-消息队列与其他分开独立部署
+```
+./bin
+├── admin_linux_x64                         # 管理员端的启动文件
+├── admin_linux_x86
+├── admin_osx_64
+├── admin_osx_x86
+├── admin_win_x64.exe
+├── admin_win_x86.exe
+├── message_queue_linux_x64                 # 消息队列启动文件
+├── message_queue_linux_x86
+├── message_queue_osx_64
+├── message_queue_osx_x86
+├── message_queue_win_x64.exe
+├── message_queue_win_x86.exe
+├── user_linux_x64                          # 用户端的启动文件
+├── user_linux_x86
+├── user_osx_64
+├── user_osx_x86
+├── user_win_x64.exe
+└── user_win_x86.exe
+```
 
 ## 如何测试?
 
