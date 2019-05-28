@@ -6,6 +6,7 @@ import (
 	"github.com/axetroy/go-server/src/message_queue"
 	"github.com/axetroy/go-server/src/message_queue/consumer"
 	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/email"
 	"github.com/nsqio/go-nsq"
 	"log"
 	"sync"
@@ -24,7 +25,7 @@ func main() {
 			return err
 		}
 
-		mailer := service.NewMailer()
+		mailer := email.NewMailer()
 
 		// 发送邮件
 		if err := mailer.SendActivationEmail(body.Email, body.Code); err != nil {

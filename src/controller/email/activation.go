@@ -6,6 +6,7 @@ import (
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service"
+	"github.com/axetroy/go-server/src/service/email"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"net/http"
@@ -82,7 +83,7 @@ func SendActivationEmail(input SendActivationEmailParams) (res schema.Response) 
 		return
 	}
 
-	e := service.NewMailer()
+	e := email.NewMailer()
 
 	// send email
 	if err = e.SendActivationEmail(input.To, activationCode); err != nil {
