@@ -22,7 +22,7 @@
 - [x] 身份认证机制 [JWT](http://jwt.io)/[oAuth2](https://oauth.net/2/)
 - [x] 数据库操作 [GORM](https://github.com/jinzhu/gorm)
 - [x] 消息队列 [nsq](https://github.com/nsqio/nsq)
-- [x] RBAC 的权限模型
+- [ ] RBAC 的权限模型
 - [x] Docker 一键启动应用
 
 ### 包含哪些模块?
