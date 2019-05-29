@@ -15,7 +15,6 @@ func CreateConsumer(topic message_queue.Topic, channel message_queue.Chanel, han
 
 	c.AddHandler(handler)
 
-	// TODO: 断线重连机制
 	err = c.ConnectToNSQD(message_queue.Address)
 
 	if err != nil {

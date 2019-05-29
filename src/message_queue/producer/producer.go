@@ -12,7 +12,6 @@ var (
 )
 
 func init() {
-	// TODO: 断线重连机制
 	err := CreateProducer(message_queue.Address)
 
 	if err != nil {
