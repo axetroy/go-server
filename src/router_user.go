@@ -34,14 +34,14 @@ func init() {
 	// Recovery middleware recovers from any panics and writes a 500 if there was one.
 	router.Use(gin.Recovery())
 
+	router.Use(middleware.Common)
+
 	router.GET("/ping", func(context *gin.Context) {
 		context.String(http.StatusOK, "pong")
 	})
 
 	// Simple group: v1
 	v1 := router.Group("/v1")
-
-	v1.Use(middleware.Common)
 
 	{
 		v1.GET("", func(context *gin.Context) {
