@@ -6,6 +6,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/message"
 	"github.com/axetroy/go-server/src/controller/news"
 	"github.com/axetroy/go-server/src/controller/notification"
+	"github.com/axetroy/go-server/src/controller/system"
 	"github.com/axetroy/go-server/src/controller/user"
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/gin-gonic/gin"
@@ -102,6 +103,8 @@ func init() {
 			bannerRouter.GET("/b/:banner_id", banner.GetBannerRouter) // 获取 banner 详情
 			bannerRouter.DELETE("/b/:banner_id", banner.DeleteRouter) // 删除 banner
 		}
+
+		v1.GET("/system", system.GetSystemInfoRouter) // 获取系统相关信息
 	}
 
 	AdminRouter = router

@@ -371,3 +371,15 @@
 </p>
 
 </details>
+
+### 系统信息
+
+<details><summary>获取当前服务器的信息<code>[GET] /v1/system</code></summary>
+
+<p>
+
+获取当前服务器的信息, 包括内存/CPU/磁盘等
+
+</p>
+
+</details>
