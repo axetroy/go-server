@@ -143,7 +143,6 @@ func UploadAvatar(uid string, input UploadAvatarParams, file *multipart.FileHead
 		}
 	}()
 
-	// FIXME: open 2 times
 	if src, err = file.Open(); err != nil {
 		return
 	}
