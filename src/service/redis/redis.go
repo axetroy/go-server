@@ -1,7 +1,7 @@
 package redis
 
 import (
-	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/src/service/dotenv"
 	"github.com/go-redis/redis"
 	"os"
 )
@@ -19,7 +19,7 @@ type redisConfig struct {
 }
 
 func init() {
-	if err := util.LoadEnv(); err != nil {
+	if err := dotenv.Load(); err != nil {
 		return
 	}
 

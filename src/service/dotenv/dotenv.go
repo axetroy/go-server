@@ -1,4 +1,4 @@
-package util
+package dotenv
 
 import (
 	"flag"
@@ -14,7 +14,7 @@ var (
 	RootDir string // 当前运行的二进制所在的目录
 )
 
-func LoadEnv() (err error) {
+func Load() (err error) {
 	var envFilePath = ".env"
 	isRunInTest := flag.Lookup("test.v") != nil
 

@@ -2,7 +2,7 @@ package uploader
 
 import (
 	"github.com/axetroy/go-fs"
-	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/src/service/dotenv"
 	"os"
 	"path"
 )
@@ -66,8 +66,8 @@ func init() {
 
 	if len(rootPath) == 0 {
 		// 如果是测试环境的话, 写死生成的目录，防止到处创建upload目录
-		if util.Test {
-			Config.Path = path.Join(util.RootDir, "upload")
+		if dotenv.Test {
+			Config.Path = path.Join(dotenv.RootDir, "upload")
 		} else if cwd, err = os.Getwd(); err != nil {
 			panic(cwd)
 		} else {
