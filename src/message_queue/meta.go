@@ -39,6 +39,7 @@ func init() {
 	Config = nsq.NewConfig()
 	Config.DialTimeout = time.Second * 5
 	Config.MsgTimeout = time.Second * 10
-	Config.ReadTimeout = time.Second * 10
+	Config.ReadTimeout = time.Second * 15
 	Config.WriteTimeout = time.Second * 10
+	Config.HeartbeatInterval = time.Second * 10
 }
