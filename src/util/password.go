@@ -1,8 +1,8 @@
 package util
 
 const (
-	passwordPrefix = "gotest"
-	passwordSuffix = "test"
+	passwordPrefix = "prefix"
+	passwordSuffix = "suffix"
 )
 
 func GeneratePassword(text string) string {
