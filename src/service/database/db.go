@@ -33,11 +33,11 @@ func init() {
 	}
 
 	if len(dbUsername) == 0 {
-		dbUsername = "postgres"
+		dbUsername = "gotest"
 	}
 
 	if len(dbPassword) == 0 {
-		dbPassword = "postgres"
+		dbPassword = "gotest"
 	}
 
 	if len(dbPort) == 0 {

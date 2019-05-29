@@ -8,6 +8,11 @@ services:
       - "./docker/volumes/pg:/var/lib/postgresql/data"
     ports:
       - 65432:5432
+    environment:
+      - POSTGRES_USER=gotest # 用户名
+      - POSTGRES_PASSWORD=gotest # 数据库密码
+      - POSTGRES_DB=gotest # 数据库名
+
   # 缓存
   redis:
     image: redis:5.0.2-alpine
