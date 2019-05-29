@@ -306,7 +306,7 @@ func SendResetPayPassword(context controller.Context) (res schema.Response) {
 		// 发送邮件
 		go func() {
 			e := email.NewMailer()
-			_ := e.SendForgotTradePasswordEmail(*userInfo.Email, resetCode)
+			_ = e.SendForgotTradePasswordEmail(*userInfo.Email, resetCode)
 		}()
 	} else if userInfo.Phone != nil {
 		// TODO: 发送手机验证码
