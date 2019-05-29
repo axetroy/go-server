@@ -7,9 +7,7 @@ import (
 
 // 创建消费者
 func CreateConsumer(topic message_queue.Topic, channel message_queue.Chanel, handler nsq.Handler) (c *nsq.Consumer, err error) {
-	config := nsq.NewConfig()
-
-	c, err = nsq.NewConsumer(string(topic), string(channel), config)
+	c, err = nsq.NewConsumer(string(topic), string(channel), message_queue.Config)
 
 	if err != nil {
 		return
@@ -17,9 +15,8 @@ func CreateConsumer(topic message_queue.Topic, channel message_queue.Chanel, han
 
 	c.AddHandler(handler)
 
-	// TODO: 从环境变量中读取
 	// TODO: 断线重连机制
-	err = c.ConnectToNSQD("127.0.0.1:4150")
+	err = c.ConnectToNSQD(message_queue.Address)
 
 	if err != nil {
 		return

@@ -5,7 +5,6 @@ import (
 	"github.com/axetroy/go-server/src/message_queue"
 	"github.com/nsqio/go-nsq"
 	"log"
-	"os"
 )
 
 var (
@@ -13,22 +12,8 @@ var (
 )
 
 func init() {
-	host := os.Getenv("MSG_QUEUE_SERVER")
-
-	if host == "" {
-		host = "127.0.0.1"
-	}
-
-	port := os.Getenv("MSG_QUEUE_PORT")
-
-	if port == "" {
-		port = "4150"
-	}
-
-	addr := host + ":" + port
-
 	// TODO: 断线重连机制
-	err := CreateProducer(addr)
+	err := CreateProducer(message_queue.Address)
 
 	if err != nil {
 		log.Panic(err)
@@ -37,7 +22,7 @@ func init() {
 
 // 初始化生产者
 func CreateProducer(address string) (err error) {
-	producer, err = nsq.NewProducer(address, nsq.NewConfig())
+	producer, err = nsq.NewProducer(address, message_queue.Config)
 	fmt.Printf("连接队列: %s\n", address)
 	return
 }
