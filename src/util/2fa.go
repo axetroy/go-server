@@ -9,8 +9,8 @@ var (
 	issuer     = "go-server" // 签发者
 	encryption = crypto.SHA1 // 加密算法
 	digits     = 6           // 密码位数
-	prefix     = "go-server" // 用于UID的前缀, 不能暴露这个字段，否则用户私钥可能泄漏
-	suffix     = "go-server" // 用户UID的后缀，不能暴露这个字段，否则用户私钥可能泄漏
+	prefix     = "prefix"    // 用于UID的前缀, 不能暴露这个字段，否则用户私钥可能泄漏
+	suffix     = "suffix"    // 用户UID的后缀，不能暴露这个字段，否则用户私钥可能泄漏
 )
 
 // 拼接用户账号
