@@ -5,6 +5,7 @@ import (
 	"github.com/axetroy/go-server/src/message_queue"
 	"github.com/nsqio/go-nsq"
 	"log"
+	"os"
 )
 
 var (
@@ -12,8 +13,19 @@ var (
 )
 
 func init() {
-	// TODO: 从环境变量中读取
-	addr := "127.0.0.1:4150"
+	host := os.Getenv("MSG_QUEUE_SERVER")
+
+	if host == "" {
+		host = "127.0.0.1"
+	}
+
+	port := os.Getenv("MSG_QUEUE_PORT")
+
+	if port == "" {
+		port = "4150"
+	}
+
+	addr := host + ":" + port
 
 	// TODO: 断线重连机制
 	err := CreateProducer(addr)
