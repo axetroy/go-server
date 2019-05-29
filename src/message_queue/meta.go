@@ -8,7 +8,7 @@ var (
 	ChanelSendEmail Chanel = "send_email"
 )
 
-type SendEmailBody struct {
+type SendActivationEmailBody struct {
 	Email string `json:"email"` // 要发送的邮箱
 	Code  string `json:"code"`  // 发送的激活码
 }

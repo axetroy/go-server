@@ -227,7 +227,7 @@ func SignUp(input SignUpParams) (res schema.Response) {
 		// 把 "发送激活码" 加入消息队列
 		var body []byte
 
-		if body, err = json.Marshal(message_queue.SendEmailBody{
+		if body, err = json.Marshal(message_queue.SendActivationEmailBody{
 			Email: *input.Email,
 			Code:  activationCode,
 		}); err != nil {

@@ -19,7 +19,7 @@ func main() {
 
 	_, err := consumer.CreateConsumer(message_queue.TopicSendEmail, message_queue.ChanelSendEmail, nsq.HandlerFunc(func(message *nsq.Message) error {
 
-		body := message_queue.SendEmailBody{}
+		body := message_queue.SendActivationEmailBody{}
 
 		if err := json.Unmarshal(message.Body, &body); err != nil {
 			return err
