@@ -12,7 +12,7 @@ import (
 	"net/http"
 )
 
-var RouterAdminClient *gin.Engine
+var AdminRouter *gin.Engine
 
 func init() {
 	gin.SetMode(gin.ReleaseMode)
@@ -104,5 +104,5 @@ func init() {
 		}
 	}
 
-	RouterAdminClient = router
+	AdminRouter = router
 }

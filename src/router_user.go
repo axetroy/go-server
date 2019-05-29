@@ -23,7 +23,7 @@ import (
 	"net/http"
 )
 
-var RouterUserClient *gin.Engine
+var UserRouter *gin.Engine
 
 func init() {
 	gin.SetMode(gin.ReleaseMode)
@@ -188,5 +188,5 @@ func init() {
 		}
 	}
 
-	RouterUserClient = router
+	UserRouter = router
 }
