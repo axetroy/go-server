@@ -3,6 +3,7 @@ package transfer
 import (
 	"fmt"
 	"github.com/axetroy/go-server/src/model"
+	"github.com/axetroy/go-server/src/util"
 	"reflect"
 	"strings"
 )
@@ -10,19 +11,6 @@ import (
 // 获取转账表名
 func GetTransferTableName(currency string) string {
 	return "transfer_log_" + strings.ToLower(currency)
-}
-
-func IsNil(i interface{}) bool {
-	vi := reflect.ValueOf(i)
-	if vi.Kind() == reflect.Ptr {
-		return vi.IsNil()
-	}
-	return false
-}
-
-func IsPoint(i interface{}) bool {
-	vi := reflect.ValueOf(i)
-	return vi.Kind() == reflect.Ptr
 }
 
 type QueryParams struct {
@@ -55,12 +43,12 @@ func GenerateTransferLogSQL(filter QueryParams, limit int, count bool) string {
 				continue
 			}
 
-			if IsNil(value) {
+			if util.IsNil(value) {
 				continue
 			}
 
 			// 如果是指针的话
-			if IsPoint(value) {
+			if util.IsPoint(value) {
 				// 获取指针对应的值
 				value = reflect.ValueOf(value).Elem()
 			} else {

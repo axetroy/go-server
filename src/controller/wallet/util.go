@@ -23,19 +23,6 @@ func mapToSchema(model model.Wallet, d *schema.Wallet) {
 	d.UpdatedAt = model.UpdatedAt.Format(time.RFC3339Nano)
 }
 
-func IsNil(i interface{}) bool {
-	vi := reflect.ValueOf(i)
-	if vi.Kind() == reflect.Ptr {
-		return vi.IsNil()
-	}
-	return false
-}
-
-func IsPoint(i interface{}) bool {
-	vi := reflect.ValueOf(i)
-	return vi.Kind() == reflect.Ptr
-}
-
 type QueryParams struct {
 	Id       *string `json:"id"`       // 用户ID
 	Currency *string `json:"currency"` // 钱包币种
@@ -62,12 +49,12 @@ func GenerateWalletSQL(filter QueryParams, limit int, count bool) string {
 				continue
 			}
 
-			if IsNil(value) {
+			if util.IsNil(value) {
 				continue
 			}
 
 			// 如果是指针的话
-			if IsPoint(value) {
+			if util.IsPoint(value) {
 				// 获取指针对应的值
 				value = reflect.ValueOf(value).Elem()
 			} else {
