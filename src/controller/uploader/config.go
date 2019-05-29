@@ -14,10 +14,10 @@ type FileConfig struct {
 }
 
 type ImageConfig struct {
-	Path      string          `json:"path"`     // 图片存储路径
-	MaxSize   int             `json:"max_size"` // 最大图片上传限制，单位byte
-	Thumbnail ThumbnailConfig // 缩略图配置
-	Avatar    AvatarConfig    // 用户头像的配置
+	Path      string          `json:"path"`      // 图片存储路径
+	MaxSize   int             `json:"max_size"`  // 最大图片上传限制，单位byte
+	Thumbnail ThumbnailConfig `json:"thumbnail"` // 缩略图配置
+	Avatar    AvatarConfig    `json:"avatar"`    // 用户头像的配置
 }
 
 type ThumbnailConfig struct {
@@ -60,19 +60,11 @@ var Config = TConfig{
 func init() {
 	var (
 		err      error
-		cwd      string
 		rootPath = os.Getenv("UPLOAD_DIR")
 	)
 
-	if len(rootPath) == 0 {
-		// 如果是测试环境的话, 写死生成的目录，防止到处创建upload目录
-		if dotenv.Test {
-			Config.Path = path.Join(dotenv.RootDir, "upload")
-		} else if cwd, err = os.Getwd(); err != nil {
-			panic(cwd)
-		} else {
-			Config.Path = path.Join(cwd, "upload")
-		}
+	if rootPath == "" {
+		Config.Path = path.Join(dotenv.RootDir, "upload")
 	} else {
 		Config.Path = rootPath
 	}
