@@ -6,6 +6,6 @@ import (
 )
 
 var (
-	HttpUser  = mocker.New(src.RouterUserClient)
-	HttpAdmin = mocker.New(src.RouterAdminClient)
+	HttpUser  = mocker.New(src.UserRouter)
+	HttpAdmin = mocker.New(src.AdminRouter)
 )
