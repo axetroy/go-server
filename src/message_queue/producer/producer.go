@@ -25,8 +25,8 @@ func init() {
 
 // 初始化生产者
 func CreateProducer(address string) (err error) {
-	fmt.Printf("连接队列: %s\n", address)
 	producer, err = nsq.NewProducer(address, nsq.NewConfig())
+	fmt.Printf("连接队列: %s\n", address)
 	return
 }
 

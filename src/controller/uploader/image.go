@@ -22,7 +22,8 @@ import (
 
 type ImageResponse struct {
 	schema.FileResponse
-	Thumbnail bool `json:"thumbnail"` // 是否拥有缩略图
+	Thumbnail     bool   `json:"thumbnail"`      // 是否拥有缩略图
+	ThumbnailPath string `json:"thumbnail_path"` // 缩略图的路径
 }
 
 // 支持的图片后缀名
@@ -31,12 +32,8 @@ var supportImageExtNames = []string{".jpg", ".jpeg", ".png", ".ico", ".svg", ".b
 func Image(context *gin.Context) {
 	var (
 		maxUploadSize = Config.Image.MaxSize // 最大上传大小
-		distPath      string                 // 最终的输出目录
 		err           error
-		file          *multipart.FileHeader
-		src           multipart.File
-		dist          *os.File
-		data          *ImageResponse
+		data          = make([]ImageResponse, 0)
 	)
 
 	defer func() {
@@ -49,10 +46,6 @@ func Image(context *gin.Context) {
 			default:
 				err = exception.Unknown
 			}
-		}
-
-		if err != nil {
-			// TODO: 移除已经下载了的文件
 		}
 
 		if err != nil {
@@ -70,81 +63,99 @@ func Image(context *gin.Context) {
 		}
 	}()
 
-	// Source
-	if file, err = context.FormFile("file"); err != nil {
+	form, er := context.MultipartForm()
+
+	if er != nil {
+		err = er
 		return
 	}
 
-	extname := strings.ToLower(path.Ext(file.Filename))
+	files := form.File["file"]
 
-	if isImage(extname) == false {
-		err = exception.NotSupportType
-		return
-	}
-
-	if maxUploadSize > 0 && file.Size > int64(maxUploadSize) {
-		err = exception.OutOfSize
-		return
-	}
-
-	if src, err = file.Open(); err != nil {
-		return
-	}
+	// 不管成功与否，都移除已下载到本地的缓存图片
 	defer func() {
-		if er := src.Close(); er != nil {
-			return
-		}
+		_ = form.RemoveAll()
 	}()
 
-	hash := md5.New()
+	for _, file := range files {
+		var (
+			src  multipart.File // 要读取的文件
+			dist *os.File       // 最终输出的文件
+		)
 
-	if _, err = io.Copy(hash, src); err != nil {
-		return
-	}
+		// 判断是否是合法的图片
+		extname := strings.ToLower(path.Ext(file.Filename))
 
-	md5string := hex.EncodeToString(hash.Sum([]byte("")))
+		{
+			if isImage(extname) == false {
+				err = exception.NotSupportType
+				return
+			}
 
-	fileName := md5string + extname
+			if maxUploadSize > 0 && file.Size > int64(maxUploadSize) {
+				err = exception.OutOfSize
+				return
+			}
+		}
 
-	// Destination
-	distPath = path.Join(Config.Path, Config.Image.Path, fileName)
-	if dist, err = os.Create(distPath); err != nil {
-		return
-	}
-	defer func() {
-		if er := dist.Close(); er != nil {
+		if src, err = file.Open(); err != nil {
 			return
 		}
-	}()
 
-	// FIXME: open 2 times
-	if src, err = file.Open(); err != nil {
-		return
-	}
+		hash := md5.New()
 
-	// Copy
-	if _, err = io.Copy(dist, src); err != nil {
-		return
-	}
+		if _, err = io.Copy(hash, src); err != nil {
+			_ = src.Close()
+			return
+		} else {
+			_ = src.Close()
+		}
 
-	var gotThumbnail bool
+		md5string := hex.EncodeToString(hash.Sum([]byte("")))
 
-	// 压缩缩略图
-	// 不管成功与否，都会进行下一步的返回
-	if _, err := thumbnailify(distPath); err != nil {
-		gotThumbnail = false
-	} else {
-		gotThumbnail = true
-	}
+		fileName := md5string + extname
 
-	data = &ImageResponse{
-		FileResponse: schema.FileResponse{
-			Hash:     md5string,
-			Filename: fileName,
-			Origin:   file.Filename,
-			Size:     file.Size,
-		},
-		Thumbnail: gotThumbnail,
+		// 输出到最终文件
+		distPath := path.Join(Config.Path, Config.Image.Path, fileName)
+
+		if dist, err = os.Create(distPath); err != nil {
+			return
+		}
+
+		if src, err = file.Open(); err != nil {
+			return
+		}
+
+		// Copy
+		if _, err = io.Copy(dist, src); err != nil {
+			_ = src.Close()
+			_ = dist.Close()
+			return
+		} else {
+			_ = src.Close()
+			_ = dist.Close()
+		}
+
+		res := ImageResponse{
+			FileResponse: schema.FileResponse{
+				Hash:         md5string,
+				Filename:     fileName,
+				Origin:       file.Filename,
+				Size:         file.Size,
+				RawPath:      "/v1/resource/image/" + fileName,
+				DownloadPath: "/v1/download/image/" + fileName,
+			},
+			Thumbnail: false,
+		}
+
+		// 压缩缩略图
+		// 不管成功与否，都会进行下一步的返回
+		if _, err := GenerateThumbnail(distPath); err == nil {
+			res.Thumbnail = true
+			res.ThumbnailPath = "/v1/resource/thumbnail/" + fileName
+		}
+
+		data = append(data, res)
 	}
 }
 
@@ -163,11 +174,13 @@ func isImage(extName string) bool {
 /**
 Generate thumbnail
 */
-func thumbnailify(imagePath string) (outputPath string, err error) {
+func GenerateThumbnail(imagePath string) (outputPath string, err error) {
 	var (
-		file     *os.File
-		img      image.Image
-		filename = path.Base(imagePath)
+		file      *os.File
+		img       image.Image
+		filename  = path.Base(imagePath)
+		maxWidth  = Config.Image.Thumbnail.MaxWidth
+		maxHeight = Config.Image.Thumbnail.MaxHeight
 	)
 
 	extname := strings.ToLower(path.Ext(imagePath))
@@ -207,7 +220,7 @@ func thumbnailify(imagePath string) (outputPath string, err error) {
 		return
 	}
 
-	m := resize.Thumbnail(uint(Config.Image.Thumbnail.MaxWidth), uint(Config.Image.Thumbnail.MaxHeight), img, resize.Lanczos3)
+	m := resize.Thumbnail(uint(maxWidth), uint(maxHeight), img, resize.Lanczos3)
 
 	out, err := os.Create(outputPath)
 	if err != nil {

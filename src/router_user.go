@@ -171,9 +171,9 @@ func init() {
 			// 文件上传 (需要验证token)
 			uploadRouter := v1.Group("/upload")
 			{
-				uploadRouter.Use(userAuthMiddleware)
-				uploadRouter.POST("/file", uploader.File)   // 上传文件
-				uploadRouter.POST("/image", uploader.Image) // 上传图片
+				uploadRouter.POST("/file", uploader.File)      // 上传文件
+				uploadRouter.POST("/image", uploader.Image)    // 上传图片
+				uploadRouter.GET("/example", uploader.Example) // 上传文件的 example
 			}
 			// 单纯获取资源文本
 			v1.GET("/resource/file/:filename", resource.File)

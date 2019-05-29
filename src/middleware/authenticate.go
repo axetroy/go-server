@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/token"
 	"github.com/gin-gonic/gin"
@@ -36,7 +37,7 @@ func Authenticate(isAdmin bool) gin.HandlerFunc {
 
 			if len(tokenString) == 0 {
 				if s, er := context.Cookie(token.AuthField); er != nil {
-					err = er
+					err = exception.InvalidToken
 					return
 				} else {
 					tokenString = s

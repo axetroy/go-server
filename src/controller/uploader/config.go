@@ -47,8 +47,8 @@ var Config = TConfig{
 		MaxSize: 1024 * 1024 * 10, // max 10MB
 		Thumbnail: ThumbnailConfig{
 			Path:      "thumbnail",
-			MaxWidth:  60,
-			MaxHeight: 60,
+			MaxWidth:  100,
+			MaxHeight: 100,
 		},
 		Avatar: AvatarConfig{
 			Path: "avatar",
