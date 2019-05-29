@@ -302,14 +302,17 @@ func SendResetPayPassword(context controller.Context) (res schema.Response) {
 		return
 	}
 
-	e := email.NewMailer()
-
 	if userInfo.Email != nil {
-		if err = e.SendForgotTradePasswordEmail(*userInfo.Email, resetCode); err != nil {
-			return
-		}
+		// 发送邮件
+		go func() {
+			e := email.NewMailer()
+			_ := e.SendForgotTradePasswordEmail(*userInfo.Email, resetCode)
+		}()
 	} else if userInfo.Phone != nil {
 		// TODO: 发送手机验证码
+		go func() {
+
+		}()
 	} else {
 		// 无效的用户
 		err = exception.NoData
