@@ -34,6 +34,7 @@ func Image(context *gin.Context) {
 		maxUploadSize = Config.Image.MaxSize // 最大上传大小
 		err           error
 		data          = make([]ImageResponse, 0)
+		imageDir      = path.Join(Config.Path, Config.Image.Path)
 	)
 
 	defer func() {
@@ -116,7 +117,7 @@ func Image(context *gin.Context) {
 		fileName := md5string + extname
 
 		// 输出到最终文件
-		distPath := path.Join(Config.Path, Config.Image.Path, fileName)
+		distPath := path.Join(imageDir, fileName)
 
 		if dist, err = os.Create(distPath); err != nil {
 			return
@@ -176,16 +177,17 @@ Generate thumbnail
 */
 func GenerateThumbnail(imagePath string) (outputPath string, err error) {
 	var (
-		file      *os.File
-		img       image.Image
-		filename  = path.Base(imagePath)
-		maxWidth  = Config.Image.Thumbnail.MaxWidth
-		maxHeight = Config.Image.Thumbnail.MaxHeight
+		file         *os.File
+		img          image.Image
+		filename     = path.Base(imagePath)
+		maxWidth     = Config.Image.Thumbnail.MaxWidth
+		maxHeight    = Config.Image.Thumbnail.MaxHeight
+		thumbnailDir = path.Join(Config.Path, Config.Image.Thumbnail.Path)
 	)
 
 	extname := strings.ToLower(path.Ext(imagePath))
 
-	outputPath = path.Join(Config.Path, Config.Image.Thumbnail.Path, filename)
+	outputPath = path.Join(thumbnailDir, filename)
 
 	// 读取文件
 	if file, err = os.Open(imagePath); err != nil {
