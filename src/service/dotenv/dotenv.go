@@ -2,6 +2,7 @@ package dotenv
 
 import (
 	"flag"
+	"fmt"
 	"github.com/axetroy/go-fs"
 	"github.com/joho/godotenv"
 	"os"
@@ -73,6 +74,8 @@ func Load() (err error) {
 			RootDir = pwd
 		}
 	}
+
+	fmt.Println("当前工作目录", RootDir)
 
 	dotEnvFilePath := path.Join(RootDir, ".env")
 
