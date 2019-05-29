@@ -41,6 +41,7 @@ func Load() (err error) {
 	switch true {
 	// 如果运行才 travis，则取当前目录
 	case isRunInTravis:
+		Test = true
 		RootDir = os.Getenv("TRAVIS_BUILD_DIR")
 		break
 	// 如果运行在测试用例
