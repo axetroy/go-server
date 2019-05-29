@@ -5,7 +5,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/admin"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/src/service/token"
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
@@ -78,7 +78,7 @@ func TestCreateAdmin(t *testing.T) {
 func TestCreateAdminRouter(t *testing.T) {
 	{
 		header := mocker.Header{
-			"Authorization": util.TokenPrefix + " 12312",
+			"Authorization": token.Prefix + " 12312",
 		}
 
 		username := "test-TestCreateAdminRouter"

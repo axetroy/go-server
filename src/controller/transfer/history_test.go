@@ -9,7 +9,7 @@ import (
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
-	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/src/service/token"
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
@@ -95,7 +95,7 @@ func TestGetHistoryRouter(t *testing.T) {
 	assert.Equal(t, schema.StatusSuccess, res2.Status)
 
 	header := mocker.Header{
-		"Authorization": util.TokenPrefix + " " + userFrom.Token,
+		"Authorization": token.Prefix + " " + userFrom.Token,
 	}
 
 	// 获取转账记录

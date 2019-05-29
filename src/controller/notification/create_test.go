@@ -5,7 +5,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/admin"
 	"github.com/axetroy/go-server/src/controller/notification"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/src/service/token"
 	"github.com/axetroy/go-server/tester"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -37,7 +37,7 @@ func TestCreate(t *testing.T) {
 		assert.Equal(t, "admin", adminInfo.Username)
 		assert.True(t, len(adminInfo.Token) > 0)
 
-		if c, er := util.ParseToken(util.TokenPrefix+" "+adminInfo.Token, true); er != nil {
+		if c, er := token.Parse(token.Prefix+" "+adminInfo.Token, true); er != nil {
 			t.Error(er)
 		} else {
 			adminUid = c.Uid

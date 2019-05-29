@@ -6,7 +6,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/address"
 	"github.com/axetroy/go-server/src/controller/auth"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/src/service/token"
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
@@ -165,7 +165,7 @@ func TestUpdateRouter(t *testing.T) {
 	}
 
 	header := mocker.Header{
-		"Authorization": util.TokenPrefix + " " + tokenString,
+		"Authorization": token.Prefix + " " + tokenString,
 	}
 
 	// 创建一条收货地址

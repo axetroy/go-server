@@ -6,7 +6,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/auth"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/src/service/token"
 	"github.com/axetroy/go-server/tester"
 	"github.com/mitchellh/mapstructure"
 	"github.com/stretchr/testify/assert"
@@ -87,7 +87,7 @@ func TestSignInSuccess(t *testing.T) {
 
 	assert.NotEmpty(t, profile.Token)
 
-	if c, err := util.ParseToken("Bearer "+profile.Token, false); err != nil {
+	if c, err := token.Parse("Bearer "+profile.Token, false); err != nil {
 		t.Error(err)
 		return
 	} else {

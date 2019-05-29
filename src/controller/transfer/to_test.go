@@ -11,7 +11,7 @@ import (
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
-	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/src/service/token"
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
@@ -105,7 +105,7 @@ func TestToRouter(t *testing.T) {
 	// 转账
 	{
 		header := mocker.Header{
-			"Authorization":  util.TokenPrefix + " " + userFrom.Token,
+			"Authorization":  token.Prefix + " " + userFrom.Token,
 			"X-Pay-Password": "123123",
 		}
 

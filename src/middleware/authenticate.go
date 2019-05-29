@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/src/service/token"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -28,14 +28,14 @@ func Authenticate(isAdmin bool) gin.HandlerFunc {
 			}
 		}()
 
-		if s, isExist := context.GetQuery(util.AuthField); isExist == true {
+		if s, isExist := context.GetQuery(token.AuthField); isExist == true {
 			tokenString = s
 			return
 		} else {
-			tokenString = context.GetHeader(util.AuthField)
+			tokenString = context.GetHeader(token.AuthField)
 
 			if len(tokenString) == 0 {
-				if s, er := context.Cookie(util.AuthField); er != nil {
+				if s, er := context.Cookie(token.AuthField); er != nil {
 					err = er
 					return
 				} else {
@@ -44,7 +44,7 @@ func Authenticate(isAdmin bool) gin.HandlerFunc {
 			}
 		}
 
-		if claims, er := util.ParseToken(tokenString, isAdmin); er != nil {
+		if claims, er := token.Parse(tokenString, isAdmin); er != nil {
 			err = er
 			return
 		} else {

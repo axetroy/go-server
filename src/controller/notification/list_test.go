@@ -7,7 +7,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/auth"
 	"github.com/axetroy/go-server/src/controller/notification"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/src/service/token"
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
@@ -55,7 +55,7 @@ func TestGetList(t *testing.T) {
 
 			assert.Nil(t, tester.Decode(r.Data, &adminInfo))
 
-			if c, er := util.ParseToken(util.TokenPrefix+" "+adminInfo.Token, true); er != nil {
+			if c, er := token.Parse(token.Prefix+" "+adminInfo.Token, true); er != nil {
 				t.Error(er)
 			} else {
 				adminUid = c.Uid
@@ -152,7 +152,7 @@ func TestGetListRouter(t *testing.T) {
 	// 管理员接口获取
 	{
 		header := mocker.Header{
-			"Authorization": util.TokenPrefix + " " + adminInfo.Token,
+			"Authorization": token.Prefix + " " + adminInfo.Token,
 		}
 
 		r := tester.HttpAdmin.Get("/v1/notification", nil, &header)
@@ -185,7 +185,7 @@ func TestGetListRouter(t *testing.T) {
 	// 普通用户获取通知
 	{
 		header := mocker.Header{
-			"Authorization": util.TokenPrefix + " " + userInfo.Token,
+			"Authorization": token.Prefix + " " + userInfo.Token,
 		}
 
 		r := tester.HttpUser.Get("/v1/notification", nil, &header)

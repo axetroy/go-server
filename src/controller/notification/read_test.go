@@ -9,7 +9,7 @@ import (
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
-	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/src/service/token"
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
@@ -143,7 +143,7 @@ func TestReadRouter(t *testing.T) {
 	// 标记为已读
 	{
 		header := mocker.Header{
-			"Authorization": util.TokenPrefix + " " + userInfo.Token,
+			"Authorization": token.Prefix + " " + userInfo.Token,
 		}
 
 		r := tester.HttpUser.Put("/v1/notification/n/"+notificationId+"/read", nil, &header)

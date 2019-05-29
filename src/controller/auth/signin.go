@@ -8,6 +8,7 @@ import (
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
+	"github.com/axetroy/go-server/src/service/token"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -97,7 +98,7 @@ func SignIn(context controller.Context, input SignInParams) (res schema.Response
 	data.UpdatedAt = userInfo.UpdatedAt.Format(time.RFC3339Nano)
 
 	// generate token
-	if t, er := util.GenerateToken(userInfo.Id, false); er != nil {
+	if t, er := token.Generate(userInfo.Id, false); er != nil {
 		err = er
 		return
 	} else {

@@ -8,7 +8,7 @@ import (
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/src/service/token"
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
@@ -86,7 +86,7 @@ func TestCreateRouter(t *testing.T) {
 		)
 
 		header := mocker.Header{
-			"Authorization": util.TokenPrefix + " " + adminInfo.Token,
+			"Authorization": token.Prefix + " " + adminInfo.Token,
 		}
 
 		body, _ := json.Marshal(&message.CreateMessageParams{

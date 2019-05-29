@@ -8,7 +8,7 @@ import (
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
-	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/src/service/token"
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/mocker"
 	"github.com/jinzhu/gorm"
@@ -43,7 +43,7 @@ func TestDelete(t *testing.T) {
 		assert.Equal(t, "admin", adminInfo.Username)
 		assert.True(t, len(adminInfo.Token) > 0)
 
-		if c, er := util.ParseToken(util.TokenPrefix+" "+adminInfo.Token, true); er != nil {
+		if c, er := token.Parse(token.Prefix+" "+adminInfo.Token, true); er != nil {
 			t.Error(er)
 		} else {
 			adminUid = c.Uid
@@ -139,7 +139,7 @@ func TestDeleteRouter(t *testing.T) {
 		assert.Equal(t, "admin", adminInfo.Username)
 		assert.True(t, len(adminInfo.Token) > 0)
 
-		if _, er := util.ParseToken(util.TokenPrefix+" "+adminInfo.Token, true); er != nil {
+		if _, er := token.Parse(token.Prefix+" "+adminInfo.Token, true); er != nil {
 			t.Error(er)
 		} else {
 			adminToken = adminInfo.Token
@@ -147,7 +147,7 @@ func TestDeleteRouter(t *testing.T) {
 	}
 
 	header := mocker.Header{
-		"Authorization": util.TokenPrefix + " " + adminToken,
+		"Authorization": token.Prefix + " " + adminToken,
 	}
 
 	// 创建一条系统通知

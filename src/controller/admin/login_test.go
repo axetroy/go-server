@@ -6,7 +6,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/admin"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/src/service/token"
 	"github.com/axetroy/go-server/tester"
 	"github.com/stretchr/testify/assert"
 	"net/http"
@@ -54,7 +54,7 @@ func TestLogin(t *testing.T) {
 		assert.Equal(t, "admin", adminInfo.Username)
 		assert.True(t, len(adminInfo.Token) > 0)
 
-		if c, er := util.ParseToken(util.TokenPrefix+" "+adminInfo.Token, true); er != nil {
+		if c, er := token.Parse(token.Prefix+" "+adminInfo.Token, true); er != nil {
 			t.Error(er)
 		} else {
 			// 判断UID是否与用户一致
@@ -110,7 +110,7 @@ func TestLoginRouter(t *testing.T) {
 
 		assert.True(t, len(adminInfo.Token) > 0)
 
-		if _, er := util.ParseToken(util.TokenPrefix+" "+adminInfo.Token, true); er != nil {
+		if _, er := token.Parse(token.Prefix+" "+adminInfo.Token, true); er != nil {
 			t.Error(er)
 		} else {
 			// 到这里说明token已经解析成功了

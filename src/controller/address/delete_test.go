@@ -8,7 +8,7 @@ import (
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
-	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/src/service/token"
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/mocker"
 	"github.com/jinzhu/gorm"
@@ -106,7 +106,7 @@ func TestDeleteRouter(t *testing.T) {
 	defer auth.DeleteUserByUserName(userInfo.Username)
 
 	header := mocker.Header{
-		"Authorization": util.TokenPrefix + " " + userInfo.Token,
+		"Authorization": token.Prefix + " " + userInfo.Token,
 	}
 
 	// 创建一条收货地址

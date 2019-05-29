@@ -7,7 +7,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/user"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/src/service/token"
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
@@ -36,7 +36,7 @@ func TestGetProfileWithInvalidAuth(t *testing.T) {
 
 func TestGetProfileWithInvalidToken(t *testing.T) {
 	header := mocker.Header{
-		"Authorization": util.TokenPrefix + " 12312",
+		"Authorization": token.Prefix + " 12312",
 	}
 
 	r := tester.HttpUser.Get("/v1/user/profile", nil, &header)
@@ -91,7 +91,7 @@ func TestGetProfileRouter(t *testing.T) {
 	defer auth.DeleteUserByUserName(userInfo.Username)
 
 	header := mocker.Header{
-		"Authorization": util.TokenPrefix + " " + userInfo.Token,
+		"Authorization": token.Prefix + " " + userInfo.Token,
 	}
 
 	r := tester.HttpUser.Get("/v1/user/profile", nil, &header)
@@ -120,7 +120,7 @@ func TestGetProfileByAdminRouter(t *testing.T) {
 	defer auth.DeleteUserByUserName(userInfo.Username)
 
 	header := mocker.Header{
-		"Authorization": util.TokenPrefix + " " + adminInfo.Token,
+		"Authorization": token.Prefix + " " + adminInfo.Token,
 	}
 
 	r := tester.HttpAdmin.Get("/v1/user/u/"+userInfo.Id, nil, &header)
@@ -173,7 +173,7 @@ func TestUpdateProfileRouter(t *testing.T) {
 	defer auth.DeleteUserByUserName(userInfo.Username)
 
 	header := mocker.Header{
-		"Authorization": util.TokenPrefix + " " + userInfo.Token,
+		"Authorization": token.Prefix + " " + userInfo.Token,
 	}
 
 	body, _ := json.Marshal(&user.UpdateProfileParams{
@@ -236,7 +236,7 @@ func TestUpdateProfileByAdminRouter(t *testing.T) {
 	defer auth.DeleteUserByUserName(userInfo.Username)
 
 	header := mocker.Header{
-		"Authorization": util.TokenPrefix + " " + adminInfo.Token,
+		"Authorization": token.Prefix + " " + adminInfo.Token,
 	}
 
 	body, _ := json.Marshal(&user.UpdateProfileParams{

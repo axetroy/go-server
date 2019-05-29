@@ -6,7 +6,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/auth"
 	"github.com/axetroy/go-server/src/controller/message"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/src/service/token"
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
@@ -127,7 +127,7 @@ func TestReadRouter(t *testing.T) {
 	{
 
 		header := mocker.Header{
-			"Authorization": util.TokenPrefix + " " + userInfo.Token,
+			"Authorization": token.Prefix + " " + userInfo.Token,
 		}
 
 		r := tester.HttpUser.Put("/v1/message/m/"+testMessage.Id+"/read", nil, &header)

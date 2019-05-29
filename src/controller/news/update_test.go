@@ -7,7 +7,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/news"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/src/service/token"
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
@@ -35,7 +35,7 @@ func TestUpdate(t *testing.T) {
 
 		assert.Nil(t, tester.Decode(r.Data, &adminInfo))
 
-		if c, er := util.ParseToken(util.TokenPrefix+" "+adminInfo.Token, true); er != nil {
+		if c, er := token.Parse(token.Prefix+" "+adminInfo.Token, true); er != nil {
 			t.Error(er)
 		} else {
 			adminUid = c.Uid
@@ -174,7 +174,7 @@ func TestUpdateRouter(t *testing.T) {
 	{
 
 		header := mocker.Header{
-			"Authorization": util.TokenPrefix + " " + adminInfo.Token,
+			"Authorization": token.Prefix + " " + adminInfo.Token,
 		}
 
 		body, _ := json.Marshal(&news.UpdateParams{

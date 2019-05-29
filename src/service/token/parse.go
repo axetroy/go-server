@@ -1,66 +1,14 @@
-package util
+package token
 
 import (
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/util"
 	"github.com/dgrijalva/jwt-go"
 	"strings"
-	"time"
 )
-
-var (
-	userSecreteKey  = "user"
-	adminSecreteKey = "admin"
-	TokenPrefix     = "Bearer"
-	AuthField       = "Authorization"
-)
-
-type Claims struct {
-	Uid string `json:"uid"`
-	jwt.StandardClaims
-}
-
-type ClaimsInternal struct {
-	Uid string `json:"uid"` // base64 encode
-	jwt.StandardClaims
-}
-
-// generate jwt token
-func GenerateToken(userId string, isAdmin bool) (tokenString string, err error) {
-	var (
-		issuer string
-		key    string
-	)
-
-	if isAdmin {
-		issuer = "admin"
-		key = adminSecreteKey
-	} else {
-		issuer = "user"
-		key = userSecreteKey
-	}
-
-	// 生成token
-	c := ClaimsInternal{
-		Base64Encode(userId),
-		jwt.StandardClaims{
-			Audience:  userId,
-			Id:        userId,
-			ExpiresAt: time.Now().Add(time.Hour * time.Duration(6)).Unix(),
-			Issuer:    issuer,
-			IssuedAt:  time.Now().Unix(),
-			NotBefore: time.Now().Unix(),
-		},
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
-
-	tokenString, err = token.SignedString([]byte(key))
-
-	return
-}
 
 // parse jwt token
-func ParseToken(tokenString string, isAdmin bool) (claims Claims, err error) {
+func Parse(tokenString string, isAdmin bool) (claims Claims, err error) {
 	var (
 		token *jwt.Token
 		key   string
@@ -72,12 +20,12 @@ func ParseToken(tokenString string, isAdmin bool) (claims Claims, err error) {
 		key = userSecreteKey
 	}
 
-	if strings.HasPrefix(tokenString, TokenPrefix+" ") == false {
+	if strings.HasPrefix(tokenString, Prefix+" ") == false {
 		err = exception.InvalidAuth
 		return
 	}
 
-	tokenString = strings.Replace(tokenString, TokenPrefix+" ", "", 1)
+	tokenString = strings.Replace(tokenString, Prefix+" ", "", 1)
 
 	if tokenString == "" {
 		err = exception.InvalidToken
@@ -101,7 +49,7 @@ func ParseToken(tokenString string, isAdmin bool) (claims Claims, err error) {
 			uid string
 		)
 
-		if uid, err = Base64Decode(c.Uid); err != nil {
+		if uid, err = util.Base64Decode(c.Uid); err != nil {
 			return
 		}
 

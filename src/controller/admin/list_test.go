@@ -5,7 +5,7 @@ import (
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/controller/admin"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/src/service/token"
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
@@ -64,7 +64,7 @@ func TestGetListRouter(t *testing.T) {
 	defer admin.DeleteAdminByAccount("test")
 
 	header := mocker.Header{
-		"Authorization": util.TokenPrefix + " " + adminInfo.Token,
+		"Authorization": token.Prefix + " " + adminInfo.Token,
 	}
 
 	r := tester.HttpAdmin.Get("/v1/admin", nil, &header)
