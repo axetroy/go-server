@@ -65,20 +65,20 @@ func init() {
 
 		// Migrate the schema
 		db.AutoMigrate(
-			new(model.Admin),     // 管理员表
-			new(model.News),      // 新闻公告
-			new(model.User),      // 用户表
-			new(model.WalletCny), // 钱包
-			new(model.WalletUsd),
-			new(model.WalletCoin),
-			new(model.InviteHistory),  // 邀请表
-			new(model.LoginLog),       // 登陆成功表
-			new(model.TransferLogCny), // 钱包转账地址
-			new(model.TransferLogUsd),
-			new(model.TransferLogCoin),
-			new(model.FinanceLogCny), // 流水列表
-			new(model.FinanceLogUsd),
-			new(model.FinanceLogCoin),
+			new(model.Admin),            // 管理员表
+			new(model.News),             // 新闻公告
+			new(model.User),             // 用户表
+			new(model.WalletCny),        // 钱包 - CNY
+			new(model.WalletUsd),        // 钱包 - USD
+			new(model.WalletCoin),       // 钱包 - COIN
+			new(model.InviteHistory),    // 邀请表
+			new(model.LoginLog),         // 登陆成功表
+			new(model.TransferLogCny),   // 转账记录 - CNY
+			new(model.TransferLogUsd),   // 转账记录 - USD
+			new(model.TransferLogCoin),  // 转账记录 - COIN
+			new(model.FinanceLogCny),    // 流水列表 - CNY
+			new(model.FinanceLogUsd),    // 流水列表 - USD
+			new(model.FinanceLogCoin),   // 流水列表 - COIN
 			new(model.Notification),     // 系统消息
 			new(model.NotificationMark), // 系统消息的已读记录
 			new(model.Message),          // 个人消息
