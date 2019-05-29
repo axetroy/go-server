@@ -15,7 +15,7 @@ import (
 func TestGetSystemInfo(t *testing.T) {
 	r := system.GetSystemInfo()
 
-	assert.Equal(t, true, r.Status)
+	assert.Equal(t, 1, r.Status)
 	assert.Equal(t, "", r.Message)
 }
 
