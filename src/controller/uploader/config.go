@@ -8,22 +8,22 @@ import (
 )
 
 type FileConfig struct {
-	Path      string   `binding:"required,length(1|20)" json:"path"`        // 普通文件的存放目录
-	MaxSize   int      `binding:"required" json:"max_size"`                 // 普通文件上传的限制大小，单位byte, 最大单位1GB
-	AllowType []string `binding:"required,length(0|100)" json:"allow_type"` // 允许上传的文件后缀名
+	Path      string   `json:"path"`       // 普通文件的存放目录
+	MaxSize   int      `json:"max_size"`   // 普通文件上传的限制大小，单位byte, 最大单位1GB
+	AllowType []string `json:"allow_type"` // 允许上传的文件后缀名
 }
 
 type ImageConfig struct {
-	Path      string          `valid:"required,length(1|20)" json:"path"` // 图片存储路径
-	MaxSize   int             `valid:"required" json:"max_size"`          // 最大图片上传限制，单位byte
+	Path      string          `json:"path"`     // 图片存储路径
+	MaxSize   int             `json:"max_size"` // 最大图片上传限制，单位byte
 	Thumbnail ThumbnailConfig // 缩略图配置
 	Avatar    AvatarConfig    // 用户头像的配置
 }
 
 type ThumbnailConfig struct {
-	Path      string `valid:"required,length(1|20)" json:"path"` // 缩略图存放路径
-	MaxWidth  int    `valid:"required" json:"max_width"`         // 缩略图最大宽度
-	MaxHeight int    `valid:"required" json:"max_height"`        // 缩略图最大高度
+	Path      string `json:"path"`       // 缩略图存放路径
+	MaxWidth  int    `json:"max_width"`  // 缩略图最大宽度
+	MaxHeight int    `json:"max_height"` // 缩略图最大高度
 }
 
 type AvatarConfig struct {
@@ -31,9 +31,9 @@ type AvatarConfig struct {
 }
 
 type TConfig struct {
-	Path  string      `valid:"required,length(1|20)"` //文件上传的根目录
-	File  FileConfig  // 普通文件上传的配置
-	Image ImageConfig // 普通图片上传的配置
+	Path  string      `json:"path"`  //文件上传的根目录
+	File  FileConfig  `json:"file"`  // 普通文件上传的配置
+	Image ImageConfig `json:"image"` // 普通图片上传的配置
 }
 
 var Config = TConfig{
