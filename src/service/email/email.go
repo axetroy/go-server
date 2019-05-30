@@ -4,27 +4,12 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
+	"github.com/axetroy/go-server/src/config"
 	"github.com/axetroy/go-server/src/service/dotenv"
 	"github.com/jordan-wright/email"
 	"net/smtp"
 	"net/textproto"
-	"os"
 )
-
-type emailFrom struct {
-	Username string
-	Email    string
-}
-
-type emailConfig struct {
-	From     emailFrom
-	Username string
-	Password string
-	Server   string
-	Port     string
-}
-
-var config emailConfig
 
 const (
 	prefix                 = "[GOTEST]: "
@@ -32,6 +17,8 @@ const (
 	tmpForgotPassword      = `<a href="javascript: void 0">点击连接重置密码</a>或使用重置码: %v`
 	tmpForgotTradePassword = `<a href="javascript: void 0">点击连接重置交易密码</a>或使用重置码: %v`
 )
+
+var Config = config.SMTP
 
 type Mailer struct {
 	Auth *smtp.Auth
@@ -55,26 +42,15 @@ func init() {
 	if err := dotenv.Load(); err != nil {
 		panic(err)
 	}
-
-	config = emailConfig{
-		From: emailFrom{
-			Username: os.Getenv("SMTP_FROM_NAME"),
-			Email:    os.Getenv("SMTP_FROM_EMAIL"),
-		},
-		Username: os.Getenv("SMTP_USERNAME"),
-		Password: os.Getenv("SMTP_PASSWORD"),
-		Server:   os.Getenv("SMTP_SERVER"),
-		Port:     os.Getenv("SMTP_SERVER_PORT"),
-	}
 }
 
 func NewMailer() *Mailer {
 	// Set up authentication information.
 	auth := smtp.PlainAuth(
 		"",
-		config.Username,
-		config.Password,
-		config.Server,
+		Config.Username,
+		Config.Password,
+		Config.Host,
 	)
 	return &Mailer{
 		Auth: &auth,
@@ -88,7 +64,7 @@ func (e *Mailer) Send(message *Message) (err error) {
 		return
 	}
 	msg := &email.Email{
-		From:    fmt.Sprintf("%v <%v>", config.From.Username, config.From.Email),
+		From:    fmt.Sprintf("%v <%v>", Config.Sender.Name, Config.Sender.Email),
 		To:      message.To,
 		Subject: message.Subject,
 		Text:    message.Text,
@@ -96,12 +72,12 @@ func (e *Mailer) Send(message *Message) (err error) {
 		Headers: textproto.MIMEHeader{},
 	}
 
-	var addr = config.Server + ":" + config.Port
+	var addr = Config.Host + ":" + Config.Port
 
 	if err = msg.SendWithTLS(
 		addr,
 		*e.Auth, &tls.Config{
-			ServerName:         config.Server,
+			ServerName:         Config.Host,
 			InsecureSkipVerify: true,
 		}); err != nil {
 		return

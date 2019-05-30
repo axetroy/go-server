@@ -1,6 +1,7 @@
 package producer
 
 import (
+	"errors"
 	"fmt"
 	"github.com/axetroy/go-server/src/message_queue"
 	"github.com/nsqio/go-nsq"
@@ -22,7 +23,6 @@ func init() {
 // 初始化生产者
 func CreateProducer(address string) (err error) {
 	producer, err = nsq.NewProducer(address, message_queue.Config)
-	fmt.Printf("连接队列: %s\n", address)
 	return
 }
 
@@ -32,17 +32,14 @@ func Publish(topic message_queue.Topic, message []byte) error {
 
 	if producer != nil {
 		if len(message) == 0 { //不能发布空串，否则会导致error
-			return nil
+			return errors.New("message can not be empty")
 		}
 
 		err = producer.Publish(string(topic), message) // 发布消息
 
-		// 如果发送失败，则重新连接
-		if err != nil {
-			err = CreateProducer("")
-		}
-
 		return err
+	} else {
+		err = errors.New("未连接队列")
 	}
 
 	return fmt.Errorf("producer is nil %v", err)

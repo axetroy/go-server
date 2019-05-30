@@ -3,6 +3,7 @@ package oauth2
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/axetroy/go-server/src/config"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/util"
@@ -11,38 +12,37 @@ import (
 	"golang.org/x/oauth2"
 	"io/ioutil"
 	"net/http"
-	"os"
 )
 
-var googleOauthConfig *oauth2.Config
+var googleOAuth2Config *oauth2.Config
 
-func GetGoogleOAuthConfig() oauth2.Config {
+func GetgoogleOAuth2Config() oauth2.Config {
 	var endpoint = oauth2.Endpoint{
 		AuthURL:   "https://accounts.google.com/o/oauth2/auth",
 		TokenURL:  "https://oauth2.googleapis.com/token",
 		AuthStyle: oauth2.AuthStyleInParams,
 	}
-	if googleOauthConfig != nil {
-		return *googleOauthConfig
+	if googleOAuth2Config != nil {
+		return *googleOAuth2Config
 	}
 
-	googleOauthConfig = &oauth2.Config{
-		ClientID:     os.Getenv("GOOGLE_AUTH2_CLIENT_ID"),
-		ClientSecret: os.Getenv("GOOGLE_AUTH2_CLIENT_SECRET"),
-		RedirectURL:  "http://localhost:8080/v1/oauth2/google_callback",
+	googleOAuth2Config = &oauth2.Config{
+		ClientID:     config.OAuth2Google.ClientId,
+		ClientSecret: config.OAuth2Google.ClientSecret,
+		RedirectURL:  "http://localhost:8080/v1/oauth2/google_callback", // TODO: 动态域名
 		Scopes: []string{"https://www.googleapis.com/auth/userinfo.profile",
 			"https://www.googleapis.com/auth/userinfo.email"},
 		Endpoint: endpoint,
 	}
 
-	return *googleOauthConfig
+	return *googleOAuth2Config
 }
 
 const oauthStateString = "go-server"
 
 // 调用谷歌登陆，然后重定向到谷歌认证页面
 func GoogleLoginRouter(context *gin.Context) {
-	c := GetGoogleOAuthConfig()
+	c := GetgoogleOAuth2Config()
 	url := c.AuthCodeURL(oauthStateString)
 	context.Redirect(http.StatusTemporaryRedirect, url)
 }
@@ -80,7 +80,7 @@ func GoogleCallbackRouter(context *gin.Context) {
 		return
 	}
 
-	c := GetGoogleOAuthConfig()
+	c := GetgoogleOAuth2Config()
 
 	token, err := c.Exchange(oauth2.NoContext, query.Code)
 

@@ -2,9 +2,9 @@ package src
 
 import (
 	"fmt"
+	"github.com/axetroy/go-server/src/config"
 	"github.com/axetroy/go-server/src/service/dotenv"
 	"net/http"
-	"os"
 	"time"
 )
 
@@ -16,11 +16,7 @@ func init() {
 
 // Server 运行服务器
 func ServerUserClient() {
-	port := "8080"
-
-	if p := os.Getenv("USER_HTTP_PORT"); p != "" {
-		port = p
-	}
+	port := config.User.Port
 
 	s := &http.Server{
 		Addr:           ":" + port,
@@ -37,11 +33,7 @@ func ServerUserClient() {
 
 // Server 运行服务器
 func ServerAdminClient() {
-	port := "8081"
-
-	if p := os.Getenv("ADMIN_HTTP_PORT"); p != "" {
-		port = p
-	}
+	port := config.Admin.Port
 
 	s := &http.Server{
 		Addr:           ":" + port,

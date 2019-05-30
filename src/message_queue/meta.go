@@ -1,8 +1,8 @@
 package message_queue
 
 import (
+	"github.com/axetroy/go-server/src/config"
 	"github.com/nsqio/go-nsq"
-	"os"
 	"time"
 )
 
@@ -22,17 +22,8 @@ type SendActivationEmailBody struct {
 }
 
 func init() {
-	host := os.Getenv("MSG_QUEUE_SERVER")
-
-	if host == "" {
-		host = "127.0.0.1"
-	}
-
-	port := os.Getenv("MSG_QUEUE_PORT")
-
-	if port == "" {
-		port = "4150"
-	}
+	host := config.MessageQueue.Host
+	port := config.MessageQueue.Port
 
 	Address = host + ":" + port
 

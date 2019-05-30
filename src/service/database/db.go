@@ -2,57 +2,26 @@ package database
 
 import (
 	"fmt"
+	"github.com/axetroy/go-server/src/config"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
-	"os"
 )
 
 var (
-	Db *gorm.DB
+	Db     *gorm.DB
+	Config = config.Database
 )
 
 func init() {
-	var (
-		err        error
-		driverName = os.Getenv("DB_DRIVER")
-		dbName     = os.Getenv("DB_NAME")
-		dbUsername = os.Getenv("DB_USERNAME")
-		dbPassword = os.Getenv("DB_PASSWORD")
-		dbPort     = os.Getenv("DB_PORT")
-		sync       = os.Getenv("DB_SYNC")
-	)
+	var err error
 
-	if len(driverName) == 0 {
-		driverName = "postgres"
-	}
-
-	if len(dbName) == 0 {
-		dbName = "gotest"
-	}
-
-	if len(dbUsername) == 0 {
-		dbUsername = "gotest"
-	}
-
-	if len(dbPassword) == 0 {
-		dbPassword = "gotest"
-	}
-
-	if len(dbPort) == 0 {
-		dbPort = "65432"
-	}
-
-	if len(sync) == 0 {
-		sync = "on"
-	}
-
-	DataSourceName := fmt.Sprintf("%s://%s:%s@localhost:%s/%s?sslmode=disable", driverName, dbUsername, dbPassword, dbPort, dbName)
+	DataSourceName := fmt.Sprintf("%s://%s:%s@%s:%s/%s?sslmode=disable", Config.Driver, Config.Username, Config.Password, Config.Host, Config.Port, Config.DatabaseName)
 
 	fmt.Println("正在连接数据库...")
 
-	db, err := gorm.Open(driverName, DataSourceName)
+	db, err := gorm.Open(Config.Driver, DataSourceName)
 
 	if err != nil {
 		panic(err)
@@ -60,7 +29,7 @@ func init() {
 
 	db.LogMode(true)
 
-	if sync == "on" {
+	if Config.Sync == "on" {
 		fmt.Println("正在同步数据库...")
 
 		// Migrate the schema
