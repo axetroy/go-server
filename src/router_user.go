@@ -13,14 +13,15 @@ import (
 	"github.com/axetroy/go-server/src/controller/notification"
 	"github.com/axetroy/go-server/src/controller/oauth2"
 	"github.com/axetroy/go-server/src/controller/resource"
-	"github.com/axetroy/go-server/src/controller/static"
 	"github.com/axetroy/go-server/src/controller/transfer"
 	"github.com/axetroy/go-server/src/controller/uploader"
 	"github.com/axetroy/go-server/src/controller/user"
 	"github.com/axetroy/go-server/src/controller/wallet"
 	"github.com/axetroy/go-server/src/middleware"
+	"github.com/axetroy/go-server/src/service/dotenv"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"path"
 )
 
 var UserRouter *gin.Engine
@@ -29,21 +30,15 @@ func init() {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 
-	router.Use(gin.Logger())
+	router.Static("/public", path.Join(dotenv.RootDir, "public"))
 
-	// Recovery middleware recovers from any panics and writes a 500 if there was one.
+	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 
-	router.Use(middleware.Common)
-
-	router.GET("/ping", func(context *gin.Context) {
-		context.String(http.StatusOK, "pong")
-	})
-
-	// Simple group: v1
 	v1 := router.Group("/v1")
-
 	{
+		v1.Use(middleware.Common)
+
 		v1.GET("", func(context *gin.Context) {
 			context.JSON(http.StatusOK, gin.H{"ping": "pong"})
 		})
@@ -181,11 +176,11 @@ func init() {
 			v1.GET("/download/image/:filename", downloader.Image)         // 下载图片
 			v1.GET("/download/thumbnail/:filename", downloader.Thumbnail) // 下载缩略图
 			// 公共资源目录
-			v1.GET("/public/:filename", static.Get)           // 获取静态文件
 			v1.GET("/avatar/:filename", user.GetAvatarRouter) // 获取用户头像
 
 			v1.GET("/area", address.AreaListRouter) // 获取地址选择列表
 		}
+
 	}
 
 	UserRouter = router

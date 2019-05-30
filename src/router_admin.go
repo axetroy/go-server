@@ -9,8 +9,10 @@ import (
 	"github.com/axetroy/go-server/src/controller/system"
 	"github.com/axetroy/go-server/src/controller/user"
 	"github.com/axetroy/go-server/src/middleware"
+	"github.com/axetroy/go-server/src/service/dotenv"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"path"
 )
 
 var AdminRouter *gin.Engine
@@ -19,21 +21,14 @@ func init() {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 
-	router.Use(gin.Logger())
+	router.Static("/public", path.Join(dotenv.RootDir, "public"))
 
-	// Recovery middleware recovers from any panics and writes a 500 if there was one.
+	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 
-	router.Use(middleware.Common)
-
-	router.GET("/ping", func(context *gin.Context) {
-		context.String(http.StatusOK, "pong")
-	})
-
-	// Simple group: v1
 	v1 := router.Group("/v1")
-
 	{
+		v1.Use(middleware.Common)
 		v1.GET("", func(context *gin.Context) {
 			context.JSON(http.StatusOK, gin.H{"ping": "pong"})
 		})
