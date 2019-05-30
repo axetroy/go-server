@@ -61,17 +61,20 @@ func Load() (err error) {
 		RootDir = filepath.Dir(exPath)
 
 		// 如果是以 go run main.go 运行, 则取工作目录
-		goRunReg := regexp.MustCompile("go-build\\d+")
-		// 如果是运行在 idea 里面的话
+		goRunReg := regexp.MustCompile("/go-build\\d+/")
+		// 如果是运行在 IDEA 里面的话
 		ideaRunReg := regexp.MustCompile("___go_build_")
 
-		isRunInGoRun := goRunReg.MatchString(ex)
-		isRunInIdea := ideaRunReg.MatchString(ex)
+		ifRunInGoRun := goRunReg.MatchString(ex)
+		ifRunInIdea := ideaRunReg.MatchString(ex)
 
 		switch true {
-		case isRunInGoRun:
-		case isRunInIdea:
+		case ifRunInGoRun:
 			RootDir = pwd
+			break
+		case ifRunInIdea:
+			RootDir = pwd
+			break
 		}
 	}
 

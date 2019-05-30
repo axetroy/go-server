@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/axetroy/go-server/src/service/dotenv"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -16,6 +17,11 @@ func init() {
 // Server 运行服务器
 func ServerUserClient() {
 	port := "8080"
+
+	if p := os.Getenv("HTTP_PORT_USER"); p != "" {
+		port = p
+	}
+
 	s := &http.Server{
 		Addr:           ":" + port,
 		Handler:        UserRouter,
@@ -23,15 +29,20 @@ func ServerUserClient() {
 		WriteTimeout:   60 * time.Second,
 		MaxHeaderBytes: 1024 * 1024 * 20, // 20M
 	}
+	fmt.Printf("用户端 HTTP 监听:  %s\n", s.Addr)
 	if err := s.ListenAndServe(); err != nil {
 		panic(err)
 	}
-	fmt.Println("Listen on port " + port)
 }
 
 // Server 运行服务器
 func ServerAdminClient() {
 	port := "8081"
+
+	if p := os.Getenv("HTTP_PORT_ADMIN"); p != "" {
+		port = p
+	}
+
 	s := &http.Server{
 		Addr:           ":" + port,
 		Handler:        AdminRouter,
@@ -39,8 +50,8 @@ func ServerAdminClient() {
 		WriteTimeout:   60 * time.Second,
 		MaxHeaderBytes: 1024 * 1024 * 20, // 20M
 	}
+	fmt.Printf("管理员端 HTTP 监听:  %s\n", s.Addr)
 	if err := s.ListenAndServe(); err != nil {
 		panic(err)
 	}
-	fmt.Println("Listen on port " + port)
 }
