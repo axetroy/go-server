@@ -1,8 +1,13 @@
 package message_queue
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/axetroy/go-server/src/config"
+	"github.com/axetroy/go-server/src/service/email"
+	"github.com/axetroy/go-server/src/service/redis"
 	"github.com/nsqio/go-nsq"
+	"sync"
 	"time"
 )
 
@@ -33,4 +38,43 @@ func init() {
 	Config.ReadTimeout = time.Second * 15
 	Config.WriteTimeout = time.Second * 10
 	Config.HeartbeatInterval = time.Second * 10
+}
+
+func RunMessageQueueConsumer() {
+	var (
+		err error
+	)
+
+	wg := &sync.WaitGroup{}
+
+	wg.Add(1)
+
+	_, err = CreateConsumer(TopicSendEmail, ChanelSendEmail, nsq.HandlerFunc(func(message *nsq.Message) error {
+
+		body := SendActivationEmailBody{}
+
+		if err := json.Unmarshal(message.Body, &body); err != nil {
+			return err
+		}
+
+		mailer := email.NewMailer()
+
+		// 发送邮件
+		if err := mailer.SendActivationEmail(body.Email, body.Code); err != nil {
+			// 邮件没发出去的话，删除 redis 的 key
+			_ = redis.ActivationCodeClient.Del(body.Code).Err()
+		}
+
+		fmt.Printf("发送验证码 %s 到 %s\n", body.Code, body.Email)
+
+		return nil
+	}))
+
+	if err != nil {
+		panic(err)
+	}
+
+	wg.Wait()
+
+	return
 }

@@ -6,7 +6,6 @@ import (
 	"github.com/axetroy/go-server/src/controller/wallet"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/message_queue"
-	"github.com/axetroy/go-server/src/message_queue/producer"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
@@ -234,7 +233,7 @@ func SignUp(input SignUpParams) (res schema.Response) {
 			return
 		}
 
-		if err = producer.Publish(message_queue.TopicSendEmail, body); err != nil {
+		if err = message_queue.Publish(message_queue.TopicSendEmail, body); err != nil {
 			return
 		}
 
