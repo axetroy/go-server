@@ -18,7 +18,7 @@ func init() {
 func ServerUserClient() {
 	port := "8080"
 
-	if p := os.Getenv("HTTP_PORT_USER"); p != "" {
+	if p := os.Getenv("USER_HTTP_PORT"); p != "" {
 		port = p
 	}
 
@@ -39,7 +39,7 @@ func ServerUserClient() {
 func ServerAdminClient() {
 	port := "8081"
 
-	if p := os.Getenv("HTTP_PORT_ADMIN"); p != "" {
+	if p := os.Getenv("ADMIN_HTTP_PORT"); p != "" {
 		port = p
 	}
 
