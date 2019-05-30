@@ -60,10 +60,10 @@ func init() {
 
 		}
 
-		oauthRouter := v1.Group("/oauth2")
+		oAuthRouter := v1.Group("/oauth2")
 		{
-			oauthRouter.GET("/google", oauth2.GoogleLoginRouter)             // 用 Google 登陆
-			oauthRouter.GET("/google_callback", oauth2.GoogleCallbackRouter) // Google 认证完成后跳转到这里，用户不应该访问这个地址
+			oAuthRouter.GET("/google", oauth2.GoogleLoginRouter)             // 用 Google 登陆
+			oAuthRouter.GET("/google_callback", oauth2.GoogleCallbackRouter) // Google 认证完成后跳转到这里，用户不应该访问这个地址
 		}
 
 		// 用户类
