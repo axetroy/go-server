@@ -12,7 +12,7 @@ type smtp struct {
 	Port     string `json:"port"`
 	Username string `json:"username"`
 	Password string `json:"password"`
-	Sender   sender `json:"from"`
+	Sender   sender `json:"sender"`
 }
 
 var SMTP smtp
