@@ -3,11 +3,13 @@ module github.com/axetroy/go-server
 go 1.12
 
 require (
+	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a
 	github.com/axetroy/go-fs v1.0.0
 	github.com/axetroy/mocker v1.0.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.4.0
+	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/go-redis/redis v6.15.2+incompatible
 	github.com/holdno/snowFlakeByGo v0.0.0-20180510033652-d23f8a8cadd7
 	github.com/jinzhu/gorm v1.9.8
@@ -24,6 +26,7 @@ require (
 	github.com/sec51/qrcode v0.0.0-20160126144534-b7779abbcaf1 // indirect
 	github.com/sec51/twofactor v1.0.1-0.20180911112802-cd97c894b2cc
 	github.com/shirou/gopsutil v2.18.12+incompatible
+	github.com/shirou/w32 v0.0.0-20160930032740-bb4de0191aa4 // indirect
 	github.com/stretchr/testify v1.3.0
 	golang.org/x/oauth2 v0.0.0-20190523182746-aaccbc9213b0
 )
