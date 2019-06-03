@@ -150,6 +150,13 @@
 
 创建一个用户角色
 
+| 参数        | 说明                          | 必选 |
+| ----------- | ----------------------------- | ---- |
+| name        | 角色名称 `string`, 角色名唯一 | \*   |
+| description | 角色描述 `string`             | \*   |
+| accession   | 角色所拥有的权限 `[]string`   | \*   |
+| note        | 角色备注 `string`             |      |
+
 </p>
 
 </details>
@@ -182,7 +189,7 @@
 
 </details>
 
-<details><summary>更改用户角色<code>[DELETE] /v1/role/u/:user_id</code></summary>
+<details><summary>更改用户角色<code>[PUT] /v1/role/u/:user_id</code></summary>
 
 <p>
 
