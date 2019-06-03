@@ -15,8 +15,6 @@ var (
 )
 
 func init() {
-	var err error
-
 	DataSourceName := fmt.Sprintf("%s://%s:%s@%s:%s/%s?sslmode=disable", Config.Driver, Config.Username, Config.Password, Config.Host, Config.Port, Config.DatabaseName)
 
 	fmt.Println("正在连接数据库...")
@@ -37,6 +35,7 @@ func init() {
 			new(model.Admin),            // 管理员表
 			new(model.News),             // 新闻公告
 			new(model.User),             // 用户表
+			new(model.Role),             // 角色表 - RBAC
 			new(model.WalletCny),        // 钱包 - CNY
 			new(model.WalletUsd),        // 钱包 - USD
 			new(model.WalletCoin),       // 钱包 - COIN
@@ -78,6 +77,30 @@ func init() {
 			panic(err)
 		}
 	}
+
+	defaultRole := model.Role{Name: model.DefaultUser.Name}
+
+	// 确保有默认的角色
+	if err := db.First(&defaultRole).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = db.Create(&model.Role{
+				Name:        model.DefaultUser.Name,
+				Description: model.DefaultUser.Description,
+				Accession:   model.DefaultUser.AccessionArray(),
+				BuildIn:     true,
+			}).Error
+		} else {
+			panic(err)
+		}
+	} else {
+		// 如果角色已存在，则同步角色的权限
+		if err := db.Model(&defaultRole).Update(&model.Role{
+			Accession: model.DefaultUser.AccessionArray(),
+		}).Error; err != nil {
+			panic(err)
+		}
+	}
+
 }
 
 func DeleteRowByTable(tableName string, field string, value interface{}) {

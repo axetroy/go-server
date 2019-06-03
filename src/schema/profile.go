@@ -1,16 +1,16 @@
 package schema
 
 type ProfilePure struct {
-	Id         string  `json:"id"`
-	Username   string  `json:"username"`
-	Nickname   *string `json:"nickname"`
-	Email      *string `json:"email"`
-	Phone      *string `json:"phone"`
-	Status     int32   `json:"status"`
-	Avatar     string  `json:"avatar"`
-	Role       string  `json:"role"`
-	Level      int32   `json:"level"`
-	InviteCode string  `json:"invite_code"`
+	Id         string   `json:"id"`
+	Username   string   `json:"username"`
+	Nickname   *string  `json:"nickname"`
+	Email      *string  `json:"email"`
+	Phone      *string  `json:"phone"`
+	Status     int32    `json:"status"`
+	Avatar     string   `json:"avatar"`
+	Role       []string `json:"role"`
+	Level      int32    `json:"level"`
+	InviteCode string   `json:"invite_code"`
 }
 
 type ProfileWithToken struct {

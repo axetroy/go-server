@@ -74,6 +74,7 @@ func TestSignUpSuccess(t *testing.T) {
 	assert.Equal(t, int(profile.Status), int(model.UserStatusInactivated))
 	assert.Equal(t, profile.Username, username)
 	assert.Equal(t, *profile.Nickname, username)
+	assert.Equal(t, profile.Role, []string{model.DefaultUser.Name})
 	assert.Nil(t, profile.Email)
 	assert.Nil(t, profile.Phone)
 }

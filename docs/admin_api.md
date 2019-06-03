@@ -8,15 +8,14 @@
 
 | 参数     | 说明       | 必选 |
 | -------- | ---------- | ---- |
-| username | 管理员账号 | *    |
-| password | 账号密码   | *    |
+| username | 管理员账号 | \*   |
+| password | 账号密码   | \*   |
 
 </p>
 
 </details>
 
 <details><summary>获取会员列表<code>[GET] /v1/user</code></summary>
-
 
 <p>
 
@@ -28,7 +27,6 @@
 
 <details><summary>获取指定会员详情<code>[GET] /v1/user/u/:user_id</code></summary>
 
-
 <p>
 
 获取指定会员详情
@@ -38,7 +36,6 @@
 </details>
 
 <details><summary>修改会员资料<code>[PUT] /v1/user/u/:user_id</code></summary>
-
 
 <p>
 
@@ -54,13 +51,11 @@
 
 <details><summary>修改会员密码<code>[PUT] /v1/user/u/:user_id/password</code></summary>
 
-
 <p>
 
 | 参数         | 说明   | 必选 |
 | ------------ | ------ | ---- |
-| new_password | 新密码 | *    |
-
+| new_password | 新密码 | \*   |
 
 </p>
 
@@ -76,9 +71,9 @@
 
 | 参数     | 说明                       | 必选 |
 | -------- | -------------------------- | ---- |
-| account  | 管理员账号                 | *    |
-| password | 账号密码                   | *    |
-| name     | 管理员名称，注册后不可修改 | *    |
+| account  | 管理员账号                 | \*   |
+| password | 账号密码                   | \*   |
+| name     | 管理员名称，注册后不可修改 | \*   |
 
 </p>
 
@@ -125,6 +120,94 @@
 
 </details>
 
+### RBAC 鉴权
+
+</details>
+
+<details><summary>获取用户角色列表<code>[GET] /v1/role</code></summary>
+
+<p>
+
+获取当前的用户角色列表
+
+</p>
+
+</details>
+
+<details><summary>获取用户角色详情<code>[GET] /v1/role/r/:name</code></summary>
+
+<p>
+
+获取用户角色详情
+
+</p>
+
+</details>
+
+<details><summary>创建用户角色<code>[POST] /v1/role</code></summary>
+
+<p>
+
+创建一个用户角色
+
+</p>
+
+</details>
+
+<details><summary>更新用户角色<code>[PUT] /v1/role/r/:name</code></summary>
+
+<p>
+
+更新一个用户角色, `内置角色` 无法更新
+
+| 参数        | 说明                        | 必选 |
+| ----------- | --------------------------- | ---- |
+| description | 角色描述 `string`           |      |
+| accession   | 角色所拥有的权限 `[]string` |      |
+| note        | 角色备注 `string`           |      |
+
+</p>
+
+</details>
+
+<details><summary>删除用户角色<code>[DELETE] /v1/role/r/:name</code></summary>
+
+<p>
+
+删除用户角色, `内置角色` 无法删除
+
+> 如果有任何一个用户属于这个角色，则不允许删除
+
+</p>
+
+</details>
+
+<details><summary>更改用户角色<code>[DELETE] /v1/role/u/:user_id</code></summary>
+
+<p>
+
+更改用户的角色, 一个用户可以赋予多种角色
+
+| 参数  | 说明                      | 必选 |
+| ----- | ------------------------- | ---- |
+| roles | 角色名称, 类型 `[]string` | \*   |
+
+</p>
+
+</p>
+
+</details>
+
+<details><summary>获取权限列表<code>[GET] /v1/role/accession</code></summary>
+
+<p>
+
+获取所有权限
+
+</p>
+
+</details>
+
 ### 新闻资讯类
 
 <details><summary>添加新闻资讯<code>[POST] /v1/news</code></summary>
@@ -133,9 +216,9 @@
 
 | 参数    | 说明                                                          | 必选 |
 | ------- | ------------------------------------------------------------- | ---- |
-| title   | 资讯标题                                                      | *    |
-| content | 资讯内容                                                      | *    |
-| type    | 资讯的类型, 取值 `news`(新闻资讯) or `announcement`(官方公告) | *    |
+| title   | 资讯标题                                                      | \*   |
+| content | 资讯内容                                                      | \*   |
+| type    | 资讯的类型, 取值 `news`(新闻资讯) or `announcement`(官方公告) | \*   |
 | tags    | 资讯标签，字符串数组                                          |      |
 
 </p>
@@ -195,8 +278,8 @@
 
 | 参数    | 说明     | 必选 |
 | ------- | -------- | ---- |
-| title   | 通知标题 | *    |
-| content | 通知内容 | *    |
+| title   | 通知标题 | \*   |
+| content | 通知内容 | \*   |
 | note    | 备注     |      |
 
 </p>
@@ -255,7 +338,7 @@
 
 | 参数    | 说明     | 必选 |
 | ------- | -------- | ---- |
-| uid     | 用户ID   |      |
+| uid     | 用户 ID  |      |
 | title   | 通知标题 |      |
 | content | 通知内容 |      |
 
@@ -310,15 +393,15 @@
 
 <p>
 
-| 参数         | 说明                                                    | 必选 |
-| ------------ | ------------------------------------------------------- | ---- |
-| image        | 图片URL                                                 | *    |
-| href         | 图片跳转的链接                                          | *    |
-| platform     | 该 banner 图片运用在哪个平台. 分别为 `PC` 或 `APP`      | *    |
-| description  | 该 banner 的描述信息                                    |      |
-| priority     | 优先级，用于排序                                        |      |
-| identifier   | APP 跳转标识符, 给 APP 跳转页面用的                     |      |
-| fallback_url | 当 APP  的 identifier 无效时的备选方案，跳转的 URL 地址 |      |
+| 参数         | 说明                                                   | 必选 |
+| ------------ | ------------------------------------------------------ | ---- |
+| image        | 图片 URL                                               | \*   |
+| href         | 图片跳转的链接                                         | \*   |
+| platform     | 该 banner 图片运用在哪个平台. 分别为 `PC` 或 `APP`     | \*   |
+| description  | 该 banner 的描述信息                                   |      |
+| priority     | 优先级，用于排序                                       |      |
+| identifier   | APP 跳转标识符, 给 APP 跳转页面用的                    |      |
+| fallback_url | 当 APP 的 identifier 无效时的备选方案，跳转的 URL 地址 |      |
 
 </p>
 
@@ -328,15 +411,15 @@
 
 <p>
 
-| 参数         | 说明                                                    | 必选 |
-| ------------ | ------------------------------------------------------- | ---- |
-| image        | 图片URL                                                 |      |
-| href         | 图片跳转的链接                                          |      |
-| platform     | 该 banner 图片运用在哪个平台. 分别为 `PC` 或 `APP`      |      |
-| description  | 该 banner 的描述信息                                    |      |
-| priority     | 优先级，用于排序                                        |      |
-| identifier   | APP 跳转标识符, 给 APP 跳转页面用的                     |      |
-| fallback_url | 当 APP  的 identifier 无效时的备选方案，跳转的 URL 地址 |      |
+| 参数         | 说明                                                   | 必选 |
+| ------------ | ------------------------------------------------------ | ---- |
+| image        | 图片 URL                                               |      |
+| href         | 图片跳转的链接                                         |      |
+| platform     | 该 banner 图片运用在哪个平台. 分别为 `PC` 或 `APP`     |      |
+| description  | 该 banner 的描述信息                                   |      |
+| priority     | 优先级，用于排序                                       |      |
+| identifier   | APP 跳转标识符, 给 APP 跳转页面用的                    |      |
+| fallback_url | 当 APP 的 identifier 无效时的备选方案，跳转的 URL 地址 |      |
 
 </p>
 

@@ -6,6 +6,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/message"
 	"github.com/axetroy/go-server/src/controller/news"
 	"github.com/axetroy/go-server/src/controller/notification"
+	"github.com/axetroy/go-server/src/controller/role"
 	"github.com/axetroy/go-server/src/controller/system"
 	"github.com/axetroy/go-server/src/controller/user"
 	"github.com/axetroy/go-server/src/middleware"
@@ -57,6 +58,19 @@ func init() {
 			userRouter.GET("/u/:user_id", user.GetProfileByAdminRouter)              // 获取单个会员的信息
 			userRouter.PUT("/u/:user_id", user.UpdateProfileByAdminRouter)           // 更新会员信息
 			userRouter.PUT("/u/:user_id/password", user.UpdatePasswordByAdminRouter) // 修改会员密码
+		}
+
+		// 用户角色
+		roleRouter := v1.Group("role")
+		{
+			roleRouter.GET("", role.GetListRouter)                   // 获取角色列表
+			roleRouter.POST("", role.CreateRouter)                   // 创建角色
+			roleRouter.PUT("/r/:name", role.UpdateRouter)            // 修改角色
+			roleRouter.DELETE("/r/:name", role.DeleteRouter)         // 删除角色
+			roleRouter.GET("/r/:name", role.GetRouter)               // 获取角色详情
+			roleRouter.GET("/accession", role.GetAccessionRouter)    // 获取所有的权限列表
+			roleRouter.GET("/u/:user_id", role.UpdateUserRoleRouter) // 用户用户的角色信息
+			roleRouter.PUT("/u/:user_id", role.UpdateUserRoleRouter) // 管理员修改用户的角色
 		}
 
 		// 新闻咨询类

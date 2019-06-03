@@ -22,7 +22,7 @@
 - [x] 身份认证机制 [JWT](http://jwt.io)/[oAuth2](https://oauth.net/2/)
 - [x] 数据库操作 [GORM](https://github.com/jinzhu/gorm)
 - [x] 消息队列 [nsq](https://github.com/nsqio/nsq)
-- [ ] RBAC 的权限模型
+- [x] RBAC 的鉴权模型
 - [x] Docker 一键启动应用
 
 ### 包含哪些模块?
@@ -118,7 +118,6 @@ make test
 
 ## TODO
 
-- [ ] RBAC 的权限控制模型
 - [ ] i18n 的错误信息
 - [ ] 提供 RPC 接口
 - [ ] 数据库动态分表

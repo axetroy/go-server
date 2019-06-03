@@ -13,6 +13,7 @@ import (
 	"github.com/axetroy/go-server/src/util"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	"github.com/lib/pq"
 	"github.com/mitchellh/mapstructure"
 	"net/http"
 	"time"
@@ -169,6 +170,7 @@ func SignUp(input SignUpParams) (res schema.Response) {
 		Nickname: &username,
 		Password: util.GeneratePassword(input.Password),
 		Status:   model.UserStatusInactivated, // 开始时未激活状态
+		Role:     pq.StringArray{model.DefaultUser.Name},
 		Phone:    input.Phone,
 		Email:    input.Email,
 		Gender:   model.GenderUnknown,
