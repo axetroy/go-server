@@ -3,9 +3,9 @@ package config
 import "os"
 
 type user struct {
-	Domain string `json:"domain"`
-	Port   string `json:"port"`
-	Secret string `json:"secret"`
+	Domain string `json:"domain"` // 用户端 API 绑定的域名
+	Port   string `json:"port"`   // 用户端 API 监听的端口
+	Secret string `json:"secret"` // 用户端密钥，用于加密/解密 token
 }
 
 var User user
