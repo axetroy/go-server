@@ -18,6 +18,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/user"
 	"github.com/axetroy/go-server/src/controller/wallet"
 	"github.com/axetroy/go-server/src/middleware"
+	"github.com/axetroy/go-server/src/rbac"
 	"github.com/axetroy/go-server/src/rbac/accession"
 	"github.com/axetroy/go-server/src/service/dotenv"
 	"github.com/gin-gonic/gin"
@@ -65,15 +66,15 @@ func init() {
 		userRouter := v1.Group("/user")
 		{
 			userRouter.Use(userAuthMiddleware)
-			userRouter.GET("/signout", user.SignOut)                                                                        // 用户登出
-			userRouter.GET("/profile", user.GetProfileRouter)                                                               // 获取用户详细信息
-			userRouter.PUT("/profile", middleware.RequireAccessions(*accession.ProfileUpdate), user.UpdateProfileRouter)    // 更新用户资料
-			userRouter.PUT("/password", middleware.RequireAccessions(*accession.PasswordUpdate), user.UpdatePasswordRouter) // 更新登陆密码
-			userRouter.POST("/password2", user.SetPayPasswordRouter)                                                        // 设置交易密码
-			userRouter.PUT("/password2", user.UpdatePayPasswordRouter)                                                      // 更新交易密码
-			userRouter.PUT("/password2/reset", user.ResetPayPasswordRouter)                                                 // 重置交易密码
-			userRouter.POST("/password2/reset", user.SendResetPayPasswordRouter)                                            // 发送重置交易密码的邮件/短信
-			userRouter.POST("/avatar", user.UploadAvatarRouter)                                                             // 上传用户头像
+			userRouter.GET("/signout", user.SignOut)                                                        // 用户登出
+			userRouter.GET("/profile", user.GetProfileRouter)                                               // 获取用户详细信息
+			userRouter.PUT("/profile", rbac.Require(*accession.ProfileUpdate), user.UpdateProfileRouter)    // 更新用户资料
+			userRouter.PUT("/password", rbac.Require(*accession.PasswordUpdate), user.UpdatePasswordRouter) // 更新登陆密码
+			userRouter.POST("/password2", user.SetPayPasswordRouter)                                        // 设置交易密码
+			userRouter.PUT("/password2", user.UpdatePayPasswordRouter)                                      // 更新交易密码
+			userRouter.PUT("/password2/reset", user.ResetPayPasswordRouter)                                 // 重置交易密码
+			userRouter.POST("/password2/reset", user.SendResetPayPasswordRouter)                            // 发送重置交易密码的邮件/短信
+			userRouter.POST("/avatar", user.UploadAvatarRouter)                                             // 上传用户头像
 			// 邀请人列表
 			inviteRouter := userRouter.Group("/invite")
 			{
@@ -104,9 +105,9 @@ func init() {
 		transferRouter := v1.Group("/transfer")
 		{
 			transferRouter.Use(userAuthMiddleware)
-			transferRouter.GET("", transfer.GetHistoryRouter)                                                                           // 获取我的转账记录
-			transferRouter.POST("", middleware.RequireAccessions(*accession.DoTransfer), middleware.AuthPayPassword, transfer.ToRouter) // 转账给某人
-			transferRouter.GET("/t/:transfer_id", transfer.GetDetailRouter)                                                             // 获取单条转账详情
+			transferRouter.GET("", transfer.GetHistoryRouter)                                                           // 获取我的转账记录
+			transferRouter.POST("", rbac.Require(*accession.DoTransfer), middleware.AuthPayPassword, transfer.ToRouter) // 转账给某人
+			transferRouter.GET("/t/:transfer_id", transfer.GetDetailRouter)                                             // 获取单条转账详情
 		}
 
 		// 财务日志
