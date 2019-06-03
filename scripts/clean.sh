@@ -18,7 +18,11 @@ function walk()
     done
 }
 
-rm ./coverage.out
+COVERAGE_FILE="./coverage.out"
+
+if [[ -fe COVERAGE_FILE ]];then
+    rm FILE
+fi
 
 if [[ $# -ne 1 ]]
 then
