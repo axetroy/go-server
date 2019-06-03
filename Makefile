@@ -5,21 +5,29 @@
 test:
 	go test --cover -covermode=count -coverprofile=coverage.out ./...
 
-all:
-	make user_win
-	make user_linux
-	make user_mac
-	make admin_win
-	make admin_linux
-	make admin_mac
-	make message_queue_win
-	make message_queue_linux
-	make message_queue_mac
-
 build:
-	make all
+	make linux
+	make macOS
+	make windows
 	cp ./.env ./bin/.env
 	echo "Build Success!"
+
+linux:
+	make user_linux
+	make admin_linux
+	make message_queue_linux
+
+macOS:
+	make user_mac
+	make admin_mac
+	make message_queue_mac
+
+windows:
+	make user_win
+	make admin_win
+	make message_queue_win
+
+# 细分任务
 
 user_win:
 	CGO_ENABLED=0 GOOS=windows GOARCH=386 go build -o ./bin/user_win_x86.exe ./cmd/user/main.go
@@ -32,7 +40,7 @@ user_linux:
 user_mac:
 	CGO_ENABLED=0 GOOS=darwin GOARCH=386 go build -o ./bin/user_osx_x86 ./cmd/user/main.go
 	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ./bin/user_osx_64 ./cmd/user/main.go
-	
+
 admin_win:
 	CGO_ENABLED=0 GOOS=windows GOARCH=386 go build -o ./bin/admin_win_x86.exe ./cmd/admin/main.go
 	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ./bin/admin_win_x64.exe ./cmd/admin/main.go
