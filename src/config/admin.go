@@ -1,3 +1,4 @@
+// Copyright 2019 Axetroy. All rights reserved. MIT license.
 package config
 
 import "os"

@@ -1,3 +1,4 @@
+// Copyright 2019 Axetroy. All rights reserved. MIT license.
 package role_test
 
 import (
