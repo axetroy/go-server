@@ -10,6 +10,9 @@ import (
 var (
 	DefaultUser = role.New("user", "普通用户", []accession.Accession{
 		*accession.ProfileUpdate,
+		*accession.Password2Set,
+		*accession.Password2Reset,
+		*accession.Password2Update,
 		*accession.PasswordUpdate,
 		*accession.DoTransfer,
 	})

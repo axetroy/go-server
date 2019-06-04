@@ -66,15 +66,15 @@ func init() {
 		userRouter := v1.Group("/user")
 		{
 			userRouter.Use(userAuthMiddleware)
-			userRouter.GET("/signout", user.SignOut)                                                        // 用户登出
-			userRouter.GET("/profile", user.GetProfileRouter)                                               // 获取用户详细信息
-			userRouter.PUT("/profile", rbac.Require(*accession.ProfileUpdate), user.UpdateProfileRouter)    // 更新用户资料
-			userRouter.PUT("/password", rbac.Require(*accession.PasswordUpdate), user.UpdatePasswordRouter) // 更新登陆密码
-			userRouter.POST("/password2", user.SetPayPasswordRouter)                                        // 设置交易密码
-			userRouter.PUT("/password2", user.UpdatePayPasswordRouter)                                      // 更新交易密码
-			userRouter.PUT("/password2/reset", user.ResetPayPasswordRouter)                                 // 重置交易密码
-			userRouter.POST("/password2/reset", user.SendResetPayPasswordRouter)                            // 发送重置交易密码的邮件/短信
-			userRouter.POST("/avatar", user.UploadAvatarRouter)                                             // 上传用户头像
+			userRouter.GET("/signout", user.SignOut)                                                                      // 用户登出
+			userRouter.GET("/profile", user.GetProfileRouter)                                                             // 获取用户详细信息
+			userRouter.PUT("/profile", rbac.Require(*accession.ProfileUpdate), user.UpdateProfileRouter)                  // 更新用户资料
+			userRouter.PUT("/password", rbac.Require(*accession.PasswordUpdate), user.UpdatePasswordRouter)               // 更新登陆密码
+			userRouter.POST("/password2", rbac.Require(*accession.Password2Set), user.SetPayPasswordRouter)               // 设置交易密码
+			userRouter.PUT("/password2", rbac.Require(*accession.Password2Update), user.UpdatePayPasswordRouter)          // 更新交易密码
+			userRouter.PUT("/password2/reset", rbac.Require(*accession.Password2Reset), user.ResetPayPasswordRouter)      // 重置交易密码
+			userRouter.POST("/password2/reset", rbac.Require(*accession.Password2Reset), user.SendResetPayPasswordRouter) // 发送重置交易密码的邮件/短信
+			userRouter.POST("/avatar", user.UploadAvatarRouter)                                                           // 上传用户头像
 			// 邀请人列表
 			inviteRouter := userRouter.Group("/invite")
 			{
