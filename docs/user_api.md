@@ -565,6 +565,21 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 ### 用户反馈
 
+<details><summary>获取我的反馈列表<code>[GET] /v1/report</code></summary>
+
+<p>
+
+获取我的反馈列表
+
+| 参数   | 类型     | 说明           | 必选 |
+| ------ | -------- | -------------- | ---- |
+| type   | `string` | 根据`类型`筛选 |      |
+| status | `int`    | 根据`状态`筛选 |      |
+
+</p>
+
+</details>
+
 <details><summary>提交反馈<code>[POST] /v1/report</code></summary>
 
 <p>
