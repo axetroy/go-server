@@ -562,3 +562,22 @@ Form 表单图片上传, 目前仅支持单张图片上传
 </p>
 
 </details>
+
+### 用户反馈
+
+<details><summary>提交反馈<code>[GET] /v1/report</code></summary>
+
+<p>
+
+提交一条用户反馈
+
+| 参数        | 类型       | 说明                                                                 | 必选 |
+| ----------- | ---------- | -------------------------------------------------------------------- | ---- |
+| title       | `string`   | 标题                                                                 | \*   |
+| content     | `string`   | 内容                                                                 | \*   |
+| type        | `string`   | 反馈的类型, 目前支持 `bug`/`feature`/`suggestion`/`other`            | \*   |
+| screenshots | `[]string` | 反馈附带的截图，一个数组的图片路径，该路径是用图片上传接口得到的路径 |      |
+
+</p>
+
+</details>

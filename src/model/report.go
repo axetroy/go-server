@@ -8,16 +8,21 @@ import (
 )
 
 type ReportType string
+type ReportStatus int
 
 var (
-	Bug        ReportType = "bug"        // BUG 反馈
-	Feature    ReportType = "feature"    // 新功能请求
-	Suggestion ReportType = "suggestion" // 建议
-	Other      ReportType = "other"      // 其他
+	ReportTypeBug        ReportType = "bug"        // BUG 反馈
+	ReportTypeFeature    ReportType = "feature"    // 新功能请求
+	ReportTypeSuggestion ReportType = "suggestion" // 建议
+	ReportTypeOther      ReportType = "other"      // 其他
 
-	ReportTypes = []ReportType{Bug, Feature, Suggestion, Other}
+	ReportStatusPending ReportStatus = 0 // 初始状态
+	ReportStatusResolve ReportStatus = 1 // 已解决
+
+	ReportTypes = []ReportType{ReportTypeBug, ReportTypeFeature, ReportTypeSuggestion, ReportTypeOther}
 )
 
+// 检验是否是有效的报错类型
 func IsValidReportType(t ReportType) bool {
 	for _, v := range ReportTypes {
 		if v == t {
@@ -33,6 +38,7 @@ type Report struct {
 	Title       string         `gorm:"not null;index;type:varchar(32)" json:"title"`                 // 反馈标题
 	Content     string         `gorm:"not null;type:text" json:"content"`                            // 反馈内容
 	Type        ReportType     `gorm:"not null;type:varchar(32)" json:"type"`                        // 反馈类型
+	Status      ReportStatus   `gorm:"not null;" json:"status"`                                      // 当前报告的处理状态
 	Screenshots pq.StringArray `gorm:"type:varchar(256)[]" json:"screenshots"`                       // 反馈的截图
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
@@ -43,6 +49,8 @@ func (report *Report) TableName() string {
 	return "report"
 }
 
-func (report *Report) BeforeCreate(scope *gorm.Scope) error {
-	return scope.SetColumn("id", util.GenerateId())
+func (report *Report) BeforeCreate(scope *gorm.Scope) (err error) {
+	err = scope.SetColumn("id", util.GenerateId())
+	err = scope.SetColumn("status", ReportStatusPending)
+	return
 }

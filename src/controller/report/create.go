@@ -26,7 +26,7 @@ type CreateParams struct {
 func Create(context controller.Context, input CreateParams) (res schema.Response) {
 	var (
 		err          error
-		data         schema.Banner
+		data         schema.Report
 		tx           *gorm.DB
 		isValidInput bool
 	)
@@ -68,32 +68,26 @@ func Create(context controller.Context, input CreateParams) (res schema.Response
 		return
 	}
 
+	if model.IsValidReportType(input.Type) == false {
+		err = exception.InvalidParams
+		return
+	}
+
 	tx = database.Db.Begin()
 
-	adminInfo := model.Admin{
-		Id: context.Uid,
+	reportInfo := model.Report{
+		Uid:         context.Uid,
+		Title:       input.Title,
+		Content:     input.Content,
+		Type:        input.Type,
+		Screenshots: input.Screenshots,
 	}
-
-	if err = tx.First(&adminInfo).Error; err != nil {
-		// 没有找到管理员
-		if err == gorm.ErrRecordNotFound {
-			err = exception.AdminNotExist
-		}
-		return
-	}
-
-	if !adminInfo.IsSuper {
-		err = exception.AdminNotSuper
-		return
-	}
-
-	reportInfo := model.Report{}
 
 	if err = tx.Create(&reportInfo).Error; err != nil {
 		return
 	}
 
-	if er := mapstructure.Decode(reportInfo, &data.BannerPure); er != nil {
+	if er := mapstructure.Decode(reportInfo, &data.ReportPure); er != nil {
 		err = er
 		return
 	}

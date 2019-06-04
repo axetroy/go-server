@@ -52,6 +52,7 @@ func init() {
 			new(model.Message),          // 个人消息
 			new(model.Address),          // 收货地址
 			new(model.Banner),           // Banner 表
+			new(model.Report),           // 反馈表
 		)
 
 		fmt.Println("数据库同步完成.")

@@ -12,6 +12,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/news"
 	"github.com/axetroy/go-server/src/controller/notification"
 	"github.com/axetroy/go-server/src/controller/oauth2"
+	"github.com/axetroy/go-server/src/controller/report"
 	"github.com/axetroy/go-server/src/controller/resource"
 	"github.com/axetroy/go-server/src/controller/transfer"
 	"github.com/axetroy/go-server/src/controller/uploader"
@@ -147,7 +148,7 @@ func init() {
 		{
 			reportRouter.Use(userAuthMiddleware)
 			reportRouter.GET("", message.GetRouter)              // TODO: 获取我的反馈列表
-			reportRouter.POST("", message.GetRouter)             // TODO: 添加一条反馈
+			reportRouter.POST("", report.CreateRouter)           // 添加一条反馈
 			reportRouter.GET("/r/:report_id", message.GetRouter) // TODO: 获取反馈详情
 		}
 
