@@ -2,6 +2,7 @@
 package src
 
 import (
+	"fmt"
 	"github.com/axetroy/go-server/src/controller/address"
 	"github.com/axetroy/go-server/src/controller/auth"
 	"github.com/axetroy/go-server/src/controller/banner"
@@ -22,6 +23,7 @@ import (
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/rbac"
 	"github.com/axetroy/go-server/src/rbac/accession"
+	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/dotenv"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -38,6 +40,14 @@ func init() {
 
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
+
+	router.NoRoute(func(context *gin.Context) {
+		context.JSON(http.StatusOK, schema.Response{
+			Status:  schema.StatusFail,
+			Message: fmt.Sprintf("%v ", http.StatusNotFound) + http.StatusText(http.StatusNotFound),
+			Data:    nil,
+		})
+	})
 
 	v1 := router.Group("/v1")
 	{
