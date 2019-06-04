@@ -152,6 +152,7 @@ func init() {
 			reportRouter.GET("", report.GetListRouter)                // 获取我的反馈列表
 			reportRouter.POST("", report.CreateRouter)                // 添加一条反馈
 			reportRouter.GET("/r/:report_id", report.GetReportRouter) // 获取反馈详情
+			reportRouter.PUT("/r/:report_id", report.UpdateRouter)    // 更新这条反馈信息
 		}
 
 		// Banner

@@ -11,6 +11,7 @@ type ReportPure struct {
 	Type        model.ReportType   `json:"type"`
 	Status      model.ReportStatus `json:"status"`
 	Screenshots []string           `json:"screenshots"`
+	Locked      bool               `json:"locked"`
 }
 
 type Report struct {

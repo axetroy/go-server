@@ -41,6 +41,7 @@ type Report struct {
 	Type        ReportType     `gorm:"not null;type:varchar(32)" json:"type"`                        // 反馈类型
 	Status      ReportStatus   `gorm:"not null;" json:"status"`                                      // 当前报告的处理状态
 	Screenshots pq.StringArray `gorm:"type:varchar(256)[]" json:"screenshots"`                       // 反馈的截图
+	Locked      bool           `gorm:"not null;" json:"locked"`                                      // 是否已锁定，锁定之后用户不能再更改状态
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   *time.Time `sql:"index"`

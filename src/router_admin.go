@@ -111,6 +111,7 @@ func init() {
 			reportRouter.Use(adminAuthMiddleware)
 			reportRouter.GET("", report.GetListByAdminRouter)                // 获取我的反馈列表
 			reportRouter.GET("/r/:report_id", report.GetReportByAdminRouter) // 获取反馈详情
+			reportRouter.PUT("/r/:report_id", report.UpdateByAdminRouter)    // 更新用户反馈
 		}
 
 		// Banner
