@@ -116,12 +116,6 @@ make build
 make test
 ```
 
-## TODO
-
-- [ ] i18n 的错误信息
-- [ ] 提供 RPC 接口
-- [ ] 数据库动态分表
-
 ## License
 
 The [MIT License](https://github.com/axetroy/go-server/blob/master/LICENSE)
