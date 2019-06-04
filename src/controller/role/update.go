@@ -244,7 +244,6 @@ func UpdateUserRole(context controller.Context, userId string, input UpdateUserR
 	}
 
 	// 确保要更新的角色存在
-	// TODO(优化): 使用 IN 操作符 优化 SQL 语句
 	for _, roleName := range input.Roles {
 		roleInfo := model.Role{
 			Name: roleName,
