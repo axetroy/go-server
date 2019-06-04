@@ -147,9 +147,9 @@ func init() {
 		reportRouter := v1.Group("/report")
 		{
 			reportRouter.Use(userAuthMiddleware)
-			reportRouter.GET("", message.GetRouter)              // TODO: 获取我的反馈列表
-			reportRouter.POST("", report.CreateRouter)           // 添加一条反馈
-			reportRouter.GET("/r/:report_id", message.GetRouter) // TODO: 获取反馈详情
+			reportRouter.GET("", message.GetRouter)                   // TODO: 获取我的反馈列表
+			reportRouter.POST("", report.CreateRouter)                // 添加一条反馈
+			reportRouter.GET("/r/:report_id", report.GetReportRouter) // 获取反馈详情
 		}
 
 		// Banner

@@ -581,3 +581,13 @@ Form 表单图片上传, 目前仅支持单张图片上传
 </p>
 
 </details>
+
+<details><summary>获取反馈详情<code>[GET] /v1/report/r/:report_id</code></summary>
+
+<p>
+
+获取一条反馈的详情
+
+</p>
+
+</details>
