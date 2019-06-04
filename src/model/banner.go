@@ -15,6 +15,7 @@ const (
 )
 
 type Banner struct {
+	w
 	Id          string         `gorm:"primary_key;unique;not null;index;type:varchar(32)" json:"id"` // ID
 	Image       string         `gorm:"not null;index;type:varchar(255)" json:"image"`                // 图片
 	Href        string         `gorm:"not null;index;type:varchar(255)" json:"href"`                 // 图片连接

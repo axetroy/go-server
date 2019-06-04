@@ -9,7 +9,8 @@ var (
 )
 
 type common struct {
-	Mode string `json:"mode"`
+	MachineId string `json:"machine_id"`
+	Mode      string `json:"mode"`
 }
 
 var Common common
@@ -17,5 +18,8 @@ var Common common
 func init() {
 	if Common.Mode = os.Getenv("GO_MOD"); Common.Mode == "" {
 		Common.Mode = ModeDevelopment
+	}
+	if Common.MachineId = os.Getenv("machine_id"); Common.MachineId == "" {
+		Common.MachineId = "0"
 	}
 }
