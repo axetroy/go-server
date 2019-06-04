@@ -3,6 +3,7 @@ package src
 
 import (
 	"fmt"
+	"github.com/axetroy/go-server/src/config"
 	"github.com/axetroy/go-server/src/controller/admin"
 	"github.com/axetroy/go-server/src/controller/banner"
 	"github.com/axetroy/go-server/src/controller/message"
@@ -23,12 +24,16 @@ import (
 var AdminRouter *gin.Engine
 
 func init() {
-	gin.SetMode(gin.ReleaseMode)
+	if config.Common.Mode == config.ModeProduction {
+		gin.SetMode(gin.ReleaseMode)
+	}
 	router := gin.Default()
 
 	router.Static("/public", path.Join(dotenv.RootDir, "public"))
 
-	router.Use(gin.Logger())
+	if config.Common.Mode == config.ModeProduction {
+		router.Use(gin.Logger())
+	}
 	router.Use(gin.Recovery())
 
 	router.NoRoute(func(context *gin.Context) {
