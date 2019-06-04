@@ -17,7 +17,8 @@ import (
 
 type Query struct {
 	schema.Query
-	//Status model.NewsStatus `json:"status" form:"status"`
+	Platform *model.BannerPlatform `json:"platform"` // 根据平台筛选
+	Active   *bool                 `json:"active"`   // 是否激活
 }
 
 func GetList(context controller.Context, input Query) (res schema.List) {
@@ -58,7 +59,19 @@ func GetList(context controller.Context, input Query) (res schema.List) {
 
 	var total int64
 
-	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Find(&list).Count(&total).Error; err != nil {
+	filter := model.Banner{}
+
+	if input.Platform != nil {
+		filter.Platform = *input.Platform
+	}
+
+	if input.Active != nil {
+		filter.Active = *input.Active
+	} else {
+		filter.Active = true
+	}
+
+	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Where(&filter).Find(&list).Count(&total).Error; err != nil {
 		return
 	}
 
