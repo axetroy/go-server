@@ -565,7 +565,7 @@ Form 表单图片上传, 目前仅支持单张图片上传
 
 ### 用户反馈
 
-<details><summary>提交反馈<code>[GET] /v1/report</code></summary>
+<details><summary>提交反馈<code>[POST] /v1/report</code></summary>
 
 <p>
 
