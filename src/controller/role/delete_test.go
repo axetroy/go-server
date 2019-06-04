@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/controller/auth"
-	"github.com/axetroy/go-server/src/controller/banner"
 	"github.com/axetroy/go-server/src/controller/role"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/model"
@@ -127,37 +126,35 @@ func TestDelete(t *testing.T) {
 
 func TestDeleteRouter(t *testing.T) {
 	var (
-		bannerId string
-		image    = "test.png"
-		href     = "https://example.com"
-		platform = model.BannerPlatformApp
+		name        = "vip"
+		description = "VIP 用户"
+		accessions  = accession.Stringify(accession.ProfileUpdate)
+		n           = schema.Role{}
 	)
+
 	adminInfo, _ := tester.LoginAdmin()
 
-	// 创建一个 Banner
 	{
-		r := banner.Create(controller.Context{
+
+		r := role.Create(controller.Context{
 			Uid: adminInfo.Id,
-		}, banner.CreateParams{
-			Image:    image,
-			Href:     href,
-			Platform: platform,
+		}, role.CreateParams{
+			Name:        name,
+			Description: description,
+			Accession:   accessions,
 		})
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		n := schema.Banner{}
+		defer role.DeleteRoleByName(name)
 
 		assert.Nil(t, tester.Decode(r.Data, &n))
 
-		defer banner.DeleteBannerById(n.Id)
-
-		bannerId = n.Id
-
-		assert.Equal(t, image, n.Image)
-		assert.Equal(t, href, n.Href)
-		assert.Equal(t, platform, n.Platform)
+		assert.Equal(t, name, n.Name)
+		assert.Equal(t, description, n.Description)
+		assert.Equal(t, accessions, n.Accession)
+		assert.Equal(t, false, n.BuildIn)
 	}
 
 	header := mocker.Header{
@@ -166,7 +163,7 @@ func TestDeleteRouter(t *testing.T) {
 
 	{
 
-		r := tester.HttpAdmin.Delete("/v1/banner/b/"+bannerId, nil, &header)
+		r := tester.HttpAdmin.Delete("/v1/role/r/"+n.Name, nil, &header)
 
 		if !assert.Equal(t, http.StatusOK, r.Code) {
 			return
@@ -186,13 +183,13 @@ func TestDeleteRouter(t *testing.T) {
 			return
 		}
 
-		bannerInfo := schema.Banner{}
+		roleInfo := schema.Role{}
 
-		assert.Nil(t, tester.Decode(res.Data, &bannerInfo))
+		assert.Nil(t, tester.Decode(res.Data, &roleInfo))
 
-		assert.Equal(t, image, bannerInfo.Image)
-		assert.Equal(t, href, bannerInfo.Href)
-		assert.Equal(t, platform, bannerInfo.Platform)
+		assert.Equal(t, description, roleInfo.Description)
+		assert.Equal(t, name, roleInfo.Name)
+		assert.Equal(t, accessions, roleInfo.Accession)
 
 	}
 
