@@ -65,9 +65,7 @@ func TestGetList(t *testing.T) {
 		assert.IsType(t, 1, r.Meta.Num)
 		assert.IsType(t, int64(1), r.Meta.Total)
 
-		if !assert.True(t, len(banners) >= 1) {
-			return
-		}
+		assert.True(t, len(banners) >= 1)
 
 		for _, b := range banners {
 			assert.IsType(t, "string", b.Image)
