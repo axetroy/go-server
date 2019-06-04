@@ -473,3 +473,31 @@
 </p>
 
 </details>
+
+### 用户反馈
+
+<details><summary>获取反馈列表<code>[GET] /v1/report</code></summary>
+
+<p>
+
+获取反馈列表
+
+| 参数   | 类型     | 说明                                   | 必选 |
+| ------ | -------- | -------------------------------------- | ---- |
+| uid    | `string` | 根据某个用户的`uid`筛选                |      |
+| type   | `string` | 根据`类型`筛选                         |      |
+| status | `int`    | 根据`状态`筛选, `0` 未解决, `1` 已解决 |      |
+
+</p>
+
+</details>
+
+<details><summary>获取反馈详情<code>[GET] /v1/report/r/:report_id</code></summary>
+
+<p>
+
+获取一条反馈的详情
+
+</p>
+
+</details>

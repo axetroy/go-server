@@ -7,6 +7,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/message"
 	"github.com/axetroy/go-server/src/controller/news"
 	"github.com/axetroy/go-server/src/controller/notification"
+	"github.com/axetroy/go-server/src/controller/report"
 	"github.com/axetroy/go-server/src/controller/role"
 	"github.com/axetroy/go-server/src/controller/system"
 	"github.com/axetroy/go-server/src/controller/user"
@@ -102,6 +103,14 @@ func init() {
 			messageRouter.GET("/m/:message_id", message.GetAdminRouter)         // 获取个人消息
 			messageRouter.PUT("/m/:message_id", message.UpdateRouter)           // 更新个人消息
 			messageRouter.DELETE("/m/:message_id", message.DeleteByAdminRouter) // 删除个人消息
+		}
+
+		// 用户反馈
+		reportRouter := v1.Group("/report")
+		{
+			reportRouter.Use(adminAuthMiddleware)
+			reportRouter.GET("", report.GetListByAdminRouter)                // 获取我的反馈列表
+			reportRouter.GET("/r/:report_id", report.GetReportByAdminRouter) // 获取反馈详情
 		}
 
 		// Banner

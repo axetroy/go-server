@@ -145,6 +145,7 @@ func init() {
 			messageRouter.DELETE("/m/:message_id", message.DeleteByUserRouter) // 删除消息
 		}
 
+		// 用户反馈
 		reportRouter := v1.Group("/report")
 		{
 			reportRouter.Use(userAuthMiddleware)
