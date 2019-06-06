@@ -29,11 +29,14 @@ func init() {
 	}
 	router := gin.Default()
 
+	router.Use(middleware.CORS())
+
 	router.Static("/public", path.Join(dotenv.RootDir, "public"))
 
 	if config.Common.Mode == config.ModeProduction {
 		router.Use(gin.Logger())
 	}
+
 	router.Use(gin.Recovery())
 
 	router.NoRoute(func(context *gin.Context) {
@@ -54,7 +57,8 @@ func init() {
 		adminAuthMiddleware := middleware.Authenticate(true) // 管理员Token的中间件
 
 		// 登陆
-		v1.POST("/login", admin.LoginRouter)
+		v1.POST("/login", admin.LoginRouter)         // 管理员登陆
+		v1.GET("/profile", admin.GetAdminInfoRouter) // 获取管理员自己的信息
 
 		v1.Use(adminAuthMiddleware)
 
@@ -63,7 +67,6 @@ func init() {
 		{
 			adminRouter.POST("", admin.CreateAdminRouter)                 // 创建管理员
 			adminRouter.GET("", admin.GetListRouter)                      // 获取管理员列表
-			adminRouter.GET("/profile", admin.GetAdminInfoRouter)         // 获取管理员自己的信息
 			adminRouter.GET("/a/:admin_id", admin.GetAdminInfoByIdRouter) // 获取某个管理员的信息
 			adminRouter.PUT("/a/:admin_id", admin.UpdateRouter)           // 修改某个管理员的信息
 		}

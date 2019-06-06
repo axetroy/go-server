@@ -70,7 +70,7 @@ func TestGetAdminInfoRouter(t *testing.T) {
 		"Authorization": token.Prefix + " " + adminInfo.Token,
 	}
 
-	r := tester.HttpAdmin.Get("/v1/admin/profile", nil, &header)
+	r := tester.HttpAdmin.Get("/v1/profile", nil, &header)
 	res := schema.Response{}
 
 	assert.Equal(t, http.StatusOK, r.Code)

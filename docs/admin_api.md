@@ -100,7 +100,7 @@
 
 </details>
 
-<details><summary>获取管理员自己的信息<code>[GET] /v1/admin/profile</code></summary>
+<details><summary>获取管理员自己的信息<code>[GET] /v1/profile</code></summary>
 
 <p>
 

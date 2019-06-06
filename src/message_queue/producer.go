@@ -3,7 +3,6 @@ package message_queue
 
 import (
 	"errors"
-	"fmt"
 	"github.com/nsqio/go-nsq"
 )
 
@@ -54,5 +53,5 @@ func Publish(topic Topic, message []byte) (err error) {
 		return
 	}
 
-	return fmt.Errorf("producer is nil %v", err)
+	return
 }

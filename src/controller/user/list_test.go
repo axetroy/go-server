@@ -37,8 +37,6 @@ func TestGetList(t *testing.T) {
 
 		assert.Equal(t, schema.DefaultLimit, r.Meta.Limit)
 		assert.Equal(t, schema.DefaultPage, r.Meta.Page)
-		assert.IsType(t, 1, r.Meta.Num)
-		assert.IsType(t, int64(1), r.Meta.Total)
 
 		if !assert.True(t, len(users) >= 1) {
 			return
@@ -86,8 +84,6 @@ func TestGetListRouter(t *testing.T) {
 
 		assert.Equal(t, schema.DefaultLimit, res.Meta.Limit)
 		assert.Equal(t, schema.DefaultPage, res.Meta.Page)
-		assert.IsType(t, 1, res.Meta.Num)
-		assert.IsType(t, int64(1), res.Meta.Total)
 
 		if !assert.True(t, len(users) >= 1) {
 			return

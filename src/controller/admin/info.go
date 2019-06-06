@@ -19,7 +19,7 @@ import (
 func GetAdminInfo(context controller.Context) (res schema.Response) {
 	var (
 		err  error
-		data = schema.AdminProfileWithToken{}
+		data = schema.AdminProfile{}
 		tx   *gorm.DB
 	)
 

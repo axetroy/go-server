@@ -26,4 +26,7 @@ var (
 	UserNotExist = New("用户不存在")
 	// 没有权限
 	NoPermission = New("没有权限")
+
+	// 查询列表
+	EmptyList = New("sql: no rows in result set")
 )

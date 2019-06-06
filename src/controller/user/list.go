@@ -58,7 +58,11 @@ func GetList(context controller.Context, input Query) (res schema.List) {
 	var total int64
 
 	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Find(&list).Count(&total).Error; err != nil {
-		return
+		if err.Error() == exception.EmptyList.Error() {
+			err = nil
+		} else {
+			return
+		}
 	}
 
 	for _, v := range list {

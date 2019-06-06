@@ -6,7 +6,6 @@ import (
 	"github.com/axetroy/go-server/src/controller/uploader"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/service/dotenv"
 	"github.com/gin-gonic/gin"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
@@ -14,11 +13,13 @@ import (
 	"github.com/shirou/gopsutil/load"
 	"github.com/shirou/gopsutil/mem"
 	"net/http"
-	"path"
+	"os/user"
 	"runtime"
+	"time"
 )
 
 type Info struct {
+	Username         string         `json:"username"`            // 当前用户名
 	Host             host.InfoStat  `json:"host"`                // 操作系统信息
 	Avg              load.AvgStat   `json:"avg"`                 // 负载信息
 	Arch             string         `json:"arch"`                // 系统架构, 32/64位
@@ -29,6 +30,8 @@ type Info struct {
 	RAMUsedBy        uint64         `json:"ram_used_by"`         // 程序占用的内存
 	RAMUsedByPercent float64        `json:"ram_used_by_percent"` // 程序占用的内存百分比
 	UploadUsageStat  disk.UsageStat `json:"upload_usage_stat"`   // 上传目录的使用量统计
+	Time             string         `json:"time"`                // 系统当前时间
+	Timezone         string         `json:"timezone"`            // 当前服务器所在的时区
 }
 
 func GetSystemInfo() (res schema.Response) {
@@ -77,11 +80,20 @@ func GetSystemInfo() (res schema.Response) {
 		return
 	}
 
-	if uploadUsageStat, err = disk.Usage(path.Join(dotenv.RootDir, uploader.Config.Path)); err != nil {
+	if uploadUsageStat, err = disk.Usage(uploader.Config.Path); err != nil {
 		return
 	}
 
+	var u *user.User
+
+	if u, err = user.Current(); err != nil {
+		return
+	}
+
+	t := time.Now()
+
 	data = Info{
+		Username:         u.Username,
 		Host:             *hostInfo,
 		Arch:             runtime.GOARCH,
 		Avg:              *avgStat,
@@ -92,6 +104,8 @@ func GetSystemInfo() (res schema.Response) {
 		RAMUsedBy:        v.Used,
 		RAMUsedByPercent: v.UsedPercent,
 		UploadUsageStat:  *uploadUsageStat,
+		Time:             t.Format(time.RFC3339Nano),
+		Timezone:         t.Location().String(),
 	}
 
 	return
