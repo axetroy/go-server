@@ -1,7 +1,9 @@
 // Copyright 2019 Axetroy. All rights reserved. MIT license.
 package config
 
-import "os"
+import (
+	"github.com/axetroy/go-server/src/service/dotenv"
+)
 
 var (
 	ModeProduction  = "production"
@@ -16,10 +18,10 @@ type common struct {
 var Common common
 
 func init() {
-	if Common.Mode = os.Getenv("GO_MOD"); Common.Mode == "" {
+	if Common.Mode = dotenv.Get("GO_MOD"); Common.Mode == "" {
 		Common.Mode = ModeDevelopment
 	}
-	if Common.MachineId = os.Getenv("machine_id"); Common.MachineId == "" {
+	if Common.MachineId = dotenv.Get("machine_id"); Common.MachineId == "" {
 		Common.MachineId = "0"
 	}
 }

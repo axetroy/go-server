@@ -3,7 +3,6 @@ package redis
 
 import (
 	"github.com/axetroy/go-server/src/config"
-	"github.com/axetroy/go-server/src/service/dotenv"
 	"github.com/go-redis/redis"
 )
 
@@ -15,10 +14,6 @@ var (
 )
 
 func init() {
-	if err := dotenv.Load(); err != nil {
-		return
-	}
-
 	var (
 		addr     = Config.Host + ":" + Config.Port
 		password = Config.Password

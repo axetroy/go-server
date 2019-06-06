@@ -4,16 +4,9 @@ package src
 import (
 	"fmt"
 	"github.com/axetroy/go-server/src/config"
-	"github.com/axetroy/go-server/src/service/dotenv"
 	"net/http"
 	"time"
 )
-
-func init() {
-	if err := dotenv.Load(); err != nil {
-		panic(err)
-	}
-}
 
 // Server 运行服务器
 func ServerUserClient() {

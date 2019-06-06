@@ -2,7 +2,7 @@
 package config
 
 import (
-	"os"
+	"github.com/axetroy/go-server/src/service/dotenv"
 )
 
 type database struct {
@@ -18,25 +18,25 @@ type database struct {
 var Database database
 
 func init() {
-	if Database.Driver = os.Getenv("DB_DRIVER"); Database.Driver == "" {
+	if Database.Driver = dotenv.Get("DB_DRIVER"); Database.Driver == "" {
 		Database.Driver = "postgres"
 	}
-	if Database.Host = os.Getenv("DB_HOST"); Database.Host == "" {
+	if Database.Host = dotenv.Get("DB_HOST"); Database.Host == "" {
 		Database.Host = "localhost"
 	}
-	if Database.Port = os.Getenv("DB_PORT"); Database.Port == "" {
+	if Database.Port = dotenv.Get("DB_PORT"); Database.Port == "" {
 		Database.Port = "65432"
 	}
-	if Database.DatabaseName = os.Getenv("DB_NAME"); Database.DatabaseName == "" {
+	if Database.DatabaseName = dotenv.Get("DB_NAME"); Database.DatabaseName == "" {
 		Database.DatabaseName = "gotest"
 	}
-	if Database.Username = os.Getenv("DB_USERNAME"); Database.Username == "" {
+	if Database.Username = dotenv.Get("DB_USERNAME"); Database.Username == "" {
 		Database.Username = "gotest"
 	}
-	if Database.Password = os.Getenv("DB_PASSWORD"); Database.Password == "" {
+	if Database.Password = dotenv.Get("DB_PASSWORD"); Database.Password == "" {
 		Database.Password = "gotest"
 	}
-	if Database.Sync = os.Getenv("DB_SYNC"); Database.Sync == "" {
+	if Database.Sync = dotenv.Get("DB_SYNC"); Database.Sync == "" {
 		Database.Sync = "on"
 	}
 }

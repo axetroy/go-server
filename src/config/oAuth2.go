@@ -1,7 +1,9 @@
 // Copyright 2019 Axetroy. All rights reserved. MIT license.
 package config
 
-import "os"
+import (
+	"github.com/axetroy/go-server/src/service/dotenv"
+)
 
 type oAuth2Google struct {
 	ClientId     string `json:"client_id"`
@@ -11,6 +13,6 @@ type oAuth2Google struct {
 var OAuth2Google oAuth2Google
 
 func init() {
-	OAuth2Google.ClientId = os.Getenv("GOOGLE_AUTH2_CLIENT_ID")
-	OAuth2Google.ClientSecret = os.Getenv("GOOGLE_AUTH2_CLIENT_SECRET")
+	OAuth2Google.ClientId = dotenv.Get("GOOGLE_AUTH2_CLIENT_ID")
+	OAuth2Google.ClientSecret = dotenv.Get("GOOGLE_AUTH2_CLIENT_SECRET")
 }

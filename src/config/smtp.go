@@ -1,7 +1,9 @@
 // Copyright 2019 Axetroy. All rights reserved. MIT license.
 package config
 
-import "os"
+import (
+	"github.com/axetroy/go-server/src/service/dotenv"
+)
 
 type sender struct {
 	Name  string `json:"name"`
@@ -19,10 +21,10 @@ type smtp struct {
 var SMTP smtp
 
 func init() {
-	SMTP.Host = os.Getenv("SMTP_SERVER")
-	SMTP.Port = os.Getenv("SMTP_SERVER_PORT")
-	SMTP.Username = os.Getenv("SMTP_USERNAME")
-	SMTP.Password = os.Getenv("SMTP_PASSWORD")
-	SMTP.Sender.Name = os.Getenv("SMTP_FROM_NAME")
-	SMTP.Sender.Email = os.Getenv("SMTP_FROM_EMAIL")
+	SMTP.Host = dotenv.Get("SMTP_SERVER")
+	SMTP.Port = dotenv.Get("SMTP_SERVER_PORT")
+	SMTP.Username = dotenv.Get("SMTP_USERNAME")
+	SMTP.Password = dotenv.Get("SMTP_PASSWORD")
+	SMTP.Sender.Name = dotenv.Get("SMTP_FROM_NAME")
+	SMTP.Sender.Email = dotenv.Get("SMTP_FROM_EMAIL")
 }

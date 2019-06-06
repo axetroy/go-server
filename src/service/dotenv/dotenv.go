@@ -3,7 +3,6 @@ package dotenv
 
 import (
 	"flag"
-	"fmt"
 	"github.com/axetroy/go-fs"
 	"github.com/joho/godotenv"
 	"os"
@@ -19,12 +18,20 @@ var (
 	loaded  bool   // 是否已初始化过
 )
 
+func init() {
+	if err := Load(); err != nil {
+		panic(err)
+	}
+}
+
 func Load() (err error) {
 	if loaded {
 		return
 	}
 	defer func() {
-		loaded = true
+		if err == nil {
+			loaded = true
+		}
 	}()
 	isRunInTest := flag.Lookup("test.v") != nil
 	isRunInTravis := os.Getenv("TRAVIS") != ""
@@ -79,8 +86,6 @@ func Load() (err error) {
 		}
 	}
 
-	fmt.Println("当前工作目录", RootDir)
-
 	dotEnvFilePath := path.Join(RootDir, ".env")
 
 	if !fs.PathExists(dotEnvFilePath) {
@@ -89,4 +94,11 @@ func Load() (err error) {
 
 	err = godotenv.Load(dotEnvFilePath)
 	return
+}
+
+func Get(key string) string {
+	if loaded == false {
+		_ = Load()
+	}
+	return os.Getenv(key)
 }

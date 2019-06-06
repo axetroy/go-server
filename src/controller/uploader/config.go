@@ -4,7 +4,6 @@ package uploader
 import (
 	"github.com/axetroy/go-fs"
 	"github.com/axetroy/go-server/src/service/dotenv"
-	"os"
 	"path"
 )
 
@@ -38,7 +37,7 @@ type TConfig struct {
 }
 
 var Config = TConfig{
-	Path: os.Getenv("UPLOAD_DIR"),
+	Path: dotenv.Get("UPLOAD_DIR"),
 	File: FileConfig{
 		Path:    "file",
 		MaxSize: 1024 * 1024 * 10, // max 10MB
@@ -61,7 +60,7 @@ var Config = TConfig{
 func init() {
 	var (
 		err      error
-		rootPath = os.Getenv("UPLOAD_DIR")
+		rootPath = dotenv.Get("UPLOAD_DIR")
 	)
 
 	if rootPath == "" {

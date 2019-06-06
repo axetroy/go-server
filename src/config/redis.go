@@ -1,7 +1,9 @@
 // Copyright 2019 Axetroy. All rights reserved. MIT license.
 package config
 
-import "os"
+import (
+	"github.com/axetroy/go-server/src/service/dotenv"
+)
 
 type redis struct {
 	Host     string `json:"host"`
@@ -12,13 +14,13 @@ type redis struct {
 var Redis redis
 
 func init() {
-	if Redis.Host = os.Getenv("REDIS_SERVER"); Redis.Host == "" {
+	if Redis.Host = dotenv.Get("REDIS_SERVER"); Redis.Host == "" {
 		Redis.Host = "127.0.0.1"
 	}
-	if Redis.Port = os.Getenv("REDIS_PORT"); Redis.Port == "" {
+	if Redis.Port = dotenv.Get("REDIS_PORT"); Redis.Port == "" {
 		Redis.Port = "6379"
 	}
-	if Redis.Password = os.Getenv("REDIS_PASSWORD"); Redis.Password == "" {
+	if Redis.Password = dotenv.Get("REDIS_PASSWORD"); Redis.Password == "" {
 		Redis.Password = "password"
 	}
 }

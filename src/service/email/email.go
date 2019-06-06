@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/axetroy/go-server/src/config"
-	"github.com/axetroy/go-server/src/service/dotenv"
 	"github.com/jordan-wright/email"
 	"net/smtp"
 	"net/textproto"
@@ -37,12 +36,6 @@ type Message struct {
 	Headers     textproto.MIMEHeader
 	Attachments []*email.Attachment
 	ReadReceipt []string
-}
-
-func init() {
-	if err := dotenv.Load(); err != nil {
-		panic(err)
-	}
 }
 
 func NewMailer() *Mailer {
