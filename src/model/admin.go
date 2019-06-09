@@ -2,6 +2,7 @@
 package model
 
 import (
+	"github.com/lib/pq"
 	"time"
 
 	"github.com/axetroy/go-server/src/util"
@@ -17,12 +18,13 @@ const (
 )
 
 type Admin struct {
-	Id        string      `gorm:"primary_key;not null;unique;index" json:"id"`            // 用户ID
-	Username  string      `gorm:"not null;unique;index;type:varchar(36)" json:"username"` // 用户名, 用于登陆
-	Name      string      `gorm:"not null;index;type:varchar(36)" json:"Name"`            // 管理员名
-	Password  string      `gorm:"not null;type:varchar(36)" json:"password"`              // 登陆密码
-	IsSuper   bool        `gorm:"not null;unique" json:"is_super"`                        // 是否是超级管理员, 超级管理员全站应该只有一个
-	Status    AdminStatus `gorm:"not null;" json:"status"`                                // 状态
+	Id        string         `gorm:"primary_key;not null;unique;index" json:"id"`            // 用户ID
+	Username  string         `gorm:"not null;unique;index;type:varchar(36)" json:"username"` // 用户名, 用于登陆
+	Name      string         `gorm:"not null;index;type:varchar(36)" json:"Name"`            // 管理员名
+	Password  string         `gorm:"not null;type:varchar(36)" json:"password"`              // 登陆密码
+	Accession pq.StringArray `gorm:"not null;type:varchar(64)[]" json:"accession"`           // 管理员的权限, 超级管理员不依赖于这个字段
+	IsSuper   bool           `gorm:"not null;" json:"is_super"`                              // 是否是超级管理员, 超级管理员全站应该只有一个
+	Status    AdminStatus    `gorm:"not null;" json:"status"`                                // 状态
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt *time.Time `sql:"index"`

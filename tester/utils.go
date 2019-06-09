@@ -7,11 +7,6 @@ import (
 	"github.com/axetroy/go-server/src/controller/auth"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/util"
-	"math/rand"
-)
-
-var (
-	i int64 = 0
 )
 
 // 创建一个测试用户
@@ -22,10 +17,6 @@ func CreateUser() (profile schema.ProfileWithToken, err error) {
 		ip        = "0.0.0.0"
 		userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3788.1 Safari/537.36"
 	)
-
-	rand.Seed(10000 + i)
-
-	i = i + 1
 
 	// 创建用户
 	if r := auth.SignUp(auth.SignUpParams{

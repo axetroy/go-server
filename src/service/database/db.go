@@ -54,6 +54,7 @@ func init() {
 			new(model.Address),          // 收货地址
 			new(model.Banner),           // Banner 表
 			new(model.Report),           // 反馈表
+			new(model.Menu),             // 后台管理员菜单
 		)
 
 		fmt.Println("数据库同步完成.")
@@ -65,11 +66,12 @@ func init() {
 	if err := db.First(&model.Admin{Username: "admin", IsSuper: true}).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			err = db.Create(&model.Admin{
-				Username: "admin",
-				Name:     "admin",
-				Password: util.GeneratePassword("admin"),
-				Status:   model.AdminStatusInit,
-				IsSuper:  true,
+				Username:  "admin",
+				Name:      "admin",
+				Password:  util.GeneratePassword("admin"),
+				Accession: []string{},
+				Status:    model.AdminStatusInit,
+				IsSuper:   true,
 			}).Error
 
 			if err != nil {

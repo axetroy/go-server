@@ -38,7 +38,7 @@ func init() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	router := gin.Default()
-
+	router.Use(middleware.CORS())
 	router.Static("/public", path.Join(dotenv.RootDir, "public"))
 
 	if config.Common.Mode != config.ModeProduction {
@@ -47,15 +47,15 @@ func init() {
 	router.Use(gin.Recovery())
 
 	router.NoRoute(func(context *gin.Context) {
-		context.JSON(http.StatusOK, schema.Response{
+		context.JSON(http.StatusNotFound, schema.Response{
 			Status:  schema.StatusFail,
 			Message: fmt.Sprintf("%v ", http.StatusNotFound) + http.StatusText(http.StatusNotFound),
 			Data:    nil,
 		})
 	})
 
-	v1 := router.Group("/v1")
 	{
+		v1 := router.Group("/v1")
 		v1.Use(middleware.Common)
 
 		v1.GET("", func(context *gin.Context) {
@@ -65,23 +65,24 @@ func init() {
 		userAuthMiddleware := middleware.Authenticate(false) // 用户Token的中间件
 
 		// 认证类
-		authRouter := v1.Group("/auth")
 		{
+			authRouter := v1.Group("/auth")
 			authRouter.POST("/signup", auth.SignUpRouter)               // 注册账号
 			authRouter.POST("/signin", auth.SignInRouter)               // 登陆账号
 			authRouter.POST("/activation", auth.ActivationRouter)       // 激活账号
 			authRouter.PUT("/password/reset", auth.ResetPasswordRouter) // 密码重置
 		}
 
-		oAuthRouter := v1.Group("/oauth2")
+		// oAuth2 认证
 		{
+			oAuthRouter := v1.Group("/oauth2")
 			oAuthRouter.GET("/google", oauth2.GoogleLoginRouter)             // 用 Google 登陆
 			oAuthRouter.GET("/google_callback", oauth2.GoogleCallbackRouter) // Google 认证完成后跳转到这里，用户不应该访问这个地址
 		}
 
 		// 用户类
-		userRouter := v1.Group("/user")
 		{
+			userRouter := v1.Group("/user")
 			userRouter.Use(userAuthMiddleware)
 			userRouter.GET("/signout", user.SignOut)                                                                      // 用户登出
 			userRouter.GET("/profile", user.GetProfileRouter)                                                             // 获取用户详细信息
@@ -93,14 +94,14 @@ func init() {
 			userRouter.POST("/password2/reset", rbac.Require(*accession.Password2Reset), user.SendResetPayPasswordRouter) // 发送重置交易密码的邮件/短信
 			userRouter.POST("/avatar", user.UploadAvatarRouter)                                                           // 上传用户头像
 			// 邀请人列表
-			inviteRouter := userRouter.Group("/invite")
 			{
+				inviteRouter := userRouter.Group("/invite")
 				inviteRouter.GET("", invite.GetListRouter)          // 获取我已邀请的列表
 				inviteRouter.GET("/i/:invite_id", invite.GetRouter) // 获取单条邀请记录详情
 			}
 			// 收货地址
-			addressRouter := userRouter.Group("/address")
 			{
+				addressRouter := userRouter.Group("/address")
 				addressRouter.GET("", address.GetListRouter)                 // 获取地址列表
 				addressRouter.POST("", address.CreateRouter)                 // 添加收货地址
 				addressRouter.PUT("/a/:address_id", address.UpdateRouter)    // 更新收货地址
@@ -111,16 +112,16 @@ func init() {
 		}
 
 		// 钱包类
-		walletRouter := v1.Group("/wallet")
 		{
+			walletRouter := v1.Group("/wallet")
 			walletRouter.Use(userAuthMiddleware)
 			walletRouter.GET("", wallet.GetWalletsRouter)            // 获取所有钱包列表
 			walletRouter.GET("/w/:currency", wallet.GetWalletRouter) // 获取单个钱包的详细信息
 
 		}
 
-		transferRouter := v1.Group("/transfer")
 		{
+			transferRouter := v1.Group("/transfer")
 			transferRouter.Use(userAuthMiddleware)
 			transferRouter.GET("", transfer.GetHistoryRouter)                                                           // 获取我的转账记录
 			transferRouter.POST("", rbac.Require(*accession.DoTransfer), middleware.AuthPayPassword, transfer.ToRouter) // 转账给某人
@@ -128,22 +129,22 @@ func init() {
 		}
 
 		// 财务日志
-		financeRouter := v1.Group("/finance")
 		{
+			financeRouter := v1.Group("/finance")
 			financeRouter.Use(userAuthMiddleware)
 			financeRouter.GET("/history", finance.GetHistory) // TODO: 获取我的财务日志
 		}
 
 		// 新闻咨询类
-		newsRouter := v1.Group("/news")
 		{
+			newsRouter := v1.Group("/news")
 			newsRouter.GET("", news.GetListRouter)       // 获取新闻公告列表
 			newsRouter.GET("/n/:id", news.GetNewsRouter) // 获取单个新闻公告详情
 		}
 
 		// 系统通知
-		notificationRouter := v1.Group("/notification")
 		{
+			notificationRouter := v1.Group("/notification")
 			notificationRouter.Use(userAuthMiddleware)
 			notificationRouter.GET("", notification.GetListUserRouter)     // 获取系统通知列表
 			notificationRouter.GET("/n/:id", notification.GetRouter)       // 获取某一条系统通知详情
@@ -151,8 +152,8 @@ func init() {
 		}
 
 		// 用户的个人消息, 个人消息是可以删除的
-		messageRouter := v1.Group("/message")
 		{
+			messageRouter := v1.Group("/message")
 			messageRouter.Use(userAuthMiddleware)
 			messageRouter.GET("", message.GetListRouter)                       // 获取我的消息列表
 			messageRouter.GET("/m/:message_id", message.GetRouter)             // 获取单个消息详情
@@ -161,8 +162,8 @@ func init() {
 		}
 
 		// 用户反馈
-		reportRouter := v1.Group("/report")
 		{
+			reportRouter := v1.Group("/report")
 			reportRouter.Use(userAuthMiddleware)
 			reportRouter.GET("", report.GetListRouter)                // 获取我的反馈列表
 			reportRouter.POST("", report.CreateRouter)                // 添加一条反馈
@@ -171,8 +172,8 @@ func init() {
 		}
 
 		// Banner
-		bannerRouter := v1.Group("banner")
 		{
+			bannerRouter := v1.Group("banner")
 			bannerRouter.GET("", banner.GetListRouter)                // 获取 banner 列表
 			bannerRouter.GET("/b/:banner_id", banner.GetBannerRouter) // 获取 banner 详情
 		}

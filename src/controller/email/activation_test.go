@@ -3,7 +3,6 @@ package email_test
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/axetroy/go-server/src/controller/auth"
 	"github.com/axetroy/go-server/src/controller/email"
 	"github.com/axetroy/go-server/src/exception"
@@ -42,11 +41,6 @@ func TestSendActivationEmail(t *testing.T) {
 		return
 	}
 
-	if !assert.Equal(t, schema.StatusFail, res.Status) {
-		fmt.Println(res.Message)
-		return
-	}
-	if !assert.Equal(t, exception.UserNotExist.Error(), res.Message) {
-		return
-	}
+	assert.Equal(t, schema.StatusFail, res.Status)
+	assert.Equal(t, exception.UserNotExist.Error(), res.Message)
 }

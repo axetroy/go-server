@@ -18,6 +18,4 @@ func TestMD5(t *testing.T) {
 		t.Error("abc的MD5值不对")
 		return
 	}
-
-	t.Log("pass")
 }

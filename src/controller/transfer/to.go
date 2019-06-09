@@ -3,7 +3,6 @@ package transfer
 
 import (
 	"errors"
-	"fmt"
 	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/controller/finance"
@@ -59,7 +58,6 @@ func To(context controller.Context, input ToParams) (res schema.Response) {
 		}
 
 		if err != nil {
-			fmt.Println(err)
 			res.Message = err.Error()
 			res.Data = nil
 		} else {
@@ -238,7 +236,6 @@ func ToRouter(context *gin.Context) {
 		if err != nil {
 			res.Data = nil
 			res.Message = err.Error()
-			fmt.Println(err)
 		}
 		context.JSON(http.StatusOK, res)
 	}()

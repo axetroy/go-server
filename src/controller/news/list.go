@@ -15,7 +15,8 @@ import (
 
 type Query struct {
 	schema.Query
-	Status model.NewsStatus `json:"status" form:"status"`
+	Status *model.NewsStatus `json:"status" form:"status"`
+	Type   *model.NewsType   `json:"type" form:"type"`
 }
 
 func GetList(input Query) (res schema.List) {
@@ -55,7 +56,17 @@ func GetList(input Query) (res schema.List) {
 
 	var total int64
 
-	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Find(&list).Count(&total).Error; err != nil {
+	filter := model.News{}
+
+	if input.Status != nil {
+		filter.Status = *input.Status
+	}
+
+	if input.Type != nil {
+		filter.Type = *input.Type
+	}
+
+	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Where(&filter).Find(&list).Count(&total).Error; err != nil {
 		return
 	}
 

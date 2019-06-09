@@ -79,11 +79,12 @@ func CreateAdmin(input CreateAdminParams, isSuper bool) (res schema.Response) {
 	}
 
 	adminInfo := model.Admin{
-		Username: input.Account,
-		Name:     input.Name,
-		Password: util.GeneratePassword(input.Password),
-		Status:   model.AdminStatusInit,
-		IsSuper:  isSuper,
+		Username:  input.Account,
+		Name:      input.Name,
+		Password:  util.GeneratePassword(input.Password),
+		Status:    model.AdminStatusInit,
+		Accession: []string{},
+		IsSuper:   isSuper,
 	}
 
 	if err = tx.Create(&adminInfo).Error; err != nil {

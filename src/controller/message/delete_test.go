@@ -3,7 +3,6 @@ package message_test
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/controller/auth"
 	"github.com/axetroy/go-server/src/controller/message"
@@ -128,8 +127,6 @@ func TestDeleteByAdminRouter(t *testing.T) {
 		assert.Nil(t, tester.Decode(res.Data, &messageInfo))
 
 		messageId = messageInfo.Id
-
-		fmt.Println("创建的消息", messageInfo)
 
 		defer message.DeleteMessageById(messageInfo.Id)
 

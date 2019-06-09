@@ -23,17 +23,6 @@ func init() {
 }
 
 func TestCreateAdmin(t *testing.T) {
-	// 不能创建超级管理员，因为只能存在一个超级管理员
-	{
-		r := admin.CreateAdmin(admin.CreateAdminParams{
-			Account:  "123123",
-			Name:     "test",
-			Password: "123",
-		}, true)
-
-		assert.Equal(t, schema.StatusFail, r.Status)
-	}
-
 	// 创建已存在的管理员
 	{
 		r := admin.CreateAdmin(admin.CreateAdminParams{

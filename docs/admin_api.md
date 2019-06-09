@@ -261,7 +261,12 @@
 
 <p>
 
-获取单个资讯信息
+获取资讯列表
+
+| 参数   | 类型     | 说明       | 必填 |
+| ------ | -------- | ---------- | ---- |
+| type   | `string` | 资讯的类型 |      |
+| status | `string` | 资讯的状态 |      |
 
 </p>
 
@@ -517,6 +522,76 @@
 | ------ | ------ | -------------------------------------- | ---- |
 | status | `int`  | 根据`状态`筛选, `0` 未解决, `1` 已解决 |      |
 | lock   | `bool` | 是否锁定该反馈, 锁定之后用户无法再更新 |      |
+
+</p>
+
+</details>
+
+### 菜单模块
+
+<details><summary>创建页面菜单<code>[POST] /v1/menu/m/:menu_id</code></summary>
+
+<p>
+
+创建页面菜单
+
+| 参数      | 类型       | 说明                                        | 必选 |
+| --------- | ---------- | ------------------------------------------- | ---- |
+| name      | `string`   | 菜单名                                      | \*   |
+| url       | `string`   | 菜单对应的页面 url                          |      |
+| icon      | `string`   | 菜单图标                                    |      |
+| accession | `[]string` | 菜单对应的权限                              |      |
+| sort      | `int`      | 菜单排序, 值越大，菜单越靠前                |      |
+| parent_id | `string`   | 该菜单的父级菜单, 如果 不填写，则为顶级菜单 |      |
+
+</p>
+
+</details>
+
+<details><summary>获取页面菜单列表<code>[GET] /v1/menu</code></summary>
+
+<p>
+
+获取页面菜单列表
+
+</p>
+
+</details>
+
+<details><summary>获取页面菜单详情<code>[GET] /v1/menu/m/:menu_id</code></summary>
+
+<p>
+
+获取一条页面菜单的详情
+
+</p>
+
+</details>
+
+<details><summary>更新页面菜单<code>[PUT] /v1/menu/m/:menu_id</code></summary>
+
+<p>
+
+更新页面菜单
+
+| 参数      | 类型       | 说明                         | 必选 |
+| --------- | ---------- | ---------------------------- | ---- |
+| name      | `string`   | 菜单名                       |      |
+| url       | `string`   | 菜单对应的页面 url           |      |
+| icon      | `string`   | 菜单图标                     |      |
+| accession | `[]string` | 菜单对应的权限               |      |
+| sort      | `int`      | 菜单排序, 值越大，菜单越靠前 |      |
+| parent_id | `string`   | 该菜单的父级菜单             |      |
+
+</p>
+
+</details>
+
+<details><summary>删除页面菜单<code>[DELETE] /v1/menu/m/:menu_id</code></summary>
+
+<p>
+
+删除页面菜单
 
 </p>
 
