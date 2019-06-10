@@ -8,6 +8,7 @@ type ProfilePure struct {
 	Email      *string  `json:"email"`
 	Phone      *string  `json:"phone"`
 	Status     int32    `json:"status"`
+	Gender     int      `json:"gender"`
 	Avatar     string   `json:"avatar"`
 	Role       []string `json:"role"`
 	Level      int32    `json:"level"`

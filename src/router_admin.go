@@ -76,6 +76,7 @@ func init() {
 		{
 			userRouter := v1.Group("user")
 			userRouter.GET("", user.GetListRouter)                                   // 获取会员列表
+			userRouter.POST("", user.CreateUserRouter)                               // 创建会员
 			userRouter.GET("/u/:user_id", user.GetProfileByAdminRouter)              // 获取单个会员的信息
 			userRouter.PUT("/u/:user_id", user.UpdateProfileByAdminRouter)           // 更新会员信息
 			userRouter.PUT("/u/:user_id/password", user.UpdatePasswordByAdminRouter) // 修改会员密码

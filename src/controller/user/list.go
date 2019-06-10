@@ -57,7 +57,7 @@ func GetList(context controller.Context, input Query) (res schema.List) {
 
 	var total int64
 
-	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Find(&list).Count(&total).Error; err != nil {
+	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Order("created_at desc").Find(&list).Count(&total).Error; err != nil {
 		if err.Error() == exception.EmptyList.Error() {
 			err = nil
 		} else {

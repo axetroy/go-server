@@ -8,12 +8,12 @@ type Accession struct {
 
 var (
 	// 用户类
-	ProfileUpdate   = New("profile.update", "有权限修改用户资料")
-	PasswordUpdate  = New("password.update", "有权限更改自己的密码")
+	ProfileUpdate   = New("profile::update", "有权限修改用户资料")
+	PasswordUpdate  = New("password::update", "有权限更改自己的密码")
 	Password2Set    = New("password2.set", "有权限设置二级密码")
 	Password2Reset  = New("password2.reset", "有权限重置二级密码")
-	Password2Update = New("password2.update", "有权限修改二级密码")
-	DoTransfer      = New("transfer.create", "有权限发起转账交易")
+	Password2Update = New("password2::update", "有权限修改二级密码")
+	DoTransfer      = New("transfer::create", "有权限发起转账交易")
 
 	// 用户的所有的权限
 	List = []*Accession{
@@ -27,15 +27,26 @@ var (
 	Map = map[string]*Accession{}
 
 	// 管理员类
-	AdminNewsCreate = New("news.create", "有权限创建新闻")
-	AdminNewsUpdate = New("news.update", "有权限修改新闻")
-	AdminNewsDelete = New("news.delete", "有权限删除新闻")
-	AdminNewsGet    = New("news.get", "有权限获取新闻")
+	AdminNewsGet    = New("news::get", "有权限获取新闻")
+	AdminNewsCreate = New("news::create", "有权限创建新闻")
+	AdminNewsUpdate = New("news::update", "有权限修改新闻")
+	AdminNewsDelete = New("news::delete", "有权限删除新闻")
 
-	adminNotificationGet    = New("notification.get", "有权限获取公告")
-	adminNotificationUpdate = New("notification.update", "有权限修改公告")
-	adminNotificationDelete = New("notification.delete", "有权限删除公告")
-	adminNotificationCreate = New("notification.create", "有权限创建公告")
+	adminNotificationGet    = New("notification::get", "有权限获取公告")
+	adminNotificationCreate = New("notification::create", "有权限创建公告")
+	adminNotificationUpdate = New("notification::update", "有权限修改公告")
+	adminNotificationDelete = New("notification::delete", "有权限删除公告")
+
+	AdminUserGet    = New("user::get", "有权限获取用户信息")
+	AdminUserCreate = New("user::create", "有权限创建新用户")
+	AdminUserUpdate = New("user::update", "有权限修改用户信息")
+	AdminUserDelete = New("user::delete", "有权限删除用户")
+	AdminUserExport = New("user::export", "有权限导出用户到CSV等")
+
+	AdminMenuGet    = New("menu::get", "有权限获取菜单信息")
+	AdminMenuCreate = New("menu::create", "有权限创建新菜单")
+	AdminMenuUpdate = New("menu::update", "有权限修改菜单信息")
+	AdminMenuDelete = New("menu::delete", "有权限删除菜单")
 
 	// 管理员的所有权限
 	AdminList = []*Accession{
@@ -48,6 +59,17 @@ var (
 		adminNotificationUpdate,
 		adminNotificationDelete,
 		adminNotificationCreate,
+
+		AdminUserGet,
+		AdminUserCreate,
+		AdminUserUpdate,
+		AdminUserDelete,
+		AdminUserExport,
+
+		AdminMenuGet,
+		AdminMenuCreate,
+		AdminMenuUpdate,
+		AdminMenuDelete,
 	}
 
 	AdminMap = map[string]*Accession{}

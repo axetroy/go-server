@@ -7,6 +7,7 @@ import (
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
+	"github.com/axetroy/go-server/src/rbac/accession"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
 	"github.com/gin-gonic/gin"
@@ -67,6 +68,14 @@ func GetAdminInfo(context controller.Context) (res schema.Response) {
 
 	if err = mapstructure.Decode(adminInfo, &data.AdminProfilePure); err != nil {
 		return
+	}
+
+	// 如果是超级管理员，则拥有全部权限
+	if adminInfo.IsSuper == true {
+		data.Accession = []string{}
+		for _, v := range accession.AdminList {
+			data.Accession = append(data.Accession, v.Name)
+		}
 	}
 
 	data.CreatedAt = adminInfo.CreatedAt.Format(time.RFC3339Nano)
