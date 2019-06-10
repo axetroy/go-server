@@ -118,7 +118,7 @@ func GetListUser(context controller.Context, input Query) (res schema.List) {
 func GetListAdmin(context controller.Context, input Query) (res schema.List) {
 	var (
 		err  error
-		data = make([]schema.Notification, 0)
+		data = make([]schema.NotificationAdmin, 0)
 		meta = &schema.Meta{}
 		tx   *gorm.DB
 	)
@@ -169,8 +169,8 @@ func GetListAdmin(context controller.Context, input Query) (res schema.List) {
 	}
 
 	for _, v := range list {
-		d := schema.Notification{}
-		if er := mapstructure.Decode(v, &d.NotificationPure); er != nil {
+		d := schema.NotificationAdmin{}
+		if er := mapstructure.Decode(v, &d.NotificationPureAdmin); er != nil {
 			err = er
 			return
 		}
