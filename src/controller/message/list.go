@@ -76,7 +76,11 @@ func GetList(context controller.Context, input Query) (res schema.List) {
 		filter.Status = *input.Status
 	}
 
-	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Where(filter).Find(&list).Count(&total).Error; err != nil {
+	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Order(query.Sort).Where(&filter).Find(&list).Error; err != nil {
+		return
+	}
+
+	if err = database.Db.Model(&filter).Where(&filter).Count(&total).Error; err != nil {
 		return
 	}
 
@@ -103,8 +107,8 @@ func GetList(context controller.Context, input Query) (res schema.List) {
 func GetListByAdmin(context controller.Context, input QueryAdmin) (res schema.List) {
 	var (
 		err  error
-		data = make([]schema.Message, 0) // 接口输出的数据
-		list = make([]model.Message, 0)  // 数据库查询出的原始数据
+		data = make([]schema.MessageAdmin, 0) // 接口输出的数据
+		list = make([]model.Message, 0)       // 数据库查询出的原始数据
 		meta = &schema.Meta{}
 	)
 
@@ -135,8 +139,6 @@ func GetListByAdmin(context controller.Context, input QueryAdmin) (res schema.Li
 
 	query.Normalize()
 
-	var total int64
-
 	filter := model.Message{}
 
 	if input.Uid != nil {
@@ -151,13 +153,19 @@ func GetListByAdmin(context controller.Context, input QueryAdmin) (res schema.Li
 		filter.Status = *input.Status
 	}
 
-	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Where(filter).Find(&list).Count(&total).Error; err != nil {
+	var total int64
+
+	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Order(query.Sort).Where(&filter).Find(&list).Error; err != nil {
+		return
+	}
+
+	if err = database.Db.Model(&filter).Where(&filter).Count(&total).Error; err != nil {
 		return
 	}
 
 	for _, v := range list {
-		d := schema.Message{}
-		if er := mapstructure.Decode(v, &d.MessagePure); er != nil {
+		d := schema.MessageAdmin{}
+		if er := mapstructure.Decode(v, &d.MessagePureAdmin); er != nil {
 			err = er
 			return
 		}

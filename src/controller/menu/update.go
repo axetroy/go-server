@@ -8,6 +8,7 @@ import (
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
+	"github.com/axetroy/go-server/src/rbac/accession"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
 	"github.com/gin-gonic/gin"
@@ -59,6 +60,12 @@ func Update(context controller.Context, bannerId string, input UpdateParams) (re
 			res.Message = err.Error()
 			res.Data = nil
 		} else {
+			if len(data.Accession) == 0 {
+				data.Accession = []string{}
+			}
+			if len(data.Children) == 0 {
+				data.Children = []schema.Menu{}
+			}
 			res.Data = data
 			res.Status = schema.StatusSuccess
 		}
@@ -98,40 +105,41 @@ func Update(context controller.Context, bannerId string, input UpdateParams) (re
 		return
 	}
 
-	updateModel := model.Menu{}
+	var m = map[string]interface{}{}
 
 	if input.Name != nil {
 		shouldUpdate = true
-		updateModel.Name = *input.Name
+		m["name"] = *input.Name
 	}
 
 	if input.Url != nil {
 		shouldUpdate = true
-		updateModel.Url = *input.Url
+		m["url"] = *input.Url
 	}
 
 	if input.Icon != nil {
 		shouldUpdate = true
-		updateModel.Icon = *input.Icon
+		m["icon"] = *input.Icon
 	}
 
 	if input.Accession != nil {
+		// 只保留有效的权限
 		shouldUpdate = true
-		updateModel.Accession = *input.Accession
+		m["accession"] = accession.FilterAdminAccession(*input.Accession)
 	}
 
 	if input.Sort != nil {
 		shouldUpdate = true
-		updateModel.Sort = *input.Sort
+		m["sort"] = *input.Sort
 	}
 
 	if input.ParentId != nil {
 		shouldUpdate = true
-		updateModel.ParentId = *input.ParentId
+		m["parent_id"] = *input.ParentId
 	}
 
 	if shouldUpdate {
-		if err = tx.Model(&menuInfo).UpdateColumns(&updateModel).Error; err != nil {
+		if err = tx.Model(&menuInfo).UpdateColumns(m).Error; err != nil {
 			if err == gorm.ErrRecordNotFound {
 				err = exception.BannerNotExist
 				return

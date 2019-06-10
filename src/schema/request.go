@@ -2,8 +2,9 @@
 package schema
 
 var (
-	DefaultLimit = 10
-	DefaultPage  = 0
+	DefaultLimit = 10                // 默认只获取 10 条数据
+	DefaultPage  = 0                 // 默认第 0 页
+	DefaultSort  = "created_at DESC" // 默认按照创建时间排序, 只允许
 	MaxLimit     = 100
 )
 
@@ -24,6 +25,10 @@ func (q *Query) Normalize() *Query {
 
 	if q.Page <= 0 {
 		q.Page = DefaultPage
+	}
+
+	if q.Sort == "" {
+		q.Sort = DefaultSort
 	}
 
 	return q

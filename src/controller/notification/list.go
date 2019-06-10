@@ -22,7 +22,7 @@ type Query struct {
 }
 
 // GetList get notification list
-func GetListUser(context controller.Context, input Query) (res schema.List) {
+func GetListByUser(context controller.Context, input Query) (res schema.List) {
 	var (
 		err  error
 		data = make([]schema.Notification, 0)
@@ -208,7 +208,7 @@ func GetListUserRouter(context *gin.Context) {
 		return
 	}
 
-	res = GetListUser(controller.Context{
+	res = GetListByUser(controller.Context{
 		Uid: context.GetString(middleware.ContextUidField),
 	}, input)
 }

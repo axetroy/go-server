@@ -84,10 +84,10 @@ func Get(context controller.Context, id string) (res schema.Response) {
 }
 
 // Get Message detail
-func GetAdmin(context controller.Context, id string) (res schema.Response) {
+func GetByAdmin(context controller.Context, id string) (res schema.Response) {
 	var (
 		err  error
-		data schema.Message
+		data schema.MessageAdmin
 		tx   *gorm.DB
 	)
 
@@ -145,7 +145,7 @@ func GetAdmin(context controller.Context, id string) (res schema.Response) {
 		return
 	}
 
-	if err = mapstructure.Decode(MessageInfo, &data.MessagePure); err != nil {
+	if err = mapstructure.Decode(MessageInfo, &data.MessagePureAdmin); err != nil {
 		return
 	}
 
@@ -200,7 +200,7 @@ func GetAdminRouter(context *gin.Context) {
 
 	id := context.Param(ParamsIdName)
 
-	res = GetAdmin(controller.Context{
+	res = GetByAdmin(controller.Context{
 		Uid: context.GetString(middleware.ContextUidField),
 	}, id)
 }

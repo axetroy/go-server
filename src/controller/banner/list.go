@@ -17,11 +17,11 @@ import (
 
 type Query struct {
 	schema.Query
-	Platform *model.BannerPlatform `json:"platform"` // 根据平台筛选
-	Active   *bool                 `json:"active"`   // 是否激活
+	Platform *model.BannerPlatform `json:"platform" form:"platform"` // 根据平台筛选
+	Active   *bool                 `json:"active" form:"active"`     // 是否激活
 }
 
-func GetList(context controller.Context, input Query) (res schema.List) {
+func GetList(context controller.Context, q Query) (res schema.List) {
 	var (
 		err  error
 		data = make([]schema.Banner, 0)
@@ -51,27 +51,31 @@ func GetList(context controller.Context, input Query) (res schema.List) {
 		}
 	}()
 
-	query := input.Query
+	query := q.Query
 
 	query.Normalize()
 
 	list := make([]model.Banner, 0)
 
+	m := map[string]interface{}{}
+
+	if q.Platform != nil {
+		m["platform"] = *q.Platform
+	}
+
+	if q.Active != nil {
+		m["active"] = *q.Active
+	} else {
+		m["active"] = true
+	}
+
 	var total int64
 
-	filter := model.Banner{}
-
-	if input.Platform != nil {
-		filter.Platform = *input.Platform
+	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Order(query.Sort).Where(m).Find(&list).Error; err != nil {
+		return
 	}
 
-	if input.Active != nil {
-		filter.Active = *input.Active
-	} else {
-		filter.Active = true
-	}
-
-	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Where(&filter).Find(&list).Count(&total).Error; err != nil {
+	if err = database.Db.Model(model.Banner{}).Where(m).Count(&total).Error; err != nil {
 		return
 	}
 
@@ -98,7 +102,7 @@ func GetListRouter(context *gin.Context) {
 	var (
 		err   error
 		res   = schema.List{}
-		input Query
+		query Query
 	)
 
 	defer func() {
@@ -109,12 +113,7 @@ func GetListRouter(context *gin.Context) {
 		context.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindQuery(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
 	res = GetList(controller.Context{
 		Uid: context.GetString(middleware.ContextUidField),
-	}, input)
+	}, query)
 }

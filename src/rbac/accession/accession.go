@@ -117,3 +117,16 @@ func New(name string, description string) *Accession {
 		Description: description,
 	}
 }
+
+// 筛选出有效的管理员权限
+func FilterAdminAccession(AccessionStr []string) (accession []string) {
+	for _, v := range AccessionStr {
+		if _, ok := AdminMap[v]; ok == true {
+			accession = append(accession, v)
+		}
+	}
+	if accession == nil {
+		accession = []string{}
+	}
+	return
+}

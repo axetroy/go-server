@@ -110,14 +110,14 @@ func TestGetAdmin(t *testing.T) {
 
 	// 3. 获取文章公告
 	{
-		r := message.GetAdmin(controller.Context{
+		r := message.GetByAdmin(controller.Context{
 			Uid: adminInfo.Id,
 		}, messageId)
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		messageInfo := r.Data.(schema.Message)
+		messageInfo := r.Data.(schema.MessageAdmin)
 
 		assert.Equal(t, "test", messageInfo.Title)
 		assert.Equal(t, "test", messageInfo.Content)
@@ -243,7 +243,7 @@ func TestGetAdminRouter(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, res.Status)
 		assert.Equal(t, "", res.Message)
 
-		n := schema.Message{}
+		n := schema.MessageAdmin{}
 
 		assert.Nil(t, tester.Decode(res.Data, &n))
 
