@@ -120,6 +120,16 @@
 
 </details>
 
+<details><summary>获取管理员的所有权限列表<code>[GET] /v1/admin/accession</code></summary>
+
+<p>
+
+获取管理员的所有权限列表
+
+</p>
+
+</details>
+
 ### RBAC 鉴权
 
 </details>

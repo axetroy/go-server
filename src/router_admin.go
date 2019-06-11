@@ -70,6 +70,7 @@ func init() {
 			adminRouter.GET("", admin.GetListRouter)                      // 获取管理员列表
 			adminRouter.GET("/a/:admin_id", admin.GetAdminInfoByIdRouter) // 获取某个管理员的信息
 			adminRouter.PUT("/a/:admin_id", admin.UpdateRouter)           // 修改某个管理员的信息
+			adminRouter.GET("/accession", admin.GetAccessionRouter)       // 获取管理员的所有权限列表
 		}
 
 		// 用户类
@@ -90,7 +91,7 @@ func init() {
 			roleRouter.PUT("/r/:name", role.UpdateRouter)            // 修改角色
 			roleRouter.DELETE("/r/:name", role.DeleteRouter)         // 删除角色
 			roleRouter.GET("/r/:name", role.GetRouter)               // 获取角色详情
-			roleRouter.GET("/accession", role.GetAccessionRouter)    // 获取所有的权限列表
+			roleRouter.GET("/accession", role.GetAccessionRouter)    // 获取用户的所有的权限列表
 			roleRouter.GET("/u/:user_id", role.UpdateUserRoleRouter) // 用户用户的角色信息
 			roleRouter.PUT("/u/:user_id", role.UpdateUserRoleRouter) // 管理员修改用户的角色
 		}
