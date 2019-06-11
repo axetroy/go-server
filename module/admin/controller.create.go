@@ -4,7 +4,7 @@ package admin
 import (
 	"errors"
 	"github.com/asaskevich/govalidator"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/middleware"
 	"github.com/axetroy/go-server/module/admin/admin_model"
 	"github.com/axetroy/go-server/module/admin/admin_schema"
@@ -41,7 +41,7 @@ func CreateAdmin(input CreateAdminParams, isSuper bool) (res schema.Response) {
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -66,7 +66,7 @@ func CreateAdmin(input CreateAdminParams, isSuper bool) (res schema.Response) {
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
 		return
 	} else if isValidInput == false {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 
@@ -118,7 +118,7 @@ func CreateAdminRouter(ctx *gin.Context) {
 	}()
 
 	if err = ctx.ShouldBindJSON(&input); err != nil {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 

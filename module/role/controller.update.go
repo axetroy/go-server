@@ -4,12 +4,13 @@ package role
 import (
 	"errors"
 	"github.com/asaskevich/govalidator"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/middleware"
 	"github.com/axetroy/go-server/module/admin"
 	"github.com/axetroy/go-server/module/admin/admin_model"
 	"github.com/axetroy/go-server/module/role/role_model"
 	"github.com/axetroy/go-server/module/role/role_schema"
+	"github.com/axetroy/go-server/module/user/user_error"
 	"github.com/axetroy/go-server/module/user/user_model"
 	"github.com/axetroy/go-server/module/user/user_schema"
 	"github.com/axetroy/go-server/rbac/accession"
@@ -49,7 +50,7 @@ func Update(context schema.Context, roleName string, input UpdateParams) (res sc
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -74,7 +75,7 @@ func Update(context schema.Context, roleName string, input UpdateParams) (res sc
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
 		return
 	} else if isValidInput == false {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 
@@ -115,7 +116,7 @@ func Update(context schema.Context, roleName string, input UpdateParams) (res sc
 
 		// 检验要更新的权限是否合法
 		if accession.Valid(*input.Accession) == false {
-			err = common_error.ErrInvalidParams
+			err = exception.ErrInvalidParams
 			return
 		}
 
@@ -172,7 +173,7 @@ func UpdateRouter(ctx *gin.Context) {
 	roleName := ctx.Param("name")
 
 	if err = ctx.ShouldBindJSON(&input); err != nil {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 
@@ -196,7 +197,7 @@ func UpdateUserRole(context schema.Context, userId string, input UpdateUserRoleP
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -237,7 +238,7 @@ func UpdateUserRole(context schema.Context, userId string, input UpdateUserRoleP
 
 	if err = tx.First(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrUserNotExist
+			err = user_error.ErrUserNotExist
 		}
 		return
 	}
@@ -298,7 +299,7 @@ func UpdateUserRoleRouter(ctx *gin.Context) {
 	userId := ctx.Param("user_id")
 
 	if err = ctx.ShouldBindJSON(&input); err != nil {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 

@@ -3,7 +3,7 @@ package role
 
 import (
 	"errors"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/rbac/accession"
 	"github.com/axetroy/go-server/schema"
 	"github.com/gin-gonic/gin"
@@ -24,7 +24,7 @@ func GetAccession() (res schema.Response) {
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 

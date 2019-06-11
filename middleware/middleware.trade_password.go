@@ -3,7 +3,7 @@ package middleware
 
 import (
 	"errors"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/module/user/user_model"
 	"github.com/axetroy/go-server/schema"
 	"github.com/axetroy/go-server/service/database"
@@ -31,7 +31,7 @@ func AuthPayPassword(ctx *gin.Context) {
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -53,14 +53,14 @@ func AuthPayPassword(ctx *gin.Context) {
 	payPassword := ctx.GetHeader(PayPasswordHeader)
 
 	if len(payPassword) == 0 {
-		err = common_error.ErrRequirePayPassword
+		err = exception.ErrRequirePayPassword
 		return
 	}
 
 	uid := ctx.GetString(ContextUidField)
 
 	if uid == "" {
-		err = common_error.ErrUserNotLogin
+		err = exception.ErrUserNotLogin
 		return
 	}
 
@@ -68,19 +68,19 @@ func AuthPayPassword(ctx *gin.Context) {
 
 	if err = database.Db.Where(&userInfo).Last(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrUserNotExist
+			err = exception.ErrUserNotExist
 		}
 		return
 	}
 
 	if userInfo.PayPassword == nil {
-		err = common_error.ErrPayPasswordNotSet
+		err = exception.ErrPayPasswordNotSet
 		return
 	}
 
 	// 校验密码是否正确
 	if *userInfo.PayPassword != util.GeneratePassword(payPassword) {
-		err = common_error.ErrInvalidPassword
+		err = exception.ErrInvalidPassword
 		return
 	}
 

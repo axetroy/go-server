@@ -3,7 +3,7 @@ package banner
 
 import (
 	"errors"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/middleware"
 	"github.com/axetroy/go-server/module/banner/banner_model"
 	"github.com/axetroy/go-server/module/banner/banner_schema"
@@ -36,7 +36,7 @@ func GetList(context schema.Context, q Query) (res schema.List) {
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 

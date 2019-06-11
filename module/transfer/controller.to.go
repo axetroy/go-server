@@ -4,12 +4,13 @@ package transfer
 import (
 	"errors"
 	"github.com/asaskevich/govalidator"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/middleware"
 	"github.com/axetroy/go-server/module/finance"
 	"github.com/axetroy/go-server/module/finance/finance_model"
 	"github.com/axetroy/go-server/module/transfer/transfer_model"
 	"github.com/axetroy/go-server/module/transfer/transfer_schema"
+	"github.com/axetroy/go-server/module/user/user_error"
 	"github.com/axetroy/go-server/module/user/user_model"
 	"github.com/axetroy/go-server/module/wallet"
 	"github.com/axetroy/go-server/module/wallet/wallet_model"
@@ -48,7 +49,7 @@ func To(context schema.Context, input ToParams) (res schema.Response) {
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -72,7 +73,7 @@ func To(context schema.Context, input ToParams) (res schema.Response) {
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
 		return
 	} else if isValidInput == false {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 
@@ -83,14 +84,14 @@ func To(context schema.Context, input ToParams) (res schema.Response) {
 
 	if err = tx.Where(&fromUserInfo).Last(&fromUserInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrUserNotExist
+			err = user_error.ErrUserNotExist
 		}
 		return
 	}
 
 	if err = tx.Where(&toUserInfo).Last(&toUserInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrUserNotExist
+			err = user_error.ErrUserNotExist
 		}
 		return
 	}

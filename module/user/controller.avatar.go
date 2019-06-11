@@ -6,9 +6,10 @@ import (
 	"encoding/hex"
 	"errors"
 	"github.com/axetroy/go-fs"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/middleware"
 	"github.com/axetroy/go-server/module/uploader"
+	"github.com/axetroy/go-server/module/user/user_error"
 	"github.com/axetroy/go-server/module/user/user_model"
 	"github.com/axetroy/go-server/schema"
 	"github.com/axetroy/go-server/service/database"
@@ -58,7 +59,7 @@ func UploadAvatar(uid string, input UploadAvatarParams, file *multipart.FileHead
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -106,7 +107,7 @@ func UploadAvatar(uid string, input UploadAvatarParams, file *multipart.FileHead
 	extname := path.Ext(file.Filename)
 
 	if isImage(extname) == false {
-		err = common_error.ErrNotSupportType
+		err = exception.ErrNotSupportType
 		return
 	}
 
@@ -116,7 +117,7 @@ func UploadAvatar(uid string, input UploadAvatarParams, file *multipart.FileHead
 
 	if err = tx.Where(&userInfo).Last(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrUserNotExist
+			err = user_error.ErrUserNotExist
 		}
 		return
 	}
@@ -180,13 +181,13 @@ func UploadAvatarRouter(ctx *gin.Context) {
 	}()
 
 	if err = ctx.ShouldBindQuery(&input); err != nil {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 
 	// Source
 	if file, err = ctx.FormFile("file"); err != nil {
-		err = common_error.ErrRequireFile
+		err = exception.ErrRequireFile
 		return
 	}
 

@@ -3,7 +3,7 @@ package message
 
 import (
 	"errors"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/middleware"
 	"github.com/axetroy/go-server/module/message/message_model"
 	"github.com/axetroy/go-server/module/message/message_schema"
@@ -31,7 +31,7 @@ func MarkRead(context schema.Context, id string) (res schema.Response) {
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -61,7 +61,7 @@ func MarkRead(context schema.Context, id string) (res schema.Response) {
 
 	if err = tx.Where(&MessageInfo).Last(&MessageInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrNoData
+			err = exception.ErrNoData
 		}
 		return
 	}

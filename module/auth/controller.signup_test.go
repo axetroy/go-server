@@ -3,7 +3,7 @@ package auth_test
 
 import (
 	"encoding/json"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/module/auth"
 	"github.com/axetroy/go-server/module/invite"
 	"github.com/axetroy/go-server/module/invite/invite_model"
@@ -30,7 +30,7 @@ func TestSignUpWithEmptyBody(t *testing.T) {
 	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
 
 	assert.Equal(t, schema.StatusFail, res.Status)
-	assert.Equal(t, common_error.ErrInvalidParams.Error(), res.Message)
+	assert.Equal(t, exception.ErrInvalidParams.Error(), res.Message)
 	assert.Nil(t, res.Data)
 }
 
@@ -52,7 +52,7 @@ func TestSignUpWithNotFullBody(t *testing.T) {
 	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
 
 	assert.Equal(t, schema.StatusFail, res.Status)
-	assert.Equal(t, common_error.ErrRequirePassword.Error(), res.Message)
+	assert.Equal(t, exception.ErrRequirePassword.Error(), res.Message)
 	assert.Nil(t, res.Data)
 }
 

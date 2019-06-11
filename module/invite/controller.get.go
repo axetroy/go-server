@@ -3,7 +3,7 @@ package invite
 
 import (
 	"errors"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/middleware"
 	"github.com/axetroy/go-server/module/invite/invite_model"
 	"github.com/axetroy/go-server/module/invite/invite_schema"
@@ -31,7 +31,7 @@ func Get(context schema.Context, id string) (res schema.Response) {
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -92,7 +92,7 @@ func GetByStruct(m *invite_model.InviteHistory) (res schema.Response) {
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 

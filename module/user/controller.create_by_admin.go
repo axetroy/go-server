@@ -3,9 +3,10 @@ package user
 import (
 	"encoding/json"
 	"errors"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/module/message_queue"
 	"github.com/axetroy/go-server/module/role/role_model"
+	"github.com/axetroy/go-server/module/user/user_error"
 	"github.com/axetroy/go-server/module/user/user_model"
 	"github.com/axetroy/go-server/module/user/user_schema"
 	"github.com/axetroy/go-server/module/wallet"
@@ -46,7 +47,7 @@ func CreateUser(input CreateUserParams) (res schema.Response) {
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -68,7 +69,7 @@ func CreateUser(input CreateUserParams) (res schema.Response) {
 	}()
 
 	if input.Password == "" {
-		err = common_error.ErrRequirePassword
+		err = exception.ErrRequirePassword
 		return
 	}
 
@@ -104,7 +105,7 @@ func CreateUser(input CreateUserParams) (res schema.Response) {
 		}
 
 		if existUserInfo.Id != "" {
-			err = common_error.ErrUserExist
+			err = user_error.ErrUserExist
 			return
 		}
 	}
@@ -119,7 +120,7 @@ func CreateUser(input CreateUserParams) (res schema.Response) {
 		}
 
 		if existUserInfo.Id != "" {
-			err = common_error.ErrUserExist
+			err = user_error.ErrUserExist
 			return
 		}
 	}
@@ -134,7 +135,7 @@ func CreateUser(input CreateUserParams) (res schema.Response) {
 		}
 
 		if existUserInfo.Id != "" {
-			err = common_error.ErrUserExist
+			err = user_error.ErrUserExist
 			return
 		}
 	}
@@ -225,7 +226,7 @@ func CreateUserRouter(ctx *gin.Context) {
 	}()
 
 	if err = ctx.ShouldBindJSON(&input); err != nil {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 

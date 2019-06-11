@@ -63,14 +63,7 @@ func init() {
 
 		v1.Use(adminAuthMiddleware)
 
-		// 管理员类
-		{
-			adminRouter := v1.Group("admin")
-			adminRouter.POST("", admin.CreateAdminRouter)                 // 创建管理员
-			adminRouter.GET("", admin.GetListRouter)                      // 获取管理员列表
-			adminRouter.GET("/a/:admin_id", admin.GetAdminInfoByIdRouter) // 获取某个管理员的信息
-			adminRouter.PUT("/a/:admin_id", admin.UpdateRouter)           // 修改某个管理员的信息
-		}
+		admin.Route(v1) // 管理员类
 
 		// 用户类
 		{

@@ -4,8 +4,9 @@ package user
 import (
 	"errors"
 	"github.com/asaskevich/govalidator"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/middleware"
+	"github.com/axetroy/go-server/module/user/user_error"
 	"github.com/axetroy/go-server/module/user/user_model"
 	"github.com/axetroy/go-server/schema"
 	"github.com/axetroy/go-server/service/database"
@@ -53,7 +54,7 @@ func SetPayPassword(context schema.Context, input SetPayPasswordParams) (res sch
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -78,12 +79,12 @@ func SetPayPassword(context schema.Context, input SetPayPasswordParams) (res sch
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
 		return
 	} else if isValidInput == false {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 
 	if input.Password != input.PasswordConfirm {
-		err = ErrInvalidConfirmPassword
+		err = user_error.ErrInvalidConfirmPassword
 		return
 	}
 
@@ -93,13 +94,13 @@ func SetPayPassword(context schema.Context, input SetPayPasswordParams) (res sch
 
 	if err = tx.Where(&userInfo).Last(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrUserNotExist
+			err = user_error.ErrUserNotExist
 		}
 		return
 	}
 
 	if userInfo.PayPassword != nil {
-		err = common_error.ErrPayPasswordSet
+		err = exception.ErrPayPasswordSet
 		return
 	}
 
@@ -129,7 +130,7 @@ func SetPayPasswordRouter(ctx *gin.Context) {
 	}()
 
 	if err = ctx.ShouldBindJSON(&input); err != nil {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 
@@ -153,7 +154,7 @@ func UpdatePayPassword(context schema.Context, input UpdatePayPasswordParams) (r
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -178,12 +179,12 @@ func UpdatePayPassword(context schema.Context, input UpdatePayPasswordParams) (r
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
 		return
 	} else if isValidInput == false {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 
 	if input.OldPassword == input.NewPassword {
-		err = common_error.ErrPasswordDuplicate
+		err = exception.ErrPasswordDuplicate
 		return
 	}
 
@@ -193,14 +194,14 @@ func UpdatePayPassword(context schema.Context, input UpdatePayPasswordParams) (r
 
 	if err = tx.Where(&userInfo).First(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrUserNotExist
+			err = user_error.ErrUserNotExist
 		}
 		return
 	}
 
 	// 如果还没有设置过交易密码，就不会有更新
 	if userInfo.PayPassword == nil {
-		err = ErrErrRequireErrPayPasswordSet
+		err = user_error.ErrErrRequireErrPayPasswordSet
 		return
 	}
 
@@ -208,7 +209,7 @@ func UpdatePayPassword(context schema.Context, input UpdatePayPasswordParams) (r
 
 	// 旧密码不匹配
 	if *userInfo.PayPassword != oldPwd {
-		err = common_error.ErrInvalidPassword
+		err = exception.ErrInvalidPassword
 		return
 	}
 
@@ -238,7 +239,7 @@ func UpdatePayPasswordRouter(ctx *gin.Context) {
 	}()
 
 	if err = ctx.ShouldBindJSON(&input); err != nil {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 
@@ -261,7 +262,7 @@ func SendResetPayPassword(context schema.Context) (res schema.Response) {
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -289,7 +290,7 @@ func SendResetPayPassword(context schema.Context) (res schema.Response) {
 
 	if err = tx.Where(&userInfo).Last(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrUserNotExist
+			err = user_error.ErrUserNotExist
 		}
 		return
 	}
@@ -315,7 +316,7 @@ func SendResetPayPassword(context schema.Context) (res schema.Response) {
 		}()
 	} else {
 		// 无效的用户
-		err = common_error.ErrNoData
+		err = exception.ErrNoData
 	}
 
 	return
@@ -356,7 +357,7 @@ func ResetPayPassword(context schema.Context, input ResetPayPasswordParams) (res
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -381,7 +382,7 @@ func ResetPayPassword(context schema.Context, input ResetPayPasswordParams) (res
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
 		return
 	} else if isValidInput == false {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 
@@ -391,25 +392,25 @@ func ResetPayPassword(context schema.Context, input ResetPayPasswordParams) (res
 
 	if err = tx.Where(&userInfo).First(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrUserNotExist
+			err = user_error.ErrUserNotExist
 		}
 		return
 	}
 
 	// 如果还没有设置过交易密码，就不会有重置
 	if userInfo.PayPassword == nil {
-		err = ErrErrRequireErrPayPasswordSet
+		err = user_error.ErrErrRequireErrPayPasswordSet
 		return
 	}
 
 	if uid, err = redis.ResetCodeClient.Get(input.Code).Result(); err != nil {
-		err = ErrInvalidResetCode
+		err = user_error.ErrInvalidResetCode
 		return
 	}
 
 	// 即使有了重置码，不是自己的账号也不能用
 	if userInfo.Id != uid {
-		err = common_error.ErrNoPermission
+		err = exception.ErrNoPermission
 		return
 	}
 
@@ -442,7 +443,7 @@ func ResetPayPasswordRouter(ctx *gin.Context) {
 	}()
 
 	if err = ctx.ShouldBindJSON(&input); err != nil {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 

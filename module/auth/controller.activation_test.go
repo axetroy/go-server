@@ -3,7 +3,7 @@ package auth_test
 
 import (
 	"encoding/json"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/module/auth"
 	"github.com/axetroy/go-server/module/email"
 	"github.com/axetroy/go-server/module/user/user_schema"
@@ -32,7 +32,7 @@ func TestActivationWithEmptyBody(t *testing.T) {
 	}
 
 	assert.Equal(t, schema.StatusFail, res.Status)
-	assert.Equal(t, common_error.ErrInvalidParams.Error(), res.Message)
+	assert.Equal(t, exception.ErrInvalidParams.Error(), res.Message)
 	assert.Nil(t, res.Data)
 }
 
@@ -51,7 +51,7 @@ func TestActivationWithInvalidCode(t *testing.T) {
 	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
 
 	assert.Equal(t, schema.StatusFail, res.Status)
-	assert.Equal(t, common_error.ErrInvalidActiveCode.Error(), res.Message)
+	assert.Equal(t, exception.ErrInvalidActiveCode.Error(), res.Message)
 	assert.Nil(t, res.Data)
 }
 

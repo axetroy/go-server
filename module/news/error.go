@@ -2,10 +2,10 @@
 package news
 
 import (
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 )
 
 var (
-	ErrNewsInvalidType = common_error.NewError("错误的文章类型")
-	ErrNewsNotExist    = common_error.NewError("文章不存在")
+	ErrNewsInvalidType = exception.NewError("错误的文章类型")
+	ErrNewsNotExist    = exception.NewError("文章不存在")
 )

@@ -4,7 +4,7 @@ package admin_test
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/module/admin"
 	"github.com/axetroy/go-server/module/admin/admin_schema"
 	"github.com/axetroy/go-server/schema"
@@ -32,7 +32,7 @@ func TestLogin(t *testing.T) {
 		})
 
 		assert.Equal(t, schema.StatusFail, r.Status)
-		assert.Equal(t, common_error.ErrInvalidAccountOrPassword.Error(), r.Message)
+		assert.Equal(t, exception.ErrInvalidAccountOrPassword.Error(), r.Message)
 		assert.Nil(t, r.Data)
 	}
 
@@ -83,7 +83,7 @@ func TestLoginRouter(t *testing.T) {
 		assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
 
 		assert.Equal(t, schema.StatusFail, res.Status)
-		assert.Equal(t, common_error.ErrInvalidAccountOrPassword.Error(), res.Message)
+		assert.Equal(t, exception.ErrInvalidAccountOrPassword.Error(), res.Message)
 	}
 
 	// 登陆正确的管理员账号

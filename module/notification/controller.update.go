@@ -4,12 +4,13 @@ package notification
 import (
 	"errors"
 	"github.com/asaskevich/govalidator"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/middleware"
 	"github.com/axetroy/go-server/module/admin"
 	"github.com/axetroy/go-server/module/admin/admin_model"
 	"github.com/axetroy/go-server/module/notification/notification_model"
 	"github.com/axetroy/go-server/module/notification/notification_schema"
+	"github.com/axetroy/go-server/module/user/user_error"
 	"github.com/axetroy/go-server/schema"
 	"github.com/axetroy/go-server/service/database"
 	"github.com/gin-gonic/gin"
@@ -41,7 +42,7 @@ func Update(context schema.Context, notificationId string, input UpdateParams) (
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -65,7 +66,7 @@ func Update(context schema.Context, notificationId string, input UpdateParams) (
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
 		return
 	} else if isValidInput == false {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 
@@ -89,7 +90,7 @@ func Update(context schema.Context, notificationId string, input UpdateParams) (
 
 	if err = tx.Where(&notificationInfo).Last(&notificationInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrUserNotExist
+			err = user_error.ErrUserNotExist
 		}
 		return
 	}
@@ -138,7 +139,7 @@ func UpdateRouter(ctx *gin.Context) {
 	}()
 
 	if err = ctx.ShouldBindJSON(&input); err != nil {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 

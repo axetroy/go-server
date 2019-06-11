@@ -2,9 +2,10 @@
 package user_test
 
 import (
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/module/auth"
 	"github.com/axetroy/go-server/module/user"
+	"github.com/axetroy/go-server/module/user/user_error"
 	"github.com/axetroy/go-server/module/user/user_schema"
 	"github.com/axetroy/go-server/schema"
 	"github.com/axetroy/go-server/service/redis"
@@ -56,7 +57,7 @@ func TestSetPayPassword(t *testing.T) {
 		})
 
 		assert.Equal(t, schema.StatusFail, r.Status)
-		assert.Equal(t, user.ErrInvalidConfirmPassword.Error(), r.Message)
+		assert.Equal(t, user_error.ErrInvalidConfirmPassword.Error(), r.Message)
 	}
 
 	{
@@ -83,7 +84,7 @@ func TestSetPayPassword(t *testing.T) {
 		})
 
 		assert.Equal(t, schema.StatusFail, r.Status)
-		assert.Equal(t, common_error.ErrPayPasswordSet.Error(), r.Message)
+		assert.Equal(t, exception.ErrPayPasswordSet.Error(), r.Message)
 		assert.False(t, r.Data.(bool))
 	}
 }
@@ -129,7 +130,7 @@ func TestUpdatePayPassword(t *testing.T) {
 		})
 
 		assert.Equal(t, schema.StatusFail, r.Status)
-		assert.Equal(t, user.ErrErrRequireErrPayPasswordSet.Error(), r.Message)
+		assert.Equal(t, user_error.ErrErrRequireErrPayPasswordSet.Error(), r.Message)
 		assert.False(t, r.Data.(bool))
 	}
 
@@ -157,7 +158,7 @@ func TestUpdatePayPassword(t *testing.T) {
 		})
 
 		assert.Equal(t, schema.StatusFail, r.Status)
-		assert.Equal(t, common_error.ErrInvalidPassword.Error(), r.Message)
+		assert.Equal(t, exception.ErrInvalidPassword.Error(), r.Message)
 		assert.False(t, r.Data.(bool))
 	}
 
@@ -223,7 +224,7 @@ func TestResetPayPassword(t *testing.T) {
 		})
 
 		assert.Equal(t, schema.StatusFail, r.Status)
-		assert.Equal(t, user.ErrErrRequireErrPayPasswordSet.Error(), r.Message)
+		assert.Equal(t, user_error.ErrErrRequireErrPayPasswordSet.Error(), r.Message)
 		assert.False(t, r.Data.(bool))
 	}
 
@@ -251,7 +252,7 @@ func TestResetPayPassword(t *testing.T) {
 		})
 
 		assert.Equal(t, schema.StatusFail, r.Status)
-		assert.Equal(t, user.ErrInvalidResetCode.Error(), r.Message)
+		assert.Equal(t, user_error.ErrInvalidResetCode.Error(), r.Message)
 		assert.False(t, r.Data.(bool))
 	}
 

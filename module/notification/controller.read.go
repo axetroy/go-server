@@ -3,9 +3,10 @@ package notification
 
 import (
 	"errors"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/middleware"
 	"github.com/axetroy/go-server/module/notification/notification_model"
+	"github.com/axetroy/go-server/module/user/user_error"
 	"github.com/axetroy/go-server/module/user/user_model"
 	"github.com/axetroy/go-server/schema"
 	"github.com/axetroy/go-server/service/database"
@@ -29,7 +30,7 @@ func MarkRead(context schema.Context, notificationID string) (res schema.Respons
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -59,7 +60,7 @@ func MarkRead(context schema.Context, notificationID string) (res schema.Respons
 	if err = tx.Where(&userInfo).First(&userInfo).Error; err != nil {
 		// 没有找到用户
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrUserNotExist
+			err = user_error.ErrUserNotExist
 		}
 		return
 	}
@@ -71,7 +72,7 @@ func MarkRead(context schema.Context, notificationID string) (res schema.Respons
 	// 先获取通知
 	if err = tx.Where(&notificationInfo).Last(&notificationInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrNoData
+			err = exception.ErrNoData
 		}
 		return
 	}

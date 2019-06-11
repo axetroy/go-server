@@ -4,12 +4,13 @@ package role
 import (
 	"errors"
 	"fmt"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/middleware"
 	"github.com/axetroy/go-server/module/address"
 	"github.com/axetroy/go-server/module/admin/admin_model"
 	"github.com/axetroy/go-server/module/role/role_model"
 	"github.com/axetroy/go-server/module/role/role_schema"
+	"github.com/axetroy/go-server/module/user/user_error"
 	"github.com/axetroy/go-server/schema"
 	"github.com/axetroy/go-server/service/database"
 	"github.com/gin-gonic/gin"
@@ -39,7 +40,7 @@ func Delete(context schema.Context, roleName string) (res schema.Response) {
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -66,7 +67,7 @@ func Delete(context schema.Context, roleName string) (res schema.Response) {
 
 	if err = tx.First(&adminInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrUserNotExist
+			err = user_error.ErrUserNotExist
 		}
 		return
 	}

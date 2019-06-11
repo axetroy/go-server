@@ -4,8 +4,8 @@ package auth
 import (
 	"errors"
 	"github.com/asaskevich/govalidator"
-	"github.com/axetroy/go-server/common_error"
-	"github.com/axetroy/go-server/module/user"
+	"github.com/axetroy/go-server/exception"
+	"github.com/axetroy/go-server/module/user/user_error"
 	"github.com/axetroy/go-server/module/user/user_model"
 	"github.com/axetroy/go-server/schema"
 	"github.com/axetroy/go-server/service/database"
@@ -37,7 +37,7 @@ func ResetPassword(input ResetPasswordParams) (res schema.Response) {
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -62,12 +62,12 @@ func ResetPassword(input ResetPasswordParams) (res schema.Response) {
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
 		return
 	} else if isValidInput == false {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 
 	if uid, err = redis.ResetCodeClient.Get(input.Code).Result(); err != nil {
-		err = user.ErrInvalidResetCode
+		err = user_error.ErrInvalidResetCode
 		return
 	}
 
@@ -77,7 +77,7 @@ func ResetPassword(input ResetPasswordParams) (res schema.Response) {
 
 	if err = tx.Where(&userInfo).First(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrUserNotExist
+			err = user_error.ErrUserNotExist
 		}
 		return
 	}
@@ -110,7 +110,7 @@ func ResetPasswordRouter(ctx *gin.Context) {
 	}()
 
 	if err = ctx.ShouldBindJSON(&input); err != nil {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 

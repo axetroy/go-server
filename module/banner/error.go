@@ -2,10 +2,10 @@
 package banner
 
 import (
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 )
 
 var (
-	ErrBannerInvalidPlatform = common_error.NewError("无效的平台")
-	ErrBannerNotExist        = common_error.NewError("不存在横幅")
+	ErrBannerInvalidPlatform = exception.NewError("无效的平台")
+	ErrBannerNotExist        = exception.NewError("不存在横幅")
 )

@@ -2,7 +2,7 @@
 package rbac
 
 import (
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/module/role/role_model"
 	"github.com/axetroy/go-server/module/user/user_model"
 	"github.com/axetroy/go-server/rbac/accession"
@@ -30,7 +30,7 @@ func New(uid string) (c *Controller, err error) {
 	}
 
 	if len(userInfo.Role) == 0 {
-		err = common_error.ErrNoPermission
+		err = exception.ErrNoPermission
 		return
 	}
 
@@ -96,7 +96,7 @@ func Require(accesions ...accession.Accession) gin.HandlerFunc {
 		}()
 
 		if uid == "" {
-			err = common_error.ErrNoPermission
+			err = exception.ErrNoPermission
 		}
 
 		if c, err = New(uid); err != nil {
@@ -104,7 +104,7 @@ func Require(accesions ...accession.Accession) gin.HandlerFunc {
 		}
 
 		if c.Require(accesions) == false {
-			err = common_error.ErrNoPermission
+			err = exception.ErrNoPermission
 		}
 	}
 }

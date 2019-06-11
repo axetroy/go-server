@@ -3,7 +3,7 @@ package user_test
 
 import (
 	"encoding/json"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/module/auth"
 	"github.com/axetroy/go-server/module/user"
 	"github.com/axetroy/go-server/module/user/user_model"
@@ -31,7 +31,7 @@ func TestUpdatePassword(t *testing.T) {
 		})
 
 		assert.Equal(t, schema.StatusFail, r.Status)
-		assert.Equal(t, common_error.ErrInvalidPassword.Error(), r.Message)
+		assert.Equal(t, exception.ErrInvalidPassword.Error(), r.Message)
 	}
 
 	{

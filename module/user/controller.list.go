@@ -3,7 +3,7 @@ package user
 
 import (
 	"errors"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/middleware"
 	"github.com/axetroy/go-server/module/user/user_model"
 	"github.com/axetroy/go-server/module/user/user_schema"
@@ -34,7 +34,7 @@ func GetList(context schema.Context, input Query) (res schema.List) {
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -58,7 +58,7 @@ func GetList(context schema.Context, input Query) (res schema.List) {
 	var total int64
 
 	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Order(query.Sort).Find(&list).Count(&total).Error; err != nil {
-		if err.Error() == common_error.ErrEmptyList.Error() {
+		if err.Error() == exception.ErrEmptyList.Error() {
 			err = nil
 		} else {
 			return
@@ -101,7 +101,7 @@ func GetListRouter(ctx *gin.Context) {
 	}()
 
 	if err = ctx.ShouldBindQuery(&input); err != nil {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 

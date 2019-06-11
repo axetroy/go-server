@@ -2,9 +2,9 @@
 package message
 
 import (
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 )
 
 var (
-	ErrMessageNotExist = common_error.NewError("用户消息不存在")
+	ErrMessageNotExist = exception.NewError("用户消息不存在")
 )

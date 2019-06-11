@@ -2,11 +2,11 @@
 package wallet
 
 import (
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 )
 
 var (
 	// wallet
-	ErrNotEnoughBalance = common_error.NewError("钱包余额不足")
-	ErrInvalidWallet    = common_error.NewError("无效的钱包")
+	ErrNotEnoughBalance = exception.NewError("钱包余额不足")
+	ErrInvalidWallet    = exception.NewError("无效的钱包")
 )

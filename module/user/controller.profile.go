@@ -4,10 +4,11 @@ package user
 import (
 	"errors"
 	"github.com/asaskevich/govalidator"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/middleware"
 	"github.com/axetroy/go-server/module/admin"
 	"github.com/axetroy/go-server/module/admin/admin_model"
+	"github.com/axetroy/go-server/module/user/user_error"
 	"github.com/axetroy/go-server/module/user/user_model"
 	"github.com/axetroy/go-server/module/user/user_schema"
 	"github.com/axetroy/go-server/schema"
@@ -40,7 +41,7 @@ func GetProfile(context schema.Context) (res schema.Response) {
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -67,7 +68,7 @@ func GetProfile(context schema.Context) (res schema.Response) {
 
 	if err = tx.Last(&user).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrUserNotExist
+			err = user_error.ErrUserNotExist
 		}
 		return
 	}
@@ -98,7 +99,7 @@ func GetProfileByAdmin(context schema.Context, userId string) (res schema.Respon
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -136,7 +137,7 @@ func GetProfileByAdmin(context schema.Context, userId string) (res schema.Respon
 
 	if err = tx.Last(&user).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrUserNotExist
+			err = user_error.ErrUserNotExist
 		}
 		return
 	}
@@ -169,7 +170,7 @@ func UpdateProfile(context schema.Context, input UpdateProfileParams) (res schem
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -194,7 +195,7 @@ func UpdateProfile(context schema.Context, input UpdateProfileParams) (res schem
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
 		return
 	} else if isValidInput == false {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 
@@ -229,7 +230,7 @@ func UpdateProfile(context schema.Context, input UpdateProfileParams) (res schem
 
 	if err = tx.First(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrUserNotExist
+			err = user_error.ErrUserNotExist
 		}
 		return
 	}
@@ -262,7 +263,7 @@ func UpdateProfileByAdmin(context schema.Context, userId string, input UpdatePro
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -287,7 +288,7 @@ func UpdateProfileByAdmin(context schema.Context, userId string, input UpdatePro
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
 		return
 	} else if isValidInput == false {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 
@@ -334,7 +335,7 @@ func UpdateProfileByAdmin(context schema.Context, userId string, input UpdatePro
 
 	if err = tx.First(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrUserNotExist
+			err = user_error.ErrUserNotExist
 		}
 		return
 	}
@@ -406,7 +407,7 @@ func UpdateProfileRouter(ctx *gin.Context) {
 	}()
 
 	if err = ctx.ShouldBindJSON(&input); err != nil {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 
@@ -433,7 +434,7 @@ func UpdateProfileByAdminRouter(ctx *gin.Context) {
 	userId := ctx.Param("user_id")
 
 	if err = ctx.ShouldBindJSON(&input); err != nil {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 

@@ -3,10 +3,11 @@ package transfer
 
 import (
 	"errors"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/middleware"
 	"github.com/axetroy/go-server/module/transfer/transfer_model"
 	"github.com/axetroy/go-server/module/transfer/transfer_schema"
+	"github.com/axetroy/go-server/module/user/user_error"
 	"github.com/axetroy/go-server/module/user/user_model"
 	"github.com/axetroy/go-server/schema"
 	"github.com/axetroy/go-server/service/database"
@@ -37,7 +38,7 @@ func GetHistory(context schema.Context, input Query) (res schema.List) {
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -66,7 +67,7 @@ func GetHistory(context schema.Context, input Query) (res schema.List) {
 
 	if err = tx.Last(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrUserNotExist
+			err = user_error.ErrUserNotExist
 		}
 		return
 	}
@@ -130,7 +131,7 @@ func GetHistoryRouter(ctx *gin.Context) {
 	}()
 
 	if err = ctx.ShouldBindQuery(&input); err != nil {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 

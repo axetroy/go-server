@@ -3,10 +3,11 @@ package transfer
 
 import (
 	"errors"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/middleware"
 	"github.com/axetroy/go-server/module/transfer/transfer_model"
 	"github.com/axetroy/go-server/module/transfer/transfer_schema"
+	"github.com/axetroy/go-server/module/user/user_error"
 	"github.com/axetroy/go-server/module/user/user_model"
 	"github.com/axetroy/go-server/schema"
 	"github.com/axetroy/go-server/service/database"
@@ -32,7 +33,7 @@ func GetDetail(context schema.Context, transferId string) (res schema.Response) 
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -59,7 +60,7 @@ func GetDetail(context schema.Context, transferId string) (res schema.Response) 
 
 	if err = tx.Last(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrUserNotExist
+			err = user_error.ErrUserNotExist
 		}
 		return
 	}
@@ -79,7 +80,7 @@ func GetDetail(context schema.Context, transferId string) (res schema.Response) 
 	if log.From != context.Uid {
 		if log.To != context.Uid {
 			// 既不是转账人，也不是收款人, 没有权限获取这条记录
-			err = common_error.ErrNoPermission
+			err = exception.ErrNoPermission
 			return
 		}
 	}

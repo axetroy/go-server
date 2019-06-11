@@ -3,7 +3,7 @@ package news
 
 import (
 	"errors"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/module/news/news_model"
 	"github.com/axetroy/go-server/module/news/news_schema"
 	"github.com/axetroy/go-server/schema"
@@ -29,7 +29,7 @@ func GetNews(id string) (res schema.Response) {
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 

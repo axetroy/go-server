@@ -3,7 +3,7 @@ package menu
 
 import (
 	"errors"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/module/menu/menu_model"
 	"github.com/axetroy/go-server/module/menu/menu_schema"
 	"github.com/axetroy/go-server/schema"
@@ -29,7 +29,7 @@ func GetMenu(id string) (res schema.Response) {
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -48,7 +48,7 @@ func GetMenu(id string) (res schema.Response) {
 
 	if err = database.Db.First(&menuInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrNoData
+			err = exception.ErrNoData
 		}
 		return
 	}

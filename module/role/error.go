@@ -2,11 +2,11 @@
 package role
 
 import (
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 )
 
 var (
-	ErrRoleNotExist     = common_error.NewError("角色不存在")
-	ErrRoleCannotUpdate = common_error.NewError("无法更新角色")
-	ErrRoleHadBeenUsed  = common_error.NewError("角色正在被使用，无法删除")
+	ErrRoleNotExist     = exception.NewError("角色不存在")
+	ErrRoleCannotUpdate = exception.NewError("无法更新角色")
+	ErrRoleHadBeenUsed  = exception.NewError("角色正在被使用，无法删除")
 )

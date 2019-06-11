@@ -65,13 +65,7 @@ func init() {
 		userAuthMiddleware := middleware.Authenticate(false) // 用户Token的中间件
 
 		// 认证类
-		{
-			authRouter := v1.Group("/auth")
-			authRouter.POST("/signup", auth.SignUpRouter)               // 注册账号
-			authRouter.POST("/signin", auth.SignInRouter)               // 登陆账号
-			authRouter.POST("/activation", auth.ActivationRouter)       // 激活账号
-			authRouter.PUT("/password/reset", auth.ResetPasswordRouter) // 密码重置
-		}
+		auth.Route(v1) // 验证模块
 
 		// oAuth2 认证
 		{
@@ -143,18 +137,12 @@ func init() {
 			reportRouter.PUT("/r/:report_id", report.UpdateRouter)    // 更新这条反馈信息
 		}
 
-		// Banner
-		{
-			bannerRouter := v1.Group("banner")
-			bannerRouter.GET("", banner.GetListRouter)                // 获取 banner 列表
-			bannerRouter.GET("/b/:banner_id", banner.GetBannerRouter) // 获取 banner 详情
-		}
+		banner.Route(v1)
 
 		// 通用类
 		{
 			// 邮件服务
-			v1.POST("/email/send/activation", email.SendActivationEmailRouter)        // 发送激活邮件
-			v1.POST("/email/send/password/reset", email.SendResetPasswordEmailRouter) // 发送密码重置邮件
+			email.Route(v1)
 
 			// 文件上传
 			v1.POST("/upload/file", uploader.File)      // 上传文件
@@ -165,9 +153,7 @@ func init() {
 			v1.GET("/resource/image/:filename", resource.Image)         // 获取图片纯文本
 			v1.GET("/resource/thumbnail/:filename", resource.Thumbnail) // 获取缩略图纯文本
 			// 下载资源
-			v1.GET("/download/file/:filename", downloader.File)           // 下载文件
-			v1.GET("/download/image/:filename", downloader.Image)         // 下载图片
-			v1.GET("/download/thumbnail/:filename", downloader.Thumbnail) // 下载缩略图
+			downloader.Route(v1)
 			// 公共资源目录
 			v1.GET("/avatar/:filename", user.GetAvatarRouter) // 获取用户头像
 

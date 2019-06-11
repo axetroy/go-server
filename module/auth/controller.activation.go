@@ -4,7 +4,8 @@ package auth
 import (
 	"errors"
 	"github.com/asaskevich/govalidator"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
+	"github.com/axetroy/go-server/module/user/user_error"
 	"github.com/axetroy/go-server/module/user/user_model"
 	"github.com/axetroy/go-server/schema"
 	"github.com/axetroy/go-server/service/database"
@@ -34,7 +35,7 @@ func Activation(input ActivationParams) (res schema.Response) {
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -57,12 +58,12 @@ func Activation(input ActivationParams) (res schema.Response) {
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
 		return
 	} else if isValidInput == false {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 
 	if uid, err = redis.ActivationCodeClient.Get(input.Code).Result(); err != nil {
-		err = common_error.ErrInvalidActiveCode
+		err = exception.ErrInvalidActiveCode
 		return
 	}
 
@@ -72,14 +73,14 @@ func Activation(input ActivationParams) (res schema.Response) {
 
 	if err = tx.Where(&userInfo).Find(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrUserNotExist
+			err = user_error.ErrUserNotExist
 		}
 		return
 	}
 
 	// 如果用户的状态不是未激活的话
 	if userInfo.Status != user_model.UserStatusInactivated {
-		err = common_error.ErrUserHaveActive
+		err = exception.ErrUserHaveActive
 		return
 	}
 
@@ -109,7 +110,7 @@ func ActivationRouter(ctx *gin.Context) {
 	}()
 
 	if err = ctx.ShouldBindJSON(&input); err != nil {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 

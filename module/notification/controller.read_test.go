@@ -3,11 +3,11 @@ package notification_test
 
 import (
 	"encoding/json"
-	"github.com/axetroy/go-server/common_error"
 	"github.com/axetroy/go-server/module/auth"
 	"github.com/axetroy/go-server/module/notification"
 	"github.com/axetroy/go-server/module/notification/notification_model"
 	"github.com/axetroy/go-server/module/notification/notification_schema"
+	"github.com/axetroy/go-server/module/user/user_error"
 	"github.com/axetroy/go-server/schema"
 	"github.com/axetroy/go-server/service/database"
 	"github.com/axetroy/go-server/service/token"
@@ -61,7 +61,7 @@ func TestMarkRead(t *testing.T) {
 		}, testNotification.Id)
 
 		assert.Equal(t, schema.StatusFail, r.Status)
-		assert.Equal(t, common_error.ErrUserNotExist.Error(), r.Message)
+		assert.Equal(t, user_error.ErrUserNotExist.Error(), r.Message)
 	}
 
 	{

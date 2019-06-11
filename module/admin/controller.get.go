@@ -3,7 +3,7 @@ package admin
 
 import (
 	"errors"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/middleware"
 	"github.com/axetroy/go-server/module/admin/admin_model"
 	"github.com/axetroy/go-server/module/admin/admin_schema"
@@ -32,7 +32,7 @@ func GetAdminInfo(context schema.Context) (res schema.Response) {
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -61,7 +61,7 @@ func GetAdminInfo(context schema.Context) (res schema.Response) {
 
 	if err = tx.First(&adminInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrInvalidAccountOrPassword
+			err = exception.ErrInvalidAccountOrPassword
 		}
 		return
 	}
@@ -99,7 +99,7 @@ func GetAdminInfoById(context schema.Context, adminId string) (res schema.Respon
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -139,7 +139,7 @@ func GetAdminInfoById(context schema.Context, adminId string) (res schema.Respon
 
 	if err = tx.First(&adminInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrInvalidAccountOrPassword
+			err = exception.ErrInvalidAccountOrPassword
 		}
 		return
 	}

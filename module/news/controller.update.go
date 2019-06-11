@@ -3,7 +3,7 @@ package news
 
 import (
 	"errors"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/middleware"
 	"github.com/axetroy/go-server/module/admin"
 	"github.com/axetroy/go-server/module/admin/admin_model"
@@ -43,7 +43,7 @@ func Update(context schema.Context, newsId string, input UpdateParams) (res sche
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -149,7 +149,7 @@ func UpdateRouter(ctx *gin.Context) {
 	id := ctx.Param("news_id")
 
 	if err = ctx.ShouldBindJSON(&input); err != nil {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 

@@ -3,9 +3,9 @@ package email_test
 
 import (
 	"encoding/json"
-	"github.com/axetroy/go-server/common_error"
 	"github.com/axetroy/go-server/module/auth"
 	"github.com/axetroy/go-server/module/email"
+	"github.com/axetroy/go-server/module/user/user_error"
 	"github.com/axetroy/go-server/schema"
 	"github.com/axetroy/go-server/tester"
 	"github.com/stretchr/testify/assert"
@@ -38,5 +38,5 @@ func TestSendResetPasswordEmail(t *testing.T) {
 	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
 
 	assert.Equal(t, schema.StatusFail, res.Status)
-	assert.Equal(t, common_error.ErrUserNotExist.Error(), res.Message)
+	assert.Equal(t, user_error.ErrUserNotExist.Error(), res.Message)
 }

@@ -3,7 +3,7 @@ package message
 
 import (
 	"errors"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/middleware"
 	"github.com/axetroy/go-server/module/admin"
 	"github.com/axetroy/go-server/module/admin/admin_model"
@@ -37,7 +37,7 @@ func DeleteByAdmin(context schema.Context, messageId string) (res schema.Respons
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -131,7 +131,7 @@ func DeleteByUser(context schema.Context, messageId string) (res schema.Response
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 

@@ -3,8 +3,9 @@ package wallet
 
 import (
 	"errors"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/middleware"
+	"github.com/axetroy/go-server/module/user/user_error"
 	"github.com/axetroy/go-server/module/user/user_model"
 	"github.com/axetroy/go-server/module/wallet/wallet_model"
 	"github.com/axetroy/go-server/module/wallet/wallet_schema"
@@ -31,7 +32,7 @@ func GetWallets(context schema.Context) (res schema.Response) {
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -59,7 +60,7 @@ func GetWallets(context schema.Context) (res schema.Response) {
 
 	if err = tx.Where(userInfo).Last(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrUserNotExist
+			err = user_error.ErrUserNotExist
 		}
 		return
 	}

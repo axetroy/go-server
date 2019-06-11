@@ -4,10 +4,11 @@ package user
 import (
 	"errors"
 	"github.com/asaskevich/govalidator"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/middleware"
 	"github.com/axetroy/go-server/module/admin"
 	"github.com/axetroy/go-server/module/admin/admin_model"
+	"github.com/axetroy/go-server/module/user/user_error"
 	"github.com/axetroy/go-server/module/user/user_model"
 	"github.com/axetroy/go-server/schema"
 	"github.com/axetroy/go-server/service/database"
@@ -41,7 +42,7 @@ func UpdatePassword(context schema.Context, input UpdatePasswordParams) (res sch
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -66,12 +67,12 @@ func UpdatePassword(context schema.Context, input UpdatePasswordParams) (res sch
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
 		return
 	} else if isValidInput == false {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 
 	if input.OldPassword == input.NewPassword {
-		err = common_error.ErrPasswordDuplicate
+		err = exception.ErrPasswordDuplicate
 		return
 	}
 
@@ -81,14 +82,14 @@ func UpdatePassword(context schema.Context, input UpdatePasswordParams) (res sch
 
 	if err = tx.First(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrUserNotExist
+			err = user_error.ErrUserNotExist
 		}
 		return
 	}
 
 	// 验证密码是否正确
 	if userInfo.Password != util.GeneratePassword(input.OldPassword) {
-		err = common_error.ErrInvalidPassword
+		err = exception.ErrInvalidPassword
 		return
 	}
 
@@ -116,7 +117,7 @@ func UpdatePasswordByAdmin(context schema.Context, userId string, input UpdatePa
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -141,7 +142,7 @@ func UpdatePasswordByAdmin(context schema.Context, userId string, input UpdatePa
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
 		return
 	} else if isValidInput == false {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 
@@ -159,7 +160,7 @@ func UpdatePasswordByAdmin(context schema.Context, userId string, input UpdatePa
 
 	// 只有超级管理员才能操作
 	if adminInfo.IsSuper == false {
-		err = common_error.ErrNoPermission
+		err = exception.ErrNoPermission
 		return
 	}
 
@@ -167,7 +168,7 @@ func UpdatePasswordByAdmin(context schema.Context, userId string, input UpdatePa
 
 	if err = tx.First(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = common_error.ErrUserNotExist
+			err = user_error.ErrUserNotExist
 		}
 		return
 	}
@@ -197,7 +198,7 @@ func UpdatePasswordRouter(ctx *gin.Context) {
 	}()
 
 	if err = ctx.ShouldBindJSON(&input); err != nil {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 
@@ -224,7 +225,7 @@ func UpdatePasswordByAdminRouter(ctx *gin.Context) {
 	userId := ctx.Param("user_id")
 
 	if err = ctx.ShouldBindJSON(&input); err != nil {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 

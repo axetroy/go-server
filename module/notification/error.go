@@ -2,9 +2,9 @@
 package notification
 
 import (
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 )
 
 var (
-	ErrNotificationNotExist = common_error.NewError("系统通知不存在")
+	ErrNotificationNotExist = exception.NewError("系统通知不存在")
 )

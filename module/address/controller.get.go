@@ -3,7 +3,7 @@ package address
 
 import (
 	"errors"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/middleware"
 	"github.com/axetroy/go-server/module/address/address_model"
 	"github.com/axetroy/go-server/module/address/address_schema"
@@ -30,7 +30,7 @@ func GetDetail(context schema.Context, id string) (res schema.Response) {
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 

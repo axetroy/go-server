@@ -3,7 +3,7 @@ package news
 
 import (
 	"errors"
-	"github.com/axetroy/go-server/common_error"
+	"github.com/axetroy/go-server/exception"
 	"github.com/axetroy/go-server/module/news/news_model"
 	"github.com/axetroy/go-server/module/news/news_schema"
 	"github.com/axetroy/go-server/schema"
@@ -36,7 +36,7 @@ func GetList(input Query) (res schema.List) {
 			case error:
 				err = t
 			default:
-				err = common_error.ErrUnknown
+				err = exception.ErrUnknown
 			}
 		}
 
@@ -106,7 +106,7 @@ func GetListRouter(ctx *gin.Context) {
 	}()
 
 	if err = ctx.ShouldBindQuery(&input); err != nil {
-		err = common_error.ErrInvalidParams
+		err = exception.ErrInvalidParams
 		return
 	}
 
