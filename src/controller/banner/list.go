@@ -57,25 +57,25 @@ func GetList(context controller.Context, q Query) (res schema.List) {
 
 	list := make([]model.Banner, 0)
 
-	m := map[string]interface{}{}
+	filter := map[string]interface{}{}
 
 	if q.Platform != nil {
-		m["platform"] = *q.Platform
+		filter["platform"] = *q.Platform
 	}
 
 	if q.Active != nil {
-		m["active"] = *q.Active
+		filter["active"] = *q.Active
 	} else {
-		m["active"] = true
+		filter["active"] = true
 	}
 
 	var total int64
 
-	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Order(query.Sort).Where(m).Find(&list).Error; err != nil {
+	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Order(query.Sort).Where(filter).Find(&list).Error; err != nil {
 		return
 	}
 
-	if err = database.Db.Model(model.Banner{}).Where(m).Count(&total).Error; err != nil {
+	if err = database.Db.Model(model.Banner{}).Where(filter).Count(&total).Error; err != nil {
 		return
 	}
 
@@ -112,6 +112,10 @@ func GetListRouter(context *gin.Context) {
 		}
 		context.JSON(http.StatusOK, res)
 	}()
+
+	if err = context.ShouldBindQuery(&query); err != nil {
+		return
+	}
 
 	res = GetList(controller.Context{
 		Uid: context.GetString(middleware.ContextUidField),
