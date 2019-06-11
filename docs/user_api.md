@@ -147,7 +147,7 @@
 
 </details>
 
-<details><summary>我的邀请列表<code>[GET] /v1/user/invite</code></summary>
+<details><summary>我的邀请列表<code>[GET] /v1/invite</code></summary>
 <p>
 
 获取我的邀请列表
@@ -156,7 +156,7 @@
 
 </details>
 
-<details><summary>获取单条邀请信息<code>[GET] /v1/user/invite/i/:invite_id</code></summary>
+<details><summary>获取单条邀请信息<code>[GET] /v1/invite/i/:invite_id</code></summary>
 <p>
 
 | 参数      | 类型     | 说明          | 必选 |
@@ -182,7 +182,7 @@
 
 ### 收货地址
 
-<details><summary>添加收货地址<code>[POST] /v1/user/address</code></summary>
+<details><summary>添加收货地址<code>[POST] /v1/address</code></summary>
 <p>
 
 | 参数          | 类型     | 说明                       | 必选 |
@@ -199,7 +199,7 @@
 
 </details>
 
-<details><summary>更新收货地址<code>[PUT] /v1/user/address/a/:address_id</code></summary>
+<details><summary>更新收货地址<code>[PUT] /v1/address/a/:address_id</code></summary>
 <p>
 
 | 参数          | 类型     | 说明                       | 必选 |
@@ -216,7 +216,7 @@
 
 </details>
 
-<details><summary>删除收货地址<code>[DELETE] /v1/user/address/a/:address_id</code></summary>
+<details><summary>删除收货地址<code>[DELETE] /v1/address/a/:address_id</code></summary>
 <p>
 
 删除收货地址
@@ -225,7 +225,7 @@
 
 </details>
 
-<details><summary>收货地址列表<code>[GET] /v1/user/address</code></summary>
+<details><summary>收货地址列表<code>[GET] /v1/address</code></summary>
 <p>
 
 获取我的收货地址列表
@@ -234,7 +234,7 @@
 
 </details>
 
-<details><summary>获取默认收货地址<code>[GET] /v1/user/address/default</code></summary>
+<details><summary>获取默认收货地址<code>[GET] /v1/address/default</code></summary>
 <p>
 
 获取我的默认收货地址
@@ -243,7 +243,7 @@
 
 </details>
 
-<details><summary>获取某一个地址<code>[GET] /v1/user/address/a/:address_id</code></summary>
+<details><summary>获取某一个地址<code>[GET] /v1/address/a/:address_id</code></summary>
 <p>
 
 获取某一个地址的详细信息

@@ -2,15 +2,16 @@ package tester
 
 import (
 	"errors"
-	"github.com/axetroy/go-server/src/controller"
-	"github.com/axetroy/go-server/src/controller/admin"
-	"github.com/axetroy/go-server/src/controller/auth"
-	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/module/admin"
+	"github.com/axetroy/go-server/module/admin/admin_schema"
+	"github.com/axetroy/go-server/module/auth"
+	"github.com/axetroy/go-server/module/user/user_schema"
+	"github.com/axetroy/go-server/schema"
+	"github.com/axetroy/go-server/util"
 )
 
 // 创建一个测试用户
-func CreateUser() (profile schema.ProfileWithToken, err error) {
+func CreateUser() (profile user_schema.ProfileWithToken, err error) {
 	var (
 		username  = "test-" + util.RandomString(6)
 		password  = "123123"
@@ -28,7 +29,7 @@ func CreateUser() (profile schema.ProfileWithToken, err error) {
 	}
 
 	// 登陆获取 token
-	r := auth.SignIn(controller.Context{
+	r := auth.SignIn(schema.Context{
 		UserAgent: userAgent,
 		Ip:        ip,
 	}, auth.SignInParams{
@@ -49,7 +50,7 @@ func CreateUser() (profile schema.ProfileWithToken, err error) {
 }
 
 // 登陆超级管理员
-func LoginAdmin() (profile schema.AdminProfileWithToken, err error) {
+func LoginAdmin() (profile admin_schema.AdminProfileWithToken, err error) {
 	r := admin.Login(admin.SignInParams{
 		Username: "admin",
 		Password: "admin",

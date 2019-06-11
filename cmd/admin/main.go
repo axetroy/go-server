@@ -2,9 +2,9 @@
 package main
 
 import (
-	"github.com/axetroy/go-server/src"
+	"github.com/axetroy/go-server"
 )
 
 func main() {
-	src.ServerAdminClient()
+	go_server.ServerAdminClient()
 }

@@ -2,7 +2,7 @@
 package main
 
 import (
-	"github.com/axetroy/go-server/src/message_queue"
+	"github.com/axetroy/go-server/module/message_queue"
 )
 
 func main() {

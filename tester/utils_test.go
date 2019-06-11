@@ -1,8 +1,8 @@
 package tester_test
 
 import (
-	"github.com/axetroy/go-server/src/controller/admin"
-	"github.com/axetroy/go-server/src/controller/auth"
+	"github.com/axetroy/go-server/module/admin"
+	"github.com/axetroy/go-server/module/auth"
 	"github.com/axetroy/go-server/tester"
 	"github.com/stretchr/testify/assert"
 	"testing"
