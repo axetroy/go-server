@@ -33,6 +33,10 @@ var (
 	AdminBannerUpdate = New("banner::update", "有权限修改横幅信息")
 	AdminBannerDelete = New("banner::delete", "有权限删除横幅")
 
+	AdminReportGet    = New("report::get", "有权限获取反馈信息")
+	AdminReportUpdate = New("report::update", "有权限修改反馈信息")
+	AdminReportDelete = New("report::delete", "有权限删除反馈")
+
 	// 管理员的所有权限
 	AdminList = []*Accession{
 		AdminAdminGet,
@@ -65,6 +69,10 @@ var (
 		AdminBannerCreate,
 		AdminBannerUpdate,
 		AdminBannerDelete,
+
+		AdminReportGet,
+		AdminReportUpdate,
+		AdminReportDelete,
 	}
 
 	AdminMap = map[string]*Accession{}
