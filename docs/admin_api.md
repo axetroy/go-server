@@ -120,6 +120,16 @@
 
 </details>
 
+<details><summary>删除管理员<code>[DELETE] /v1/admin/a/:admin_id</code></summary>
+
+<p>
+
+删除删除管理员
+
+</p>
+
+</details>
+
 <details><summary>获取管理员的所有权限列表<code>[GET] /v1/admin/accession</code></summary>
 
 <p>

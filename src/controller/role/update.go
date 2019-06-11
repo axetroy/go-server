@@ -125,7 +125,7 @@ func Update(context controller.Context, roleName string, input UpdateParams) (re
 	}
 
 	if shouldUpdate {
-		if err = tx.Model(&roleInfo).UpdateColumns(&updateModel).Error; err != nil {
+		if err = tx.Model(&roleInfo).Updates(&updateModel).Error; err != nil {
 			if err == gorm.ErrRecordNotFound {
 				err = exception.RoleNotExist
 				return
@@ -262,7 +262,7 @@ func UpdateUserRole(context controller.Context, userId string, input UpdateUserR
 		Role: input.Roles,
 	}
 
-	if err = tx.Model(&userInfo).UpdateColumns(&updateModel).Error; err != nil {
+	if err = tx.Model(&userInfo).Updates(&updateModel).Error; err != nil {
 		return
 	}
 

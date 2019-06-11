@@ -2,11 +2,10 @@
 package model
 
 import (
-	"github.com/lib/pq"
-	"time"
-
 	"github.com/axetroy/go-server/src/util"
 	"github.com/jinzhu/gorm"
+	"github.com/lib/pq"
+	"time"
 )
 
 type AdminStatus int32

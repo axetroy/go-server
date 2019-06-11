@@ -112,7 +112,7 @@ func Update(context controller.Context, messageId string, input UpdateParams) (r
 	}
 
 	if shouldUpdate {
-		if err = tx.Model(&messageInfo).UpdateColumns(&updateModel).Error; err != nil {
+		if err = tx.Model(&messageInfo).Updates(&updateModel).Error; err != nil {
 			if err == gorm.ErrRecordNotFound {
 				err = exception.MessageNotExist
 				return

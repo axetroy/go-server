@@ -80,7 +80,7 @@ func GetList(context controller.Context, input Query) (res schema.List) {
 
 	var total int64
 
-	if err = database.Db.Where(filter).Count(&total).Error; err != nil {
+	if err = database.Db.Model(&model.Report{}).Where(filter).Count(&total).Error; err != nil {
 		return
 	}
 

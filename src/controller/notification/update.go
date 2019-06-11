@@ -106,7 +106,7 @@ func Update(context controller.Context, notificationId string, input UpdateParam
 		updateModel.Note = input.Note
 	}
 
-	if err = tx.Model(&notificationInfo).UpdateColumns(&updateModel).Error; err != nil {
+	if err = tx.Model(&notificationInfo).Updates(&updateModel).Error; err != nil {
 		return
 	}
 

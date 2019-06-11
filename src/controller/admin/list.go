@@ -55,15 +55,19 @@ func GetList(context controller.Context, input Query) (res schema.List) {
 	query.Normalize()
 
 	list := make([]model.Admin, 0)
-	filter := model.Admin{}
+	filter := map[string]interface{}{}
 
 	if input.Status != nil {
-		filter.Status = *input.Status
+		filter["status"] = *input.Status
+	}
+
+	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Order(query.Sort).Where(filter).Find(&list).Error; err != nil {
+		return
 	}
 
 	var total int64
 
-	if err = database.Db.Where(filter).Limit(query.Limit).Offset(query.Limit * query.Page).Find(&list).Count(&total).Error; err != nil {
+	if err = database.Db.Model(model.Admin{}).Where(filter).Count(&total).Error; err != nil {
 		return
 	}
 

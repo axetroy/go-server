@@ -152,7 +152,7 @@ func Update(context controller.Context, addressId string, input UpdateParams) (r
 	}
 
 	if shouldUpdate {
-		if err = tx.Model(&addressInfo).UpdateColumns(&updateModel).Error; err != nil {
+		if err = tx.Model(&addressInfo).Updates(&updateModel).Error; err != nil {
 			if err == gorm.ErrRecordNotFound {
 				err = exception.AddressNotExist
 				return

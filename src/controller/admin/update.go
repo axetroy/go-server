@@ -99,22 +99,23 @@ func Update(context controller.Context, adminId string, input UpdateParams) (res
 		return
 	}
 
-	updateModel := model.Admin{}
+	// 需要更新的字段
+	updated := map[string]interface{}{}
 
 	if input.Status != nil {
 		shouldUpdate = true
-		updateModel.Status = *input.Status
 		adminInfo.Status = *input.Status
+		updated["status"] = *input.Status
 	}
 
 	if input.Name != nil {
 		shouldUpdate = true
-		updateModel.Name = *input.Name
 		adminInfo.Name = *input.Name
+		updated["name"] = *input.Name
 	}
 
 	if shouldUpdate {
-		if err = tx.Model(&adminInfo).UpdateColumns(&updateModel).Error; err != nil {
+		if err = tx.Model(&adminInfo).Updates(updated).Error; err != nil {
 			if err == gorm.ErrRecordNotFound {
 				err = exception.AdminNotExist
 				return
@@ -125,6 +126,10 @@ func Update(context controller.Context, adminId string, input UpdateParams) (res
 
 	if err = mapstructure.Decode(adminInfo, &data.AdminProfilePure); err != nil {
 		return
+	}
+
+	if len(data.Accession) == 0 {
+		data.Accession = []string{}
 	}
 
 	data.CreatedAt = adminInfo.CreatedAt.Format(time.RFC3339Nano)

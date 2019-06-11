@@ -78,6 +78,10 @@ func GetAdminInfo(context controller.Context) (res schema.Response) {
 		}
 	}
 
+	if len(data.Accession) == 0 {
+		data.Accession = []string{}
+	}
+
 	data.CreatedAt = adminInfo.CreatedAt.Format(time.RFC3339Nano)
 	data.UpdatedAt = adminInfo.UpdatedAt.Format(time.RFC3339Nano)
 

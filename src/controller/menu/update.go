@@ -139,7 +139,7 @@ func Update(context controller.Context, bannerId string, input UpdateParams) (re
 	}
 
 	if shouldUpdate {
-		if err = tx.Model(&menuInfo).UpdateColumns(m).Error; err != nil {
+		if err = tx.Model(&menuInfo).Updates(m).Error; err != nil {
 			if err == gorm.ErrRecordNotFound {
 				err = exception.BannerNotExist
 				return
