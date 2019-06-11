@@ -8,6 +8,7 @@ import (
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
+	"github.com/axetroy/go-server/src/rbac/accession"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
 	"github.com/gin-gonic/gin"
@@ -18,8 +19,9 @@ import (
 )
 
 type UpdateParams struct {
-	Status *model.AdminStatus `json:"status"` // 管理员状态
-	Name   *string            `json:"name"`   // 管理员名字
+	Status    *model.AdminStatus `json:"status"`    // 管理员状态
+	Name      *string            `json:"name"`      // 管理员名字
+	Accession *[]string          `json:"accession"` // 管理员的权限
 }
 
 func Update(context controller.Context, adminId string, input UpdateParams) (res schema.Response) {
@@ -112,6 +114,13 @@ func Update(context controller.Context, adminId string, input UpdateParams) (res
 		shouldUpdate = true
 		adminInfo.Name = *input.Name
 		updated["name"] = *input.Name
+	}
+
+	if input.Accession != nil {
+		shouldUpdate = true
+		accessions := accession.FilterAdminAccession(*input.Accession) // 提取有效的权限, 无效的忽略
+		adminInfo.Accession = accessions
+		updated["accession"] = accessions
 	}
 
 	if shouldUpdate {
