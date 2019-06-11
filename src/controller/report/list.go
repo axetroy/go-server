@@ -62,21 +62,25 @@ func GetList(context controller.Context, input Query) (res schema.List) {
 
 	list := make([]model.Report, 0)
 
-	var total int64
+	filter := map[string]interface{}{}
 
-	search := model.Report{
-		Uid: context.Uid,
-	}
+	filter["uid"] = context.Uid
 
 	if input.Type != nil {
-		search.Type = *input.Type
+		filter["type"] = *input.Type
 	}
 
 	if input.Status != nil {
-		search.Status = *input.Status
+		filter["status"] = *input.Status
 	}
 
-	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Where(&search).Find(&list).Count(&total).Error; err != nil {
+	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Order(query.Sort).Where(filter).Find(&list).Error; err != nil {
+		return
+	}
+
+	var total int64
+
+	if err = database.Db.Where(filter).Count(&total).Error; err != nil {
 		return
 	}
 
@@ -160,21 +164,21 @@ func GetListByAdmin(context controller.Context, input QueryAdmin) (res schema.Li
 
 	list := make([]model.Report, 0)
 
-	var total int64
-
-	search := model.Report{}
+	filter := map[string]interface{}{}
 
 	if input.Type != nil {
-		search.Type = *input.Type
+		filter["type"] = *input.Type
 	}
 
 	if input.Status != nil {
-		search.Status = *input.Status
+		filter["status"] = *input.Status
 	}
 
-	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Where(&search).Find(&list).Count(&total).Error; err != nil {
+	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Order(query.Sort).Where(filter).Find(&list).Error; err != nil {
 		return
 	}
+
+	var total int64
 
 	for _, v := range list {
 		d := schema.Report{}

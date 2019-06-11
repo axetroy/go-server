@@ -48,6 +48,11 @@ var (
 	AdminMenuUpdate = New("menu::update", "有权限修改菜单信息")
 	AdminMenuDelete = New("menu::delete", "有权限删除菜单")
 
+	AdminBannerGet    = New("banner::get", "有权限获取横幅信息")
+	AdminBannerCreate = New("banner::create", "有权限创建新横幅")
+	AdminBannerUpdate = New("banner::update", "有权限修改横幅信息")
+	AdminBannerDelete = New("banner::delete", "有权限删除横幅")
+
 	// 管理员的所有权限
 	AdminList = []*Accession{
 		AdminNewsGet,
@@ -70,6 +75,11 @@ var (
 		AdminMenuCreate,
 		AdminMenuUpdate,
 		AdminMenuDelete,
+
+		AdminBannerGet,
+		AdminBannerCreate,
+		AdminBannerUpdate,
+		AdminBannerDelete,
 	}
 
 	AdminMap = map[string]*Accession{}
