@@ -16,11 +16,7 @@ import (
 )
 
 func TestGetList(t *testing.T) {
-	userInfo, err := tester.CreateUser()
-
-	if !assert.Nil(t, err) {
-		return
-	}
+	userInfo, _ := tester.CreateUser()
 
 	defer auth.DeleteUserByUserName(userInfo.Username)
 
@@ -68,7 +64,7 @@ func TestGetList(t *testing.T) {
 
 	// 获取地址列表
 	{
-		r := address.GetList(context, address.Query{})
+		r := address.GetAddressListByUser(context, address.Query{})
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)

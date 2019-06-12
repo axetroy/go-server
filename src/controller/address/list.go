@@ -21,7 +21,7 @@ type Query struct {
 	//Status model.NewsStatus `json:"status" form:"status"`
 }
 
-func GetList(context controller.Context, input Query) (res schema.List) {
+func GetAddressListByUser(context controller.Context, input Query) (res schema.List) {
 	var (
 		err  error
 		data = make([]schema.Address, 0) // 输出到外部的结果
@@ -57,11 +57,19 @@ func GetList(context controller.Context, input Query) (res schema.List) {
 
 	query.Normalize()
 
-	var total int64
-
 	tx = database.Db.Begin()
 
-	if err = tx.Limit(query.Limit).Offset(query.Limit*query.Page).Where(model.Address{Uid: context.Uid}, context.Uid).Find(&list).Count(&total).Error; err != nil {
+	filter := map[string]interface{}{}
+
+	filter["uid"] = context.Uid
+
+	var total int64
+
+	if err = tx.Limit(query.Limit).Offset(query.Limit * query.Page).Order(query.Sort).Where(filter).Find(&list).Error; err != nil {
+		return
+	}
+
+	if err = tx.Model(model.Address{}).Where(filter).Count(&total).Error; err != nil {
 		return
 	}
 
@@ -84,7 +92,7 @@ func GetList(context controller.Context, input Query) (res schema.List) {
 	return
 }
 
-func GetListRouter(context *gin.Context) {
+func GetAddressListByUserRouter(context *gin.Context) {
 	var (
 		err   error
 		res   = schema.List{}
@@ -104,7 +112,7 @@ func GetListRouter(context *gin.Context) {
 		return
 	}
 
-	res = GetList(controller.Context{
+	res = GetAddressListByUser(controller.Context{
 		Uid: context.GetString(middleware.ContextUidField),
 	}, input)
 }

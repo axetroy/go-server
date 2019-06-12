@@ -102,7 +102,7 @@ func init() {
 			// 收货地址
 			{
 				addressRouter := userRouter.Group("/address")
-				addressRouter.GET("", address.GetListRouter)                 // 获取地址列表
+				addressRouter.GET("", address.GetAddressListByUserRouter)    // 获取地址列表
 				addressRouter.POST("", address.CreateRouter)                 // 添加收货地址
 				addressRouter.PUT("/a/:address_id", address.UpdateRouter)    // 更新收货地址
 				addressRouter.DELETE("/a/:address_id", address.DeleteRouter) // 删除收货地址
@@ -117,7 +117,6 @@ func init() {
 			walletRouter.Use(userAuthMiddleware)
 			walletRouter.GET("", wallet.GetWalletsRouter)            // 获取所有钱包列表
 			walletRouter.GET("/w/:currency", wallet.GetWalletRouter) // 获取单个钱包的详细信息
-
 		}
 
 		{
