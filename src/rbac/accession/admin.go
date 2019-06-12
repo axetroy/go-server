@@ -35,7 +35,7 @@ var (
 
 	AdminReportGet    = New("report::get", "有权限获取反馈信息")
 	AdminReportUpdate = New("report::update", "有权限修改反馈信息")
-	AdminReportDelete = New("report::delete", "有权限删除反馈")
+	AdminReportDelete = New("report::delete", "有权限删除反馈信息")
 
 	// 管理员的所有权限
 	AdminList = []*Accession{
