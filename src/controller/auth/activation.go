@@ -84,7 +84,9 @@ func Activation(input ActivationParams) (res schema.Response) {
 	}
 
 	// 更新激活状态
-	tx.Model(&userInfo).Update("status", model.UserStatusInit)
+	if err = tx.Model(&userInfo).Update("status", model.UserStatusInit).Error; err != nil {
+		return
+	}
 
 	// delete code from redis
 	if err = redis.ActivationCodeClient.Del(input.Code).Err(); err != nil {
