@@ -51,7 +51,7 @@ func TestGetList(t *testing.T) {
 
 	// 获取列表
 	{
-		r := banner.GetList(context, banner.Query{})
+		r := banner.GetBannerList(context, banner.Query{})
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)

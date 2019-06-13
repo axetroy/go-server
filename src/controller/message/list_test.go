@@ -15,7 +15,7 @@ import (
 	"testing"
 )
 
-func TestGetList(t *testing.T) {
+func TestGetMessageListByUser(t *testing.T) {
 
 	{
 		var (
@@ -24,7 +24,7 @@ func TestGetList(t *testing.T) {
 		query := schema.Query{
 			Limit: 20,
 		}
-		r := message.GetList(controller.Context{
+		r := message.GetMessageListByUser(controller.Context{
 			Uid: "123123",
 		}, message.Query{
 			Query: query,
@@ -77,7 +77,7 @@ func TestGetList(t *testing.T) {
 		query := schema.Query{
 			Limit: 20,
 		}
-		r := message.GetList(controller.Context{
+		r := message.GetMessageListByUser(controller.Context{
 			Uid: userInfo.Id,
 		}, message.Query{
 			Query: query,
@@ -97,7 +97,7 @@ func TestGetList(t *testing.T) {
 	}
 }
 
-func TestGetListByAdmin(t *testing.T) {
+func TestGetMessageListByAdmin(t *testing.T) {
 
 	{
 		var (
@@ -106,7 +106,7 @@ func TestGetListByAdmin(t *testing.T) {
 		query := schema.Query{
 			Limit: 20,
 		}
-		r := message.GetList(controller.Context{
+		r := message.GetMessageListByUser(controller.Context{
 			Uid: "123123",
 		}, message.Query{
 			Query: query,
@@ -161,7 +161,7 @@ func TestGetListByAdmin(t *testing.T) {
 				Limit: 20,
 			},
 		}
-		r := message.GetListByAdmin(controller.Context{
+		r := message.GetMessageListByAdmin(controller.Context{
 			Uid: adminInfo.Id,
 		}, message.QueryAdmin{
 			Query: query,
@@ -180,7 +180,7 @@ func TestGetListByAdmin(t *testing.T) {
 	}
 }
 
-func TestGetListRouter(t *testing.T) {
+func TestGetMessageListByUserRouter(t *testing.T) {
 	adminInfo, _ := tester.LoginAdmin()
 
 	userInfo, _ := tester.CreateUser()
@@ -249,7 +249,7 @@ func TestGetListRouter(t *testing.T) {
 	}
 }
 
-func TestGetListAdminRouter(t *testing.T) {
+func TestGetMessageListByAdminRouter(t *testing.T) {
 	adminInfo, _ := tester.LoginAdmin()
 
 	userInfo, _ := tester.CreateUser()

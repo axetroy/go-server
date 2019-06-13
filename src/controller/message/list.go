@@ -27,7 +27,7 @@ type QueryAdmin struct {
 }
 
 // 用户获取自己的消息列表
-func GetList(context controller.Context, input Query) (res schema.List) {
+func GetMessageListByUser(context controller.Context, input Query) (res schema.List) {
 	var (
 		err  error
 		data = make([]schema.Message, 0) // 接口输出的数据
@@ -64,23 +64,23 @@ func GetList(context controller.Context, input Query) (res schema.List) {
 
 	var total int64
 
-	filter := model.Message{
-		Uid: context.Uid,
-	}
+	filter := map[string]interface{}{}
+
+	filter["uid"] = context.Uid
 
 	if input.Read != nil {
-		filter.Read = *input.Read
+		filter["read"] = *input.Read
 	}
 
 	if input.Status != nil {
-		filter.Status = *input.Status
+		filter["status"] = *input.Status
 	}
 
-	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Order(query.Sort).Where(&filter).Find(&list).Error; err != nil {
+	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Order(query.Sort).Where(filter).Find(&list).Error; err != nil {
 		return
 	}
 
-	if err = database.Db.Model(&filter).Where(&filter).Count(&total).Error; err != nil {
+	if err = database.Db.Model(model.Message{}).Where(filter).Count(&total).Error; err != nil {
 		return
 	}
 
@@ -104,7 +104,7 @@ func GetList(context controller.Context, input Query) (res schema.List) {
 }
 
 // 用户获取自己的消息列表
-func GetListByAdmin(context controller.Context, input QueryAdmin) (res schema.List) {
+func GetMessageListByAdmin(context controller.Context, input QueryAdmin) (res schema.List) {
 	var (
 		err  error
 		data = make([]schema.MessageAdmin, 0) // 接口输出的数据
@@ -182,7 +182,7 @@ func GetListByAdmin(context controller.Context, input QueryAdmin) (res schema.Li
 	return
 }
 
-func GetListRouter(context *gin.Context) {
+func GetMessageListByUserRouter(context *gin.Context) {
 	var (
 		err   error
 		res   = schema.List{}
@@ -202,12 +202,12 @@ func GetListRouter(context *gin.Context) {
 		return
 	}
 
-	res = GetList(controller.Context{
+	res = GetMessageListByUser(controller.Context{
 		Uid: context.GetString(middleware.ContextUidField),
 	}, input)
 }
 
-func GetListAdminRouter(context *gin.Context) {
+func GetMessageListByAdminRouter(context *gin.Context) {
 	var (
 		err   error
 		res   = schema.List{}
@@ -227,7 +227,7 @@ func GetListAdminRouter(context *gin.Context) {
 		return
 	}
 
-	res = GetListByAdmin(controller.Context{
+	res = GetMessageListByAdmin(controller.Context{
 		Uid: context.GetString(middleware.ContextUidField),
 	}, input)
 }

@@ -96,8 +96,8 @@ func init() {
 			// 邀请人列表
 			{
 				inviteRouter := userRouter.Group("/invite")
-				inviteRouter.GET("", invite.GetListRouter)          // 获取我已邀请的列表
-				inviteRouter.GET("/i/:invite_id", invite.GetRouter) // 获取单条邀请记录详情
+				inviteRouter.GET("", invite.GetInviteListByUserRouter) // 获取我已邀请的列表
+				inviteRouter.GET("/i/:invite_id", invite.GetRouter)    // 获取单条邀请记录详情
 			}
 			// 收货地址
 			{
@@ -137,24 +137,24 @@ func init() {
 		// 新闻咨询类
 		{
 			newsRouter := v1.Group("/news")
-			newsRouter.GET("", news.GetListRouter)       // 获取新闻公告列表
-			newsRouter.GET("/n/:id", news.GetNewsRouter) // 获取单个新闻公告详情
+			newsRouter.GET("", news.GetNewsListByUserRouter) // 获取新闻公告列表
+			newsRouter.GET("/n/:id", news.GetNewsRouter)     // 获取单个新闻公告详情
 		}
 
 		// 系统通知
 		{
 			notificationRouter := v1.Group("/notification")
 			notificationRouter.Use(userAuthMiddleware)
-			notificationRouter.GET("", notification.GetListUserRouter)     // 获取系统通知列表
-			notificationRouter.GET("/n/:id", notification.GetRouter)       // 获取某一条系统通知详情
-			notificationRouter.PUT("/n/:id/read", notification.ReadRouter) // 标记通知为已读
+			notificationRouter.GET("", notification.GetNotificationListByUserRouter) // 获取系统通知列表
+			notificationRouter.GET("/n/:id", notification.GetRouter)                 // 获取某一条系统通知详情
+			notificationRouter.PUT("/n/:id/read", notification.ReadRouter)           // 标记通知为已读
 		}
 
 		// 用户的个人消息, 个人消息是可以删除的
 		{
 			messageRouter := v1.Group("/message")
 			messageRouter.Use(userAuthMiddleware)
-			messageRouter.GET("", message.GetListRouter)                       // 获取我的消息列表
+			messageRouter.GET("", message.GetMessageListByUserRouter)          // 获取我的消息列表
 			messageRouter.GET("/m/:message_id", message.GetRouter)             // 获取单个消息详情
 			messageRouter.PUT("/m/:message_id/read", message.ReadRouter)       // 标记消息为已读
 			messageRouter.DELETE("/m/:message_id", message.DeleteByUserRouter) // 删除消息
@@ -173,7 +173,7 @@ func init() {
 		// Banner
 		{
 			bannerRouter := v1.Group("banner")
-			bannerRouter.GET("", banner.GetListRouter)                // 获取 banner 列表
+			bannerRouter.GET("", banner.GetBannerListRouter)          // 获取 banner 列表
 			bannerRouter.GET("/b/:banner_id", banner.GetBannerRouter) // 获取 banner 详情
 		}
 

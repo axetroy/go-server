@@ -21,7 +21,7 @@ func TestGetList(t *testing.T) {
 		query := schema.Query{
 			Limit: 20,
 		}
-		r := news.GetList(news.Query{
+		r := news.GetNewsListByUser(news.Query{
 			Query: query,
 		})
 
@@ -70,7 +70,7 @@ func TestGetList(t *testing.T) {
 		query := schema.Query{
 			Limit: 20,
 		}
-		r := news.GetList(news.Query{
+		r := news.GetNewsListByUser(news.Query{
 			Query: query,
 		})
 

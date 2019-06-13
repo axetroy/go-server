@@ -10,8 +10,8 @@ import (
 	"testing"
 )
 
-func TestGetList(t *testing.T) {
-	// 现在没有任何数据，获取到的应该是0个长度的
+// TODO: 完善测试用例
+func TestGetInviteListByUser(t *testing.T) {
 	{
 		var (
 			data = make([]model.InviteHistory, 0)
@@ -19,7 +19,7 @@ func TestGetList(t *testing.T) {
 		query := schema.Query{
 			Limit: 20,
 		}
-		r := invite.GetList(invite.Query{
+		r := invite.GetInviteListByUser(invite.Query{
 			Query: query,
 		})
 

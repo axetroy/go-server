@@ -21,7 +21,7 @@ type Query struct {
 	Active   *bool                 `json:"active" form:"active"`     // 是否激活
 }
 
-func GetList(context controller.Context, q Query) (res schema.List) {
+func GetBannerList(context controller.Context, q Query) (res schema.List) {
 	var (
 		err  error
 		data = make([]schema.Banner, 0)
@@ -98,7 +98,7 @@ func GetList(context controller.Context, q Query) (res schema.List) {
 	return
 }
 
-func GetListRouter(context *gin.Context) {
+func GetBannerListRouter(context *gin.Context) {
 	var (
 		err   error
 		res   = schema.List{}
@@ -117,7 +117,7 @@ func GetListRouter(context *gin.Context) {
 		return
 	}
 
-	res = GetList(controller.Context{
+	res = GetBannerList(controller.Context{
 		Uid: context.GetString(middleware.ContextUidField),
 	}, query)
 }

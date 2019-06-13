@@ -22,7 +22,7 @@ type Query struct {
 }
 
 // GetList get notification list
-func GetListByUser(context controller.Context, input Query) (res schema.List) {
+func GetNotificationListByUser(context controller.Context, input Query) (res schema.List) {
 	var (
 		err  error
 		data = make([]schema.Notification, 0)
@@ -67,11 +67,17 @@ func GetListByUser(context controller.Context, input Query) (res schema.List) {
 
 	tx = database.Db.Begin()
 
-	var total int64
-
 	list := make([]model.Notification, 0)
 
-	if err = tx.Table(new(model.Notification).TableName()).Limit(query.Limit).Offset(query.Limit * query.Page).Find(&list).Count(&total).Error; err != nil {
+	filter := map[string]interface{}{}
+
+	if err = tx.Limit(query.Limit).Offset(query.Limit * query.Page).Where(filter).Order(query.Sort).Find(&list).Error; err != nil {
+		return
+	}
+
+	var total int64
+
+	if err = tx.Model(&model.Notification{}).Count(&total).Error; err != nil {
 		return
 	}
 
@@ -115,7 +121,7 @@ func GetListByUser(context controller.Context, input Query) (res schema.List) {
 }
 
 // GetList get notification list
-func GetListAdmin(context controller.Context, input Query) (res schema.List) {
+func GetNotificationListByAdmin(context controller.Context, input Query) (res schema.List) {
 	var (
 		err  error
 		data = make([]schema.NotificationAdmin, 0)
@@ -160,11 +166,17 @@ func GetListAdmin(context controller.Context, input Query) (res schema.List) {
 
 	tx = database.Db.Begin()
 
-	var total int64
-
 	list := make([]model.Notification, 0)
 
-	if err = tx.Table(new(model.Notification).TableName()).Limit(query.Limit).Offset(query.Limit * query.Page).Find(&list).Count(&total).Error; err != nil {
+	filter := map[string]interface{}{}
+
+	if err = tx.Limit(query.Limit).Offset(query.Limit * query.Page).Order(query.Sort).Where(filter).Find(&list).Error; err != nil {
+		return
+	}
+
+	var total int64
+
+	if err = tx.Model(&model.Notification{}).Where(filter).Count(&total).Error; err != nil {
 		return
 	}
 
@@ -188,7 +200,7 @@ func GetListAdmin(context controller.Context, input Query) (res schema.List) {
 }
 
 // GetListRouter get list router
-func GetListUserRouter(context *gin.Context) {
+func GetNotificationListByUserRouter(context *gin.Context) {
 	var (
 		err   error
 		res   = schema.List{}
@@ -208,13 +220,13 @@ func GetListUserRouter(context *gin.Context) {
 		return
 	}
 
-	res = GetListByUser(controller.Context{
+	res = GetNotificationListByUser(controller.Context{
 		Uid: context.GetString(middleware.ContextUidField),
 	}, input)
 }
 
 // GetListRouter get list router
-func GetListAdminRouter(context *gin.Context) {
+func GetNotificationListByAdminRouter(context *gin.Context) {
 	var (
 		err   error
 		res   = schema.List{}
@@ -234,7 +246,7 @@ func GetListAdminRouter(context *gin.Context) {
 		return
 	}
 
-	res = GetListAdmin(controller.Context{
+	res = GetNotificationListByAdmin(controller.Context{
 		Uid: context.GetString(middleware.ContextUidField),
 	}, input)
 }

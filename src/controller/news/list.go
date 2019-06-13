@@ -19,7 +19,7 @@ type Query struct {
 	Type   *model.NewsType   `json:"type" form:"type"`
 }
 
-func GetList(input Query) (res schema.List) {
+func GetNewsListByUser(input Query) (res schema.List) {
 	var (
 		err  error
 		data = make([]schema.News, 0) // 接口输出的数据
@@ -54,19 +54,23 @@ func GetList(input Query) (res schema.List) {
 
 	query.Normalize()
 
-	var total int64
-
-	filter := model.News{}
+	filter := map[string]interface{}{}
 
 	if input.Status != nil {
-		filter.Status = *input.Status
+		filter["status"] = *input.Status
 	}
 
 	if input.Type != nil {
-		filter.Type = *input.Type
+		filter["type"] = *input.Type
 	}
 
-	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Where(&filter).Find(&list).Count(&total).Error; err != nil {
+	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Order(query.Sort).Where(filter).Find(&list).Error; err != nil {
+		return
+	}
+
+	var total int64
+
+	if err = database.Db.Model(model.News{}).Where(filter).Count(&total).Error; err != nil {
 		return
 	}
 
@@ -89,7 +93,7 @@ func GetList(input Query) (res schema.List) {
 	return
 }
 
-func GetListRouter(context *gin.Context) {
+func GetNewsListByUserRouter(context *gin.Context) {
 	var (
 		err   error
 		res   = schema.List{}
@@ -109,5 +113,5 @@ func GetListRouter(context *gin.Context) {
 		return
 	}
 
-	res = GetList(input)
+	res = GetNewsListByUser(input)
 }

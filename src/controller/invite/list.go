@@ -15,7 +15,7 @@ type Query struct {
 	schema.Query
 }
 
-func GetList(input Query) (res schema.List) {
+func GetInviteListByUser(input Query) (res schema.List) {
 	var (
 		err  error
 		data = make([]model.InviteHistory, 0)
@@ -49,9 +49,15 @@ func GetList(input Query) (res schema.List) {
 
 	query.Normalize()
 
+	filter := map[string]interface{}{}
+
+	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Where(filter).Order(query.Sort).Find(&data).Error; err != nil {
+		return
+	}
+
 	var total int64
 
-	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Find(&data).Count(&total).Error; err != nil {
+	if err = database.Db.Model(model.InviteHistory{}).Where(filter).Count(&total).Error; err != nil {
 		return
 	}
 
@@ -63,7 +69,7 @@ func GetList(input Query) (res schema.List) {
 	return
 }
 
-func GetListRouter(context *gin.Context) {
+func GetInviteListByUserRouter(context *gin.Context) {
 	var (
 		err   error
 		res   = schema.List{}
@@ -83,5 +89,5 @@ func GetListRouter(context *gin.Context) {
 		return
 	}
 
-	res = GetList(input)
+	res = GetInviteListByUser(input)
 }

@@ -69,7 +69,7 @@ func GetAddressListByUser(context controller.Context, input Query) (res schema.L
 		return
 	}
 
-	if err = tx.Model(model.Address{}).Where(filter).Count(&total).Error; err != nil {
+	if err = tx.Model(&model.Address{}).Where(filter).Count(&total).Error; err != nil {
 		return
 	}
 

@@ -101,7 +101,7 @@ func init() {
 		{
 			newsRouter := v1.Group("/news")
 			newsRouter.POST("", news.CreateRouter)              // 新建新闻公告
-			newsRouter.GET("", news.GetListRouter)              // 获取新闻列表
+			newsRouter.GET("", news.GetNewsListByUserRouter)    // 获取新闻列表
 			newsRouter.GET("/n/:news_id", news.GetNewsRouter)   // 获取新闻详情
 			newsRouter.PUT("/n/:news_id", news.UpdateRouter)    // 更新新闻公告
 			newsRouter.DELETE("/n/:news_id", news.DeleteRouter) // 删除新闻
@@ -110,18 +110,18 @@ func init() {
 		// 系统通知
 		{
 			notificationRouter := v1.Group("/notification")
-			notificationRouter.POST("", notification.CreateRouter)         // 创建系统通知
-			notificationRouter.GET("", notification.GetListAdminRouter)    // 获取系统通知列表
-			notificationRouter.PUT("/n/:id", notification.UpdateRouter)    // 更新系统通知
-			notificationRouter.DELETE("/n/:id", notification.DeleteRouter) // 删除系统通知
-			notificationRouter.GET("/n/:id", notification.GetRouter)       // 获取单条系统通知
+			notificationRouter.POST("", notification.CreateRouter)                    // 创建系统通知
+			notificationRouter.GET("", notification.GetNotificationListByAdminRouter) // 获取系统通知列表
+			notificationRouter.PUT("/n/:id", notification.UpdateRouter)               // 更新系统通知
+			notificationRouter.DELETE("/n/:id", notification.DeleteRouter)            // 删除系统通知
+			notificationRouter.GET("/n/:id", notification.GetRouter)                  // 获取单条系统通知
 		}
 
 		// 个人消息
 		{
 			messageRouter := v1.Group("/message")
 			messageRouter.POST("", message.CreateRouter)                        // 创建个人消息
-			messageRouter.GET("", message.GetListAdminRouter)                   // 获取消息列表
+			messageRouter.GET("", message.GetMessageListByAdminRouter)          // 获取消息列表
 			messageRouter.GET("/m/:message_id", message.GetAdminRouter)         // 获取个人消息
 			messageRouter.PUT("/m/:message_id", message.UpdateRouter)           // 更新个人消息
 			messageRouter.DELETE("/m/:message_id", message.DeleteByAdminRouter) // 删除个人消息
@@ -139,7 +139,7 @@ func init() {
 		// Banner
 		{
 			bannerRouter := v1.Group("banner")
-			bannerRouter.GET("", banner.GetListRouter)                // 获取 banner 列表
+			bannerRouter.GET("", banner.GetBannerListRouter)          // 获取 banner 列表
 			bannerRouter.POST("", banner.CreateRouter)                // 创建 banner
 			bannerRouter.PUT("/b/:banner_id", banner.UpdateRouter)    // 更新 banner
 			bannerRouter.GET("/b/:banner_id", banner.GetBannerRouter) // 获取 banner 详情

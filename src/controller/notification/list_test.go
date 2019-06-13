@@ -15,7 +15,7 @@ import (
 	"testing"
 )
 
-func TestGetList(t *testing.T) {
+func TestGetNotificationListByUser(t *testing.T) {
 	{
 		var (
 			adminUid string
@@ -73,7 +73,7 @@ func TestGetList(t *testing.T) {
 			query := schema.Query{
 				Limit: 20,
 			}
-			r := notification.GetListByUser(controller.Context{}, notification.Query{
+			r := notification.GetNotificationListByUser(controller.Context{}, notification.Query{
 				Query: query,
 			})
 
@@ -91,7 +91,7 @@ func TestGetList(t *testing.T) {
 	}
 }
 
-func TestGetListRouter(t *testing.T) {
+func TestGetNotificationListByUserRouter(t *testing.T) {
 	adminInfo, _ := tester.LoginAdmin()
 	userInfo, _ := tester.CreateUser()
 
@@ -137,17 +137,9 @@ func TestGetListRouter(t *testing.T) {
 		r := tester.HttpAdmin.Get("/v1/notification", nil, &header)
 		res := schema.Response{}
 
-		if !assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res)) {
-			return
-		}
-
-		if !assert.Equal(t, "", res.Message) {
-			return
-		}
-
-		if !assert.Equal(t, schema.StatusSuccess, res.Status) {
-			return
-		}
+		assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+		assert.Equal(t, "", res.Message)
+		assert.Equal(t, schema.StatusSuccess, res.Status)
 
 		banners := make([]schema.Notification, 0)
 
@@ -170,17 +162,9 @@ func TestGetListRouter(t *testing.T) {
 		r := tester.HttpUser.Get("/v1/notification", nil, &header)
 		res := schema.Response{}
 
-		if !assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res)) {
-			return
-		}
-
-		if !assert.Equal(t, "", res.Message) {
-			return
-		}
-
-		if !assert.Equal(t, schema.StatusSuccess, res.Status) {
-			return
-		}
+		assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+		assert.Equal(t, "", res.Message)
+		assert.Equal(t, schema.StatusSuccess, res.Status)
 
 		list := make([]schema.Notification, 0)
 
@@ -194,3 +178,5 @@ func TestGetListRouter(t *testing.T) {
 		}
 	}
 }
+
+// TODO: 测试管理员接口
