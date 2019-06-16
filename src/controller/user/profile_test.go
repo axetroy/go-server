@@ -31,7 +31,7 @@ func TestGetProfileWithInvalidAuth(t *testing.T) {
 	res := schema.Response{}
 
 	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
-	assert.Equal(t, schema.StatusFail, res.Status)
+	assert.Equal(t, exception.InvalidToken.Code(), res.Status)
 	assert.Equal(t, exception.InvalidAuth.Error(), res.Message)
 }
 
@@ -49,7 +49,7 @@ func TestGetProfileWithInvalidToken(t *testing.T) {
 	res := schema.Response{}
 
 	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
-	assert.Equal(t, schema.StatusFail, res.Status)
+	assert.Equal(t, exception.InvalidToken.Code(), res.Status)
 	assert.Equal(t, exception.InvalidToken.Error(), res.Message)
 }
 

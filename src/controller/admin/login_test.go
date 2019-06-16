@@ -32,7 +32,6 @@ func TestLogin(t *testing.T) {
 
 		assert.Equal(t, schema.StatusFail, r.Status)
 		assert.Equal(t, exception.InvalidAccountOrPassword.Error(), r.Message)
-		assert.Nil(t, r.Data)
 	}
 
 	// 登陆超级管理员-成功

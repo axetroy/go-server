@@ -88,16 +88,9 @@ func TestCreateAdminRouter(t *testing.T) {
 
 		res := schema.Response{}
 
-		if !assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res)) {
-			return
-		}
-
-		if !assert.Equal(t, schema.StatusFail, res.Status) {
-			return
-		}
-		if !assert.Equal(t, exception.InvalidToken.Error(), res.Message) {
-			return
-		}
+		assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+		assert.Equal(t, exception.InvalidToken.Code(), res.Status)
+		assert.Equal(t, exception.InvalidToken.Error(), res.Message)
 	}
 
 	{
