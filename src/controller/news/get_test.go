@@ -37,7 +37,7 @@ func TestGetNews(t *testing.T) {
 			var (
 				title    = "test"
 				content  = "test"
-				newsType = model.NewsType_News
+				newsType = model.NewsTypeNews
 			)
 
 			r := news.Create(controller.Context{
@@ -74,7 +74,7 @@ func TestGetNews(t *testing.T) {
 
 			assert.Equal(t, "test", newsInfo.Title)
 			assert.Equal(t, "test", newsInfo.Content)
-			assert.Equal(t, model.NewsType_News, newsInfo.Type)
+			assert.Equal(t, model.NewsTypeNews, newsInfo.Type)
 		}
 	}
 }
@@ -91,7 +91,7 @@ func TestGetNewsRouter(t *testing.T) {
 		var (
 			title    = "test"
 			content  = "test"
-			newsType = model.NewsType_News
+			newsType = model.NewsTypeNews
 		)
 
 		r := news.Create(controller.Context{

@@ -21,7 +21,7 @@ func TestDelete(t *testing.T) {
 	var (
 		title   = "test"
 		content = "test"
-		newType = model.NewsType_Announcement
+		newType = model.NewsTypeAnnouncement
 		tags    = []string{"test"}
 		newsId  string
 	)
@@ -91,7 +91,7 @@ func TestDeleteRouter(t *testing.T) {
 	var (
 		title   = "test"
 		content = "test"
-		newType = model.NewsType_Announcement
+		newType = model.NewsTypeAnnouncement
 		tags    = []string{"test"}
 		newsId  string
 	)

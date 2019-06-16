@@ -48,7 +48,7 @@ func TestUpdate(t *testing.T) {
 		var (
 			title    = "test"
 			content  = "test"
-			newsType = model.NewsType_News
+			newsType = model.NewsTypeNews
 		)
 
 		r := news.Create(controller.Context{
@@ -79,7 +79,7 @@ func TestUpdate(t *testing.T) {
 		var (
 			newTittle  = "new title"
 			newContent = "new content"
-			newType    = model.NewsType_Announcement
+			newType    = model.NewsTypeAnnouncement
 			newTags    = []string{newTittle}
 		)
 
@@ -142,7 +142,7 @@ func TestUpdateRouter(t *testing.T) {
 		var (
 			title    = "test"
 			content  = "test"
-			newsType = model.NewsType_News
+			newsType = model.NewsTypeNews
 		)
 
 		r := news.Create(controller.Context{

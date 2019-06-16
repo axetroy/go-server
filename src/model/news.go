@@ -12,15 +12,15 @@ type NewsType string
 type NewsStatus int
 
 const (
-	NewsType_News         NewsType = "news"         // 新闻资讯
-	NewsType_Announcement NewsType = "announcement" // 官方公告
+	NewsTypeNews         NewsType = "news"         // 新闻资讯
+	NewsTypeAnnouncement NewsType = "announcement" // 官方公告
 
 	NewsStatusInActive NewsStatus = -1 // 未启用的状态
 	NewsStatusActive                   // 启用的状态
 )
 
 var (
-	NewsTypes = []NewsType{NewsType_News, NewsType_Announcement}
+	NewsTypes = []NewsType{NewsTypeNews, NewsTypeAnnouncement}
 )
 
 func IsValidNewsType(t NewsType) bool {

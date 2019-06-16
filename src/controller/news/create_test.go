@@ -49,7 +49,7 @@ func TestCreate(t *testing.T) {
 		}, news.CreateNewParams{
 			Title:   title,
 			Content: content,
-			Type:    model.NewsType_News,
+			Type:    model.NewsTypeNews,
 		})
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
@@ -70,7 +70,7 @@ func TestCreate(t *testing.T) {
 		var (
 			title    = "test"
 			content  = "test"
-			newsType = model.NewsType_News
+			newsType = model.NewsTypeNews
 		)
 
 		r := news.Create(controller.Context{
@@ -112,7 +112,7 @@ func TestCreateRouter(t *testing.T) {
 		body, _ := json.Marshal(&news.CreateNewParams{
 			Title:   title,
 			Content: content,
-			Type:    model.NewsType_News,
+			Type:    model.NewsTypeNews,
 		})
 
 		r := tester.HttpAdmin.Post("/v1/news", body, &header)

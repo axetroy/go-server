@@ -40,7 +40,7 @@ func TestGetList(t *testing.T) {
 		var (
 			title    = "test"
 			content  = "test"
-			newsType = model.NewsType_News
+			newsType = model.NewsTypeNews
 		)
 
 		r := news.Create(controller.Context{
@@ -92,7 +92,7 @@ func TestGetListRouter(t *testing.T) {
 		var (
 			title    = "test"
 			content  = "test"
-			newsType = model.NewsType_News
+			newsType = model.NewsTypeNews
 		)
 
 		r := news.Create(controller.Context{
@@ -139,7 +139,7 @@ func TestGetListRouter(t *testing.T) {
 			assert.IsType(t, "string", b.Title)
 			assert.IsType(t, "string", b.Content)
 			assert.IsType(t, "string", b.Author)
-			assert.IsType(t, model.NewsType_Announcement, b.Type)
+			assert.IsType(t, model.NewsTypeAnnouncement, b.Type)
 			assert.IsType(t, []string{""}, b.Tags)
 			assert.IsType(t, model.NewsStatusActive, b.Status)
 			assert.IsType(t, "string", b.CreatedAt)
