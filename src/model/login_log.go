@@ -22,12 +22,12 @@ const (
 )
 
 type LoginLog struct {
-	Id        string          `gorm:"primary_key;not null;index;type:varchar(32)" json:"id"`
-	Uid       string          `gorm:"not null;index;type:varchar(32)" json:"uid"`
-	Type      LoginLogType    `gorm:"not null;type:int" json:"type"`
-	Command   LoginLogCommand `gorm:"not null;type:int" json:"command"`
-	LastIp    string          `gorm:"not null;type:varchar(15)" json:"last_ip"`
-	Client    string          `gorm:"not null;type:varchar(255)" json:"client"`
+	Id        string          `gorm:"primary_key;not null;index;type:varchar(32)" json:"id"` // 数据ID
+	Uid       string          `gorm:"not null;index;type:varchar(32)" json:"uid"`            // 用户ID
+	Type      LoginLogType    `gorm:"not null;type:int" json:"type"`                         // 登陆类型(用什么方式登陆)
+	Command   LoginLogCommand `gorm:"not null;type:int" json:"command"`                      // 登陆的状态(成功, 失败)
+	LastIp    string          `gorm:"not null;type:varchar(15)" json:"last_ip"`              // 本次登陆IP
+	Client    string          `gorm:"not null;type:varchar(255)" json:"client"`              // 登陆的客户端
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt *time.Time `sql:"index"`

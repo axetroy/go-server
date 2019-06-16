@@ -108,11 +108,11 @@ func SignIn(context controller.Context, input SignInParams) (res schema.Response
 
 	// 写入登陆记录
 	log := model.LoginLog{
-		Uid:     userInfo.Id,
+		Uid:     userInfo.Id,                       // 用户ID
 		Type:    model.LoginLogTypeUserName,        // 默认用户名登陆
 		Command: model.LoginLogCommandLoginSuccess, // 登陆成功
-		Client:  context.UserAgent,
-		LastIp:  context.Ip,
+		Client:  context.UserAgent,                 // 用户的 userAgent
+		LastIp:  context.Ip,                        // 用户的IP
 	}
 
 	if err = tx.Create(&log).Error; err != nil {

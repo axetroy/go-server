@@ -9,6 +9,7 @@ import (
 	"github.com/axetroy/go-server/src/config"
 	"github.com/axetroy/go-server/src/controller/admin"
 	"github.com/axetroy/go-server/src/controller/banner"
+	loginLog "github.com/axetroy/go-server/src/controller/logs/login"
 	"github.com/axetroy/go-server/src/controller/menu"
 	"github.com/axetroy/go-server/src/controller/message"
 	"github.com/axetroy/go-server/src/controller/news"
@@ -157,6 +158,13 @@ func init() {
 			menuRouter.PUT("/m/:menu_id", menu.UpdateRouter)    // 更新菜单
 			menuRouter.GET("/m/:menu_id", menu.GetMenuRouter)   // 获取菜单详情
 			menuRouter.DELETE("/m/:menu_id", menu.DeleteRouter) // 删除菜单
+		}
+
+		// 日志
+		{
+			logRouter := v1.Group("log")
+			logRouter.GET("/login", loginLog.GetLoginLogsRouter)          // 获取用户的登陆日志列表
+			logRouter.GET("/login/l/:log_id", loginLog.GetLoginLogRouter) // 用户单条登陆记录
 		}
 
 		v1.GET("/system", system.GetSystemInfoRouter) // 获取系统相关信息
