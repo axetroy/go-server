@@ -3,6 +3,9 @@ package src
 
 import (
 	"fmt"
+	"net/http"
+	"path"
+
 	"github.com/axetroy/go-server/src/config"
 	"github.com/axetroy/go-server/src/controller/admin"
 	"github.com/axetroy/go-server/src/controller/banner"
@@ -18,8 +21,6 @@ import (
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/dotenv"
 	"github.com/gin-gonic/gin"
-	"net/http"
-	"path"
 )
 
 var AdminRouter *gin.Engine
@@ -58,10 +59,12 @@ func init() {
 		adminAuthMiddleware := middleware.Authenticate(true) // 管理员Token的中间件
 
 		// 登陆
-		v1.POST("/login", admin.LoginRouter)         // 管理员登陆
-		v1.GET("/profile", admin.GetAdminInfoRouter) // 获取管理员自己的信息
+		v1.POST("/login", admin.LoginRouter) // 管理员登陆
 
 		v1.Use(adminAuthMiddleware)
+
+		v1.GET("/profile", adminAuthMiddleware, admin.GetAdminInfoRouter)    // 获取管理员自己的信息
+		v1.PUT("/password", adminAuthMiddleware, admin.UpdatePasswordRouter) // 更改自己的密码
 
 		// 管理员类
 		{

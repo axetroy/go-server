@@ -111,6 +111,22 @@
 
 </details>
 
+<details><summary>更改自己的密码<code>[PUT] /v1/password</code></summary>
+
+<p>
+
+更改管理员自己的密码
+
+| 参数             | 类型     | 说明       | 必填 |
+| ---------------- | -------- | ---------- | ---- |
+| old_password     | `string` | 旧密码     | \*   |
+| new_password     | `string` | 新密码     | \*   |
+| confirm_password | `string` | 新密码确认 | \*   |
+
+</p>
+
+</details>
+
 <details><summary>获取指定管理员信息<code>[GET] /v1/admin/a/:admin_id</code></summary>
 
 <p>

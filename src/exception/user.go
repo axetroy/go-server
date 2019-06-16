@@ -2,8 +2,8 @@
 package exception
 
 var (
-	// wallet
-	InvalidConfirmPassword = New("两次密码不一致")
-	InvalidResetCode       = New("重置码错误或已失效")
-	RequirePayPasswordSet  = New("需要先设置交易密码")
+	UserExist             = New("用户已存在", 0)
+	UserNotExist          = New("用户不存在", 0)
+	InvalidResetCode      = New("重置码错误或已失效", 0)
+	RequirePayPasswordSet = New("需要先设置交易密码", 0)
 )

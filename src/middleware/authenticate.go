@@ -19,10 +19,12 @@ func Authenticate(isAdmin bool) gin.HandlerFunc {
 		var (
 			err         error
 			tokenString string
+			status      = schema.StatusFail
 		)
 		defer func() {
 			if err != nil {
 				context.JSON(http.StatusOK, schema.Response{
+					Status:  status,
 					Message: err.Error(),
 					Data:    nil,
 				})
@@ -39,6 +41,7 @@ func Authenticate(isAdmin bool) gin.HandlerFunc {
 			if len(tokenString) == 0 {
 				if s, er := context.Cookie(token.AuthField); er != nil {
 					err = exception.InvalidToken
+					status = exception.InvalidToken.Code()
 					return
 				} else {
 					tokenString = s
@@ -48,6 +51,7 @@ func Authenticate(isAdmin bool) gin.HandlerFunc {
 
 		if claims, er := token.Parse(tokenString, isAdmin); er != nil {
 			err = er
+			status = exception.InvalidToken.Code()
 			return
 		} else {
 			// 把 UID 挂载到上下文中国呢

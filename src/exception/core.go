@@ -1,21 +1,22 @@
 // Copyright 2019 Axetroy. All rights reserved. MIT license.
 package exception
 
-type exception struct {
+type Error struct {
 	message string
 	code    int
 }
 
-func New(text string) *exception {
-	return &exception{
+func New(text string, code int) *Error {
+	return &Error{
 		message: text,
+		code:    code,
 	}
 }
 
-func (e *exception) Error() string {
+func (e *Error) Error() string {
 	return e.message
 }
 
-func (e *exception) Code() int {
+func (e *Error) Code() int {
 	return e.code
 }

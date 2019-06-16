@@ -2,5 +2,5 @@
 package exception
 
 var (
-	MessageNotExist = New("用户消息不存在")
+	MessageNotExist = New("用户消息不存在", 0)
 )

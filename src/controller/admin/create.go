@@ -9,6 +9,7 @@ import (
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
+	"github.com/axetroy/go-server/src/service/token"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -27,7 +28,7 @@ type CreateAdminParams struct {
 func CreateAdmin(input CreateAdminParams, isSuper bool) (res schema.Response) {
 	var (
 		err          error
-		data         schema.AdminProfile
+		data         schema.AdminProfileWithToken
 		tx           *gorm.DB
 		isValidInput bool
 	)
@@ -92,6 +93,11 @@ func CreateAdmin(input CreateAdminParams, isSuper bool) (res schema.Response) {
 	}
 
 	if err = mapstructure.Decode(adminInfo, &data.AdminProfilePure); err != nil {
+		return
+	}
+
+	// generate token
+	if data.Token, err = token.Generate(adminInfo.Id, true); err != nil {
 		return
 	}
 

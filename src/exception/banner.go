@@ -2,6 +2,6 @@
 package exception
 
 var (
-	BannerInvalidPlatform = New("无效的平台")
-	BannerNotExist        = New("不存在横幅")
+	BannerInvalidPlatform = New("无效的平台", 0)
+	BannerNotExist        = New("不存在横幅", 0)
 )
