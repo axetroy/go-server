@@ -1,0 +1,11 @@
+package: github.com/sec51/cryptoengine
+import:
+- package: github.com/sec51/convert
+  version: ~1.0.1
+  subpackages:
+  - smallendian
+- package: golang.org/x/crypto
+  subpackages:
+  - hkdf
+  - nacl/box
+  - nacl/secretbox

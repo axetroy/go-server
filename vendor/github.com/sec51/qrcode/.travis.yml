@@ -1,0 +1,10 @@
+language: go
+
+go:
+  - 1.5.3
+
+install:
+  - go get "github.com/sec51/gf256"  
+
+script:
+  - go test -v

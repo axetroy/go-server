@@ -1,0 +1,17 @@
+hash: 51b3e34cdd407b66ef5ba1e02201c2d989a971f5e577f9f24dfcca5e0b6ae020
+updated: 2018-09-11T13:20:38.45417+02:00
+imports:
+- name: github.com/sec51/convert
+  version: 3276ac712ca35cb9cc9a823b564fdaf89f4ac803
+  subpackages:
+  - smallendian
+- name: golang.org/x/crypto
+  version: beef0f4390813b96e8e68fd78570396d0f4751fc
+  subpackages:
+  - curve25519
+  - hkdf
+  - nacl/box
+  - nacl/secretbox
+  - poly1305
+  - salsa20/salsa
+testImports: []
