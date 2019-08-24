@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"math"
 	"runtime"
 	"time"
 
@@ -43,6 +44,7 @@ type OpenFilesStat struct {
 type MemoryInfoStat struct {
 	RSS    uint64 `json:"rss"`    // bytes
 	VMS    uint64 `json:"vms"`    // bytes
+	HWM    uint64 `json:"hwm"`    // bytes
 	Data   uint64 `json:"data"`   // bytes
 	Stack  uint64 `json:"stack"`  // bytes
 	Locked uint64 `json:"locked"` // bytes
@@ -74,6 +76,13 @@ type IOCountersStat struct {
 type NumCtxSwitchesStat struct {
 	Voluntary   int64 `json:"voluntary"`
 	Involuntary int64 `json:"involuntary"`
+}
+
+type PageFaultsStat struct {
+	MinorFaults      uint64 `json:"minorFaults"`
+	MajorFaults      uint64 `json:"majorFaults"`
+	ChildMinorFaults uint64 `json:"childMinorFaults"`
+	ChildMajorFaults uint64 `json:"childMajorFaults"`
 }
 
 // Resource limit constants are from /usr/include/x86_64-linux-gnu/bits/resource.h
@@ -129,21 +138,6 @@ func (p NumCtxSwitchesStat) String() string {
 
 func PidExists(pid int32) (bool, error) {
 	return PidExistsWithContext(context.Background(), pid)
-}
-
-func PidExistsWithContext(ctx context.Context, pid int32) (bool, error) {
-	pids, err := Pids()
-	if err != nil {
-		return false, err
-	}
-
-	for _, i := range pids {
-		if i == pid {
-			return true, err
-		}
-	}
-
-	return false, err
 }
 
 // Background returns true if the process is in background, false otherwise.
@@ -204,7 +198,7 @@ func calculatePercent(t1, t2 *cpu.TimesStat, delta float64, numcpu int) float64 
 	}
 	delta_proc := t2.Total() - t1.Total()
 	overall_percent := ((delta_proc / delta) * 100) * float64(numcpu)
-	return overall_percent
+	return math.Min(100, math.Max(0, overall_percent))
 }
 
 // MemoryPercent returns how many percent of the total RAM this process uses
@@ -225,7 +219,7 @@ func (p *Process) MemoryPercentWithContext(ctx context.Context) (float32, error)
 	}
 	used := processMemory.RSS
 
-	return (100 * float32(used) / float32(total)), nil
+	return float32(math.Min(100, math.Max(0, (100*float64(used)/float64(total))))), nil
 }
 
 // CPU_Percent returns how many percent of the CPU time this process uses
@@ -250,5 +244,5 @@ func (p *Process) CPUPercentWithContext(ctx context.Context) (float64, error) {
 		return 0, nil
 	}
 
-	return 100 * cput.Total() / totalTime, nil
+	return math.Min(100, math.Max(0, 100*cput.Total()/totalTime)), nil
 }
