@@ -26,6 +26,6 @@ require (
 	github.com/sec51/qrcode v0.0.0-20160126144534-b7779abbcaf1 // indirect
 	github.com/sec51/twofactor v1.0.1-0.20180911112802-cd97c894b2cc
 	github.com/shirou/gopsutil v2.19.7+incompatible
-	github.com/stretchr/testify v1.3.0
+	github.com/stretchr/testify v1.4.0
 	golang.org/x/oauth2 v0.0.0-20190523182746-aaccbc9213b0
 )
