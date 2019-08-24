@@ -44,7 +44,7 @@ github.com/joho/godotenv
 github.com/jordan-wright/email
 # github.com/json-iterator/go v1.1.6
 github.com/json-iterator/go
-# github.com/lib/pq v1.1.1
+# github.com/lib/pq v1.2.0
 github.com/lib/pq
 github.com/lib/pq/oid
 github.com/lib/pq/scram
