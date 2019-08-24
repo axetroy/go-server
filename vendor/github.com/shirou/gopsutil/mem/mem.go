@@ -58,7 +58,6 @@ type VirtualMemoryStat struct {
 	Shared         uint64 `json:"shared"`
 	Slab           uint64 `json:"slab"`
 	SReclaimable   uint64 `json:"sreclaimable"`
-	SUnreclaim     uint64 `json:"sunreclaim"`
 	PageTables     uint64 `json:"pagetables"`
 	SwapCached     uint64 `json:"swapcached"`
 	CommitLimit    uint64 `json:"commitlimit"`
@@ -85,9 +84,6 @@ type SwapMemoryStat struct {
 	UsedPercent float64 `json:"usedPercent"`
 	Sin         uint64  `json:"sin"`
 	Sout        uint64  `json:"sout"`
-	PgIn        uint64  `json:"pgin"`
-	PgOut       uint64  `json:"pgout"`
-	PgFault     uint64  `json:"pgfault"`
 }
 
 func (m VirtualMemoryStat) String() string {

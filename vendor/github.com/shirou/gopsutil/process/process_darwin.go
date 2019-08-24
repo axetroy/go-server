@@ -108,21 +108,30 @@ func (p *Process) ExeWithContext(ctx context.Context) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	out, err := invoke.CommandWithContext(ctx, lsof_bin, "-p", strconv.Itoa(int(p.Pid)), "-Fpfn")
+
+	awk_bin, err := exec.LookPath("awk")
 	if err != nil {
-		return "", fmt.Errorf("bad call to lsof: %s", err)
+		return "", err
 	}
-	txtFound := 0
-	lines := strings.Split(string(out), "\n")
-	for i := 1; i < len(lines); i += 2 {
-		if lines[i] == "ftxt" {
-			txtFound++
-			if txtFound == 2 {
-				return lines[i-1][1:], nil
-			}
-		}
+
+	sed_bin, err := exec.LookPath("sed")
+	if err != nil {
+		return "", err
 	}
-	return "", fmt.Errorf("missing txt data returned by lsof")
+
+	lsof := exec.CommandContext(ctx, lsof_bin, "-p", strconv.Itoa(int(p.Pid)), "-Fpfn")
+	awk := exec.CommandContext(ctx, awk_bin, "NR==5{print}")
+	sed := exec.CommandContext(ctx, sed_bin, "s/n\\//\\//")
+
+	output, _, err := common.Pipeline(lsof, awk, sed)
+
+	if err != nil {
+		return "", err
+	}
+
+	ret := strings.TrimSpace(string(output))
+
+	return ret, nil
 }
 
 // Cmdline returns the command line arguments of the process as a string with
@@ -380,32 +389,12 @@ func convertCPUTimes(s string) (ret float64, err error) {
 	var _tmp string
 	if strings.Contains(s, ":") {
 		_t := strings.Split(s, ":")
-		switch len(_t) {
-		case 3:
-			hour, err := strconv.Atoi(_t[0])
-			if err != nil {
-				return ret, err
-			}
-			t += hour * 60 * 60 * ClockTicks
-
-			mins, err := strconv.Atoi(_t[1])
-			if err != nil {
-				return ret, err
-			}
-			t += mins * 60 * ClockTicks
-			_tmp = _t[2]
-		case 2:
-			mins, err := strconv.Atoi(_t[0])
-			if err != nil {
-				return ret, err
-			}
-			t += mins * 60 * ClockTicks
-			_tmp = _t[1]
-		case 1, 0:
-			_tmp = s
-		default:
-			return ret, fmt.Errorf("wrong cpu time string")
+		hour, err := strconv.Atoi(_t[0])
+		if err != nil {
+			return ret, err
 		}
+		t += hour * 60 * 100
+		_tmp = _t[1]
 	} else {
 		_tmp = s
 	}
@@ -415,7 +404,7 @@ func convertCPUTimes(s string) (ret float64, err error) {
 		return ret, err
 	}
 	h, err := strconv.Atoi(_t[0])
-	t += h * ClockTicks
+	t += h * 100
 	h, err = strconv.Atoi(_t[1])
 	t += h
 	return float64(t) / ClockTicks, nil
@@ -492,14 +481,6 @@ func (p *Process) MemoryInfoExWithContext(ctx context.Context) (*MemoryInfoExSta
 	return nil, common.ErrNotImplementedError
 }
 
-func (p *Process) PageFaults() (*PageFaultsStat, error) {
-	return p.PageFaultsWithContext(context.Background())
-}
-
-func (p *Process) PageFaultsWithContext(ctx context.Context) (*PageFaultsStat, error) {
-	return nil, common.ErrNotImplementedError
-}
-
 func (p *Process) Children() ([]*Process, error) {
 	return p.ChildrenWithContext(context.Background())
 }
@@ -534,15 +515,6 @@ func (p *Process) Connections() ([]net.ConnectionStat, error) {
 
 func (p *Process) ConnectionsWithContext(ctx context.Context) ([]net.ConnectionStat, error) {
 	return net.ConnectionsPid("all", p.Pid)
-}
-
-// Connections returns a slice of net.ConnectionStat used by the process at most `max`
-func (p *Process) ConnectionsMax(max int) ([]net.ConnectionStat, error) {
-	return p.ConnectionsMaxWithContext(context.Background(), max)
-}
-
-func (p *Process) ConnectionsMaxWithContext(ctx context.Context, max int) ([]net.ConnectionStat, error) {
-	return net.ConnectionsPidMax("all", p.Pid, max)
 }
 
 func (p *Process) NetIOCounters(pernic bool) ([]net.IOCountersStat, error) {

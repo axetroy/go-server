@@ -11,7 +11,6 @@ package host
 #include <sys/types.h>
 #include <sys/time.h>
 #include <utmpx.h>
-#include "freebsd_headers/utxdb.h"
 
 enum {
 	sizeofPtr = sizeof(void*),
@@ -28,7 +27,7 @@ const (
 	sizeofInt      = C.sizeof_int
 	sizeofLong     = C.sizeof_long
 	sizeofLongLong = C.sizeof_longlong
-	sizeOfUtmpx    = C.sizeof_struct_futx
+	sizeOfUtmpx    = C.sizeof_struct_utmpx
 )
 
 // Basic types
@@ -40,5 +39,6 @@ type (
 	_C_long_long C.longlong
 )
 
-type Utmp C.struct_utmp // for FreeBSD 9.0 compatibility
-type Utmpx C.struct_futx
+type Utmp C.struct_utmp
+type Utmpx C.struct_utmpx
+type Timeval C.struct_timeval
