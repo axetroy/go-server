@@ -20,3 +20,7 @@ upload
 .DS_Store
 coverage.out
 docker
+yarn.lock
+package-lock.json
+node_modules
+*.log
