@@ -1,8 +1,5 @@
 {
   "scripts": {
-    "docs": "npx docsify serve ./docs"
-  },
-  "devDependencies": {
-    "docsify-cli": "^4.3.0"
+    "docs": "npx docsify-cli serve ./docs"
   }
 }
