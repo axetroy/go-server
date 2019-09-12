@@ -8,3 +8,6 @@ test:
 build:
 	bash ./scripts/build.sh
 	echo "Build Success!"
+
+clean:
+	bash ./scripts/clean.sh
