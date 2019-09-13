@@ -20,7 +20,7 @@ func TestSignature(t *testing.T) {
 			args: args{
 				input: "123",
 			},
-			want: "38130d15223d921022b83673aaf26dde49bdb103e9471a1f52a801919364924a",
+			want: "aa154db7952aa6a2656fed90d0d88f2e87560a6ca7d7ed180ac76705fdc1639b",
 		},
 	}
 	for _, tt := range tests {

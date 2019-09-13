@@ -17,7 +17,7 @@ func TestCreate(t *testing.T) {
 
 	assert.Equal(t, schema.StatusSuccess, r.Status)
 	assert.Equal(t, "", r.Message)
-	assert.Equal(t, "38130d15223d921022b83673aaf26dde49bdb103e9471a1f52a801919364924a", r.Data)
+	assert.Equal(t, "aa154db7952aa6a2656fed90d0d88f2e87560a6ca7d7ed180ac76705fdc1639b", r.Data)
 }
 
 func TestCreateRouter(t *testing.T) {
@@ -30,6 +30,6 @@ func TestCreateRouter(t *testing.T) {
 	assert.Equal(t, schema.StatusSuccess, r.Status)
 	assert.Equal(t, "", r.Message)
 
-	assert.Equal(t, "38130d15223d921022b83673aaf26dde49bdb103e9471a1f52a801919364924a", r.Data)
+	assert.Equal(t, "aa154db7952aa6a2656fed90d0d88f2e87560a6ca7d7ed180ac76705fdc1639b", r.Data)
 
 }
