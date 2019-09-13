@@ -44,8 +44,7 @@ before_script:
   - go get -v ./...
 
 script:
-  - make test
-  - make build
+  - make test && make build
 
 after_success:
   # report code cover
