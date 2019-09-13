@@ -7,7 +7,8 @@
 
 ### 2. 请求说明
 
-- 用户处于已登录状态时，所有请求需要带入 token（通过头部 `authorization` 字段）
+- 用户处于已登录状态时，所有请求需要带入 token（通过头部 `Authorization` 字段）
+- 认证方式采用 `Web JSON Token`, 根据规范，携带的 Header 应该是 `Authorization: Bearer 你的身份令牌`
 - 请求数据格式为： `application/json`
 - 需要使用输入交易密码时，请求头部需要加上 `X-Pay-Password` 字段指定交易密码
 
