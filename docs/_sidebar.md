@@ -18,6 +18,7 @@
     * [静态文件服务](user/static)
     * [Banner 管理](user/banner)
     * [用户反馈](user/report)
+    * [数据签名](user/signature)
 * 管理员接口
     * [验证类](admin/auth)
     * [会员类](admin/user)

@@ -2,6 +2,7 @@
 package transfer_test
 
 import (
+	"encoding/json"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/controller/auth"
 	"github.com/axetroy/go-server/src/controller/transfer"
@@ -9,6 +10,7 @@ import (
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
+	"github.com/axetroy/go-server/src/util"
 	"github.com/axetroy/go-server/tester"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -32,13 +34,23 @@ func TestGetDetail(t *testing.T) {
 
 	// 转账一次
 	{
-		res2 := transfer.To(controller.Context{
-			Uid: userFrom.Id,
-		}, transfer.ToParams{
+		input := transfer.ToParams{
 			Currency: "CNY",
 			To:       userTo.Id,
 			Amount:   "20", // 转账 20
-		})
+		}
+
+		b, err := json.Marshal(input)
+
+		assert.Nil(t, err)
+
+		signature, err := util.Signature(string(b))
+
+		assert.Nil(t, err)
+
+		res2 := transfer.To(controller.Context{
+			Uid: userFrom.Id,
+		}, input, signature)
 
 		assert.Equal(t, "", res2.Message)
 		assert.Equal(t, schema.StatusSuccess, res2.Status)

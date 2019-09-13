@@ -11,6 +11,7 @@
 - 认证方式采用 `Web JSON Token`, 根据规范，携带的 Header 应该是 `Authorization: Bearer 你的身份令牌`
 - 请求数据格式为： `application/json`
 - 需要使用输入交易密码时，请求头部需要加上 `X-Pay-Password` 字段指定交易密码
+- 在一些需要签名的接口，需要先请求签名接口`[POST] /v1/signature`, 然后把得到的 hash值 放在请求头 `X-Signature`
 
 **通用的查询参数**:
 

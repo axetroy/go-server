@@ -2,6 +2,7 @@
 package transfer
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/controller"
@@ -29,7 +30,7 @@ type ToParams struct {
 	Note     *string `json:"note"`                                              // 转账备注
 }
 
-func To(context controller.Context, input ToParams) (res schema.Response) {
+func To(context controller.Context, input ToParams, signature string) (res schema.Response) {
 	var (
 		err          error
 		tx           *gorm.DB
@@ -71,6 +72,25 @@ func To(context controller.Context, input ToParams) (res schema.Response) {
 	} else if isValidInput == false {
 		err = exception.InvalidParams
 		return
+	}
+
+	// 交验签名是否正确
+	if b, err1 := json.Marshal(input); err != nil {
+		err = err1
+		return
+	} else {
+		s, err2 := util.Signature(string(b))
+
+		if err2 != nil {
+			err = err2
+			return
+		}
+
+		// 如果签名不一致
+		if s != signature {
+			err = exception.InvalidSignature
+			return
+		}
 	}
 
 	tx = database.Db.Begin()
@@ -244,7 +264,10 @@ func ToRouter(context *gin.Context) {
 		return
 	}
 
+	// 获取数据签名
+	signature := context.GetHeader("X-Signature")
+
 	res = To(controller.Context{
 		Uid: context.GetString(middleware.ContextUidField),
-	}, input)
+	}, input, signature)
 }

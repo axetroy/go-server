@@ -13,6 +13,7 @@ import (
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/service/token"
+	"github.com/axetroy/go-server/src/util"
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
@@ -27,13 +28,23 @@ func TestTo(t *testing.T) {
 	defer auth.DeleteUserByUserName(userFrom.Username)
 	defer auth.DeleteUserByUserName(userTo.Username)
 
-	res1 := transfer.To(controller.Context{
-		Uid: userFrom.Id,
-	}, transfer.ToParams{
+	input1 := transfer.ToParams{
 		Currency: "CNY",
 		To:       userTo.Id,
 		Amount:   "0.0001", // 转账失败，钱包没有余额
-	})
+	}
+
+	b1, err := json.Marshal(input1)
+
+	assert.Nil(t, err)
+
+	signature1, err := util.Signature(string(b1))
+
+	assert.Nil(t, err)
+
+	res1 := transfer.To(controller.Context{
+		Uid: userFrom.Id,
+	}, input1, signature1)
 
 	assert.Equal(t, exception.NotEnoughBalance.Error(), res1.Message)
 	assert.Equal(t, schema.StatusFail, res1.Status)
@@ -44,13 +55,23 @@ func TestTo(t *testing.T) {
 		Currency: model.WalletCNY,
 	}).Error)
 
-	res2 := transfer.To(controller.Context{
-		Uid: userFrom.Id,
-	}, transfer.ToParams{
+	input2 := transfer.ToParams{
 		Currency: "CNY",
 		To:       userTo.Id,
 		Amount:   "20", // 转账 20
-	})
+	}
+
+	b2, err := json.Marshal(input2)
+
+	assert.Nil(t, err)
+
+	signature2, err := util.Signature(string(b2))
+
+	assert.Nil(t, err)
+
+	res2 := transfer.To(controller.Context{
+		Uid: userFrom.Id,
+	}, input2, signature2)
 	data := schema.TransferLog{}
 
 	assert.Equal(t, "", res2.Message)
@@ -79,6 +100,22 @@ func TestTo(t *testing.T) {
 	assert.Nil(t, tester.Decode(r4.Data, &toUserWallet))
 	assert.Equal(t, "20.00000000", toUserWallet.Balance)
 	assert.Equal(t, "0.00000000", toUserWallet.Frozen)
+
+	// Invalid Signature
+	{
+		input := transfer.ToParams{
+			Currency: "CNY",
+			To:       userTo.Id,
+			Amount:   "0.0001", // 转账失败，钱包没有余额
+		}
+
+		res := transfer.To(controller.Context{
+			Uid: userFrom.Id,
+		}, input, "Invalid signature")
+
+		assert.Equal(t, exception.InvalidSignature.Error(), res.Message)
+		assert.Equal(t, schema.StatusFail, res.Status)
+	}
 }
 
 func TestToRouter(t *testing.T) {
@@ -115,6 +152,12 @@ func TestToRouter(t *testing.T) {
 			To:       userTo.Id,
 			Amount:   "20",
 		})
+
+		signature, err := util.Signature(string(body))
+
+		header["X-Signature"] = signature
+
+		assert.Nil(t, err)
 
 		r := tester.HttpUser.Post("/v1/transfer", body, &header)
 

@@ -17,6 +17,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/oauth2"
 	"github.com/axetroy/go-server/src/controller/report"
 	"github.com/axetroy/go-server/src/controller/resource"
+	"github.com/axetroy/go-server/src/controller/signature"
 	"github.com/axetroy/go-server/src/controller/transfer"
 	"github.com/axetroy/go-server/src/controller/uploader"
 	"github.com/axetroy/go-server/src/controller/user"
@@ -199,6 +200,9 @@ func init() {
 			v1.GET("/avatar/:filename", user.GetAvatarRouter) // 获取用户头像
 
 			v1.GET("/area", address.AreaListRouter) // 获取地址选择列表
+
+			// 数据签名
+			v1.POST("/signature", signature.EncryptionRouter)
 		}
 
 	}

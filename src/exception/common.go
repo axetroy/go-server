@@ -23,4 +23,5 @@ var (
 	InvalidConfirmPassword   = New("两次输入密码不一致", 0)
 	InvalidOldPassword       = New("旧密码错误", 0)
 	EmptyList                = New("sql: no rows in result set", 0)
+	InvalidSignature         = New("Invalid Signature", 0)
 )

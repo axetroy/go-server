@@ -11,6 +11,7 @@ import (
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/service/token"
+	"github.com/axetroy/go-server/src/util"
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
@@ -31,13 +32,23 @@ func TestGetHistory(t *testing.T) {
 	}).Error)
 
 	// 创建一条转账记录
-	res2 := transfer.To(controller.Context{
-		Uid: userFrom.Id,
-	}, transfer.ToParams{
+	input := transfer.ToParams{
 		Currency: "CNY",
 		To:       userTo.Id,
 		Amount:   "20", // 转账 20
-	})
+	}
+
+	b, err := json.Marshal(input)
+
+	assert.Nil(t, err)
+
+	signature, err := util.Signature(string(b))
+
+	assert.Nil(t, err)
+
+	res2 := transfer.To(controller.Context{
+		Uid: userFrom.Id,
+	}, input, signature)
 
 	assert.Equal(t, "", res2.Message)
 	assert.Equal(t, schema.StatusSuccess, res2.Status)
@@ -84,13 +95,23 @@ func TestGetHistoryRouter(t *testing.T) {
 	}).Error)
 
 	// 创建一条转账记录
-	res2 := transfer.To(controller.Context{
-		Uid: userFrom.Id,
-	}, transfer.ToParams{
+	input := transfer.ToParams{
 		Currency: "CNY",
 		To:       userTo.Id,
 		Amount:   "20", // 转账 20
-	})
+	}
+
+	b, err := json.Marshal(input)
+
+	assert.Nil(t, err)
+
+	signature, err := util.Signature(string(b))
+
+	assert.Nil(t, err)
+
+	res2 := transfer.To(controller.Context{
+		Uid: userFrom.Id,
+	}, input, signature)
 
 	assert.Equal(t, "", res2.Message)
 	assert.Equal(t, schema.StatusSuccess, res2.Status)
