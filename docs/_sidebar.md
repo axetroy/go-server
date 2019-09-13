@@ -1,4 +1,6 @@
 * [首页](/)
+* [接口规范](/specification)
+* [架构说明](/architecture)
 * 用户接口
     * [验证类](user/auth)
     * [oAuth](user/oauth)
