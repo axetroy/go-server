@@ -4,11 +4,12 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"fmt"
+	"github.com/axetroy/go-server/src/config"
 	"io"
 )
 
-const (
-	key = "hash key"
+var (
+	key = config.Common.Signature
 )
 
 func Signature(input string) (string, error) {

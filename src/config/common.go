@@ -7,12 +7,13 @@ import (
 
 var (
 	ModeProduction  = "production"
-	ModeDevelopment = "production"
+	ModeDevelopment = "development"
 )
 
 type common struct {
 	MachineId string `json:"machine_id"`
 	Mode      string `json:"mode"`
+	Signature string `json:"signature"`
 }
 
 var Common common
@@ -21,7 +22,10 @@ func init() {
 	if Common.Mode = dotenv.Get("GO_MOD"); Common.Mode == "" {
 		Common.Mode = ModeDevelopment
 	}
-	if Common.MachineId = dotenv.Get("machine_id"); Common.MachineId == "" {
+	if Common.MachineId = dotenv.Get("MACHINE_ID"); Common.MachineId == "" {
 		Common.MachineId = "0"
+	}
+	if Common.Signature = dotenv.Get("SIGNATURE_KEY"); Common.Signature == "" {
+		Common.Signature = "signature key"
 	}
 }
