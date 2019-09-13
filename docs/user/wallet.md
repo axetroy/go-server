@@ -25,7 +25,7 @@
 | amount   | `string` | 转账金额                | \*   |
 | note     | `string` | 转账备注                |      |
 
-!> 在发起转账前，先调用签名接口，它 JSON 格式的参数，提交到 `/v1/signature` 进行签名. 签名后赋值给 `X-Signature`
+!> 在发起转账前，先调用签名接口，把 JSON 格式的参数，提交到 `/v1/signature` 进行签名. 签名后赋值给 `X-Signature`
 
 ### 获取转账记录
 
