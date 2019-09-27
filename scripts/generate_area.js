@@ -94,6 +94,6 @@ var (
 
 const raw = genearte()
 
-const distFilePath = path.join(rootPath, "src", "controller", "address", "area.go")
+const distFilePath = path.join(rootPath, "src", "controller", "address", "code.go")
 
 fs.writeFileSync(distFilePath, raw)
