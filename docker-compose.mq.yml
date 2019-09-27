@@ -4,12 +4,14 @@ services:
   nsqlookupd:
     image: nsqio/nsq
     command: /nsqlookupd
+    restart: always
     ports:
       - 4160:4160 # TCP 端口
       - 4161:4161 # HTTP 端口
   nsqd:
     image: nsqio/nsq
     command: /nsqd --lookupd-tcp-address=nsqlookupd:4160
+    restart: always
     depends_on:
       - nsqlookupd
     ports:
@@ -18,6 +20,7 @@ services:
   nsqadmin:
     image: nsqio/nsq
     command: /nsqadmin --lookupd-http-address=nsqlookupd:4161
+    restart: always
     depends_on:
       - nsqlookupd
     ports:

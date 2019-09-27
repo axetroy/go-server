@@ -6,8 +6,7 @@ import (
 )
 
 var (
-	ModeProduction  = "production"
-	ModeDevelopment = "development"
+	ModeProduction = "production"
 )
 
 type common struct {
@@ -20,7 +19,7 @@ var Common common
 
 func init() {
 	if Common.Mode = dotenv.Get("GO_MOD"); Common.Mode == "" {
-		Common.Mode = ModeDevelopment
+		Common.Mode = ModeProduction
 	}
 	if Common.MachineId = dotenv.Get("MACHINE_ID"); Common.MachineId == "" {
 		Common.MachineId = "0"

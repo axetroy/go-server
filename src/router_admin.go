@@ -3,12 +3,10 @@ package src
 
 import (
 	"fmt"
-	"net/http"
-	"path"
-
 	"github.com/axetroy/go-server/src/config"
 	"github.com/axetroy/go-server/src/controller/admin"
 	"github.com/axetroy/go-server/src/controller/banner"
+	"github.com/axetroy/go-server/src/controller/help"
 	loginLog "github.com/axetroy/go-server/src/controller/logs/login"
 	"github.com/axetroy/go-server/src/controller/menu"
 	"github.com/axetroy/go-server/src/controller/message"
@@ -22,6 +20,8 @@ import (
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/dotenv"
 	"github.com/gin-gonic/gin"
+	"net/http"
+	"path"
 )
 
 var AdminRouter *gin.Engine
@@ -138,6 +138,16 @@ func init() {
 			reportRouter.GET("", report.GetListByAdminRouter)                // 获取我的反馈列表
 			reportRouter.GET("/r/:report_id", report.GetReportByAdminRouter) // 获取反馈详情
 			reportRouter.PUT("/r/:report_id", report.UpdateByAdminRouter)    // 更新用户反馈
+		}
+
+		// 帮助中心
+		{
+			helpRouter := v1.Group("help")
+			helpRouter.GET("", help.GetHelpListRouter)          // 创建帮助列表
+			helpRouter.POST("", help.CreateRouter)              // 创建帮助
+			helpRouter.PUT("/h/:help_id", help.UpdateRouter)    // 更新帮助
+			helpRouter.GET("/h/:help_id", help.GetHelpRouter)   // 获取帮助详情
+			helpRouter.DELETE("/h/:help_id", help.DeleteRouter) // 删除帮助
 		}
 
 		// Banner

@@ -10,6 +10,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/downloader"
 	"github.com/axetroy/go-server/src/controller/email"
 	"github.com/axetroy/go-server/src/controller/finance"
+	"github.com/axetroy/go-server/src/controller/help"
 	"github.com/axetroy/go-server/src/controller/invite"
 	"github.com/axetroy/go-server/src/controller/message"
 	"github.com/axetroy/go-server/src/controller/news"
@@ -169,6 +170,13 @@ func init() {
 			reportRouter.POST("", report.CreateRouter)                // 添加一条反馈
 			reportRouter.GET("/r/:report_id", report.GetReportRouter) // 获取反馈详情
 			reportRouter.PUT("/r/:report_id", report.UpdateRouter)    // 更新这条反馈信息
+		}
+
+		// 帮助中心
+		{
+			helpRouter := v1.Group("help")
+			helpRouter.GET("", help.GetHelpListRouter)        // 创建帮助列表
+			helpRouter.GET("/h/:help_id", help.GetHelpRouter) // 获取帮助详情
 		}
 
 		// Banner

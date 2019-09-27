@@ -55,6 +55,7 @@ func init() {
 			new(model.Banner),           // Banner 表
 			new(model.Report),           // 反馈表
 			new(model.Menu),             // 后台管理员菜单
+			new(model.Help),             // 帮助中心
 		)
 
 		fmt.Println("数据库同步完成.")
