@@ -1,6 +1,6 @@
 module github.com/axetroy/go-server
 
-go 1.12
+go 1.13.1
 
 require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
@@ -28,5 +28,6 @@ require (
 	github.com/shirou/gopsutil v2.18.12+incompatible
 	github.com/shirou/w32 v0.0.0-20160930032740-bb4de0191aa4 // indirect
 	github.com/stretchr/testify v1.3.0
+	github.com/urfave/cli v1.22.1
 	golang.org/x/oauth2 v0.0.0-20190523182746-aaccbc9213b0
 )

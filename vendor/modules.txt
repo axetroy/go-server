@@ -6,6 +6,8 @@ github.com/asaskevich/govalidator
 github.com/axetroy/go-fs
 # github.com/axetroy/mocker v1.0.0
 github.com/axetroy/mocker
+# github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d
+github.com/cpuguy83/go-md2man/v2/md2man
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
 # github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -62,6 +64,8 @@ github.com/nfnt/resize
 github.com/nsqio/go-nsq
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
+# github.com/russross/blackfriday/v2 v2.0.1
+github.com/russross/blackfriday/v2
 # github.com/sec51/convert v0.0.0-20190309075348-ebe586d87951
 github.com/sec51/convert
 github.com/sec51/convert/bigendian
@@ -79,43 +83,47 @@ github.com/sec51/twofactor
 github.com/shirou/gopsutil/cpu
 github.com/shirou/gopsutil/disk
 github.com/shirou/gopsutil/host
+github.com/shirou/gopsutil/internal/common
 github.com/shirou/gopsutil/load
 github.com/shirou/gopsutil/mem
-github.com/shirou/gopsutil/internal/common
-github.com/shirou/gopsutil/process
 github.com/shirou/gopsutil/net
+github.com/shirou/gopsutil/process
 # github.com/shirou/w32 v0.0.0-20160930032740-bb4de0191aa4
 github.com/shirou/w32
-# github.com/stretchr/testify v1.4.0
+# github.com/shurcooL/sanitized_anchor_name v1.0.0
+github.com/shurcooL/sanitized_anchor_name
+# github.com/stretchr/testify v1.3.0
 github.com/stretchr/testify/assert
 # github.com/ugorji/go v1.1.4
 github.com/ugorji/go/codec
+# github.com/urfave/cli v1.22.1
+github.com/urfave/cli
 # golang.org/x/crypto v0.0.0-20190325154230-a5d413f7728c
+golang.org/x/crypto/curve25519
 golang.org/x/crypto/hkdf
+golang.org/x/crypto/internal/subtle
 golang.org/x/crypto/nacl/box
 golang.org/x/crypto/nacl/secretbox
-golang.org/x/crypto/curve25519
-golang.org/x/crypto/salsa20/salsa
-golang.org/x/crypto/internal/subtle
 golang.org/x/crypto/poly1305
+golang.org/x/crypto/salsa20/salsa
 # golang.org/x/net v0.0.0-20190503192946-f4e77d36d62c
-golang.org/x/net/context/ctxhttp
 golang.org/x/net/context
+golang.org/x/net/context/ctxhttp
 # golang.org/x/oauth2 v0.0.0-20190523182746-aaccbc9213b0
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
 # golang.org/x/sys v0.0.0-20190222072716-a9d3bda3a223
+golang.org/x/sys/cpu
 golang.org/x/sys/unix
 golang.org/x/sys/windows
-golang.org/x/sys/cpu
 # google.golang.org/appengine v1.4.0
-google.golang.org/appengine/urlfetch
 google.golang.org/appengine/internal
-google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/internal/base
 google.golang.org/appengine/internal/datastore
 google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
+google.golang.org/appengine/internal/urlfetch
+google.golang.org/appengine/urlfetch
 # gopkg.in/go-playground/validator.v8 v8.18.2
 gopkg.in/go-playground/validator.v8
 # gopkg.in/yaml.v2 v2.2.2
