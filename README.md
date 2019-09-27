@@ -58,13 +58,19 @@
 再根据以下命令运行
 
 ```bash
-> go get -v github.com/axetroy/go-server # 拉取项目
-> cd $GOPATH/github/axetroy/go-server # 切换到项目目录
-> docker-compose -f docker-compose.mq.yml up # 启动消息队列
-> docker-compose up # 启动数据库和HTTP服务
-> go run ./cmd/message_queue/main.go # 启动消息队列
-> go run ./cmd/user/main.go # 运行用户端的接口服务
-> go run ./cmd/admin/main.go # 运行管理员端的接口服务
+# 克隆项目
+$ go get -v github.com/axetroy/go-server # 拉取项目
+
+# 启用项目依赖(数据库，消息队列等)
+$ cd $GOPATH/github/axetroy/go-server # 切换到项目目录
+$ cd docker
+$ ./start.sh
+
+# 启动接口服务
+$ cd $GOPATH/github/axetroy/go-server # 切换到项目目录
+$ go run ./cmd/message_queue/main.go # 启动消息队列
+$ go run ./cmd/user/main.go # 运行用户端的接口服务
+$ go run ./cmd/admin/main.go # 运行管理员端的接口服务
 ```
 
 可以通过 [.env](.env) 文件进行配置
