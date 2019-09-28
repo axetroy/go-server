@@ -99,7 +99,7 @@ func Update(context controller.Context, bannerId string, input UpdateParams) (re
 
 	if err = tx.First(&menuInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = exception.BannerNotExist
+			err = exception.NoData
 			return
 		}
 		return
@@ -141,7 +141,7 @@ func Update(context controller.Context, bannerId string, input UpdateParams) (re
 	if shouldUpdate {
 		if err = tx.Model(&menuInfo).Updates(m).Error; err != nil {
 			if err == gorm.ErrRecordNotFound {
-				err = exception.BannerNotExist
+				err = exception.NoData
 				return
 			}
 			return

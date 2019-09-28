@@ -24,6 +24,7 @@ const (
 type LoginLog struct {
 	Id        string          `gorm:"primary_key;not null;index;type:varchar(32)" json:"id"` // 数据ID
 	Uid       string          `gorm:"not null;index;type:varchar(32)" json:"uid"`            // 用户ID
+	User      User            `gorm:"foreignkey:Uid" json:"user"`                            // **外键**
 	Type      LoginLogType    `gorm:"not null;type:int" json:"type"`                         // 登陆类型(用什么方式登陆)
 	Command   LoginLogCommand `gorm:"not null;type:int" json:"command"`                      // 登陆的状态(成功, 失败)
 	LastIp    string          `gorm:"not null;type:varchar(15)" json:"last_ip"`              // 本次登陆IP

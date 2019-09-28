@@ -1,6 +1,7 @@
 // Copyright 2019 Axetroy. All rights reserved. MIT license.
 package schema
 
+// 用户自己的资料
 type ProfilePure struct {
 	Id         string   `json:"id"`
 	Username   string   `json:"username"`
@@ -13,6 +14,14 @@ type ProfilePure struct {
 	Role       []string `json:"role"`
 	Level      int32    `json:"level"`
 	InviteCode string   `json:"invite_code"`
+}
+
+// 公开的用户资料，任何人都可以查阅
+type ProfilePublic struct {
+	Id       string  `json:"id"`
+	Username string  `json:"username"`
+	Nickname *string `json:"nickname"`
+	Avatar   string  `json:"avatar"`
 }
 
 type ProfileWithToken struct {

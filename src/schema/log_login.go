@@ -12,6 +12,7 @@ type LogLoginPure struct {
 
 type LogLogin struct {
 	LogLoginPure
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
+	User      ProfilePublic `json:"user"`
+	CreatedAt string        `json:"created_at"`
+	UpdatedAt string        `json:"updated_at"`
 }
