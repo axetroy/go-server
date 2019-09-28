@@ -44,10 +44,11 @@ before_script:
   - go get -v ./...
 
 script:
-  - make test && make build
+  - make test
 
 after_success:
   # report code cover
   - go get golang.org/x/tools/cmd/cover
   - go get github.com/mattn/goveralls
   - $GOPATH/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
+  - make build
