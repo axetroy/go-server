@@ -131,7 +131,7 @@ func TestGetListRouter(t *testing.T) {
 
 		res := schema.List{}
 
-		if !assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res)) {
+		if !assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res)) {
 			return
 		}
 

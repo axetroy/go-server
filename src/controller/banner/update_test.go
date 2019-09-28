@@ -120,7 +120,7 @@ func TestUpdateRouter(t *testing.T) {
 
 		res := schema.Response{}
 
-		if !assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res)) {
+		if !assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res)) {
 			return
 		}
 
@@ -158,7 +158,7 @@ func TestUpdateRouter(t *testing.T) {
 
 		res := schema.Response{}
 
-		if !assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res)) {
+		if !assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res)) {
 			return
 		}
 

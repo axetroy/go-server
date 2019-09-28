@@ -120,7 +120,7 @@ func TestDeleteByAdminRouter(t *testing.T) {
 		res := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, r.Code)
-		assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res))
+		assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res))
 
 		messageInfo := schema.Message{}
 
@@ -141,7 +141,7 @@ func TestDeleteByAdminRouter(t *testing.T) {
 		res := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, r.Code)
-		assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res))
+		assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res))
 
 		// 再查找这条记录，应该是空的
 
@@ -277,7 +277,7 @@ func TestDeleteByUserRouter(t *testing.T) {
 			return
 		}
 
-		if !assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res)) {
+		if !assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res)) {
 			return
 		}
 

@@ -32,7 +32,7 @@ func TestGetSystemInfoRouter(t *testing.T) {
 	res := schema.Response{}
 
 	assert.Equal(t, http.StatusOK, r.Code)
-	assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res))
+	assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res))
 
 	n := system.Info{}
 

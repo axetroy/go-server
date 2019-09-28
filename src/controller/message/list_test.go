@@ -222,7 +222,7 @@ func TestGetMessageListByUserRouter(t *testing.T) {
 
 		assert.Equal(t, http.StatusOK, r.Code)
 
-		if !assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res)) {
+		if !assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res)) {
 			return
 		}
 
@@ -291,7 +291,7 @@ func TestGetMessageListByAdminRouter(t *testing.T) {
 
 		assert.Equal(t, http.StatusOK, r.Code)
 
-		if !assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res)) {
+		if !assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res)) {
 			return
 		}
 

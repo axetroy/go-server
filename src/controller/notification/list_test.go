@@ -137,7 +137,7 @@ func TestGetNotificationListByUserRouter(t *testing.T) {
 		r := tester.HttpAdmin.Get("/v1/notification", nil, &header)
 		res := schema.Response{}
 
-		assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res))
+		assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res))
 		assert.Equal(t, "", res.Message)
 		assert.Equal(t, schema.StatusSuccess, res.Status)
 
@@ -162,7 +162,7 @@ func TestGetNotificationListByUserRouter(t *testing.T) {
 		r := tester.HttpUser.Get("/v1/notification", nil, &header)
 		res := schema.Response{}
 
-		assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res))
+		assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res))
 		assert.Equal(t, "", res.Message)
 		assert.Equal(t, schema.StatusSuccess, res.Status)
 

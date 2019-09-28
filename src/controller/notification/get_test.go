@@ -115,7 +115,7 @@ func TestGetRouter(t *testing.T) {
 		res := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, r.Code)
-		assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res))
+		assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res))
 
 		assert.Equal(t, schema.StatusSuccess, res.Status)
 		assert.Equal(t, "", res.Message)
@@ -140,7 +140,7 @@ func TestGetRouter(t *testing.T) {
 		res := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, r.Code)
-		assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res))
+		assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res))
 
 		assert.Equal(t, schema.StatusSuccess, res.Status)
 		assert.Equal(t, "", res.Message)

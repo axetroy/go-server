@@ -35,7 +35,7 @@ func TestSendResetPasswordEmail(t *testing.T) {
 
 	res := schema.Response{}
 
-	assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res))
+	assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res))
 
 	assert.Equal(t, schema.StatusFail, res.Status)
 	assert.Equal(t, exception.UserNotExist.Error(), res.Message)

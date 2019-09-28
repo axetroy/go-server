@@ -24,7 +24,7 @@ func TestSignInWithEmptyBody(t *testing.T) {
 
 	res := schema.Response{}
 
-	assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res))
+	assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res))
 
 	assert.Equal(t, schema.StatusFail, res.Status)
 	assert.Equal(t, exception.InvalidParams.Error(), res.Message)
@@ -44,7 +44,7 @@ func TestSignInWithInvalidPassword(t *testing.T) {
 
 	res := schema.Response{}
 
-	assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res))
+	assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res))
 
 	assert.Equal(t, schema.StatusFail, res.Status)
 	assert.Equal(t, exception.InvalidAccountOrPassword.Error(), res.Message)

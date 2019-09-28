@@ -166,7 +166,7 @@ func TestUpdateRouter(t *testing.T) {
 
 		res := schema.Response{}
 
-		assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res))
+		assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res))
 		assert.Equal(t, "", res.Message)
 		assert.Equal(t, schema.StatusSuccess, res.Status)
 
