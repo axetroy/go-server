@@ -85,7 +85,7 @@ func TestUpdatePasswordRouter(t *testing.T) {
 	testProfile := schema.AdminProfile{}
 
 	assert.Equal(t, http.StatusOK, r.Code)
-	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+	assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res))
 	assert.Equal(t, "", res.Message)
 	assert.Equal(t, schema.StatusSuccess, res.Status)
 	assert.Nil(t, tester.Decode(res.Data, &testProfile))

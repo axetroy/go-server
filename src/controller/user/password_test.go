@@ -115,7 +115,7 @@ func TestUpdatePasswordRouter(t *testing.T) {
 
 		res := schema.Response{}
 
-		if !assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res)) {
+		if !assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res)) {
 			return
 		}
 
@@ -162,7 +162,7 @@ func TestUpdatePasswordByAdminRouter(t *testing.T) {
 
 		res := schema.Response{}
 
-		if !assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res)) {
+		if !assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res)) {
 			return
 		}
 

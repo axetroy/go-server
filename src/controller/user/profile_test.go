@@ -30,7 +30,7 @@ func TestGetProfileWithInvalidAuth(t *testing.T) {
 
 	res := schema.Response{}
 
-	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+	assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res))
 	assert.Equal(t, exception.InvalidToken.Code(), res.Status)
 	assert.Equal(t, exception.InvalidAuth.Error(), res.Message)
 }
@@ -48,7 +48,7 @@ func TestGetProfileWithInvalidToken(t *testing.T) {
 
 	res := schema.Response{}
 
-	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+	assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res))
 	assert.Equal(t, exception.InvalidToken.Code(), res.Status)
 	assert.Equal(t, exception.InvalidToken.Error(), res.Message)
 }
@@ -103,7 +103,7 @@ func TestGetProfileRouter(t *testing.T) {
 
 	res := schema.Response{}
 
-	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+	assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res))
 	assert.Equal(t, schema.StatusSuccess, res.Status)
 	assert.Equal(t, "", res.Message)
 
@@ -132,7 +132,7 @@ func TestGetProfileByAdminRouter(t *testing.T) {
 
 	res := schema.Response{}
 
-	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+	assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res))
 	assert.Equal(t, schema.StatusSuccess, res.Status)
 	assert.Equal(t, "", res.Message)
 
@@ -189,7 +189,7 @@ func TestUpdateProfileRouter(t *testing.T) {
 
 	res := schema.Response{}
 
-	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+	assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res))
 	assert.Equal(t, schema.StatusSuccess, res.Status)
 	assert.Equal(t, "", res.Message)
 
@@ -252,7 +252,7 @@ func TestUpdateProfileByAdminRouter(t *testing.T) {
 
 	res := schema.Response{}
 
-	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+	assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res))
 	assert.Equal(t, schema.StatusSuccess, res.Status)
 	assert.Equal(t, "", res.Message)
 

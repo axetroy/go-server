@@ -26,7 +26,7 @@ func TestResetPasswordWithEmptyBody(t *testing.T) {
 
 	res := schema.Response{}
 
-	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+	assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res))
 
 	assert.Equal(t, schema.StatusFail, res.Status)
 	assert.Equal(t, exception.InvalidParams.Error(), res.Message)
@@ -48,7 +48,7 @@ func TestResetPasswordWithInvalidPassword(t *testing.T) {
 
 	res := schema.Response{}
 
-	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+	assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res))
 
 	assert.Equal(t, schema.StatusFail, res.Status)
 	assert.Equal(t, exception.InvalidResetCode.Error(), res.Message)
@@ -103,7 +103,7 @@ func TestResetPasswordSuccess(t *testing.T) {
 
 	res := schema.Response{}
 
-	assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+	assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res))
 	assert.Equal(t, schema.StatusSuccess, res.Status)
 	assert.Equal(t, true, res.Data)
 

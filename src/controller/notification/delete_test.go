@@ -167,7 +167,7 @@ func TestDeleteRouter(t *testing.T) {
 		res := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, r.Code)
-		assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+		assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res))
 
 		assert.Nil(t, tester.Decode(res.Data, &notificationInfo))
 
@@ -184,7 +184,7 @@ func TestDeleteRouter(t *testing.T) {
 		res := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, r.Code)
-		assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+		assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res))
 
 		// 再查找这条记录，应该是空的
 

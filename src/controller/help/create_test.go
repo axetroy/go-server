@@ -106,7 +106,7 @@ func TestCreateRouter(t *testing.T) {
 		res := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, r.Code)
-		assert.Nil(t, json.Unmarshal([]byte(r.Body.String()), &res))
+		assert.Nil(t, json.Unmarshal(r.Body.Bytes()), &res))
 
 		n := schema.Help{}
 
