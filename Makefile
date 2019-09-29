@@ -9,5 +9,9 @@ build:
 	bash ./scripts/build.sh
 	echo "Build Success!"
 
+build-simple:
+	bash ./scripts/build-simple.sh
+	echo "Build Success!"
+
 clean:
 	bash ./scripts/clean.sh
