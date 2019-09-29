@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/axetroy/go-fs"
 	"github.com/axetroy/go-server/src"
+	"github.com/axetroy/go-server/src/util"
 	"github.com/urfave/cli"
 	"log"
 	"os"
@@ -91,6 +92,14 @@ func main() {
 
 				_ = fs.Remove(pidFileName)
 
+				return nil
+			},
+		},
+		{
+			Name:  "env",
+			Usage: "print runtime environment",
+			Action: func(c *cli.Context) error {
+				util.PrintEnv()
 				return nil
 			},
 		},

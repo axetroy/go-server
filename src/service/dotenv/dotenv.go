@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/axetroy/go-fs"
+	"github.com/fatih/color"
 	"github.com/joho/godotenv"
 	"os"
 	"path"
@@ -93,7 +94,7 @@ func Load() (err error) {
 		return
 	}
 
-	fmt.Println("加载的环境文件", dotEnvFilePath)
+	fmt.Println(fmt.Sprintf("加载环境变量文件 `%s`", color.GreenString(dotEnvFilePath)))
 
 	err = godotenv.Load(dotEnvFilePath)
 	return

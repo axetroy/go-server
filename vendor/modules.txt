@@ -12,6 +12,8 @@ github.com/cpuguy83/go-md2man/v2/md2man
 github.com/davecgh/go-spew/spew
 # github.com/dgrijalva/jwt-go v3.2.0+incompatible
 github.com/dgrijalva/jwt-go
+# github.com/fatih/color v1.7.0
+github.com/fatih/color
 # github.com/gin-contrib/sse v0.0.0-20190301062529-5545eab6dad3
 github.com/gin-contrib/sse
 # github.com/gin-gonic/gin v1.4.0
@@ -52,7 +54,9 @@ github.com/konsorten/go-windows-terminal-sequences
 github.com/lib/pq
 github.com/lib/pq/oid
 github.com/lib/pq/scram
-# github.com/mattn/go-isatty v0.0.7
+# github.com/mattn/go-colorable v0.1.2
+github.com/mattn/go-colorable
+# github.com/mattn/go-isatty v0.0.9
 github.com/mattn/go-isatty
 # github.com/mitchellh/mapstructure v1.1.2
 github.com/mitchellh/mapstructure
@@ -116,7 +120,7 @@ golang.org/x/net/context/ctxhttp
 # golang.org/x/oauth2 v0.0.0-20190523182746-aaccbc9213b0
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
-# golang.org/x/sys v0.0.0-20190422165155-953cdadca894
+# golang.org/x/sys v0.0.0-20190927073244-c990c680b611
 golang.org/x/sys/cpu
 golang.org/x/sys/unix
 golang.org/x/sys/windows
