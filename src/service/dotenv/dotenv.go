@@ -3,6 +3,7 @@ package dotenv
 
 import (
 	"flag"
+	"fmt"
 	"github.com/axetroy/go-fs"
 	"github.com/joho/godotenv"
 	"os"
@@ -64,9 +65,9 @@ func Load() (err error) {
 			panic(err)
 		}
 
-		exPath := filepath.Dir(ex)
+		exPathDir := filepath.Dir(ex)
 
-		RootDir = filepath.Dir(exPath)
+		RootDir = exPathDir
 
 		// 如果是以 go run main.go 运行, 则取工作目录
 		goRunReg := regexp.MustCompile("/go-build\\d+/")
@@ -91,6 +92,8 @@ func Load() (err error) {
 	if !fs.PathExists(dotEnvFilePath) {
 		return
 	}
+
+	fmt.Println("加载的环境文件", dotEnvFilePath)
 
 	err = godotenv.Load(dotEnvFilePath)
 	return
