@@ -9,6 +9,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/finance"
 	"github.com/axetroy/go-server/src/controller/wallet"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/logger"
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
@@ -54,6 +55,7 @@ func To(context controller.Context, input ToParams, signature string) (res schem
 			if err != nil {
 				_ = tx.Rollback().Error
 			} else {
+				logger.Infof("User %s transfer %v", context.Uid, input)
 				err = tx.Commit().Error
 			}
 		}
