@@ -45,6 +45,9 @@ func PrintEnv() {
 	fmt.Println(color.GreenString("=== Configuration Common ==="))
 	printJSON(config.Common)
 
+	fmt.Println(color.GreenString("=== Configuration Upload ==="))
+	printJSON(config.Upload)
+
 	fmt.Println(color.GreenString("=== Configuration Message Queue ==="))
 	printJSON(config.MessageQueue)
 

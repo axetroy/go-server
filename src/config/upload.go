@@ -1,5 +1,4 @@
-// Copyright 2019 Axetroy. All rights reserved. MIT license.
-package uploader
+package config
 
 import (
 	"github.com/axetroy/go-fs"
@@ -36,19 +35,20 @@ type TConfig struct {
 	Image ImageConfig `json:"image"` // 普通图片上传的配置
 }
 
-var Config = TConfig{
-	Path: dotenv.Get("UPLOAD_DIR"),
+var Upload = TConfig{
+	Path: dotenv.GetByDefault("UPLOAD_DIR", "upload"),
 	File: FileConfig{
-		Path:    "file",
-		MaxSize: 1024 * 1024 * 10, // max 10MB
+		Path:      "file",
+		MaxSize:   dotenv.GetIntByDefault("UPLOAD_FILE_MAX_SIZE", 1024*1024*10), // max 10MB
+		AllowType: dotenv.GetStrArrayByDefault("UPLOAD_FILE_EXTENSION", []string{".txt", ".md"}),
 	},
 	Image: ImageConfig{
 		Path:    "image",
-		MaxSize: 1024 * 1024 * 10, // max 10MB
+		MaxSize: dotenv.GetIntByDefault("UPLOAD_IMAGE_MAX_SIZE", 1024*1024*10), // max 10MB
 		Thumbnail: ThumbnailConfig{
 			Path:      "thumbnail",
-			MaxWidth:  100,
-			MaxHeight: 100,
+			MaxWidth:  dotenv.GetIntByDefault("UPLOAD_IMAGE_THUMBNAIL_WIDTH", 100),
+			MaxHeight: dotenv.GetIntByDefault("UPLOAD_IMAGE_THUMBNAIL_HEIGHT", 100),
 		},
 		Avatar: AvatarConfig{
 			Path: "avatar",
@@ -59,29 +59,22 @@ var Config = TConfig{
 // 确保上传的文件目录存在
 func init() {
 	var (
-		err      error
-		rootPath = dotenv.Get("UPLOAD_DIR")
+		err error
 	)
 
-	if rootPath == "" {
-		Config.Path = path.Join(dotenv.RootDir, "upload")
-	} else {
-		Config.Path = rootPath
-	}
-
-	if err = fs.EnsureDir(path.Join(Config.Path, Config.File.Path)); err != nil {
+	if err = fs.EnsureDir(path.Join(Upload.Path, Upload.File.Path)); err != nil {
 		return
 	}
 
-	if err = fs.EnsureDir(path.Join(Config.Path, Config.Image.Path)); err != nil {
+	if err = fs.EnsureDir(path.Join(Upload.Path, Upload.Image.Path)); err != nil {
 		return
 	}
 
-	if err = fs.EnsureDir(path.Join(Config.Path, Config.Image.Thumbnail.Path)); err != nil {
+	if err = fs.EnsureDir(path.Join(Upload.Path, Upload.Image.Thumbnail.Path)); err != nil {
 		return
 	}
 
-	if err = fs.EnsureDir(path.Join(Config.Path, Config.Image.Avatar.Path)); err != nil {
+	if err = fs.EnsureDir(path.Join(Upload.Path, Upload.Image.Avatar.Path)); err != nil {
 		return
 	}
 

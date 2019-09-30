@@ -4,7 +4,7 @@ package downloader
 import (
 	"fmt"
 	"github.com/axetroy/go-fs"
-	"github.com/axetroy/go-server/src/controller/uploader"
+	"github.com/axetroy/go-server/src/config"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"path"
@@ -12,7 +12,7 @@ import (
 
 func Thumbnail(context *gin.Context) {
 	filename := context.Param("filename")
-	Config := uploader.Config
+	Config := config.Upload
 	originImagePath := path.Join(Config.Path, Config.Image.Path, filename)
 	thumbnailImagePath := path.Join(Config.Path, Config.Image.Thumbnail.Path, filename)
 	if fs.PathExists(thumbnailImagePath) == false {

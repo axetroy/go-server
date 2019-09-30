@@ -7,10 +7,13 @@ import (
 	"github.com/axetroy/go-fs"
 	"github.com/fatih/color"
 	"github.com/joho/godotenv"
+	"log"
 	"os"
 	"path"
 	"path/filepath"
 	"regexp"
+	"strconv"
+	"strings"
 )
 
 var (
@@ -105,4 +108,43 @@ func Get(key string) string {
 		_ = Load()
 	}
 	return os.Getenv(key)
+}
+
+func GetIntByDefault(key string, defaultValue int) int {
+	val := GetByDefault(key, fmt.Sprintf("%d", defaultValue))
+
+	result, err := strconv.Atoi(val)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return result
+}
+
+func GetStrArrayByDefault(key string, defaultValue []string) []string {
+	val := GetByDefault(key, fmt.Sprintf("%s", strings.Join(defaultValue, ",")))
+
+	var result []string
+
+	arr := strings.Split(val, ",")
+
+	for _, val := range arr {
+		result = append(result, strings.TrimSpace(val))
+	}
+
+	return result
+}
+
+func GetByDefault(key string, defaultValue string) string {
+	if loaded == false {
+		_ = Load()
+	}
+	result := os.Getenv(key)
+
+	if result == "" {
+		return defaultValue
+	} else {
+		return result
+	}
 }

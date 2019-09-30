@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
+	"github.com/axetroy/go-server/src/config"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/gin-gonic/gin"
@@ -32,10 +33,10 @@ var supportImageExtNames = []string{".jpg", ".jpeg", ".png", ".ico", ".svg", ".b
 
 func Image(context *gin.Context) {
 	var (
-		maxUploadSize = Config.Image.MaxSize // 最大上传大小
+		maxUploadSize = config.Upload.Image.MaxSize // 最大上传大小
 		err           error
 		data          = make([]ImageResponse, 0)
-		imageDir      = path.Join(Config.Path, Config.Image.Path)
+		imageDir      = path.Join(config.Upload.Path, config.Upload.Image.Path)
 	)
 
 	defer func() {
@@ -181,9 +182,9 @@ func GenerateThumbnail(imagePath string) (outputPath string, err error) {
 		file         *os.File
 		img          image.Image
 		filename     = path.Base(imagePath)
-		maxWidth     = Config.Image.Thumbnail.MaxWidth
-		maxHeight    = Config.Image.Thumbnail.MaxHeight
-		thumbnailDir = path.Join(Config.Path, Config.Image.Thumbnail.Path)
+		maxWidth     = config.Upload.Image.Thumbnail.MaxWidth
+		maxHeight    = config.Upload.Image.Thumbnail.MaxHeight
+		thumbnailDir = path.Join(config.Upload.Path, config.Upload.Image.Thumbnail.Path)
 	)
 
 	extname := strings.ToLower(path.Ext(imagePath))
