@@ -54,6 +54,9 @@ func PrintEnv() {
 	fmt.Println(color.GreenString("=== Configuration oAuth2 ==="))
 	printJSON(config.OAuth2Google)
 
+	fmt.Println(color.GreenString("=== Configuration Wechat ==="))
+	printJSON(config.Wechat)
+
 	fmt.Println(color.GreenString("=== Configuration Redis ==="))
 	printJSON(config.Redis)
 
