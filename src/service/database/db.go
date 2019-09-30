@@ -26,7 +26,7 @@ func init() {
 		panic(err)
 	}
 
-	db.LogMode(true)
+	db.LogMode(config.Common.Mode != "production")
 
 	if Config.Sync == "on" {
 		fmt.Println("正在同步数据库...")
@@ -56,6 +56,7 @@ func init() {
 			new(model.Report),           // 反馈表
 			new(model.Menu),             // 后台管理员菜单
 			new(model.Help),             // 帮助中心
+			new(model.WechatOpenID),     // 微信 open_id 外键表
 		)
 
 		fmt.Println("数据库同步完成.")

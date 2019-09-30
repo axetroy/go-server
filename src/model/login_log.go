@@ -15,6 +15,7 @@ const (
 	LoginLogTypeTel                                  // 手机登陆
 	LoginLogTypeEmail                                // 邮箱登陆
 	LoginLogTypeThird                                // 第三方登陆
+	LoginLogTypeWechat                               // 微信登陆
 	LoginLogCommandLoginSuccess  LoginLogCommand = 0 // 登陆成功
 	LoginLogCommandLogoutSuccess                     // 登出成功
 	LoginLogCommandLoginFail                         // 登陆失败

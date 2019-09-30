@@ -69,10 +69,12 @@ func init() {
 		// 认证类
 		{
 			authRouter := v1.Group("/auth")
-			authRouter.POST("/signup", auth.SignUpRouter)               // 注册账号
-			authRouter.POST("/signin", auth.SignInRouter)               // 登陆账号
-			authRouter.POST("/activation", auth.ActivationRouter)       // 激活账号
-			authRouter.PUT("/password/reset", auth.ResetPasswordRouter) // 密码重置
+			authRouter.POST("/signup", auth.SignUpRouter)                               // 注册账号
+			authRouter.POST("/signin/wechat", auth.SignInWithWechatRouter)              // 微信帐号登陆
+			authRouter.PUT("/signin/wechat_complete", auth.WechatAccountCompleteRouter) // 补全微信帐号信息
+			authRouter.POST("/signin", auth.SignInRouter)                               // 登陆账号
+			authRouter.POST("/activation", auth.ActivationRouter)                       // 激活账号
+			authRouter.PUT("/password/reset", auth.ResetPasswordRouter)                 // 密码重置
 		}
 
 		// oAuth2 认证

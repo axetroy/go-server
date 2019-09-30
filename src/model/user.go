@@ -16,7 +16,7 @@ const (
 	// 用户状态
 	UserStatusBanned      UserStatus = -100 // 账号被禁用
 	UserStatusInactivated UserStatus = -1   // 账号未激活
-	UserStatusInit        UserStatus = 0    // 初始化状态
+	UserStatusInit        UserStatus = 1    // 初始化状态
 
 	// 用户性别
 	GenderUnknown Gender = 0 // 未知性别
