@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/asaskevich/govalidator"
+	"github.com/axetroy/go-server/src/config"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/model"
@@ -45,11 +46,6 @@ type WechatCompleteParams struct {
 	Phone    *string `json:"phone"`                           // 手机号 	TODO: 校验手机号
 	Username *string `json:"username"`                        // 用户名
 }
-
-var (
-	wechatAppID  = "APPID"
-	wechatSecret = "SECRET"
-)
 
 // 普通帐号登陆
 func SignIn(context controller.Context, input SignInParams) (res schema.Response) {
@@ -210,7 +206,7 @@ func SignInWithWechat(context controller.Context, input SignInWithWechatParams) 
 		return
 	}
 
-	wechatUrl := fmt.Sprintf("https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code", wechatAppID, wechatSecret, input.Code)
+	wechatUrl := fmt.Sprintf("https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code", config.Wechat.AppID, config.Wechat.Secret, input.Code)
 
 	r, reqErr := http.Get(wechatUrl)
 
@@ -367,7 +363,7 @@ func WechatAccountComplete(context controller.Context, input WechatCompleteParam
 		return
 	}
 
-	wechatUrl := fmt.Sprintf("https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code", wechatAppID, wechatSecret, input.Code)
+	wechatUrl := fmt.Sprintf("https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code", config.Wechat.AppID, config.Wechat.Secret, input.Code)
 
 	r, reqErr := http.Get(wechatUrl)
 

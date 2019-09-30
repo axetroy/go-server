@@ -39,40 +39,43 @@
 | Google 认证登陆配置        | -        | -                                                        | -               |
 | GOOGLE_AUTH2_CLIENT_ID     | `string` | Google 登陆的 client ID                                  | `""`            |
 | GOOGLE_AUTH2_CLIENT_SECRET | `string` | Google 登陆的 secret                                     | `""`            |
+| 微信小程序认证登陆配置     | -        | -                                                        | -               |
+| WECHAT_APP_ID              | `string` | 微信小程序的 `appid`                                     | `""`            |
+| WECHAT_SECRET              | `string` | 微信小程序的 `secret`                                    | `""`            |
 
-例如一下配置
+例如以下配置
 
 ```env
 ##################### 用户端专有配置 #####################
-USER_HTTP_PORT = "9090" # 用户端的 HTTP 监听端口. 默认 8080
-USER_HTTP_DOMAIN = http://127.0.0.1:8080 # 用户端的 API 域名
-USER_TOKEN_SECRET_KEY = user # 用户端的 JWT token 密钥
+USER_HTTP_PORT=9090 # 用户端的 HTTP 监听端口. 默认 8080
+USER_HTTP_DOMAIN=http://127.0.0.1:8080 # 用户端的 API 域名
+USER_TOKEN_SECRET_KEY=user # 用户端的 JWT token 密钥
 
 ##################### 管理员专有配置 #####################
-ADMIN_HTTP_PORT = "9091" # 管理员端的 HTTP 监听端口. 默认 8081
-ADMIN_HTTP_DOMAIN = http://127.0.0.1:8081 # 用户端的 API 域名
-ADMIN_TOKEN_SECRET_KEY = admin # 管理员端的 JWT token 密钥
+ADMIN_HTTP_PORT=9091 # 管理员端的 HTTP 监听端口. 默认 8081
+ADMIN_HTTP_DOMAIN=http://127.0.0.1:8081 # 用户端的 API 域名
+ADMIN_TOKEN_SECRET_KEY=admin # 管理员端的 JWT token 密钥
 
 
 ######################## 公共配置 ########################
 # 通用
-MACHINE_ID = "0" # 机器 ID, 在集群中，每个ID都应该不同，用于产出不同的 ID
-GO_MOD = "production" # 处于开发模式(development)/生产模式(production), 默认 development
-SIGNATURE_KEY = "signature key" # 数据签名的密钥
+MACHINE_ID="0" # 机器 ID, 在集群中，每个ID都应该不同，用于产出不同的 ID
+GO_MOD="production" # 处于开发模式(development)/生产模式(production), 默认 development
+SIGNATURE_KEY="signature key" # 数据签名的密钥, 该配置不可泄漏
 
 # 主数据库设置
-DB_HOST = "${DB_HOST}" # 默认 localhost
-DB_PORT = "${DB_PORT}" # 默认 "65432", postgres 官方端口 54321
-DB_DRIVER = "${DB_DRIVER}" # 默认 "postgres"
-DB_NAME = "${DB_NAME}" # 默认 "gotest"
-DB_USERNAME = "${DB_USERNAME}" # 默认 "gotest"
-DB_PASSWORD = "${DB_PASSWORD}" # 默认 "gotest"
-DB_SYNC = "on" # 在应用启动时，是否同步数据库表, 可选 on/off, 默认 on
+DB_HOST="${DB_HOST}" # 默认 localhost
+DB_PORT="${DB_PORT}" # 默认 "65432", postgres 官方端口 54321
+DB_DRIVER="${DB_DRIVER}" # 默认 "postgres"
+DB_NAME="${DB_NAME}" # 默认 "gotest"
+DB_USERNAME="${DB_USERNAME}" # 默认 "gotest"
+DB_PASSWORD="${DB_PASSWORD}" # 默认 "gotest"
+DB_SYNC="on" # 在应用启动时，是否同步数据库表, 可选 on/off, 默认 on
 
 # Redis 缓存服务器配置
-REDIS_SERVER = localhost #  Redis 服务器地址
-REDIS_PORT = 6379 # Redis 端口
-REDIS_PASSWORD = password # 连接服务器密码
+REDIS_SERVER=localhost #  Redis 服务器地址
+REDIS_PORT=6379 # Redis 端口
+REDIS_PASSWORD=password # 连接服务器密码
 
 # SMTP 服务器配置，用于发送邮件
 SMTP_SERVER = smtp.qq.com # 邮件服务器
@@ -89,4 +92,8 @@ MSG_QUEUE_PORT = 4150 # 消息队列服务器端口. 默认 4150
 # OAuth2 认证服务
 GOOGLE_AUTH2_CLIENT_ID = "${GOOGLE_AUTH2_CLIENT_ID}" # Google oAuth2 的 client ID
 GOOGLE_AUTH2_CLIENT_SECRET = "${GOOGLE_AUTH2_CLIENT_SECRET}" # Google oAuth2 的 client secret
+
+# 微信小程序认证
+WECHAT_APP_ID = "${WECHAT_APP_ID}"
+WECHAT_SECRET = "${WECHAT_SECRET}"
 ```
