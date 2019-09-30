@@ -3,7 +3,7 @@ package system
 
 import (
 	"errors"
-	"github.com/axetroy/go-server/src/controller/uploader"
+	"github.com/axetroy/go-server/src/config"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/gin-gonic/gin"
@@ -80,7 +80,7 @@ func GetSystemInfo() (res schema.Response) {
 		return
 	}
 
-	if uploadUsageStat, err = disk.Usage(uploader.Config.Path); err != nil {
+	if uploadUsageStat, err = disk.Usage(config.Upload.Path); err != nil {
 		return
 	}
 
