@@ -39,7 +39,7 @@ before_script:
   - wget http://bitly-downloads.s3.amazonaws.com/nsq/$NSQ_DOWNLOAD.tar.gz
   - tar zxvf $NSQ_DOWNLOAD.tar.gz
   - export PATH=$NSQ_DOWNLOAD/bin:$PATH
-  - nsqlookupd & nsqd --lookupd-tcp-address=127.0.0.1:4160 & nsqadmin --lookupd-http-address=127.0.0.1:4161 & echo "完成nsq的启动"
+  - nsqlookupd &> /dev/null & nsqd --lookupd-tcp-address=127.0.0.1:4160 & nsqadmin --lookupd-http-address=127.0.0.1:4161 & echo "完成nsq的启动"
 
   - go get -v ./...
 
@@ -52,3 +52,4 @@ after_success:
   - go get github.com/mattn/goveralls
   - $GOPATH/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
   - make build-simple
+  - ls -lh ./bin
