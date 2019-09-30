@@ -6,7 +6,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"github.com/axetroy/go-fs"
-	"github.com/axetroy/go-server/src/controller/uploader"
+	"github.com/axetroy/go-server/src/config"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
@@ -132,7 +132,7 @@ func UploadAvatar(uid string, input UploadAvatarParams, file *multipart.FileHead
 	}
 
 	// Destination
-	distPath = path.Join(uploader.Config.Path, uploader.Config.Image.Avatar.Path, fileName)
+	distPath = path.Join(config.Upload.Path, config.Upload.Image.Avatar.Path, fileName)
 
 	if dist, err = os.Create(distPath); err != nil {
 		return
@@ -195,7 +195,7 @@ func UploadAvatarRouter(context *gin.Context) {
 
 func GetAvatarRouter(context *gin.Context) {
 	filename := context.Param("filename")
-	originImagePath := path.Join(uploader.Config.Path, uploader.Config.Image.Avatar.Path, filename)
+	originImagePath := path.Join(config.Upload.Path, config.Upload.Image.Avatar.Path, filename)
 	if fs.PathExists(originImagePath) == false {
 		// if the path not found
 		http.NotFound(context.Writer, context.Request)
