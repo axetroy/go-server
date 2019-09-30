@@ -3,7 +3,7 @@ package login_test
 import (
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/controller/auth"
-	loginLog "github.com/axetroy/go-server/src/controller/logs/login"
+	loginLog "github.com/axetroy/go-server/src/controller/logger/login"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/tester"
 	"github.com/stretchr/testify/assert"

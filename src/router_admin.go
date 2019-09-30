@@ -7,7 +7,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/admin"
 	"github.com/axetroy/go-server/src/controller/banner"
 	"github.com/axetroy/go-server/src/controller/help"
-	loginLog "github.com/axetroy/go-server/src/controller/logs/login"
+	loginLog "github.com/axetroy/go-server/src/controller/logger/login"
 	"github.com/axetroy/go-server/src/controller/menu"
 	"github.com/axetroy/go-server/src/controller/message"
 	"github.com/axetroy/go-server/src/controller/news"
