@@ -9,7 +9,7 @@ function walk()
     do
         local path=$1"/"$file
         if [[ -d ${path} ]];then
-            if [[ ${file} == "upload" ]] || [[ ${file} == "keys" ]]; then
+            if [[ ${file} == "upload" ]] || [[ ${file} == "keys" ]] || [[ ${file} == "logs" ]]; then
                 rm -rf ${path}
             else
                 walk ${path}
