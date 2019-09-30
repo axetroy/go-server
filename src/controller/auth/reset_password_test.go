@@ -67,7 +67,7 @@ func TestResetPasswordSuccess(t *testing.T) {
 	if r := auth.SignUp(auth.SignUpParams{
 		Username: &username,
 		Password: oldPassword,
-	}); r.Status != schema.StatusSuccess {
+	}, model.UserStatusInactivated); r.Status != schema.StatusSuccess {
 		t.Error(r.Message)
 		return
 	} else {

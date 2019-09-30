@@ -60,7 +60,7 @@ func TestSignUpSuccess(t *testing.T) {
 	res := auth.SignUp(auth.SignUpParams{
 		Username: &username,
 		Password: "123123",
-	})
+	}, model.UserStatusInactivated)
 
 	assert.Equal(t, schema.StatusSuccess, res.Status)
 	assert.Equal(t, "", res.Message)
@@ -94,7 +94,7 @@ func TestSignUpInviteCode(t *testing.T) {
 		r := auth.SignUp(auth.SignUpParams{
 			Username: &testerUsername,
 			Password: "123123",
-		})
+		}, model.UserStatusInactivated)
 
 		profile := schema.Profile{}
 
@@ -115,7 +115,7 @@ func TestSignUpInviteCode(t *testing.T) {
 		Username:   &username,
 		Password:   "123123",
 		InviteCode: &inviteCode,
-	})
+	}, model.UserStatusInactivated)
 
 	assert.Equal(t, schema.StatusSuccess, res.Status)
 	assert.Equal(t, "", res.Message)

@@ -6,6 +6,7 @@ import (
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/controller/auth"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/token"
 	"github.com/axetroy/go-server/tester"
@@ -60,7 +61,7 @@ func TestSignInSuccess(t *testing.T) {
 	if r := auth.SignUp(auth.SignUpParams{
 		Username: &username,
 		Password: password,
-	}); r.Status != schema.StatusSuccess {
+	}, model.UserStatusInit); r.Status != schema.StatusSuccess {
 		t.Error(r.Message)
 		return
 	} else {

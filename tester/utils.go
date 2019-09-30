@@ -5,6 +5,7 @@ import (
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/controller/admin"
 	"github.com/axetroy/go-server/src/controller/auth"
+	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/util"
 )
@@ -22,7 +23,7 @@ func CreateUser() (profile schema.ProfileWithToken, err error) {
 	if r := auth.SignUp(auth.SignUpParams{
 		Username: &username,
 		Password: password,
-	}); r.Status != schema.StatusSuccess {
+	}, model.UserStatusInit); r.Status != schema.StatusSuccess {
 		err = errors.New(r.Message)
 		return
 	}

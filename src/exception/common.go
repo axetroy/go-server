@@ -15,6 +15,8 @@ var (
 	InvalidAccountOrPassword = New("账号或密码错误", 0)
 	InvalidActiveCode        = New("激活链接已超时", 0)
 	UserHaveActive           = New("用户已激活", 0)
+	UserIsInActive           = New("帐号未激活", 0)
+	UserHaveBeenBan          = New("帐号已被禁用", 0)
 	PasswordDuplicate        = New("新密码和旧密码不能相同", 0)
 	InvalidInviteCode        = New("无效的邀请码", 0)
 	PayPasswordSet           = New("交易密码已设置", 0)

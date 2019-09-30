@@ -100,7 +100,6 @@ func SignIn(context controller.Context, input SignInParams) (res schema.Response
 
 	userInfo := model.User{
 		Password: util.GeneratePassword(input.Password),
-		Status:   model.UserStatusInit,
 	}
 
 	if govalidator.Matches(input.Account, "^/d+$") && input.Code != nil { // 如果是手机号, 并且传入了code字段
@@ -119,6 +118,17 @@ func SignIn(context controller.Context, input SignInParams) (res schema.Response
 			err = exception.InvalidAccountOrPassword
 		}
 		return
+	}
+
+	if userInfo.Status != model.UserStatusInactivated {
+		switch userInfo.Status {
+		case model.UserStatusInactivated:
+			err = exception.UserIsInActive
+			return
+		case model.UserStatusBanned:
+			err = exception.UserHaveBeenBan
+			return
+		}
 	}
 
 	if err = mapstructure.Decode(userInfo, &data.ProfilePure); err != nil {

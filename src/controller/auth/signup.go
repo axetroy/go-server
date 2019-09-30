@@ -29,7 +29,7 @@ type SignUpParams struct {
 	InviteCode *string `json:"invite_code"` // 邀请码
 }
 
-func SignUp(input SignUpParams) (res schema.Response) {
+func SignUp(input SignUpParams, userStatus model.UserStatus) (res schema.Response) {
 	var (
 		err     error
 		data    schema.Profile
@@ -170,7 +170,7 @@ func SignUp(input SignUpParams) (res schema.Response) {
 		Username: username,
 		Nickname: &username,
 		Password: util.GeneratePassword(input.Password),
-		Status:   model.UserStatusInactivated, // 开始时未激活状态
+		Status:   userStatus,
 		Role:     pq.StringArray{model.DefaultUser.Name},
 		Phone:    input.Phone,
 		Email:    input.Email,
@@ -265,5 +265,5 @@ func SignUpRouter(context *gin.Context) {
 		return
 	}
 
-	res = SignUp(input)
+	res = SignUp(input, model.UserStatusInactivated)
 }

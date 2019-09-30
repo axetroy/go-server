@@ -6,6 +6,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/auth"
 	"github.com/axetroy/go-server/src/controller/email"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/redis"
 	"github.com/axetroy/go-server/tester"
@@ -64,7 +65,7 @@ func TestActivationSuccess(t *testing.T) {
 		r := auth.SignUp(auth.SignUpParams{
 			Username: &testerUsername,
 			Password: "123123",
-		})
+		}, model.UserStatusInactivated)
 
 		profile := schema.Profile{}
 

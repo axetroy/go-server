@@ -6,6 +6,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/auth"
 	"github.com/axetroy/go-server/src/controller/user"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/redis"
 	"github.com/axetroy/go-server/tester"
@@ -29,7 +30,7 @@ func TestSetPayPassword(t *testing.T) {
 		r := auth.SignUp(auth.SignUpParams{
 			Username: &username,
 			Password: password,
-		})
+		}, model.UserStatusInactivated)
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
@@ -102,7 +103,7 @@ func TestUpdatePayPassword(t *testing.T) {
 		r := auth.SignUp(auth.SignUpParams{
 			Username: &username,
 			Password: password,
-		})
+		}, model.UserStatusInactivated)
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
@@ -190,7 +191,7 @@ func TestResetPayPassword(t *testing.T) {
 		r := auth.SignUp(auth.SignUpParams{
 			Username: &username,
 			Password: password,
-		})
+		}, model.UserStatusInactivated)
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
