@@ -10,16 +10,10 @@ import (
 	"net/http"
 )
 
-type AreaListResponse struct {
-	Province map[string]string `json:"province"`
-	City     map[string]string `json:"city"`
-	Area     map[string]string `json:"area"`
-}
-
 func AreaList() (res schema.Response) {
 	var (
 		err  error
-		data AreaListResponse
+		data schema.Area
 		tx   *gorm.DB
 	)
 
@@ -52,7 +46,7 @@ func AreaList() (res schema.Response) {
 		}
 	}()
 
-	data = AreaListResponse{
+	data = schema.Area{
 		Province: ProvinceCode,
 		City:     CityCode,
 		Area:     CountryCode,
