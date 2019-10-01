@@ -3,7 +3,6 @@ package address_test
 
 import (
 	"encoding/json"
-	"github.com/axetroy/go-server/src/controller/address"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/tester"
 	"github.com/stretchr/testify/assert"
@@ -32,7 +31,7 @@ func TestAreaRouter(t *testing.T) {
 		return
 	}
 
-	areaInfo := address.AreaListResponse{}
+	areaInfo := schema.Area{}
 
 	assert.Nil(t, tester.Decode(res.Data, &areaInfo))
 }

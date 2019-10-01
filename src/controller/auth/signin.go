@@ -492,10 +492,7 @@ func SignInRouter(context *gin.Context) {
 		return
 	}
 
-	res = SignIn(controller.Context{
-		UserAgent: context.GetHeader("user-agent"),
-		Ip:        context.ClientIP(),
-	}, input)
+	res = SignIn(controller.NewContext(context), input)
 }
 
 func SignInWithWechatRouter(context *gin.Context) {
@@ -518,10 +515,7 @@ func SignInWithWechatRouter(context *gin.Context) {
 		return
 	}
 
-	res = SignInWithWechat(controller.Context{
-		UserAgent: context.GetHeader("user-agent"),
-		Ip:        context.ClientIP(),
-	}, input)
+	res = SignInWithWechat(controller.NewContext(context), input)
 }
 
 func WechatAccountCompleteRouter(context *gin.Context) {
@@ -544,8 +538,5 @@ func WechatAccountCompleteRouter(context *gin.Context) {
 		return
 	}
 
-	res = WechatAccountComplete(controller.Context{
-		UserAgent: context.GetHeader("user-agent"),
-		Ip:        context.ClientIP(),
-	}, input)
+	res = WechatAccountComplete(controller.NewContext(context), input)
 }

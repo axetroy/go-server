@@ -5,7 +5,6 @@ import (
 	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
-	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
@@ -138,7 +137,5 @@ func CreateRouter(context *gin.Context) {
 		return
 	}
 
-	res = Create(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
-	}, input)
+	res = Create(controller.NewContext(context), input)
 }

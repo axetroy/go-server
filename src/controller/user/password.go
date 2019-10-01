@@ -6,7 +6,6 @@ import (
 	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
-	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
@@ -200,9 +199,7 @@ func UpdatePasswordRouter(context *gin.Context) {
 		return
 	}
 
-	res = UpdatePassword(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
-	}, input)
+	res = UpdatePassword(controller.NewContext(context), input)
 }
 
 func UpdatePasswordByAdminRouter(context *gin.Context) {
@@ -227,7 +224,5 @@ func UpdatePasswordByAdminRouter(context *gin.Context) {
 		return
 	}
 
-	res = UpdatePasswordByAdmin(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
-	}, userId, input)
+	res = UpdatePasswordByAdmin(controller.NewContext(context), userId, input)
 }

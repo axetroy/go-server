@@ -6,7 +6,6 @@ import (
 	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
-	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/rbac/accession"
 	"github.com/axetroy/go-server/src/schema"
@@ -180,7 +179,5 @@ func UpdateRouter(context *gin.Context) {
 		return
 	}
 
-	res = Update(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
-	}, id, input)
+	res = Update(controller.NewContext(context), id, input)
 }

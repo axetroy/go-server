@@ -6,7 +6,6 @@ import (
 	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
-	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/rbac/accession"
 	"github.com/axetroy/go-server/src/schema"
@@ -172,9 +171,7 @@ func UpdateRouter(context *gin.Context) {
 		return
 	}
 
-	res = Update(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
-	}, roleName, input)
+	res = Update(controller.NewContext(context), roleName, input)
 }
 
 func UpdateUserRole(context controller.Context, userId string, input UpdateUserRoleParams) (res schema.Response) {
@@ -298,7 +295,5 @@ func UpdateUserRoleRouter(context *gin.Context) {
 		return
 	}
 
-	res = UpdateUserRole(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
-	}, userId, input)
+	res = UpdateUserRole(controller.NewContext(context), userId, input)
 }
