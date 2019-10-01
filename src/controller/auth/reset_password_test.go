@@ -50,7 +50,7 @@ func TestResetPasswordWithInvalidPassword(t *testing.T) {
 
 	assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res))
 
-	assert.Equal(t, schema.StatusFail, res.Status)
+	assert.Equal(t, exception.InvalidResetCode.Code(), res.Status)
 	assert.Equal(t, exception.InvalidResetCode.Error(), res.Message)
 	assert.Equal(t, nil, res.Data)
 }

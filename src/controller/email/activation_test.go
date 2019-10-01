@@ -41,6 +41,6 @@ func TestSendActivationEmail(t *testing.T) {
 		return
 	}
 
-	assert.Equal(t, schema.StatusFail, res.Status)
+	assert.Equal(t, exception.UserNotExist.Code(), res.Status)
 	assert.Equal(t, exception.UserNotExist.Error(), res.Message)
 }

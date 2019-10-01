@@ -47,7 +47,7 @@ func TestSignInWithInvalidPassword(t *testing.T) {
 
 	assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res))
 
-	assert.Equal(t, schema.StatusFail, res.Status)
+	assert.Equal(t, exception.InvalidAccountOrPassword.Code(), res.Status)
 	assert.Equal(t, exception.InvalidAccountOrPassword.Error(), res.Message)
 	assert.Nil(t, res.Data)
 }

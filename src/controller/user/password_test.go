@@ -31,7 +31,7 @@ func TestUpdatePassword(t *testing.T) {
 			NewPassword: "aaa",
 		})
 
-		assert.Equal(t, schema.StatusFail, r.Status)
+		assert.Equal(t, exception.InvalidPassword.Code(), r.Status)
 		assert.Equal(t, exception.InvalidPassword.Error(), r.Message)
 	}
 

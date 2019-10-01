@@ -56,7 +56,7 @@ func TestSetPayPassword(t *testing.T) {
 			PasswordConfirm: "321321",
 		})
 
-		assert.Equal(t, schema.StatusFail, r.Status)
+		assert.Equal(t, exception.InvalidConfirmPassword.Code(), r.Status)
 		assert.Equal(t, exception.InvalidConfirmPassword.Error(), r.Message)
 	}
 
@@ -83,7 +83,7 @@ func TestSetPayPassword(t *testing.T) {
 			PasswordConfirm: "123123",
 		})
 
-		assert.Equal(t, schema.StatusFail, r.Status)
+		assert.Equal(t, exception.PayPasswordSet.Code(), r.Status)
 		assert.Equal(t, exception.PayPasswordSet.Error(), r.Message)
 		assert.Equal(t, nil, r.Data)
 	}
@@ -129,7 +129,7 @@ func TestUpdatePayPassword(t *testing.T) {
 			NewPassword: "123123",
 		})
 
-		assert.Equal(t, schema.StatusFail, r.Status)
+		assert.Equal(t, exception.RequirePayPasswordSet.Code(), r.Status)
 		assert.Equal(t, exception.RequirePayPasswordSet.Error(), r.Message)
 		assert.Equal(t, nil, r.Data)
 	}
@@ -157,7 +157,7 @@ func TestUpdatePayPassword(t *testing.T) {
 			NewPassword: "111111",
 		})
 
-		assert.Equal(t, schema.StatusFail, r.Status)
+		assert.Equal(t, exception.InvalidPassword.Code(), r.Status)
 		assert.Equal(t, exception.InvalidPassword.Error(), r.Message)
 		assert.Equal(t, nil, r.Data)
 	}
@@ -223,7 +223,7 @@ func TestResetPayPassword(t *testing.T) {
 			NewPassword: "123123",
 		})
 
-		assert.Equal(t, schema.StatusFail, r.Status)
+		assert.Equal(t, exception.RequirePayPasswordSet.Code(), r.Status)
 		assert.Equal(t, exception.RequirePayPasswordSet.Error(), r.Message)
 		assert.Equal(t, nil, r.Data)
 	}
@@ -251,7 +251,7 @@ func TestResetPayPassword(t *testing.T) {
 			NewPassword: "123123",
 		})
 
-		assert.Equal(t, schema.StatusFail, r.Status)
+		assert.Equal(t, exception.InvalidResetCode.Code(), r.Status)
 		assert.Equal(t, exception.InvalidResetCode.Error(), r.Message)
 		assert.Equal(t, nil, r.Data)
 	}

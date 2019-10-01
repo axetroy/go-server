@@ -60,7 +60,7 @@ func TestMarkRead(t *testing.T) {
 			Uid: "123123",
 		}, testNotification.Id)
 
-		assert.Equal(t, schema.StatusFail, r.Status)
+		assert.Equal(t, exception.UserNotExist.Code(), r.Status)
 		assert.Equal(t, exception.UserNotExist.Error(), r.Message)
 	}
 

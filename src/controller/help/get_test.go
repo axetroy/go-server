@@ -20,7 +20,7 @@ func TestGetHelp(t *testing.T) {
 	{
 		r := help.GetHelp("123123")
 
-		assert.Equal(t, schema.StatusFail, r.Status)
+		assert.Equal(t, exception.NoData.Code(), r.Status)
 		assert.Equal(t, exception.NoData.Error(), r.Message)
 	}
 

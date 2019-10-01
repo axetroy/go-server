@@ -47,7 +47,7 @@ func TestTo(t *testing.T) {
 	}, input1, signature1)
 
 	assert.Equal(t, exception.NotEnoughBalance.Error(), res1.Message)
-	assert.Equal(t, schema.StatusFail, res1.Status)
+	assert.Equal(t, exception.NotEnoughBalance.Code(), res1.Status)
 
 	// 给账户充钱
 	assert.Nil(t, database.Db.Table(wallet.GetTableName("CNY")).Where("id = ?", userFrom.Id).Update(model.Wallet{
@@ -114,7 +114,7 @@ func TestTo(t *testing.T) {
 		}, input, "Invalid signature")
 
 		assert.Equal(t, exception.InvalidSignature.Error(), res.Message)
-		assert.Equal(t, schema.StatusFail, res.Status)
+		assert.Equal(t, exception.InvalidSignature.Code(), res.Status)
 	}
 }
 

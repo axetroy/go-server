@@ -30,7 +30,7 @@ func TestLogin(t *testing.T) {
 			Password: "admin123",
 		})
 
-		assert.Equal(t, schema.StatusFail, r.Status)
+		assert.Equal(t, exception.InvalidAccountOrPassword.Code(), r.Status)
 		assert.Equal(t, exception.InvalidAccountOrPassword.Error(), r.Message)
 	}
 
@@ -80,7 +80,7 @@ func TestLoginRouter(t *testing.T) {
 
 		assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res))
 
-		assert.Equal(t, schema.StatusFail, res.Status)
+		assert.Equal(t, exception.InvalidAccountOrPassword.Code(), res.Status)
 		assert.Equal(t, exception.InvalidAccountOrPassword.Error(), res.Message)
 	}
 
