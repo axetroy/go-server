@@ -15,7 +15,7 @@ require (
 	github.com/holdno/snowFlakeByGo v0.0.0-20180510033652-d23f8a8cadd7
 	github.com/jinzhu/gorm v1.9.11
 	github.com/joho/godotenv v1.3.0
-	github.com/jordan-wright/email v0.0.0-20190218024454-3ea4d25e7cf8
+	github.com/jordan-wright/email v0.0.0-20190819015918-041e0cec78b0
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/lib/pq v1.2.0
 	github.com/mattn/go-colorable v0.1.2 // indirect
