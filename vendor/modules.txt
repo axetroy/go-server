@@ -4,7 +4,7 @@ github.com/StackExchange/wmi
 github.com/asaskevich/govalidator
 # github.com/axetroy/go-fs v1.0.0
 github.com/axetroy/go-fs
-# github.com/axetroy/mocker v1.0.0
+# github.com/axetroy/mocker v1.1.0
 github.com/axetroy/mocker
 # github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d
 github.com/cpuguy83/go-md2man/v2/md2man
