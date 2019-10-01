@@ -3,14 +3,13 @@
 这里使用的服务包括:
 
 - 数据库
-    - Postgres
-    - Redis
-    
+  - Postgres
+  - Redis
 - 消息队列
-    - nsq
-    
+  - nsq
+
 为了方便搭建服务，在项目目录中已经提供了对应的 `docker-compose.yml` 文件
-    
+
 ### 2. 进程
 
 程序又分有 3 个独立的进程

@@ -74,7 +74,7 @@ func AuthPayPassword(context *gin.Context) {
 	}
 
 	if userInfo.PayPassword == nil {
-		err = exception.PayPasswordNotSet
+		err = exception.RequirePayPasswordSet
 		return
 	}
 
