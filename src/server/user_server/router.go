@@ -1,5 +1,5 @@
 // Copyright 2019 Axetroy. All rights reserved. MIT license.
-package src
+package user_server
 
 import (
 	"fmt"

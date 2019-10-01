@@ -4,7 +4,8 @@ package main
 import (
 	"fmt"
 	"github.com/axetroy/go-fs"
-	"github.com/axetroy/go-server/src/message_queue"
+	App "github.com/axetroy/go-server"
+	"github.com/axetroy/go-server/src/server/message_queue_server"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/urfave/cli"
 	"log"
@@ -14,39 +15,17 @@ import (
 	"strconv"
 )
 
-var (
+const (
 	pidFileName = "go-server.mq.pid"
 )
 
 func main() {
 	app := cli.NewApp()
 	app.Usage = "message queue server controller"
-	app.Author = "Axetroy"
-	app.Email = "axetroy.dev@gmail.com"
-	app.Version = "0.1.2"
-
-	cli.AppHelpTemplate = `NAME:
-   {{.Name}} - {{.Usage}}
-USAGE:
-   {{.HelpName}} {{if .VisibleFlags}}[global options]{{end}}{{if .Commands}} command [command options]{{end}} {{if .ArgsUsage}}{{.ArgsUsage}}{{else}}[arguments...]{{end}}
-   {{if len .Authors}}
-AUTHOR:
-   {{range .Authors}}{{ . }}{{end}}
-   {{end}}{{if .Commands}}
-COMMANDS:
-{{range .Commands}}{{if not .HideHelp}}   {{join .Names ", "}}{{ "\t"}}{{.Usage}}{{ "\n" }}{{end}}{{end}}{{end}}{{if .VisibleFlags}}
-GLOBAL OPTIONS:
-   {{range .VisibleFlags}}{{.}}
-   {{end}}{{end}}{{if .Copyright }}
-COPYRIGHT:
-   {{.Copyright}}
-   {{end}}{{if .Version}}
-VERSION:
-   {{.Version}}
-   {{end}}
-SOURCE CODE:
-	https://github.com/axetroy/go-server
-`
+	app.Author = App.Author
+	app.Email = App.Email
+	app.Version = App.Version
+	cli.AppHelpTemplate = App.CliTemplate
 
 	app.Commands = []cli.Command{
 		{
@@ -77,7 +56,7 @@ SOURCE CODE:
 					if err := fs.WriteFile(pidFileName, []byte(fmt.Sprintf("%d", os.Getpid()))); err != nil {
 						return err
 					}
-					message_queue.RunMessageQueueConsumer()
+					message_queue_server.Serve()
 					return nil
 				}
 			},
