@@ -13,7 +13,7 @@ require (
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/go-redis/redis v6.15.2+incompatible
 	github.com/holdno/snowFlakeByGo v0.0.0-20180510033652-d23f8a8cadd7
-	github.com/jinzhu/gorm v1.9.10
+	github.com/jinzhu/gorm v1.9.11
 	github.com/joho/godotenv v1.3.0
 	github.com/jordan-wright/email v0.0.0-20190218024454-3ea4d25e7cf8
 	github.com/kr/pretty v0.1.0 // indirect
