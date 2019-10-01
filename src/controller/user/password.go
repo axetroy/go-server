@@ -6,6 +6,7 @@ import (
 	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/helper"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
@@ -51,13 +52,7 @@ func UpdatePassword(context controller.Context, input UpdatePasswordParams) (res
 			}
 		}
 
-		if err != nil {
-			res.Message = err.Error()
-			res.Data = false
-		} else {
-			res.Data = true
-			res.Status = schema.StatusSuccess
-		}
+		helper.Response(&res, nil, err)
 	}()
 
 	// 参数校验
@@ -126,13 +121,7 @@ func UpdatePasswordByAdmin(context controller.Context, userId string, input Upda
 			}
 		}
 
-		if err != nil {
-			res.Message = err.Error()
-			res.Data = false
-		} else {
-			res.Data = true
-			res.Status = schema.StatusSuccess
-		}
+		helper.Response(&res, nil, err)
 	}()
 
 	// 参数校验

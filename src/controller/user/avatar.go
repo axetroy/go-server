@@ -8,6 +8,7 @@ import (
 	"github.com/axetroy/go-fs"
 	"github.com/axetroy/go-server/src/config"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/helper"
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
@@ -70,13 +71,7 @@ func UploadAvatar(uid string, input UploadAvatarParams, file *multipart.FileHead
 			}
 		}
 
-		if err != nil {
-			res.Message = err.Error()
-			res.Data = nil
-		} else {
-			res.Data = data
-			res.Status = schema.StatusSuccess
-		}
+		helper.Response(&res, data, err)
 	}()
 
 	tx = database.Db.Begin()

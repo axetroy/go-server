@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/helper"
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
@@ -43,13 +44,7 @@ func GetDetail(context controller.Context, transferId string) (res schema.Respon
 			}
 		}
 
-		if err != nil {
-			res.Message = err.Error()
-			res.Data = nil
-		} else {
-			res.Status = schema.StatusSuccess
-			res.Data = data
-		}
+		helper.Response(&res, data, err)
 	}()
 
 	tx = database.Db.Begin()

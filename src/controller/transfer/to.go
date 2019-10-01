@@ -9,6 +9,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/finance"
 	"github.com/axetroy/go-server/src/controller/wallet"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/helper"
 	"github.com/axetroy/go-server/src/logger"
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
@@ -60,13 +61,7 @@ func To(context controller.Context, input ToParams, signature string) (res schem
 			}
 		}
 
-		if err != nil {
-			res.Message = err.Error()
-			res.Data = nil
-		} else {
-			res.Status = schema.StatusSuccess
-			res.Data = data
-		}
+		helper.Response(&res, data, err)
 	}()
 
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {

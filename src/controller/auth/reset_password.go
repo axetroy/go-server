@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/helper"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
@@ -48,13 +49,7 @@ func ResetPassword(input ResetPasswordParams) (res schema.Response) {
 			}
 		}
 
-		if err != nil {
-			res.Message = err.Error()
-			res.Data = false
-		} else {
-			res.Status = schema.StatusSuccess
-			res.Data = true
-		}
+		helper.Response(&res, nil, err)
 	}()
 
 	// 参数校验

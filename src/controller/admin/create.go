@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/helper"
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
@@ -53,14 +54,7 @@ func CreateAdmin(input CreateAdminParams, isSuper bool) (res schema.Response) {
 			}
 		}
 
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		} else {
-			res.Data = data
-			res.Status = schema.StatusSuccess
-		}
-
+		helper.Response(&res, data, err)
 	}()
 
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {

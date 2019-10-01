@@ -72,7 +72,7 @@ func TestMarkRead(t *testing.T) {
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
-		assert.True(t, r.Data.(bool))
+		assert.Equal(t, nil, r.Data)
 
 		defer notification.DeleteNotificationMarkById(testNotification.Id)
 	}
@@ -162,7 +162,7 @@ func TestReadRouter(t *testing.T) {
 			return
 		}
 
-		assert.True(t, res.Data.(bool))
+		assert.Equal(t, nil, res.Data)
 
 		// 再读取这条系统通知
 		notificationMarkInfo := model.NotificationMark{}

@@ -3,9 +3,6 @@ package address_test
 
 import (
 	"encoding/json"
-	"net/http"
-	"testing"
-
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/controller/address"
 	"github.com/axetroy/go-server/src/controller/auth"
@@ -14,6 +11,8 @@ import (
 	"github.com/axetroy/go-server/tester"
 	"github.com/axetroy/mocker"
 	"github.com/stretchr/testify/assert"
+	"net/http"
+	"testing"
 )
 
 func TestCreate(t *testing.T) {

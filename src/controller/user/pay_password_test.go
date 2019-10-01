@@ -71,7 +71,7 @@ func TestSetPayPassword(t *testing.T) {
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
-		assert.True(t, r.Data.(bool))
+		assert.Equal(t, nil, r.Data)
 	}
 
 	{
@@ -85,7 +85,7 @@ func TestSetPayPassword(t *testing.T) {
 
 		assert.Equal(t, schema.StatusFail, r.Status)
 		assert.Equal(t, exception.PayPasswordSet.Error(), r.Message)
-		assert.False(t, r.Data.(bool))
+		assert.Equal(t, nil, r.Data)
 	}
 }
 
@@ -131,7 +131,7 @@ func TestUpdatePayPassword(t *testing.T) {
 
 		assert.Equal(t, schema.StatusFail, r.Status)
 		assert.Equal(t, exception.RequirePayPasswordSet.Error(), r.Message)
-		assert.False(t, r.Data.(bool))
+		assert.Equal(t, nil, r.Data)
 	}
 
 	{
@@ -145,7 +145,7 @@ func TestUpdatePayPassword(t *testing.T) {
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
-		assert.True(t, r.Data.(bool))
+		assert.Equal(t, nil, r.Data)
 	}
 
 	{
@@ -159,7 +159,7 @@ func TestUpdatePayPassword(t *testing.T) {
 
 		assert.Equal(t, schema.StatusFail, r.Status)
 		assert.Equal(t, exception.InvalidPassword.Error(), r.Message)
-		assert.False(t, r.Data.(bool))
+		assert.Equal(t, nil, r.Data)
 	}
 
 	{
@@ -173,7 +173,7 @@ func TestUpdatePayPassword(t *testing.T) {
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
-		assert.True(t, r.Data.(bool))
+		assert.Equal(t, nil, r.Data)
 	}
 }
 
@@ -225,7 +225,7 @@ func TestResetPayPassword(t *testing.T) {
 
 		assert.Equal(t, schema.StatusFail, r.Status)
 		assert.Equal(t, exception.RequirePayPasswordSet.Error(), r.Message)
-		assert.False(t, r.Data.(bool))
+		assert.Equal(t, nil, r.Data)
 	}
 
 	{
@@ -239,7 +239,7 @@ func TestResetPayPassword(t *testing.T) {
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
-		assert.True(t, r.Data.(bool))
+		assert.Equal(t, nil, r.Data)
 	}
 
 	{
@@ -253,7 +253,7 @@ func TestResetPayPassword(t *testing.T) {
 
 		assert.Equal(t, schema.StatusFail, r.Status)
 		assert.Equal(t, exception.InvalidResetCode.Error(), r.Message)
-		assert.False(t, r.Data.(bool))
+		assert.Equal(t, nil, r.Data)
 	}
 
 	{
@@ -267,6 +267,6 @@ func TestResetPayPassword(t *testing.T) {
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
-		assert.True(t, r.Data.(bool))
+		assert.Equal(t, nil, r.Data)
 	}
 }

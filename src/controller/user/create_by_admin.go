@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/src/controller/wallet"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/helper"
 	"github.com/axetroy/go-server/src/message_queue"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
@@ -55,13 +56,7 @@ func CreateUser(input CreateUserParams) (res schema.Response) {
 			}
 		}
 
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		} else {
-			res.Data = data
-			res.Status = schema.StatusSuccess
-		}
+		helper.Response(&res, data, err)
 	}()
 
 	if input.Password == "" {

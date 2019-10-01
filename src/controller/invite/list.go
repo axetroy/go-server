@@ -4,6 +4,7 @@ package invite
 import (
 	"errors"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/helper"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
@@ -34,15 +35,7 @@ func GetInviteListByUser(input Query) (res schema.List) {
 			}
 		}
 
-		if err != nil {
-			res.Message = err.Error()
-			res.Data = nil
-			res.Meta = nil
-		} else {
-			res.Data = data
-			res.Status = schema.StatusSuccess
-			res.Meta = meta
-		}
+		helper.ResponseList(&res, data, meta, err)
 	}()
 
 	query := input.Query

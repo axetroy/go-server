@@ -6,6 +6,7 @@ import (
 	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/helper"
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
@@ -66,14 +67,7 @@ func SetPayPassword(context controller.Context, input SetPayPasswordParams) (res
 			}
 		}
 
-		if err != nil {
-			res.Message = err.Error()
-			res.Data = nil
-			res.Data = false
-		} else {
-			res.Data = true
-			res.Status = schema.StatusSuccess
-		}
+		helper.Response(&res, nil, err)
 	}()
 
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
@@ -166,14 +160,7 @@ func UpdatePayPassword(context controller.Context, input UpdatePayPasswordParams
 			}
 		}
 
-		if err != nil {
-			res.Message = err.Error()
-			res.Data = nil
-			res.Data = false
-		} else {
-			res.Data = true
-			res.Status = schema.StatusSuccess
-		}
+		helper.Response(&res, nil, err)
 	}()
 
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
@@ -274,14 +261,7 @@ func SendResetPayPassword(context controller.Context) (res schema.Response) {
 			}
 		}
 
-		if err != nil {
-			res.Message = err.Error()
-			res.Data = nil
-			res.Data = false
-		} else {
-			res.Data = true
-			res.Status = schema.StatusSuccess
-		}
+		helper.Response(&res, nil, err)
 	}()
 
 	userInfo := model.User{Id: context.Uid}
@@ -369,14 +349,7 @@ func ResetPayPassword(context controller.Context, input ResetPayPasswordParams) 
 			}
 		}
 
-		if err != nil {
-			res.Message = err.Error()
-			res.Data = nil
-			res.Data = false
-		} else {
-			res.Data = true
-			res.Status = schema.StatusSuccess
-		}
+		helper.Response(&res, nil, err)
 	}()
 
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {

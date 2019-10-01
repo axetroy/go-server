@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/helper"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
@@ -42,13 +43,7 @@ func MarkRead(context controller.Context, id string) (res schema.Response) {
 			}
 		}
 
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		} else {
-			res.Data = data
-			res.Status = schema.StatusSuccess
-		}
+		helper.Response(&res, data, err)
 	}()
 
 	tx = database.Db.Begin()

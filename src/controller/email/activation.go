@@ -4,6 +4,7 @@ package email
 import (
 	"errors"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/helper"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
@@ -51,12 +52,7 @@ func SendActivationEmail(input SendActivationEmailParams) (res schema.Response) 
 			}
 		}
 
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		} else {
-			res.Status = schema.StatusSuccess
-		}
+		helper.Response(&res, nil, err)
 	}()
 
 	userInfo := model.User{

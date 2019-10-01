@@ -4,6 +4,7 @@ package address
 import (
 	"errors"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/helper"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -37,13 +38,7 @@ func AreaList() (res schema.Response) {
 			}
 		}
 
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		} else {
-			res.Data = data
-			res.Status = schema.StatusSuccess
-		}
+		helper.Response(&res, data, err)
 	}()
 
 	data = schema.Area{

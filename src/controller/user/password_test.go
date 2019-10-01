@@ -45,7 +45,7 @@ func TestUpdatePassword(t *testing.T) {
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
-		assert.True(t, r.Data.(bool))
+		assert.Equal(t, nil, r.Data)
 
 		r2 := auth.SignIn(controller.Context{
 			UserAgent: "test",
@@ -75,7 +75,7 @@ func TestUpdatePasswordByAdmin(t *testing.T) {
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
-		assert.True(t, r.Data.(bool))
+		assert.Equal(t, nil, r.Data)
 
 		r2 := auth.SignIn(controller.Context{
 			UserAgent: "test",
@@ -127,7 +127,7 @@ func TestUpdatePasswordRouter(t *testing.T) {
 			return
 		}
 
-		assert.Equal(t, true, res.Data.(bool))
+		assert.Equal(t, nil, res.Data)
 
 		// 验证密码是否已修改
 		user := model.User{Id: userInfo.Id}
@@ -174,7 +174,7 @@ func TestUpdatePasswordByAdminRouter(t *testing.T) {
 			return
 		}
 
-		assert.Equal(t, true, res.Data.(bool))
+		assert.Equal(t, nil, res.Data)
 
 		// 验证密码是否已修改
 		user := model.User{Id: userInfo.Id}

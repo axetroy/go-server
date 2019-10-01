@@ -4,6 +4,7 @@ package role
 import (
 	"errors"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/helper"
 	"github.com/axetroy/go-server/src/rbac/accession"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/gin-gonic/gin"
@@ -28,13 +29,7 @@ func GetAccession() (res schema.Response) {
 			}
 		}
 
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		} else {
-			res.Data = data
-			res.Status = schema.StatusSuccess
-		}
+		helper.Response(&res, data, err)
 	}()
 
 	data = accession.List

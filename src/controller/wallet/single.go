@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/helper"
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
@@ -52,13 +53,7 @@ func GetWallet(context controller.Context, currencyName string) (res schema.Resp
 			}
 		}
 
-		if err != nil {
-			res.Message = err.Error()
-			res.Data = nil
-		} else {
-			res.Data = data
-			res.Status = schema.StatusSuccess
-		}
+		helper.Response(&res, data, err)
 	}()
 
 	// 获取用户信息

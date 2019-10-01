@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/helper"
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/util"
@@ -32,13 +33,7 @@ func Encryption(context controller.Context, input string) (res schema.Response) 
 			}
 		}
 
-		if err != nil {
-			res.Message = err.Error()
-			res.Data = nil
-		} else {
-			res.Status = schema.StatusSuccess
-			res.Data = data
-		}
+		helper.Response(&res, data, err)
 	}()
 
 	hash, err = util.Signature(input)

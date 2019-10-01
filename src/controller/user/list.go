@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/helper"
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
@@ -38,15 +39,7 @@ func GetList(context controller.Context, input Query) (res schema.List) {
 			}
 		}
 
-		if err != nil {
-			res.Message = err.Error()
-			res.Data = nil
-			res.Meta = nil
-		} else {
-			res.Data = data
-			res.Status = schema.StatusSuccess
-			res.Meta = meta
-		}
+		helper.ResponseList(&res, data, meta, err)
 	}()
 
 	query := input.Query

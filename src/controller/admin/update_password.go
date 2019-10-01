@@ -3,6 +3,7 @@ package admin
 
 import (
 	"errors"
+	"github.com/axetroy/go-server/src/helper"
 	"net/http"
 	"time"
 
@@ -53,13 +54,7 @@ func UpdatePassword(context controller.Context, input UpdatePasswordParams) (res
 			}
 		}
 
-		if err != nil {
-			res.Message = err.Error()
-			res.Data = nil
-		} else {
-			res.Data = data
-			res.Status = schema.StatusSuccess
-		}
+		helper.Response(&res, data, err)
 	}()
 
 	// 参数校验

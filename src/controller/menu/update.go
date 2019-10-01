@@ -6,6 +6,7 @@ import (
 	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/helper"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/rbac/accession"
 	"github.com/axetroy/go-server/src/schema"
@@ -55,19 +56,16 @@ func Update(context controller.Context, bannerId string, input UpdateParams) (re
 			}
 		}
 
-		if err != nil {
-			res.Message = err.Error()
-			res.Data = nil
-		} else {
+		if err == nil {
 			if len(data.Accession) == 0 {
 				data.Accession = []string{}
 			}
 			if len(data.Children) == 0 {
 				data.Children = []schema.Menu{}
 			}
-			res.Data = data
-			res.Status = schema.StatusSuccess
 		}
+
+		helper.Response(&res, data, err)
 	}()
 
 	// 参数校验
