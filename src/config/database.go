@@ -18,25 +18,11 @@ type database struct {
 var Database database
 
 func init() {
-	if Database.Driver = dotenv.Get("DB_DRIVER"); Database.Driver == "" {
-		Database.Driver = "postgres"
-	}
-	if Database.Host = dotenv.Get("DB_HOST"); Database.Host == "" {
-		Database.Host = "localhost"
-	}
-	if Database.Port = dotenv.Get("DB_PORT"); Database.Port == "" {
-		Database.Port = "65432"
-	}
-	if Database.DatabaseName = dotenv.Get("DB_NAME"); Database.DatabaseName == "" {
-		Database.DatabaseName = "gotest"
-	}
-	if Database.Username = dotenv.Get("DB_USERNAME"); Database.Username == "" {
-		Database.Username = "gotest"
-	}
-	if Database.Password = dotenv.Get("DB_PASSWORD"); Database.Password == "" {
-		Database.Password = "gotest"
-	}
-	if Database.Sync = dotenv.Get("DB_SYNC"); Database.Sync == "" {
-		Database.Sync = "on"
-	}
+	Database.Driver = dotenv.GetByDefault("DB_DRIVER", "postgres")
+	Database.Host = dotenv.GetByDefault("DB_HOST", "localhost")
+	Database.Port = dotenv.GetByDefault("DB_PORT", "65432")
+	Database.DatabaseName = dotenv.GetByDefault("DB_NAME", "gotest")
+	Database.Username = dotenv.GetByDefault("DB_USERNAME", "gotest")
+	Database.Password = dotenv.GetByDefault("DB_PASSWORD", "gotest")
+	Database.Sync = dotenv.GetByDefault("DB_SYNC", "on")
 }

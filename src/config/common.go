@@ -18,13 +18,7 @@ type common struct {
 var Common common
 
 func init() {
-	if Common.Mode = dotenv.Get("GO_MOD"); Common.Mode == "" {
-		Common.Mode = ModeProduction
-	}
-	if Common.MachineId = dotenv.Get("MACHINE_ID"); Common.MachineId == "" {
-		Common.MachineId = "0"
-	}
-	if Common.Signature = dotenv.Get("SIGNATURE_KEY"); Common.Signature == "" {
-		Common.Signature = "signature key"
-	}
+	Common.Mode = dotenv.GetByDefault("GO_MOD", ModeProduction)
+	Common.MachineId = dotenv.GetByDefault("MACHINE_ID", "0")
+	Common.Signature = dotenv.GetByDefault("SIGNATURE_KEY", "signature key")
 }

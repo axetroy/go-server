@@ -14,13 +14,7 @@ type admin struct {
 var Admin admin
 
 func init() {
-	if Admin.Port = dotenv.Get("ADMIN_HTTP_PORT"); Admin.Port == "" {
-		Admin.Port = "8081"
-	}
-	if Admin.Domain = dotenv.Get("ADMIN_HTTP_DOMAIN"); Admin.Domain == "" {
-		Admin.Domain = "http://127.0.0.1:" + Admin.Port
-	}
-	if Admin.Secret = dotenv.Get("ADMIN_TOKEN_SECRET_KEY"); Admin.Secret == "" {
-		Admin.Secret = "admin"
-	}
+	Admin.Port = dotenv.GetByDefault("ADMIN_HTTP_PORT", "8081")
+	Admin.Domain = dotenv.GetByDefault("ADMIN_HTTP_DOMAIN", "http://127.0.0.1:"+Admin.Port)
+	Admin.Secret = dotenv.GetByDefault("ADMIN_TOKEN_SECRET_KEY", "admin")
 }

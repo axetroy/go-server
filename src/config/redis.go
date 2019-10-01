@@ -14,13 +14,7 @@ type redis struct {
 var Redis redis
 
 func init() {
-	if Redis.Host = dotenv.Get("REDIS_SERVER"); Redis.Host == "" {
-		Redis.Host = "127.0.0.1"
-	}
-	if Redis.Port = dotenv.Get("REDIS_PORT"); Redis.Port == "" {
-		Redis.Port = "6379"
-	}
-	if Redis.Password = dotenv.Get("REDIS_PASSWORD"); Redis.Password == "" {
-		Redis.Password = "password"
-	}
+	Redis.Host = dotenv.GetByDefault("REDIS_SERVER", "127.0.0.1")
+	Redis.Port = dotenv.GetByDefault("REDIS_PORT", "6379")
+	Redis.Password = dotenv.GetByDefault("REDIS_PASSWORD", "password")
 }

@@ -13,10 +13,6 @@ type messageQueue struct {
 var MessageQueue messageQueue
 
 func init() {
-	if MessageQueue.Host = dotenv.Get("MSG_QUEUE_SERVER"); MessageQueue.Host == "" {
-		MessageQueue.Host = "127.0.0.1"
-	}
-	if MessageQueue.Port = dotenv.Get("MSG_QUEUE_PORT"); MessageQueue.Port == "" {
-		MessageQueue.Port = "4150"
-	}
+	MessageQueue.Host = dotenv.GetByDefault("MSG_QUEUE_SERVER", "127.0.0.1")
+	MessageQueue.Port = dotenv.GetByDefault("MSG_QUEUE_PORT", "4150")
 }

@@ -14,13 +14,7 @@ type user struct {
 var User user
 
 func init() {
-	if User.Port = dotenv.Get("USER_HTTP_PORT"); User.Port == "" {
-		User.Port = "8080"
-	}
-	if User.Domain = dotenv.Get("USER_HTTP_DOMAIN"); User.Domain == "" {
-		User.Domain = "http://127.0.0.1:" + User.Port
-	}
-	if User.Secret = dotenv.Get("USER_TOKEN_SECRET_KEY"); User.Secret == "" {
-		User.Secret = "user"
-	}
+	User.Port = dotenv.GetByDefault("USER_HTTP_PORT", "8080")
+	User.Domain = dotenv.GetByDefault("USER_HTTP_DOMAIN", "http://127.0.0.1:"+User.Port)
+	User.Secret = dotenv.GetByDefault("USER_TOKEN_SECRET_KEY", "user")
 }
