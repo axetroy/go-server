@@ -32,6 +32,8 @@ func init() {
 	}
 	router := gin.Default()
 
+	router.Use(middleware.GracefulExit())
+
 	router.Use(middleware.CORS())
 
 	router.Static("/public", path.Join(dotenv.RootDir, "public"))

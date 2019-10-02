@@ -2,6 +2,7 @@
 package exception
 
 var (
+	SystemMaintenance = New("系统维护中", -1)
 	Unknown           = New("未知错误", 0)
 	InvalidParams     = New("参数不正确", 100000)
 	NoData            = New("找不到数据", 100001)

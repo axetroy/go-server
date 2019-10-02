@@ -42,15 +42,11 @@ func init() {
 }
 
 func RunMessageQueueConsumer() error {
-	var (
-		err error
-	)
-
 	wg := &sync.WaitGroup{}
 
 	wg.Add(1)
 
-	_, err = CreateConsumer(TopicSendEmail, ChanelSendEmail, nsq.HandlerFunc(func(message *nsq.Message) error {
+	if _, err := CreateConsumer(TopicSendEmail, ChanelSendEmail, nsq.HandlerFunc(func(message *nsq.Message) error {
 
 		body := SendActivationEmailBody{}
 
@@ -69,9 +65,7 @@ func RunMessageQueueConsumer() error {
 		fmt.Printf("发送验证码 %s 到 %s\n", body.Code, body.Email)
 
 		return nil
-	}))
-
-	if err != nil {
+	})); err != nil {
 		return err
 	}
 

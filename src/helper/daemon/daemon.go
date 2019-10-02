@@ -3,11 +3,11 @@ package daemon
 import (
 	"fmt"
 	"github.com/axetroy/go-fs"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"syscall"
 )
 
 type Action func() error
@@ -29,8 +29,8 @@ func Start(action Action, shouldRunInDaemon bool) error {
 		cmd := exec.Command(filePath, os.Args[1:]...)
 		// 将其他命令传入生成出的进程
 		// cmd.Stdin = os.Stdin // 给新进程设置文件描述符，可以重定向到文件中
-		cmd.Stdout = ioutil.Discard
-		cmd.Stderr = ioutil.Discard
+		//cmd.Stdout = ioutil.Discard
+		//cmd.Stderr = ioutil.Discard
 		err := cmd.Start() // 开始执行新进程，不等待新进程退出
 		return err
 	} else {
@@ -79,13 +79,25 @@ func Stop() error {
 		return err
 	}
 
-	if err := ps.Kill(); err != nil {
+	if err := ps.Signal(syscall.SIGTERM); err != nil {
 		return err
 	}
 
-	fmt.Printf("process %s have been kill.\n", pidStr)
+	psState, err := ps.Wait()
 
-	_ = fs.Remove(pidFilePath)
+	if err != nil {
+		return err
+	}
+
+	haveBeenKill := psState.Exited()
+
+	if haveBeenKill {
+		fmt.Printf("进程 %d 已结束.\n", psState.Pid())
+
+		_ = fs.Remove(pidFilePath)
+	} else {
+		fmt.Printf("进程 %d 结束失败.\n", psState.Pid())
+	}
 
 	return nil
 }

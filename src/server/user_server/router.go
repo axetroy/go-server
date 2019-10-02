@@ -40,12 +40,17 @@ func init() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	router := gin.Default()
+
+	router.Use(middleware.GracefulExit())
+
 	router.Use(middleware.CORS())
+
 	router.Static("/public", path.Join(dotenv.RootDir, "public"))
 
 	if config.Common.Mode != config.ModeProduction {
 		router.Use(gin.Logger())
 	}
+
 	router.Use(gin.Recovery())
 
 	router.NoRoute(func(context *gin.Context) {
