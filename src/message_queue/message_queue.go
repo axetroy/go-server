@@ -41,7 +41,7 @@ func init() {
 	Config.HeartbeatInterval = time.Second * 10
 }
 
-func RunMessageQueueConsumer() {
+func RunMessageQueueConsumer() error {
 	var (
 		err error
 	)
@@ -72,10 +72,10 @@ func RunMessageQueueConsumer() {
 	}))
 
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	wg.Wait()
 
-	return
+	return nil
 }

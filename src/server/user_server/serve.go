@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func Serve() {
+func Serve() error {
 	port := config.User.Port
 
 	s := &http.Server{
@@ -18,8 +18,12 @@ func Serve() {
 		WriteTimeout:   60 * time.Second,
 		MaxHeaderBytes: 1024 * 1024 * 20, // 20M
 	}
+
 	fmt.Printf("用户端 HTTP 监听:  %s\n", s.Addr)
+
 	if err := s.ListenAndServe(); err != nil {
-		panic(err)
+		return err
 	}
+
+	return nil
 }
