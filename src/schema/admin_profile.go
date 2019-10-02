@@ -1,7 +1,9 @@
 // Copyright 2019 Axetroy. All rights reserved. MIT license.
 package schema
 
-import "github.com/axetroy/go-server/src/model"
+import (
+	"github.com/axetroy/go-server/src/model"
+)
 
 type AdminProfilePure struct {
 	Id        string            `json:"id"`        // 用户ID

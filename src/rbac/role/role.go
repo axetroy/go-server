@@ -1,7 +1,9 @@
 // Copyright 2019 Axetroy. All rights reserved. MIT license.
 package role
 
-import "github.com/axetroy/go-server/src/rbac/accession"
+import (
+	"github.com/axetroy/go-server/src/rbac/accession"
+)
 
 type Role struct {
 	Name        string                `json:"name"`        // 角色名
