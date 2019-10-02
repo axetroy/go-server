@@ -12,8 +12,8 @@ type Mocker struct {
 
 type Header map[string]string
 
-func New(router http.Handler) Mocker {
-	return Mocker{
+func New(router http.Handler) *Mocker {
+	return &Mocker{
 		router: router,
 	}
 }
