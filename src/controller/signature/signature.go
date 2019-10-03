@@ -3,7 +3,6 @@ package signature
 
 import (
 	"errors"
-	"fmt"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/helper"
@@ -41,8 +40,6 @@ func Encryption(context controller.Context, input string) (res schema.Response) 
 	if err != nil {
 		return
 	}
-
-	fmt.Println("hash", hash)
 
 	data = hash
 
