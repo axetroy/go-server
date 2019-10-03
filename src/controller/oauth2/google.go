@@ -12,6 +12,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"golang.org/x/oauth2"
 	"io/ioutil"
+	"net"
 	"net/http"
 )
 
@@ -30,7 +31,7 @@ func GetgoogleOAuth2Config() oauth2.Config {
 	googleOAuth2Config = &oauth2.Config{
 		ClientID:     config.OAuth2Google.ClientId,
 		ClientSecret: config.OAuth2Google.ClientSecret,
-		RedirectURL:  config.User.Domain + "/v1/oauth2/google_callback",
+		RedirectURL:  net.JoinHostPort(config.User.Domain, config.User.Port) + "/v1/oauth2/google_callback",
 		Scopes: []string{"https://www.googleapis.com/auth/userinfo.profile",
 			"https://www.googleapis.com/auth/userinfo.email"},
 		Endpoint: endpoint,

@@ -4,12 +4,16 @@
 | ----------------------------- | -------- | -------------------------------------------------------- | --------------- |
 | 用户接口配置                  | -        | -                                                        | -               |
 | USER_HTTP_PORT                | `int`    | 用户接口服务监听的端口                                   | `8080`          |
-| USER_HTTP_DOMAIN              | `string` | 用户接口服务的域名                                       | `""`            |
+| USER_HTTP_DOMAIN              | `string` | 用户接口服务的域名                                       | `localhost`     |
 | USER_TOKEN_SECRET_KEY         | `string` | 用户接口服务的密钥，用于签发 `token`, 该配置不可泄漏     | `""`            |
+| USER_TLS_CERT                 | `string` | TLS 的证书文件                                           | `""`            |
+| USER_TLS_KEY                  | `string` | TLS 的 key 文件                                          | `""`            |
 | 管理员接口配置                | -        | -                                                        | -               |
 | ADMIN_HTTP_PORT               | `int`    | 管理员接口服务监听的端口                                 | `8081`          |
-| ADMIN_HTTP_DOMAIN             | `string` | 管理员接口服务的域名                                     | `""`            |
+| ADMIN_HTTP_DOMAIN             | `string` | 管理员接口服务的域名                                     | `localhost`     |
 | ADMIN_TOKEN_SECRET_KEY        | `string` | 管理员接口服务的密钥，用于签发 `token`, 该配置不可泄漏   | `""`            |
+| ADMIN_TLS_CERT                | `string` | TLS 的证书文件                                           | `""`            |
+| ADMIN_TLS_KEY                 | `string` | TLS 的 key 文件                                          | `""`            |
 | 通用配置                      | -        | -                                                        | -               |
 | MACHINE_ID                    | `int`    | 机器 ID, 在集群中，每个 ID 都应该不同，用于产出不同的 ID | `0`             |
 | GO_MOD                        | `string` | 处于开发模式(development)/生产模式(production)           | `development`   |

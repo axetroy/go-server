@@ -3,6 +3,7 @@ package admin_server
 
 import (
 	"context"
+	"crypto/tls"
 	"github.com/axetroy/go-server/src/config"
 	"log"
 	"net/http"
@@ -20,14 +21,37 @@ func Serve() error {
 		Handler:        AdminRouter,
 		ReadTimeout:    60 * time.Second,
 		WriteTimeout:   60 * time.Second,
-		MaxHeaderBytes: 1024 * 1024 * 20, // 20M
+		MaxHeaderBytes: 1 << 20, // 10M
 	}
 
 	log.Printf("Listen on:  %s\n", s.Addr)
 
 	go func() {
-		if err := s.ListenAndServe(); err != nil {
-			log.Println(err)
+		if config.Admin.TLS != nil {
+			TLSConfig := &tls.Config{
+				MinVersion:               tls.VersionTLS11,
+				CurvePreferences:         []tls.CurveID{tls.CurveP521, tls.CurveP384, tls.CurveP256},
+				PreferServerCipherSuites: true,
+				CipherSuites: []uint16{
+					tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+					tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+					tls.TLS_RSA_WITH_AES_256_GCM_SHA384,
+					tls.TLS_RSA_WITH_AES_256_CBC_SHA,
+				},
+			}
+
+			TLSProto := make(map[string]func(*http.Server, *tls.Conn, http.Handler), 0)
+
+			s.TLSConfig = TLSConfig
+			s.TLSNextProto = TLSProto
+
+			if err := s.ListenAndServeTLS(config.Admin.TLS.Cert, config.Admin.TLS.Key); err != nil {
+				log.Println(err)
+			}
+		} else {
+			if err := s.ListenAndServe(); err != nil {
+				log.Println(err)
+			}
 		}
 	}()
 
