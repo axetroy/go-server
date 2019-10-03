@@ -24,5 +24,5 @@ func init() {
 	Database.DatabaseName = dotenv.GetByDefault("DB_NAME", "gotest")
 	Database.Username = dotenv.GetByDefault("DB_USERNAME", "gotest")
 	Database.Password = dotenv.GetByDefault("DB_PASSWORD", "gotest")
-	Database.Sync = dotenv.GetByDefault("DB_SYNC", "on")
+	Database.Sync = dotenv.GetByDefault("DB_SYNC", "off")
 }
