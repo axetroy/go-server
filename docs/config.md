@@ -60,11 +60,15 @@
 USER_HTTP_PORT=9090 # 用户端的 HTTP 监听端口. 默认 8080
 USER_HTTP_DOMAIN=http://127.0.0.1:8080 # 用户端的 API 域名
 USER_TOKEN_SECRET_KEY=user # 用户端的 JWT token 密钥
+USER_TLS_CERT="" # TLS 的证书文件
+USER_TLS_KEY="" # TLS 的 key 文件
 
 ##################### 管理员专有配置 #####################
 ADMIN_HTTP_PORT=9091 # 管理员端的 HTTP 监听端口. 默认 8081
 ADMIN_HTTP_DOMAIN=http://127.0.0.1:8081 # 用户端的 API 域名
 ADMIN_TOKEN_SECRET_KEY=admin # 管理员端的 JWT token 密钥
+ADMIN_TLS_CERT="" # TLS 的证书文件
+ADMIN_TLS_KEY="" # TLS 的 key 文件
 
 
 ######################## 公共配置 ########################
@@ -86,7 +90,7 @@ DB_DRIVER="${DB_DRIVER}" # 默认 "postgres"
 DB_NAME="${DB_NAME}" # 默认 "gotest"
 DB_USERNAME="${DB_USERNAME}" # 默认 "gotest"
 DB_PASSWORD="${DB_PASSWORD}" # 默认 "gotest"
-DB_SYNC="on" # 在应用启动时，是否同步数据库表, 可选 on/off, 默认 on
+DB_SYNC=on # 在应用启动时，是否同步数据库表, 可选 on/off, 默认 on
 
 # Redis 缓存服务器配置
 REDIS_SERVER=localhost #  Redis 服务器地址
