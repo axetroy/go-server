@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/axetroy/go-server/src/config"
 	"github.com/axetroy/go-server/src/model"
+	"github.com/axetroy/go-server/src/service/dotenv"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
@@ -71,7 +72,7 @@ func init() {
 			err = db.Create(&model.Admin{
 				Username:  "admin",
 				Name:      "admin",
-				Password:  util.GeneratePassword("admin"),
+				Password:  util.GeneratePassword(dotenv.GetByDefault("ADMIN_DEFAULT_PASSWORD", "admin")),
 				Accession: []string{},
 				Status:    model.AdminStatusInit,
 				IsSuper:   true,

@@ -1,57 +1,58 @@
 项目配置需要一个 `.env` 文件，通过环境变量的形式进行配置
 
-| 环境变量                      | 类型     | 说明                                                     | 默认值          |
-| ----------------------------- | -------- | -------------------------------------------------------- | --------------- |
-| 用户接口配置                  | -        | -                                                        | -               |
-| USER_HTTP_PORT                | `int`    | 用户接口服务监听的端口                                   | `8080`          |
-| USER_HTTP_DOMAIN              | `string` | 用户接口服务的域名                                       | `localhost`     |
-| USER_TOKEN_SECRET_KEY         | `string` | 用户接口服务的密钥，用于签发 `token`, 该配置不可泄漏     | `""`            |
-| USER_TLS_CERT                 | `string` | TLS 的证书文件                                           | `""`            |
-| USER_TLS_KEY                  | `string` | TLS 的 key 文件                                          | `""`            |
-| 管理员接口配置                | -        | -                                                        | -               |
-| ADMIN_HTTP_PORT               | `int`    | 管理员接口服务监听的端口                                 | `8081`          |
-| ADMIN_HTTP_DOMAIN             | `string` | 管理员接口服务的域名                                     | `localhost`     |
-| ADMIN_TOKEN_SECRET_KEY        | `string` | 管理员接口服务的密钥，用于签发 `token`, 该配置不可泄漏   | `""`            |
-| ADMIN_TLS_CERT                | `string` | TLS 的证书文件                                           | `""`            |
-| ADMIN_TLS_KEY                 | `string` | TLS 的 key 文件                                          | `""`            |
-| 通用配置                      | -        | -                                                        | -               |
-| MACHINE_ID                    | `int`    | 机器 ID, 在集群中，每个 ID 都应该不同，用于产出不同的 ID | `0`             |
-| GO_MOD                        | `string` | 处于开发模式(development)/生产模式(production)           | `development`   |
-| SIGNATURE_KEY                 | `string` | 数据签名的密钥, 该配置不可泄漏                           | `signature key` |
-| UPLOAD_DIR                    | `string` | 图片上传储存的目录                                       | `upload`        |
-| UPLOAD_FILE_MAX_SIZE          | `int`    | 文件上传的最大大小                                       | `10485760`      |
-| UPLOAD_FILE_EXTENSION         | `string` | 允许上传的文件类型, 以为 `,` 作为分隔符                  | `.txt,.md`      |
-| UPLOAD_IMAGE_MAX_SIZE         | `int`    | 图片上传的最大大小                                       | `10485760`      |
-| UPLOAD_IMAGE_THUMBNAIL_WIDTH  | `int`    | 图片缩略图宽度, 单位 `px`                                | `100`           |
-| UPLOAD_IMAGE_THUMBNAIL_HEIGHT | `int`    | 图片缩略图高度, 单位 `px`                                | `100`           |
-| 数据库配置                    | -        | -                                                        | -               |
-| DB_HOST                       | `string` | 连接的数据库地址                                         | `localhost`     |
-| DB_PORT                       | `int`    | 连接的数据库端口                                         | `65432`         |
-| DB_DRIVER                     | `string` | 数据库驱动器, 即数据库类型                               | `postgres`      |
-| DB_NAME                       | `string` | 数据库名称                                               | `gotest`        |
-| DB_USERNAME                   | `string` | 连接数据库的用户名                                       | `gotest`        |
-| DB_PASSWORD                   | `string` | 连接数据库的密码                                         | `gotest`        |
-| DB_SYNC                       | `string` | 在应用启动时，是否同步数据库表, 可选 `on`/`off`          | `on`            |
-| Redis 配置                    | -        | -                                                        | -               |
-| REDIS_SERVER                  | `string` | `redis` 服务器地址                                       | `localhost`     |
-| REDIS_PORT                    | `string` | `redis` 服务器端口                                       | `6379`          |
-| REDIS_PASSWORD                | `string` | `redis` 服务器密码                                       | `""`            |
-| SMTP 服务器配置               | -        | -                                                        | -               |
-| SMTP_SERVER                   | `string` | SMTP 服务器                                              | `""`            |
-| SMTP_SERVER_PORT              | `int`    | SMTP 服务器的端口                                        | `""`            |
-| SMTP_USERNAME                 | `string` | SMTP 服务器的用户名                                      | `""`            |
-| SMTP_PASSWORD                 | `string` | SMTP 服务器的密码                                        | `""`            |
-| SMTP_FROM_NAME                | `string` | SMTP 服务器发送邮件的发送者                              | `""`            |
-| SMTP_FROM_EMAIL               | `string` | SMTP 服务器发送邮件的发送者的邮箱地址                    | `""`            |
-| 消息队列配置                  | -        | -                                                        | -               |
-| MSG_QUEUE_SERVER              | `string` | 消息队列服务器地址                                       | `localhost`     |
-| MSG_QUEUE_PORT                | `int`    | 消息队列服务器端口                                       | `4150`          |
-| Google 认证登陆配置           | -        | -                                                        | -               |
-| GOOGLE_AUTH2_CLIENT_ID        | `string` | Google 登陆的 client ID                                  | `""`            |
-| GOOGLE_AUTH2_CLIENT_SECRET    | `string` | Google 登陆的 secret                                     | `""`            |
-| 微信小程序认证登陆配置        | -        | -                                                        | -               |
-| WECHAT_APP_ID                 | `string` | 微信小程序的 `appid`                                     | `""`            |
-| WECHAT_SECRET                 | `string` | 微信小程序的 `secret`                                    | `""`            |
+| 环境变量                      | 类型     | 说明                                                                            | 默认值          |
+| ----------------------------- | -------- | ------------------------------------------------------------------------------- | --------------- |
+| 用户接口配置                  | -        | -                                                                               | -               |
+| USER_HTTP_PORT                | `int`    | 用户接口服务监听的端口                                                          | `8080`          |
+| USER_HTTP_DOMAIN              | `string` | 用户接口服务的域名                                                              | `localhost`     |
+| USER_TOKEN_SECRET_KEY         | `string` | 用户接口服务的密钥，用于签发 `token`, 该配置不可泄漏                            | `""`            |
+| USER_TLS_CERT                 | `string` | TLS 的证书文件                                                                  | `""`            |
+| USER_TLS_KEY                  | `string` | TLS 的 key 文件                                                                 | `""`            |
+| 管理员接口配置                | -        | -                                                                               | -               |
+| ADMIN_HTTP_PORT               | `int`    | 管理员接口服务监听的端口                                                        | `8081`          |
+| ADMIN_HTTP_DOMAIN             | `string` | 管理员接口服务的域名                                                            | `localhost`     |
+| ADMIN_TOKEN_SECRET_KEY        | `string` | 管理员接口服务的密钥，用于签发 `token`, 该配置不可泄漏                          | `""`            |
+| ADMIN_TLS_CERT                | `string` | TLS 的证书文件                                                                  | `""`            |
+| ADMIN_TLS_KEY                 | `string` | TLS 的 key 文件                                                                 | `""`            |
+| ADMIN_DEFAULT_PASSWORD        | `string` | 默认的超级管理员 admin 的密码，在第一次启动时，会向数据库添加一个超级管理员帐号 | `admin`         |
+| 通用配置                      | -        | -                                                                               | -               |
+| MACHINE_ID                    | `int`    | 机器 ID, 在集群中，每个 ID 都应该不同，用于产出不同的 ID                        | `0`             |
+| GO_MOD                        | `string` | 处于开发模式(development)/生产模式(production)                                  | `development`   |
+| SIGNATURE_KEY                 | `string` | 数据签名的密钥, 该配置不可泄漏                                                  | `signature key` |
+| UPLOAD_DIR                    | `string` | 图片上传储存的目录                                                              | `upload`        |
+| UPLOAD_FILE_MAX_SIZE          | `int`    | 文件上传的最大大小                                                              | `10485760`      |
+| UPLOAD_FILE_EXTENSION         | `string` | 允许上传的文件类型, 以为 `,` 作为分隔符                                         | `.txt,.md`      |
+| UPLOAD_IMAGE_MAX_SIZE         | `int`    | 图片上传的最大大小                                                              | `10485760`      |
+| UPLOAD_IMAGE_THUMBNAIL_WIDTH  | `int`    | 图片缩略图宽度, 单位 `px`                                                       | `100`           |
+| UPLOAD_IMAGE_THUMBNAIL_HEIGHT | `int`    | 图片缩略图高度, 单位 `px`                                                       | `100`           |
+| 数据库配置                    | -        | -                                                                               | -               |
+| DB_HOST                       | `string` | 连接的数据库地址                                                                | `localhost`     |
+| DB_PORT                       | `int`    | 连接的数据库端口                                                                | `65432`         |
+| DB_DRIVER                     | `string` | 数据库驱动器, 即数据库类型                                                      | `postgres`      |
+| DB_NAME                       | `string` | 数据库名称                                                                      | `gotest`        |
+| DB_USERNAME                   | `string` | 连接数据库的用户名                                                              | `gotest`        |
+| DB_PASSWORD                   | `string` | 连接数据库的密码                                                                | `gotest`        |
+| DB_SYNC                       | `string` | 在应用启动时，是否同步数据库表, 可选 `on`/`off`                                 | `on`            |
+| Redis 配置                    | -        | -                                                                               | -               |
+| REDIS_SERVER                  | `string` | `redis` 服务器地址                                                              | `localhost`     |
+| REDIS_PORT                    | `string` | `redis` 服务器端口                                                              | `6379`          |
+| REDIS_PASSWORD                | `string` | `redis` 服务器密码                                                              | `""`            |
+| SMTP 服务器配置               | -        | -                                                                               | -               |
+| SMTP_SERVER                   | `string` | SMTP 服务器                                                                     | `""`            |
+| SMTP_SERVER_PORT              | `int`    | SMTP 服务器的端口                                                               | `""`            |
+| SMTP_USERNAME                 | `string` | SMTP 服务器的用户名                                                             | `""`            |
+| SMTP_PASSWORD                 | `string` | SMTP 服务器的密码                                                               | `""`            |
+| SMTP_FROM_NAME                | `string` | SMTP 服务器发送邮件的发送者                                                     | `""`            |
+| SMTP_FROM_EMAIL               | `string` | SMTP 服务器发送邮件的发送者的邮箱地址                                           | `""`            |
+| 消息队列配置                  | -        | -                                                                               | -               |
+| MSG_QUEUE_SERVER              | `string` | 消息队列服务器地址                                                              | `localhost`     |
+| MSG_QUEUE_PORT                | `int`    | 消息队列服务器端口                                                              | `4150`          |
+| Google 认证登陆配置           | -        | -                                                                               | -               |
+| GOOGLE_AUTH2_CLIENT_ID        | `string` | Google 登陆的 client ID                                                         | `""`            |
+| GOOGLE_AUTH2_CLIENT_SECRET    | `string` | Google 登陆的 secret                                                            | `""`            |
+| 微信小程序认证登陆配置        | -        | -                                                                               | -               |
+| WECHAT_APP_ID                 | `string` | 微信小程序的 `appid`                                                            | `""`            |
+| WECHAT_SECRET                 | `string` | 微信小程序的 `secret`                                                           | `""`            |
 
 例如以下配置
 
@@ -69,7 +70,7 @@ ADMIN_HTTP_DOMAIN=http://127.0.0.1:8081 # 用户端的 API 域名
 ADMIN_TOKEN_SECRET_KEY=admin # 管理员端的 JWT token 密钥
 ADMIN_TLS_CERT="" # TLS 的证书文件
 ADMIN_TLS_KEY="" # TLS 的 key 文件
-
+ADMIN_DEFAULT_PASSWORD="admin" # 默认的超级管理员 admin 的密码，在第一次启动时，会向数据库添加一个超级管理员帐号。默认值: admin
 
 ######################## 公共配置 ########################
 # 通用
@@ -90,7 +91,7 @@ DB_DRIVER="${DB_DRIVER}" # 默认 "postgres"
 DB_NAME="${DB_NAME}" # 默认 "gotest"
 DB_USERNAME="${DB_USERNAME}" # 默认 "gotest"
 DB_PASSWORD="${DB_PASSWORD}" # 默认 "gotest"
-DB_SYNC=on # 在应用启动时，是否同步数据库表, 可选 on/off, 默认 on
+DB_SYNC=off # 在应用启动时，是否同步数据库表, 可选 on/off, 默认 off
 
 # Redis 缓存服务器配置
 REDIS_SERVER=localhost #  Redis 服务器地址
