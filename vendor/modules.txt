@@ -44,7 +44,7 @@ github.com/jinzhu/gorm
 github.com/jinzhu/inflection
 # github.com/joho/godotenv v1.3.0
 github.com/joho/godotenv
-# github.com/jordan-wright/email v0.0.0-20190218024454-3ea4d25e7cf8
+# github.com/jordan-wright/email v0.0.0-20190819015918-041e0cec78b0
 github.com/jordan-wright/email
 # github.com/json-iterator/go v1.1.6
 github.com/json-iterator/go
@@ -54,7 +54,7 @@ github.com/konsorten/go-windows-terminal-sequences
 github.com/lib/pq
 github.com/lib/pq/oid
 github.com/lib/pq/scram
-# github.com/mattn/go-colorable v0.1.2
+# github.com/mattn/go-colorable v0.1.4
 github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.9
 github.com/mattn/go-isatty
@@ -85,7 +85,7 @@ github.com/sec51/qrcode
 github.com/sec51/qrcode/coding
 # github.com/sec51/twofactor v1.0.1-0.20180911112802-cd97c894b2cc
 github.com/sec51/twofactor
-# github.com/shirou/gopsutil v2.18.12+incompatible
+# github.com/shirou/gopsutil v2.19.9+incompatible
 github.com/shirou/gopsutil/cpu
 github.com/shirou/gopsutil/disk
 github.com/shirou/gopsutil/host
@@ -117,7 +117,7 @@ golang.org/x/crypto/salsa20/salsa
 # golang.org/x/net v0.0.0-20190503192946-f4e77d36d62c
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
-# golang.org/x/oauth2 v0.0.0-20190523182746-aaccbc9213b0
+# golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
 # golang.org/x/sys v0.0.0-20191002091554-b397fe3ad8ed
