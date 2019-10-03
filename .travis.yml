@@ -42,7 +42,7 @@ before_script:
   - export PATH=$NSQ_DOWNLOAD/bin:$PATH
   - nsqlookupd &> /dev/null & nsqd --lookupd-tcp-address=127.0.0.1:4160 & nsqadmin --lookupd-http-address=127.0.0.1:4161 & echo "完成nsq的启动"
 
-  - go get -v ./...
+  # - go get -v ./...
 
 script:
   - make test
