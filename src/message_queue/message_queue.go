@@ -3,11 +3,12 @@ package message_queue
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/axetroy/go-server/src/config"
 	"github.com/axetroy/go-server/src/service/email"
 	"github.com/axetroy/go-server/src/service/redis"
 	"github.com/nsqio/go-nsq"
+	"log"
+	"net"
 	"sync"
 	"time"
 )
@@ -31,7 +32,7 @@ func init() {
 	host := config.MessageQueue.Host
 	port := config.MessageQueue.Port
 
-	Address = host + ":" + port
+	Address = net.JoinHostPort(host, port)
 
 	Config = nsq.NewConfig()
 	Config.DialTimeout = time.Second * 5
@@ -41,12 +42,12 @@ func init() {
 	Config.HeartbeatInterval = time.Second * 10
 }
 
-func RunMessageQueueConsumer() error {
+func RunMessageQueueConsumer() (*nsq.Consumer, error) {
 	wg := &sync.WaitGroup{}
 
 	wg.Add(1)
 
-	if _, err := CreateConsumer(TopicSendEmail, ChanelSendEmail, nsq.HandlerFunc(func(message *nsq.Message) error {
+	c, err := CreateConsumer(TopicSendEmail, ChanelSendEmail, nsq.HandlerFunc(func(message *nsq.Message) error {
 
 		body := SendActivationEmailBody{}
 
@@ -62,14 +63,16 @@ func RunMessageQueueConsumer() error {
 			_ = redis.ActivationCodeClient.Del(body.Code).Err()
 		}
 
-		fmt.Printf("发送验证码 %s 到 %s\n", body.Code, body.Email)
+		log.Printf("发送验证码 %s 到 %s\n", body.Code, body.Email)
 
 		return nil
-	})); err != nil {
-		return err
+	}))
+
+	if err != nil {
+		return c, err
 	}
 
 	wg.Wait()
 
-	return nil
+	return c, nil
 }

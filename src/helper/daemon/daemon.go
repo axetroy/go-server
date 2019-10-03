@@ -3,6 +3,7 @@ package daemon
 import (
 	"fmt"
 	"github.com/axetroy/go-fs"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -92,11 +93,11 @@ func Stop() error {
 	haveBeenKill := psState.Exited()
 
 	if haveBeenKill {
-		fmt.Printf("进程 %d 已结束.\n", psState.Pid())
+		log.Printf("进程 %d 已结束.\n", psState.Pid())
 
 		_ = fs.Remove(pidFilePath)
 	} else {
-		fmt.Printf("进程 %d 结束失败.\n", psState.Pid())
+		log.Printf("进程 %d 结束失败.\n", psState.Pid())
 	}
 
 	return nil

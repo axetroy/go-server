@@ -2,18 +2,13 @@
 package main
 
 import (
-	"fmt"
 	App "github.com/axetroy/go-server"
-	"github.com/axetroy/go-server/src/config"
 	"github.com/axetroy/go-server/src/helper/daemon"
 	"github.com/axetroy/go-server/src/server/admin_server"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/urfave/cli"
 	"log"
 	"os"
-	"os/signal"
-	"syscall"
-	"time"
 )
 
 func main() {
@@ -23,25 +18,6 @@ func main() {
 	app.Email = App.Email
 	app.Version = App.Version
 	cli.AppHelpTemplate = App.CliTemplate
-
-	c := make(chan os.Signal)
-
-	signal.Notify(c, os.Kill, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGSTOP, syscall.SIGTSTP, syscall.SIGUSR1, syscall.SIGUSR2)
-
-	go func() {
-		for s := range c {
-			switch s {
-			case os.Kill, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGSTOP, syscall.SIGTSTP:
-				fmt.Println("接收到终止信号, 正在退出进程...")
-				config.Common.Exiting = true
-				time.AfterFunc(5*time.Second, func() {
-					os.Exit(0)
-				})
-			default:
-				fmt.Println("接收到信号:", s)
-			}
-		}
-	}()
 
 	app.Commands = []cli.Command{
 		{

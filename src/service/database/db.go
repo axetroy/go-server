@@ -8,6 +8,7 @@ import (
 	"github.com/axetroy/go-server/src/util"
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
+	"log"
 )
 
 var (
@@ -18,7 +19,7 @@ var (
 func init() {
 	DataSourceName := fmt.Sprintf("%s://%s:%s@%s:%s/%s?sslmode=disable", Config.Driver, Config.Username, Config.Password, Config.Host, Config.Port, Config.DatabaseName)
 
-	fmt.Println("正在连接数据库...")
+	log.Println("正在连接数据库...")
 
 	db, err := gorm.Open(Config.Driver, DataSourceName)
 
@@ -29,7 +30,7 @@ func init() {
 	db.LogMode(config.Common.Mode != "production")
 
 	if Config.Sync == "on" {
-		fmt.Println("正在同步数据库...")
+		log.Println("正在同步数据库...")
 
 		// Migrate the schema
 		db.AutoMigrate(
@@ -59,7 +60,7 @@ func init() {
 			new(model.WechatOpenID),     // 微信 open_id 外键表
 		)
 
-		fmt.Println("数据库同步完成.")
+		log.Println("数据库同步完成.")
 	}
 
 	Db = db
