@@ -34,5 +34,5 @@ require (
 	github.com/stretchr/testify v1.4.0
 	github.com/urfave/cli v1.22.1
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
-	golang.org/x/sys v0.0.0-20191002091554-b397fe3ad8ed // indirect
+	golang.org/x/sys v0.0.0-20191005200804-aed5e4c7ecf9 // indirect
 )
