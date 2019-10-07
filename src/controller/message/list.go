@@ -69,7 +69,7 @@ func GetMessageListByUser(context controller.Context, input Query) (res schema.L
 		filter["status"] = *input.Status
 	}
 
-	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Order(query.Sort).Where(filter).Find(&list).Error; err != nil {
+	if err = query.Order(database.Db.Limit(query.Limit).Offset(query.Limit * query.Page)).Where(filter).Find(&list).Error; err != nil {
 		return
 	}
 
@@ -148,7 +148,7 @@ func GetMessageListByAdmin(context controller.Context, input QueryAdmin) (res sc
 
 	var total int64
 
-	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Order(query.Sort).Where(&filter).Find(&list).Error; err != nil {
+	if err = query.Order(database.Db.Limit(query.Limit).Offset(query.Limit * query.Page)).Where(&filter).Find(&list).Error; err != nil {
 		return
 	}
 

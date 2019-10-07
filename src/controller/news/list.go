@@ -57,7 +57,7 @@ func GetNewsListByUser(input Query) (res schema.List) {
 		filter["type"] = *input.Type
 	}
 
-	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Order(query.Sort).Where(filter).Find(&list).Error; err != nil {
+	if err = query.Order(database.Db.Limit(query.Limit).Offset(query.Limit * query.Page)).Where(filter).Find(&list).Error; err != nil {
 		return
 	}
 

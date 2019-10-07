@@ -44,7 +44,7 @@ func GetInviteListByUser(input Query) (res schema.List) {
 
 	filter := map[string]interface{}{}
 
-	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Where(filter).Order(query.Sort).Find(&data).Error; err != nil {
+	if err = query.Order(database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Where(filter)).Find(&data).Error; err != nil {
 		return
 	}
 

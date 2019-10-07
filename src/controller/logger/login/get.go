@@ -45,7 +45,7 @@ func GetLatestLoginLog(context controller.Context) (res schema.Response) {
 
 	query.Normalize()
 
-	if err = database.Db.Where(&logInfo).Preload("User").Order(query.Sort).First(&logInfo).Error; err != nil {
+	if err = query.Order(database.Db.Where(&logInfo).Preload("User")).First(&logInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			err = exception.NoData
 		}
@@ -101,7 +101,7 @@ func GetLoginLog(id string) (res schema.Response) {
 
 	query.Normalize()
 
-	if err = database.Db.Where(&logInfo).Preload("User").Order(query.Sort).First(&logInfo).Error; err != nil {
+	if err = query.Order(database.Db.Where(&logInfo).Preload("User")).First(&logInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			err = exception.NoData
 		}

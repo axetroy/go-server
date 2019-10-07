@@ -61,7 +61,7 @@ func GetHelpList(context controller.Context, q Query) (res schema.List) {
 
 	var total int64
 
-	if err = database.Db.Limit(query.Limit).Offset(query.Limit * query.Page).Order(query.Sort).Where(filter).Find(&list).Error; err != nil {
+	if err = query.Order(database.Db.Limit(query.Limit).Offset(query.Limit * query.Page)).Where(filter).Find(&list).Error; err != nil {
 		return
 	}
 
@@ -84,6 +84,7 @@ func GetHelpList(context controller.Context, q Query) (res schema.List) {
 	meta.Num = len(list)
 	meta.Page = query.Page
 	meta.Limit = query.Limit
+	meta.Sort = query.Sort
 
 	return
 }

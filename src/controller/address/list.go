@@ -57,7 +57,7 @@ func GetAddressListByUser(context controller.Context, input Query) (res schema.L
 
 	var total int64
 
-	if err = tx.Limit(query.Limit).Offset(query.Limit * query.Page).Order(query.Sort).Where(filter).Find(&list).Error; err != nil {
+	if err = query.Order(tx.Limit(query.Limit).Offset(query.Limit * query.Page)).Where(filter).Find(&list).Error; err != nil {
 		return
 	}
 
