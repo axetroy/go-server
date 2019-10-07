@@ -126,7 +126,7 @@ func GetByStruct(m *model.InviteHistory) (res schema.Response) {
 	return
 }
 
-func GetRouter(context *gin.Context) {
+func GetRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -137,10 +137,10 @@ func GetRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	inviteId := context.Param("invite_id")
+	inviteId := c.Param("invite_id")
 
-	res = Get(controller.NewContext(context), inviteId)
+	res = Get(controller.NewContext(c), inviteId)
 }

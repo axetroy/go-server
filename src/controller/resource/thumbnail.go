@@ -9,20 +9,20 @@ import (
 	"path"
 )
 
-func Thumbnail(context *gin.Context) {
-	filename := context.Param("filename")
+func Thumbnail(c *gin.Context) {
+	filename := c.Param("filename")
 	Config := config.Upload
 	originImagePath := path.Join(Config.Path, Config.Image.Path, filename)
 	thumbnailImagePath := path.Join(Config.Path, Config.Image.Thumbnail.Path, filename)
 	if fs.PathExists(thumbnailImagePath) == false {
 		// if thumbnail image not exist, try to get origin image
 		if fs.PathExists(originImagePath) == true {
-			http.ServeFile(context.Writer, context.Request, originImagePath)
+			http.ServeFile(c.Writer, c.Request, originImagePath)
 			return
 		}
 		// if the path not found
-		http.NotFound(context.Writer, context.Request)
+		http.NotFound(c.Writer, c.Request)
 		return
 	}
-	http.ServeFile(context.Writer, context.Request, thumbnailImagePath)
+	http.ServeFile(c.Writer, c.Request, thumbnailImagePath)
 }

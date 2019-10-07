@@ -75,7 +75,7 @@ func GetWallets(context controller.Context) (res schema.Response) {
 	return
 }
 
-func GetWalletsRouter(context *gin.Context) {
+func GetWalletsRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -86,10 +86,10 @@ func GetWalletsRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
 	res = GetWallets(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
+		Uid: c.GetString(middleware.ContextUidField),
 	})
 }

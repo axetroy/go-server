@@ -105,7 +105,7 @@ func GetSystemInfo() (res schema.Response) {
 	return
 }
 
-func GetSystemInfoRouter(context *gin.Context) {
+func GetSystemInfoRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -116,7 +116,7 @@ func GetSystemInfoRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
 	res = GetSystemInfo()

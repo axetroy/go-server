@@ -92,7 +92,7 @@ func Activation(input ActivationParams) (res schema.Response) {
 	return
 }
 
-func ActivationRouter(context *gin.Context) {
+func ActivationRouter(c *gin.Context) {
 	var (
 		input ActivationParams
 		err   error
@@ -104,10 +104,10 @@ func ActivationRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}

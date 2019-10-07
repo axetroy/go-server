@@ -9,13 +9,13 @@ import (
 	"path"
 )
 
-func Image(context *gin.Context) {
-	filename := context.Param("filename")
+func Image(c *gin.Context) {
+	filename := c.Param("filename")
 	originImagePath := path.Join(config.Upload.Path, config.Upload.Image.Path, filename)
 	if fs.PathExists(originImagePath) == false {
 		// if the path not found
-		http.NotFound(context.Writer, context.Request)
+		http.NotFound(c.Writer, c.Request)
 		return
 	}
-	http.ServeFile(context.Writer, context.Request, originImagePath)
+	http.ServeFile(c.Writer, c.Request, originImagePath)
 }

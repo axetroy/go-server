@@ -201,7 +201,7 @@ func CreateUser(input CreateUserParams) (res schema.Response) {
 	return
 }
 
-func CreateUserRouter(context *gin.Context) {
+func CreateUserRouter(c *gin.Context) {
 	var (
 		input CreateUserParams
 		err   error
@@ -213,10 +213,10 @@ func CreateUserRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}

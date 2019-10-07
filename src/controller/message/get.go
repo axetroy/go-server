@@ -157,7 +157,7 @@ func GetByAdmin(context controller.Context, id string) (res schema.Response) {
 }
 
 // GetRouter get Message detail router
-func GetRouter(context *gin.Context) {
+func GetRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -168,18 +168,18 @@ func GetRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	id := context.Param(ParamsIdName)
+	id := c.Param(ParamsIdName)
 
 	res = Get(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
+		Uid: c.GetString(middleware.ContextUidField),
 	}, id)
 }
 
 // 管理员获取个人消息详情
-func GetAdminRouter(context *gin.Context) {
+func GetAdminRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -190,12 +190,12 @@ func GetAdminRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	id := context.Param(ParamsIdName)
+	id := c.Param(ParamsIdName)
 
 	res = GetByAdmin(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
+		Uid: c.GetString(middleware.ContextUidField),
 	}, id)
 }

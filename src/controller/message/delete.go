@@ -88,7 +88,7 @@ func DeleteByAdmin(context controller.Context, messageId string) (res schema.Res
 	return
 }
 
-func DeleteByAdminRouter(context *gin.Context) {
+func DeleteByAdminRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -99,13 +99,13 @@ func DeleteByAdminRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	id := context.Param(ParamsIdName)
+	id := c.Param(ParamsIdName)
 
 	res = DeleteByAdmin(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
+		Uid: c.GetString(middleware.ContextUidField),
 	}, id)
 }
 
@@ -174,7 +174,7 @@ func DeleteByUser(context controller.Context, messageId string) (res schema.Resp
 	return
 }
 
-func DeleteByUserRouter(context *gin.Context) {
+func DeleteByUserRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -185,12 +185,12 @@ func DeleteByUserRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	id := context.Param(ParamsIdName)
+	id := c.Param(ParamsIdName)
 
 	res = DeleteByUser(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
+		Uid: c.GetString(middleware.ContextUidField),
 	}, id)
 }

@@ -6,7 +6,6 @@ import (
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/helper"
-	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
@@ -85,7 +84,7 @@ func GetAddressListByUser(context controller.Context, input Query) (res schema.L
 	return
 }
 
-func GetAddressListByUserRouter(context *gin.Context) {
+func GetAddressListByUserRouter(c *gin.Context) {
 	var (
 		err   error
 		res   = schema.List{}
@@ -97,15 +96,13 @@ func GetAddressListByUserRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindQuery(&input); err != nil {
+	if err = c.ShouldBindQuery(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
-	res = GetAddressListByUser(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
-	}, input)
+	res = GetAddressListByUser(controller.NewContext(c), input)
 }

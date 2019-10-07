@@ -31,7 +31,7 @@ type ImageResponse struct {
 // 支持的图片后缀名
 var supportImageExtNames = []string{".jpg", ".jpeg", ".png", ".ico", ".svg", ".bmp", ".gif"}
 
-func Image(context *gin.Context) {
+func Image(c *gin.Context) {
 	var (
 		maxUploadSize = config.Upload.Image.MaxSize // 最大上传大小
 		err           error
@@ -52,13 +52,13 @@ func Image(context *gin.Context) {
 		}
 
 		if err != nil {
-			context.JSON(http.StatusOK, schema.Response{
+			c.JSON(http.StatusOK, schema.Response{
 				Status:  schema.StatusFail,
 				Message: err.Error(),
 				Data:    nil,
 			})
 		} else {
-			context.JSON(http.StatusOK, schema.Response{
+			c.JSON(http.StatusOK, schema.Response{
 				Status:  schema.StatusSuccess,
 				Message: "",
 				Data:    data,
@@ -66,7 +66,7 @@ func Image(context *gin.Context) {
 		}
 	}()
 
-	form, er := context.MultipartForm()
+	form, er := c.MultipartForm()
 
 	if er != nil {
 		err = er

@@ -57,7 +57,7 @@ func GetBanner(id string) (res schema.Response) {
 	return
 }
 
-func GetBannerRouter(context *gin.Context) {
+func GetBannerRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -68,10 +68,10 @@ func GetBannerRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	id := context.Param("banner_id")
+	id := c.Param("banner_id")
 
 	res = GetBanner(id)
 }

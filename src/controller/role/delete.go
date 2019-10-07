@@ -108,7 +108,7 @@ func Delete(context controller.Context, roleName string) (res schema.Response) {
 	return
 }
 
-func DeleteRouter(context *gin.Context) {
+func DeleteRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -119,10 +119,10 @@ func DeleteRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	roleName := context.Param("name")
+	roleName := c.Param("name")
 
-	res = Delete(controller.NewContext(context), roleName)
+	res = Delete(controller.NewContext(c), roleName)
 }

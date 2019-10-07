@@ -48,8 +48,8 @@ func init() {
 
 	router.Use(gin.Recovery())
 
-	router.NoRoute(func(context *gin.Context) {
-		context.JSON(http.StatusNotFound, schema.Response{
+	router.NoRoute(func(c *gin.Context) {
+		c.JSON(http.StatusNotFound, schema.Response{
 			Status:  schema.StatusFail,
 			Message: fmt.Sprintf("%v ", http.StatusNotFound) + http.StatusText(http.StatusNotFound),
 			Data:    nil,
@@ -59,8 +59,8 @@ func init() {
 	{
 		v1 := router.Group("/v1")
 		v1.Use(middleware.Common)
-		v1.GET("", func(context *gin.Context) {
-			context.JSON(http.StatusOK, gin.H{"ping": "pong"})
+		v1.GET("", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{"ping": "pong"})
 		})
 
 		adminAuthMiddleware := middleware.Authenticate(true) // 管理员Token的中间件

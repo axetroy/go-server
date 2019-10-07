@@ -87,7 +87,7 @@ func GetDetail(context controller.Context, transferId string) (res schema.Respon
 	return
 }
 
-func GetDetailRouter(context *gin.Context) {
+func GetDetailRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -98,10 +98,10 @@ func GetDetailRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
 	res = GetDetail(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
-	}, context.Param("transfer_id"))
+		Uid: c.GetString(middleware.ContextUidField),
+	}, c.Param("transfer_id"))
 }

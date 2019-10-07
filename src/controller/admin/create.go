@@ -101,7 +101,7 @@ func CreateAdmin(input CreateAdminParams, isSuper bool) (res schema.Response) {
 	return
 }
 
-func CreateAdminRouter(context *gin.Context) {
+func CreateAdminRouter(c *gin.Context) {
 	var (
 		input CreateAdminParams
 		err   error
@@ -113,15 +113,15 @@ func CreateAdminRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
-	uid := context.GetString(middleware.ContextUidField)
+	uid := c.GetString(middleware.ContextUidField)
 
 	adminInfo := model.Admin{
 		Id: uid,

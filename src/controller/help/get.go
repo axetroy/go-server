@@ -57,7 +57,7 @@ func GetHelp(id string) (res schema.Response) {
 	return
 }
 
-func GetHelpRouter(context *gin.Context) {
+func GetHelpRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -68,10 +68,10 @@ func GetHelpRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	id := context.Param("help_id")
+	id := c.Param("help_id")
 
 	res = GetHelp(id)
 }

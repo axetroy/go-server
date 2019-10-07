@@ -193,7 +193,7 @@ func GetNotificationListByAdmin(context controller.Context, input Query) (res sc
 }
 
 // GetListRouter get list router
-func GetNotificationListByUserRouter(context *gin.Context) {
+func GetNotificationListByUserRouter(c *gin.Context) {
 	var (
 		err   error
 		res   = schema.List{}
@@ -205,21 +205,21 @@ func GetNotificationListByUserRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindQuery(&input); err != nil {
+	if err = c.ShouldBindQuery(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
 	res = GetNotificationListByUser(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
+		Uid: c.GetString(middleware.ContextUidField),
 	}, input)
 }
 
 // GetListRouter get list router
-func GetNotificationListByAdminRouter(context *gin.Context) {
+func GetNotificationListByAdminRouter(c *gin.Context) {
 	var (
 		err   error
 		res   = schema.List{}
@@ -231,15 +231,15 @@ func GetNotificationListByAdminRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindQuery(&input); err != nil {
+	if err = c.ShouldBindQuery(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
 	res = GetNotificationListByAdmin(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
+		Uid: c.GetString(middleware.ContextUidField),
 	}, input)
 }

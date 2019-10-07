@@ -114,7 +114,7 @@ func UpdatePassword(context controller.Context, input UpdatePasswordParams) (res
 	return
 }
 
-func UpdatePasswordRouter(context *gin.Context) {
+func UpdatePasswordRouter(c *gin.Context) {
 	var (
 		err   error
 		res   = schema.Response{}
@@ -126,15 +126,15 @@ func UpdatePasswordRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
 	res = UpdatePassword(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
+		Uid: c.GetString(middleware.ContextUidField),
 	}, input)
 }

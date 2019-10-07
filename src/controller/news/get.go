@@ -57,7 +57,7 @@ func GetNews(id string) (res schema.Response) {
 	return
 }
 
-func GetNewsRouter(context *gin.Context) {
+func GetNewsRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -68,10 +68,10 @@ func GetNewsRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	id := context.Param("news_id")
+	id := c.Param("news_id")
 
 	res = GetNews(id)
 }

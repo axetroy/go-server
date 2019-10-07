@@ -168,7 +168,7 @@ func UpdatePasswordByAdmin(context controller.Context, userId string, input Upda
 	return
 }
 
-func UpdatePasswordRouter(context *gin.Context) {
+func UpdatePasswordRouter(c *gin.Context) {
 	var (
 		err   error
 		res   = schema.Response{}
@@ -180,18 +180,18 @@ func UpdatePasswordRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
-	res = UpdatePassword(controller.NewContext(context), input)
+	res = UpdatePassword(controller.NewContext(c), input)
 }
 
-func UpdatePasswordByAdminRouter(context *gin.Context) {
+func UpdatePasswordByAdminRouter(c *gin.Context) {
 	var (
 		err   error
 		res   = schema.Response{}
@@ -203,15 +203,15 @@ func UpdatePasswordByAdminRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	userId := context.Param("user_id")
+	userId := c.Param("user_id")
 
-	if err = context.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
-	res = UpdatePasswordByAdmin(controller.NewContext(context), userId, input)
+	res = UpdatePasswordByAdmin(controller.NewContext(c), userId, input)
 }

@@ -122,7 +122,7 @@ func GetLoginLog(id string) (res schema.Response) {
 	return
 }
 
-func GetLoginLogRouter(context *gin.Context) {
+func GetLoginLogRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -133,10 +133,10 @@ func GetLoginLogRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	id := context.Param("log_id")
+	id := c.Param("log_id")
 
 	res = GetLoginLog(id)
 }

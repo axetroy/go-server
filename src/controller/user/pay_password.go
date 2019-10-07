@@ -7,7 +7,6 @@ import (
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/helper"
-	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
@@ -108,7 +107,7 @@ func SetPayPassword(context controller.Context, input SetPayPasswordParams) (res
 	return
 }
 
-func SetPayPasswordRouter(context *gin.Context) {
+func SetPayPasswordRouter(c *gin.Context) {
 	var (
 		err   error
 		res   = schema.Response{}
@@ -120,17 +119,15 @@ func SetPayPasswordRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
-	res = SetPayPassword(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
-	}, input)
+	res = SetPayPassword(controller.NewContext(c), input)
 }
 
 func UpdatePayPassword(context controller.Context, input UpdatePayPasswordParams) (res schema.Response) {
@@ -210,7 +207,7 @@ func UpdatePayPassword(context controller.Context, input UpdatePayPasswordParams
 	return
 }
 
-func UpdatePayPasswordRouter(context *gin.Context) {
+func UpdatePayPasswordRouter(c *gin.Context) {
 	var (
 		err   error
 		res   = schema.Response{}
@@ -222,17 +219,15 @@ func UpdatePayPasswordRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
-	res = UpdatePayPassword(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
-	}, input)
+	res = UpdatePayPassword(controller.NewContext(c), input)
 }
 
 func SendResetPayPassword(context controller.Context) (res schema.Response) {
@@ -302,7 +297,7 @@ func SendResetPayPassword(context controller.Context) (res schema.Response) {
 	return
 }
 
-func SendResetPayPasswordRouter(context *gin.Context) {
+func SendResetPayPasswordRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -313,12 +308,10 @@ func SendResetPayPasswordRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	res = SendResetPayPassword(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
-	})
+	res = SendResetPayPassword(controller.NewContext(c))
 }
 
 func ResetPayPassword(context controller.Context, input ResetPayPasswordParams) (res schema.Response) {
@@ -400,7 +393,7 @@ func ResetPayPassword(context controller.Context, input ResetPayPasswordParams) 
 	return
 }
 
-func ResetPayPasswordRouter(context *gin.Context) {
+func ResetPayPasswordRouter(c *gin.Context) {
 	var (
 		err   error
 		res   = schema.Response{}
@@ -412,15 +405,13 @@ func ResetPayPasswordRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
-	res = ResetPayPassword(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
-	}, input)
+	res = ResetPayPassword(controller.NewContext(c), input)
 }

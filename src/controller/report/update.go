@@ -120,7 +120,7 @@ func Update(context controller.Context, reportId string, input UpdateParams) (re
 	return
 }
 
-func UpdateRouter(context *gin.Context) {
+func UpdateRouter(c *gin.Context) {
 	var (
 		input UpdateParams
 		err   error
@@ -132,18 +132,18 @@ func UpdateRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	reportId := context.Param("report_id")
+	reportId := c.Param("report_id")
 
-	if err = context.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
 	res = Update(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
+		Uid: c.GetString(middleware.ContextUidField),
 	}, reportId, input)
 }
 
@@ -239,7 +239,7 @@ func UpdateByAdmin(context controller.Context, reportId string, input UpdateByAd
 	return
 }
 
-func UpdateByAdminRouter(context *gin.Context) {
+func UpdateByAdminRouter(c *gin.Context) {
 	var (
 		input UpdateByAdminParams
 		err   error
@@ -251,17 +251,17 @@ func UpdateByAdminRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	reportId := context.Param("report_id")
+	reportId := c.Param("report_id")
 
-	if err = context.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
 	res = UpdateByAdmin(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
+		Uid: c.GetString(middleware.ContextUidField),
 	}, reportId, input)
 }

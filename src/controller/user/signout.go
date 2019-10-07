@@ -7,8 +7,8 @@ import (
 	"net/http"
 )
 
-func SignOut(context *gin.Context) {
-	context.JSON(http.StatusOK, schema.Response{
+func SignOut(c *gin.Context) {
+	c.JSON(http.StatusOK, schema.Response{
 		Status:  schema.StatusSuccess,
 		Message: "您已登出",
 		Data:    true,

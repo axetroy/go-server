@@ -123,7 +123,7 @@ func Create(context controller.Context, input CreateMenuParams) (res schema.Resp
 	return
 }
 
-func CreateRouter(context *gin.Context) {
+func CreateRouter(c *gin.Context) {
 	var (
 		input CreateMenuParams
 		err   error
@@ -135,13 +135,13 @@ func CreateRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
-	res = Create(controller.NewContext(context), input)
+	res = Create(controller.NewContext(c), input)
 }

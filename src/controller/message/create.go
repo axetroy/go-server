@@ -115,7 +115,7 @@ func Create(context controller.Context, input CreateMessageParams) (res schema.R
 	return
 }
 
-func CreateRouter(context *gin.Context) {
+func CreateRouter(c *gin.Context) {
 	var (
 		input CreateMessageParams
 		err   error
@@ -127,15 +127,15 @@ func CreateRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
 	res = Create(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
+		Uid: c.GetString(middleware.ContextUidField),
 	}, input)
 }

@@ -239,7 +239,7 @@ func SignUp(input SignUpParams, userStatus model.UserStatus) (res schema.Respons
 	return
 }
 
-func SignUpRouter(context *gin.Context) {
+func SignUpRouter(c *gin.Context) {
 	var (
 		input SignUpParams
 		err   error
@@ -251,10 +251,10 @@ func SignUpRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}

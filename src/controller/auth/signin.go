@@ -459,7 +459,7 @@ func WechatAccountComplete(context controller.Context, input WechatCompleteParam
 	return
 }
 
-func SignInRouter(context *gin.Context) {
+func SignInRouter(c *gin.Context) {
 	var (
 		input SignInParams
 		err   error
@@ -471,18 +471,18 @@ func SignInRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
-	res = SignIn(controller.NewContext(context), input)
+	res = SignIn(controller.NewContext(c), input)
 }
 
-func SignInWithWechatRouter(context *gin.Context) {
+func SignInWithWechatRouter(c *gin.Context) {
 	var (
 		input SignInWithWechatParams
 		err   error
@@ -494,18 +494,18 @@ func SignInWithWechatRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
-	res = SignInWithWechat(controller.NewContext(context), input)
+	res = SignInWithWechat(controller.NewContext(c), input)
 }
 
-func WechatAccountCompleteRouter(context *gin.Context) {
+func WechatAccountCompleteRouter(c *gin.Context) {
 	var (
 		input WechatCompleteParams
 		err   error
@@ -517,13 +517,13 @@ func WechatAccountCompleteRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
-	res = WechatAccountComplete(controller.NewContext(context), input)
+	res = WechatAccountComplete(controller.NewContext(c), input)
 }

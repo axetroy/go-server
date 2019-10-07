@@ -7,7 +7,6 @@ import (
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/helper"
-	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
@@ -161,7 +160,7 @@ func Create(context controller.Context, input CreateAddressParams) (res schema.R
 	return
 }
 
-func CreateRouter(context *gin.Context) {
+func CreateRouter(c *gin.Context) {
 	var (
 		input CreateAddressParams
 		err   error
@@ -173,15 +172,13 @@ func CreateRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
-	res = Create(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
-	}, input)
+	res = Create(controller.NewContext(c), input)
 }

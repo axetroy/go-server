@@ -77,20 +77,20 @@ func (c *Controller) Has(a accession.Accession) bool {
 
 // 根据 RBAC 鉴权的中间件
 func Require(accesions ...accession.Accession) gin.HandlerFunc {
-	return func(context *gin.Context) {
+	return func(c *gin.Context) {
 		var (
 			err error
-			uid = context.GetString("uid") // 这个中间件必须安排在JWT的中间件后面, 所以这里是拿的到 UID 的
-			c   *Controller
+			uid = c.GetString("uid") // 这个中间件必须安排在JWT的中间件后面, 所以这里是拿的到 UID 的
+			cc  *Controller
 		)
 
 		defer func() {
 			if err != nil {
-				context.JSON(http.StatusOK, schema.Response{
+				c.JSON(http.StatusOK, schema.Response{
 					Message: err.Error(),
 					Data:    nil,
 				})
-				context.Abort()
+				c.Abort()
 			}
 		}()
 
@@ -98,11 +98,11 @@ func Require(accesions ...accession.Accession) gin.HandlerFunc {
 			err = exception.NoPermission
 		}
 
-		if c, err = New(uid); err != nil {
+		if cc, err = New(uid); err != nil {
 			return
 		}
 
-		if c.Require(accesions) == false {
+		if cc.Require(accesions) == false {
 			err = exception.NoPermission
 		}
 	}

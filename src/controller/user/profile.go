@@ -343,7 +343,7 @@ func UpdateProfileByAdmin(context controller.Context, userId string, input Updat
 	return
 }
 
-func GetProfileRouter(context *gin.Context) {
+func GetProfileRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -354,15 +354,15 @@ func GetProfileRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
 	res = GetProfile(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
+		Uid: c.GetString(middleware.ContextUidField),
 	})
 }
 
-func GetProfileByAdminRouter(context *gin.Context) {
+func GetProfileByAdminRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -373,17 +373,17 @@ func GetProfileByAdminRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	userId := context.Param("user_id")
+	userId := c.Param("user_id")
 
 	res = GetProfileByAdmin(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
+		Uid: c.GetString(middleware.ContextUidField),
 	}, userId)
 }
 
-func UpdateProfileRouter(context *gin.Context) {
+func UpdateProfileRouter(c *gin.Context) {
 	var (
 		err   error
 		res   = schema.Response{}
@@ -395,20 +395,20 @@ func UpdateProfileRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
 	res = UpdateProfile(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
+		Uid: c.GetString(middleware.ContextUidField),
 	}, input)
 }
 
-func UpdateProfileByAdminRouter(context *gin.Context) {
+func UpdateProfileByAdminRouter(c *gin.Context) {
 	var (
 		err   error
 		res   = schema.Response{}
@@ -420,17 +420,17 @@ func UpdateProfileByAdminRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	userId := context.Param("user_id")
+	userId := c.Param("user_id")
 
-	if err = context.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
 	res = UpdateProfileByAdmin(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
+		Uid: c.GetString(middleware.ContextUidField),
 	}, userId, input)
 }

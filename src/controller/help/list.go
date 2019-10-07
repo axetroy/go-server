@@ -88,7 +88,7 @@ func GetHelpList(context controller.Context, q Query) (res schema.List) {
 	return
 }
 
-func GetHelpListRouter(context *gin.Context) {
+func GetHelpListRouter(c *gin.Context) {
 	var (
 		err   error
 		res   = schema.List{}
@@ -100,12 +100,12 @@ func GetHelpListRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindQuery(&query); err != nil {
+	if err = c.ShouldBindQuery(&query); err != nil {
 		return
 	}
 
-	res = GetHelpList(controller.NewContext(context), query)
+	res = GetHelpList(controller.NewContext(c), query)
 }

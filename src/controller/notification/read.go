@@ -98,7 +98,7 @@ func MarkRead(context controller.Context, notificationID string) (res schema.Res
 }
 
 // ReadRouter read this notification router
-func ReadRouter(context *gin.Context) {
+func ReadRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -109,12 +109,12 @@ func ReadRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	notificationID := context.Param("id")
+	notificationID := c.Param("id")
 
 	res = MarkRead(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
+		Uid: c.GetString(middleware.ContextUidField),
 	}, notificationID)
 }

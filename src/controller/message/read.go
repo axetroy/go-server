@@ -80,7 +80,7 @@ func MarkRead(context controller.Context, id string) (res schema.Response) {
 	return
 }
 
-func ReadRouter(context *gin.Context) {
+func ReadRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -91,10 +91,10 @@ func ReadRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	id := context.Param(ParamsIdName)
+	id := c.Param(ParamsIdName)
 
-	res = MarkRead(controller.NewContext(context), id)
+	res = MarkRead(controller.NewContext(c), id)
 }

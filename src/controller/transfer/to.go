@@ -11,7 +11,6 @@ import (
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/helper"
 	"github.com/axetroy/go-server/src/logger"
-	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
@@ -242,7 +241,7 @@ func To(context controller.Context, input ToParams, signature string) (res schem
 	return
 }
 
-func ToRouter(context *gin.Context) {
+func ToRouter(c *gin.Context) {
 	var (
 		err   error
 		input ToParams
@@ -254,17 +253,15 @@ func ToRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		return
 	}
 
 	// 获取数据签名
-	signature := context.GetHeader("X-Signature")
+	signature := c.GetHeader("X-Signature")
 
-	res = To(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
-	}, input, signature)
+	res = To(controller.NewContext(c), input, signature)
 }

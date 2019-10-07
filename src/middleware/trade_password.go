@@ -18,7 +18,7 @@ var (
 )
 
 // 交易密码的验证中间件
-func AuthPayPassword(context *gin.Context) {
+func AuthPayPassword(c *gin.Context) {
 	var (
 		err error
 	)
@@ -37,27 +37,27 @@ func AuthPayPassword(context *gin.Context) {
 
 		// 如果有报错的话，那么不会进入到路由中
 		if err != nil {
-			context.JSON(http.StatusOK, schema.Response{
+			c.JSON(http.StatusOK, schema.Response{
 				Status:  schema.StatusFail,
 				Message: err.Error(),
 				Data:    nil,
 			})
 
 			// 中断后面的路由器执行
-			context.Abort()
+			c.Abort()
 
 			return
 		}
 	}()
 
-	payPassword := context.GetHeader(PayPasswordHeader)
+	payPassword := c.GetHeader(PayPasswordHeader)
 
 	if len(payPassword) == 0 {
 		err = exception.RequirePayPassword
 		return
 	}
 
-	uid := context.GetString(ContextUidField)
+	uid := c.GetString(ContextUidField)
 
 	if uid == "" {
 		err = exception.UserNotLogin

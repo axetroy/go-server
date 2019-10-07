@@ -123,7 +123,7 @@ func Update(context controller.Context, newsId string, input UpdateParams) (res 
 	return
 }
 
-func UpdateRouter(context *gin.Context) {
+func UpdateRouter(c *gin.Context) {
 	var (
 		err   error
 		res   = schema.Response{}
@@ -135,15 +135,15 @@ func UpdateRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	id := context.Param("news_id")
+	id := c.Param("news_id")
 
-	if err = context.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
-	res = Update(controller.NewContext(context), id, input)
+	res = Update(controller.NewContext(c), id, input)
 }

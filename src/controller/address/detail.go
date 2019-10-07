@@ -60,7 +60,7 @@ func GetDetail(context controller.Context, id string) (res schema.Response) {
 	return
 }
 
-func GetDetailRouter(context *gin.Context) {
+func GetDetailRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -71,12 +71,12 @@ func GetDetailRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	id := context.Param("address_id")
+	id := c.Param("address_id")
 
 	res = GetDetail(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
+		Uid: c.GetString(middleware.ContextUidField),
 	}, id)
 }

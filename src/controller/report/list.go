@@ -96,7 +96,7 @@ func GetList(context controller.Context, input Query) (res schema.List) {
 	return
 }
 
-func GetListRouter(context *gin.Context) {
+func GetListRouter(c *gin.Context) {
 	var (
 		err   error
 		res   = schema.List{}
@@ -108,16 +108,16 @@ func GetListRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindQuery(&input); err != nil {
+	if err = c.ShouldBindQuery(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
 	res = GetList(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
+		Uid: c.GetString(middleware.ContextUidField),
 	}, input)
 }
 
@@ -192,7 +192,7 @@ func GetListByAdmin(context controller.Context, input QueryAdmin) (res schema.Li
 	return
 }
 
-func GetListByAdminRouter(context *gin.Context) {
+func GetListByAdminRouter(c *gin.Context) {
 	var (
 		err   error
 		res   = schema.List{}
@@ -204,15 +204,13 @@ func GetListByAdminRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindQuery(&input); err != nil {
+	if err = c.ShouldBindQuery(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
-	res = GetListByAdmin(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
-	}, input)
+	res = GetListByAdmin(controller.NewContext(c), input)
 }

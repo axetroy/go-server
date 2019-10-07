@@ -87,7 +87,7 @@ func Get(context controller.Context, id string) (res schema.Response) {
 }
 
 // GetRouter get notification detail router
-func GetRouter(context *gin.Context) {
+func GetRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -98,12 +98,12 @@ func GetRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	id := context.Param("id")
+	id := c.Param("id")
 
 	res = Get(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
+		Uid: c.GetString(middleware.ContextUidField),
 	}, id)
 }

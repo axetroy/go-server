@@ -158,7 +158,7 @@ func UploadAvatar(uid string, input UploadAvatarParams, file *multipart.FileHead
 	return
 }
 
-func UploadAvatarRouter(context *gin.Context) {
+func UploadAvatarRouter(c *gin.Context) {
 	var (
 		err   error
 		res   = schema.Response{}
@@ -171,30 +171,30 @@ func UploadAvatarRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindQuery(&input); err != nil {
+	if err = c.ShouldBindQuery(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
 	// Source
-	if file, err = context.FormFile("file"); err != nil {
+	if file, err = c.FormFile("file"); err != nil {
 		err = exception.RequireFile
 		return
 	}
 
-	res = UploadAvatar(context.GetString(middleware.ContextUidField), input, file)
+	res = UploadAvatar(c.GetString(middleware.ContextUidField), input, file)
 }
 
-func GetAvatarRouter(context *gin.Context) {
-	filename := context.Param("filename")
+func GetAvatarRouter(c *gin.Context) {
+	filename := c.Param("filename")
 	originImagePath := path.Join(config.Upload.Path, config.Upload.Image.Avatar.Path, filename)
 	if fs.PathExists(originImagePath) == false {
 		// if the path not found
-		http.NotFound(context.Writer, context.Request)
+		http.NotFound(c.Writer, c.Request)
 		return
 	}
-	http.ServeFile(context.Writer, context.Request, originImagePath)
+	http.ServeFile(c.Writer, c.Request, originImagePath)
 }

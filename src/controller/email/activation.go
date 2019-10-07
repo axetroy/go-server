@@ -93,7 +93,7 @@ func SendActivationEmail(input SendActivationEmailParams) (res schema.Response) 
 	return
 }
 
-func SendActivationEmailRouter(context *gin.Context) {
+func SendActivationEmailRouter(c *gin.Context) {
 	var (
 		input SendActivationEmailParams
 		err   error
@@ -105,10 +105,10 @@ func SendActivationEmailRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}

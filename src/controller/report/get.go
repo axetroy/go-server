@@ -5,7 +5,6 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
-	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
@@ -65,7 +64,7 @@ func GetReportByUser(context controller.Context, id string) (res schema.Response
 	return
 }
 
-func GetReportRouter(context *gin.Context) {
+func GetReportRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -76,14 +75,12 @@ func GetReportRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	id := context.Param("report_id")
+	id := c.Param("report_id")
 
-	res = GetReportByUser(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
-	}, id)
+	res = GetReportByUser(controller.NewContext(c), id)
 }
 
 func GetReportByAdmin(context controller.Context, id string) (res schema.Response) {
@@ -134,7 +131,7 @@ func GetReportByAdmin(context controller.Context, id string) (res schema.Respons
 	return
 }
 
-func GetReportByAdminRouter(context *gin.Context) {
+func GetReportByAdminRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -145,12 +142,10 @@ func GetReportByAdminRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	id := context.Param("report_id")
+	id := c.Param("report_id")
 
-	res = GetReportByAdmin(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
-	}, id)
+	res = GetReportByAdmin(controller.NewContext(c), id)
 }

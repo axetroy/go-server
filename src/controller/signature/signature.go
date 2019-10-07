@@ -46,7 +46,7 @@ func Encryption(context controller.Context, input string) (res schema.Response) 
 	return
 }
 
-func EncryptionRouter(context *gin.Context) {
+func EncryptionRouter(c *gin.Context) {
 	var (
 		err   error
 		input []byte
@@ -58,16 +58,16 @@ func EncryptionRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	input, err = context.GetRawData()
+	input, err = c.GetRawData()
 
 	if err != nil {
 		return
 	}
 
 	res = Encryption(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
+		Uid: c.GetString(middleware.ContextUidField),
 	}, string(input))
 }

@@ -43,10 +43,10 @@ func GetgoogleOAuth2Config() oauth2.Config {
 const oauthStateString = "go-server"
 
 // 调用谷歌登陆，然后重定向到谷歌认证页面
-func GoogleLoginRouter(context *gin.Context) {
-	c := GetgoogleOAuth2Config()
-	url := c.AuthCodeURL(oauthStateString)
-	context.Redirect(http.StatusTemporaryRedirect, url)
+func GoogleLoginRouter(c *gin.Context) {
+	config := GetgoogleOAuth2Config()
+	url := config.AuthCodeURL(oauthStateString)
+	c.Redirect(http.StatusTemporaryRedirect, url)
 }
 
 type Query struct {
@@ -68,27 +68,27 @@ type GoogleAuthResponse struct {
 }
 
 // 谷歌登陆成功之后的回调函数
-func GoogleCallbackRouter(context *gin.Context) {
+func GoogleCallbackRouter(c *gin.Context) {
 	query := Query{}
 
-	if err := context.BindQuery(&query); err != nil {
+	if err := c.BindQuery(&query); err != nil {
 		fmt.Printf("error")
 		return
 	}
 
 	if query.State != oauthStateString {
 		res := fmt.Sprintf("invalid oauth state, expected '%s', got '%s'\n", oauthStateString, query.State)
-		context.String(http.StatusBadRequest, res)
+		c.String(http.StatusBadRequest, res)
 		return
 	}
 
-	c := GetgoogleOAuth2Config()
+	config := GetgoogleOAuth2Config()
 
-	token, err := c.Exchange(oauth2.NoContext, query.Code)
+	token, err := config.Exchange(oauth2.NoContext, query.Code)
 
 	if err != nil {
 		res := fmt.Sprintf("code exchange failed with '%s'\n", err)
-		context.String(http.StatusTemporaryRedirect, res)
+		c.String(http.StatusTemporaryRedirect, res)
 		return
 	}
 
@@ -96,7 +96,7 @@ func GoogleCallbackRouter(context *gin.Context) {
 	response, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
 
 	if err != nil {
-		context.String(http.StatusBadRequest, err.Error())
+		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -107,7 +107,7 @@ func GoogleCallbackRouter(context *gin.Context) {
 	contents, err := ioutil.ReadAll(response.Body)
 
 	if err != nil {
-		context.String(http.StatusBadRequest, err.Error())
+		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -116,7 +116,7 @@ func GoogleCallbackRouter(context *gin.Context) {
 	err = json.Unmarshal(contents, &res)
 
 	if err != nil {
-		context.String(http.StatusTemporaryRedirect, err.Error())
+		c.String(http.StatusTemporaryRedirect, err.Error())
 	}
 
 	// 查询是否有这个用户存在

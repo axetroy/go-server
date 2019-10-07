@@ -7,7 +7,6 @@ import (
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/helper"
-	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
@@ -166,7 +165,7 @@ func Update(context controller.Context, addressId string, input UpdateParams) (r
 	return
 }
 
-func UpdateRouter(context *gin.Context) {
+func UpdateRouter(c *gin.Context) {
 	var (
 		err   error
 		res   = schema.Response{}
@@ -178,17 +177,15 @@ func UpdateRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	id := context.Param("address_id")
+	id := c.Param("address_id")
 
-	if err = context.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
-	res = Update(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
-	}, id, input)
+	res = Update(controller.NewContext(c), id, input)
 }

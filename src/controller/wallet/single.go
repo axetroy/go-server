@@ -6,7 +6,6 @@ import (
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/helper"
-	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
@@ -87,7 +86,7 @@ func GetWallet(context controller.Context, currencyName string) (res schema.Resp
 	return
 }
 
-func GetWalletRouter(context *gin.Context) {
+func GetWalletRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -98,12 +97,10 @@ func GetWalletRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	currency := context.Param("currency")
+	currency := c.Param("currency")
 
-	res = GetWallet(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
-	}, currency)
+	res = GetWallet(controller.NewContext(c), currency)
 }

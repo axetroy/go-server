@@ -87,7 +87,7 @@ func DeleteAdminById(context controller.Context, adminId string) (res schema.Res
 	return
 }
 
-func DeleteAdminByIdRouter(context *gin.Context) {
+func DeleteAdminByIdRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -98,12 +98,12 @@ func DeleteAdminByIdRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	id := context.Param("admin_id")
+	id := c.Param("admin_id")
 
 	res = DeleteAdminById(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
+		Uid: c.GetString(middleware.ContextUidField),
 	}, id)
 }

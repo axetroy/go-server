@@ -99,7 +99,7 @@ func GetLoginLogs(context controller.Context, q Query) (res schema.List) {
 	return
 }
 
-func GetLoginLogsRouter(context *gin.Context) {
+func GetLoginLogsRouter(c *gin.Context) {
 	var (
 		err   error
 		res   = schema.List{}
@@ -111,14 +111,14 @@ func GetLoginLogsRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindQuery(&query); err != nil {
+	if err = c.ShouldBindQuery(&query); err != nil {
 		return
 	}
 
 	res = GetLoginLogs(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
+		Uid: c.GetString(middleware.ContextUidField),
 	}, query)
 }

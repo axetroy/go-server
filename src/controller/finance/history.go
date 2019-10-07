@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetHistory(context *gin.Context) {
+func GetHistory(c *gin.Context) {
 	//var (
 	//	err     error
 	//	session *xorm.Session
@@ -40,13 +40,13 @@ func GetHistory(context *gin.Context) {
 	//	}
 	//
 	//	if err != nil {
-	//		context.JSON(http.StatusOK, response.Response{
+	//		c.JSON(http.StatusOK, response.Response{
 	//			Status:  response.StatusFail,
 	//			Message: err.Error(),
 	//			Data:    nil,
 	//		})
 	//	} else {
-	//		context.JSON(http.StatusOK, response.List{
+	//		c.JSON(http.StatusOK, response.List{
 	//			Response: response.Response{
 	//				Status:  response.StatusSuccess,
 	//				Message: "",
@@ -59,7 +59,7 @@ func GetHistory(context *gin.Context) {
 	//
 	//uid := context.GetInt64("uid")
 	//
-	//if err = context.ShouldBindQuery(&query); err != nil {
+	//if err = c.ShouldBindQuery(&query); err != nil {
 	//	return
 	//}
 	//

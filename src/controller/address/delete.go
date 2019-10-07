@@ -6,7 +6,6 @@ import (
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/helper"
-	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
@@ -92,7 +91,7 @@ func Delete(context controller.Context, addressId string) (res schema.Response) 
 	return
 }
 
-func DeleteRouter(context *gin.Context) {
+func DeleteRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -103,12 +102,10 @@ func DeleteRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	id := context.Param("address_id")
+	id := c.Param("address_id")
 
-	res = Delete(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
-	}, id)
+	res = Delete(controller.NewContext(c), id)
 }

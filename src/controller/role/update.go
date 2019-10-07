@@ -144,7 +144,7 @@ func Update(context controller.Context, roleName string, input UpdateParams) (re
 	return
 }
 
-func UpdateRouter(context *gin.Context) {
+func UpdateRouter(c *gin.Context) {
 	var (
 		err   error
 		res   = schema.Response{}
@@ -156,17 +156,17 @@ func UpdateRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	roleName := context.Param("name")
+	roleName := c.Param("name")
 
-	if err = context.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
-	res = Update(controller.NewContext(context), roleName, input)
+	res = Update(controller.NewContext(c), roleName, input)
 }
 
 func UpdateUserRole(context controller.Context, userId string, input UpdateUserRoleParams) (res schema.Response) {
@@ -268,7 +268,7 @@ func UpdateUserRole(context controller.Context, userId string, input UpdateUserR
 	return
 }
 
-func UpdateUserRoleRouter(context *gin.Context) {
+func UpdateUserRoleRouter(c *gin.Context) {
 	var (
 		err   error
 		res   = schema.Response{}
@@ -280,15 +280,15 @@ func UpdateUserRoleRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	userId := context.Param("user_id")
+	userId := c.Param("user_id")
 
-	if err = context.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
-	res = UpdateUserRole(controller.NewContext(context), userId, input)
+	res = UpdateUserRole(controller.NewContext(c), userId, input)
 }

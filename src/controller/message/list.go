@@ -175,7 +175,7 @@ func GetMessageListByAdmin(context controller.Context, input QueryAdmin) (res sc
 	return
 }
 
-func GetMessageListByUserRouter(context *gin.Context) {
+func GetMessageListByUserRouter(c *gin.Context) {
 	var (
 		err   error
 		res   = schema.List{}
@@ -187,20 +187,20 @@ func GetMessageListByUserRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindQuery(&input); err != nil {
+	if err = c.ShouldBindQuery(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
 	res = GetMessageListByUser(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
+		Uid: c.GetString(middleware.ContextUidField),
 	}, input)
 }
 
-func GetMessageListByAdminRouter(context *gin.Context) {
+func GetMessageListByAdminRouter(c *gin.Context) {
 	var (
 		err   error
 		res   = schema.List{}
@@ -212,15 +212,15 @@ func GetMessageListByAdminRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindQuery(&input); err != nil {
+	if err = c.ShouldBindQuery(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
 	res = GetMessageListByAdmin(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
+		Uid: c.GetString(middleware.ContextUidField),
 	}, input)
 }

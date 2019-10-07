@@ -3,10 +3,10 @@ package uploader
 
 import "github.com/gin-gonic/gin"
 
-func Example(context *gin.Context) {
-	header := context.Writer.Header()
+func Example(c *gin.Context) {
+	header := c.Writer.Header()
 	header.Set("Content-Type", "text/html; charset=utf-8")
-	context.String(200, `
+	c.String(200, `
 <!DOCTYPE html>
 <html lang="en">
 <head>

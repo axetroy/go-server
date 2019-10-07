@@ -37,7 +37,7 @@ func GetAccession() (res schema.Response) {
 	return
 }
 
-func GetAccessionRouter(context *gin.Context) {
+func GetAccessionRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -48,7 +48,7 @@ func GetAccessionRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
 	res = GetAccession()

@@ -5,8 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Common(context *gin.Context) {
-	header := context.Writer.Header()
+func Common(c *gin.Context) {
+	header := c.Writer.Header()
 	// alone dns prefect
 	header.Set("X-DNS-Prefetch-Control", "on")
 	// IE No Open

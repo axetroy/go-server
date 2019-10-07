@@ -157,7 +157,7 @@ func GetAdminInfoById(context controller.Context, adminId string) (res schema.Re
 	return
 }
 
-func GetAdminInfoRouter(context *gin.Context) {
+func GetAdminInfoRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -168,13 +168,13 @@ func GetAdminInfoRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	res = GetAdminInfo(controller.Context{Uid: context.GetString(middleware.ContextUidField)})
+	res = GetAdminInfo(controller.Context{Uid: c.GetString(middleware.ContextUidField)})
 }
 
-func GetAdminInfoByIdRouter(context *gin.Context) {
+func GetAdminInfoByIdRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -185,10 +185,10 @@ func GetAdminInfoByIdRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	adminId := context.Param("admin_id")
+	adminId := c.Param("admin_id")
 
-	res = GetAdminInfoById(controller.Context{Uid: context.GetString(middleware.ContextUidField)}, adminId)
+	res = GetAdminInfoById(controller.Context{Uid: c.GetString(middleware.ContextUidField)}, adminId)
 }

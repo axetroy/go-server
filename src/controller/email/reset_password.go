@@ -90,7 +90,7 @@ func SendResetPasswordEmail(input SendResetPasswordEmailParams) (res schema.Resp
 
 }
 
-func SendResetPasswordEmailRouter(context *gin.Context) {
+func SendResetPasswordEmailRouter(c *gin.Context) {
 	var (
 		input SendResetPasswordEmailParams
 		err   error
@@ -102,10 +102,10 @@ func SendResetPasswordEmailRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}

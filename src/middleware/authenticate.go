@@ -15,7 +15,7 @@ var (
 
 // Token 验证中间件
 func Authenticate(isAdmin bool) gin.HandlerFunc {
-	return func(context *gin.Context) {
+	return func(c *gin.Context) {
 		var (
 			err         error
 			tokenString string
@@ -23,23 +23,23 @@ func Authenticate(isAdmin bool) gin.HandlerFunc {
 		)
 		defer func() {
 			if err != nil {
-				context.JSON(http.StatusOK, schema.Response{
+				c.JSON(http.StatusOK, schema.Response{
 					Status:  status,
 					Message: err.Error(),
 					Data:    nil,
 				})
-				context.Abort()
+				c.Abort()
 			}
 		}()
 
-		if s, isExist := context.GetQuery(token.AuthField); isExist == true {
+		if s, isExist := c.GetQuery(token.AuthField); isExist == true {
 			tokenString = s
 			return
 		} else {
-			tokenString = context.GetHeader(token.AuthField)
+			tokenString = c.GetHeader(token.AuthField)
 
 			if len(tokenString) == 0 {
-				if s, er := context.Cookie(token.AuthField); er != nil {
+				if s, er := c.Cookie(token.AuthField); er != nil {
 					err = exception.InvalidToken
 					status = exception.InvalidToken.Code()
 					return
@@ -55,7 +55,7 @@ func Authenticate(isAdmin bool) gin.HandlerFunc {
 			return
 		} else {
 			// 把 UID 挂载到上下文中国呢
-			context.Set(ContextUidField, claims.Uid)
+			c.Set(ContextUidField, claims.Uid)
 		}
 	}
 }

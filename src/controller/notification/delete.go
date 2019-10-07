@@ -92,7 +92,7 @@ func Delete(context controller.Context, notificationId string) (res schema.Respo
 	return
 }
 
-func DeleteRouter(context *gin.Context) {
+func DeleteRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -103,12 +103,12 @@ func DeleteRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	id := context.Param("id")
+	id := c.Param("id")
 
 	res = Delete(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
+		Uid: c.GetString(middleware.ContextUidField),
 	}, id)
 }

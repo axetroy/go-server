@@ -63,7 +63,7 @@ func GetMenu(id string) (res schema.Response) {
 	return
 }
 
-func GetMenuRouter(context *gin.Context) {
+func GetMenuRouter(c *gin.Context) {
 	var (
 		err error
 		res = schema.Response{}
@@ -74,10 +74,10 @@ func GetMenuRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	id := context.Param("menu_id")
+	id := c.Param("menu_id")
 
 	res = GetMenu(id)
 }

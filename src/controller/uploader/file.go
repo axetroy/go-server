@@ -16,7 +16,7 @@ import (
 	"path"
 )
 
-func File(context *gin.Context) {
+func File(c *gin.Context) {
 	var (
 		isSupportFile bool
 		maxUploadSize = config.Upload.File.MaxSize   // 最大上传大小
@@ -38,13 +38,13 @@ func File(context *gin.Context) {
 		}
 
 		if err != nil {
-			context.JSON(http.StatusOK, schema.Response{
+			c.JSON(http.StatusOK, schema.Response{
 				Status:  schema.StatusFail,
 				Message: err.Error(),
 				Data:    nil,
 			})
 		} else {
-			context.JSON(http.StatusOK, schema.Response{
+			c.JSON(http.StatusOK, schema.Response{
 				Status:  schema.StatusSuccess,
 				Message: "",
 				Data:    data,
@@ -53,7 +53,7 @@ func File(context *gin.Context) {
 
 	}()
 
-	form, er := context.MultipartForm()
+	form, er := c.MultipartForm()
 
 	if er != nil {
 		err = er

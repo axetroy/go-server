@@ -6,7 +6,6 @@ import (
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/helper"
-	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
@@ -83,7 +82,7 @@ func GetList(context controller.Context, input Query) (res schema.List) {
 	return
 }
 
-func GetListRouter(context *gin.Context) {
+func GetListRouter(c *gin.Context) {
 	var (
 		err   error
 		res   = schema.List{}
@@ -95,15 +94,13 @@ func GetListRouter(context *gin.Context) {
 			res.Data = nil
 			res.Message = err.Error()
 		}
-		context.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, res)
 	}()
 
-	if err = context.ShouldBindQuery(&input); err != nil {
+	if err = c.ShouldBindQuery(&input); err != nil {
 		err = exception.InvalidParams
 		return
 	}
 
-	res = GetList(controller.Context{
-		Uid: context.GetString(middleware.ContextUidField),
-	}, input)
+	res = GetList(controller.NewContext(c), input)
 }
