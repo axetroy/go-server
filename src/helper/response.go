@@ -17,7 +17,7 @@ func TrimCode(message string) string {
 func Response(res *schema.Response, data interface{}, err error) {
 	if err != nil {
 		res.Data = nil
-		res.Message = TrimCode(err.Error())
+		res.Message = err.Error()
 		res.Status = exception.GetCodeFromError(err)
 	} else {
 		res.Data = data
@@ -28,7 +28,7 @@ func Response(res *schema.Response, data interface{}, err error) {
 func ResponseList(res *schema.List, data interface{}, meta *schema.Meta, err error) {
 	if err != nil {
 		res.Data = nil
-		res.Message = TrimCode(err.Error())
+		res.Message = err.Error()
 		res.Status = exception.GetCodeFromError(err)
 		res.Meta = nil
 	} else {
