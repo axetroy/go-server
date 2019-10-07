@@ -118,15 +118,7 @@ func GetMessageListByAdmin(context controller.Context, input QueryAdmin) (res sc
 			}
 		}
 
-		if err != nil {
-			res.Message = err.Error()
-			res.Data = nil
-			res.Meta = nil
-		} else {
-			res.Data = data
-			res.Status = schema.StatusSuccess
-			res.Meta = meta
-		}
+		helper.ResponseList(&res, data, meta, err)
 	}()
 
 	query := input.Query

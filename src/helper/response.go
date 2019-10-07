@@ -3,12 +3,21 @@ package helper
 import (
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/schema"
+	"regexp"
 )
+
+var (
+	codeReg = regexp.MustCompile("\\s*\\[\\d+\\]$")
+)
+
+func TrimCode(message string) string {
+	return codeReg.ReplaceAllString(message, "")
+}
 
 func Response(res *schema.Response, data interface{}, err error) {
 	if err != nil {
 		res.Data = nil
-		res.Message = err.Error() // TODO: trim code
+		res.Message = TrimCode(err.Error())
 		res.Status = exception.GetCodeFromError(err)
 	} else {
 		res.Data = data
@@ -19,7 +28,7 @@ func Response(res *schema.Response, data interface{}, err error) {
 func ResponseList(res *schema.List, data interface{}, meta *schema.Meta, err error) {
 	if err != nil {
 		res.Data = nil
-		res.Message = err.Error() // TODO: trim code
+		res.Message = TrimCode(err.Error())
 		res.Status = exception.GetCodeFromError(err)
 		res.Meta = nil
 	} else {

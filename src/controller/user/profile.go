@@ -103,13 +103,7 @@ func GetProfileByAdmin(context controller.Context, userId string) (res schema.Re
 			}
 		}
 
-		if err != nil {
-			res.Message = err.Error()
-			res.Data = nil
-		} else {
-			res.Data = data
-			res.Status = schema.StatusSuccess
-		}
+		helper.Response(&res, data, err)
 	}()
 
 	tx = database.Db.Begin()
@@ -174,13 +168,7 @@ func UpdateProfile(context controller.Context, input UpdateProfileParams) (res s
 			}
 		}
 
-		if err != nil {
-			res.Message = err.Error()
-			res.Data = nil
-		} else {
-			res.Data = data
-			res.Status = schema.StatusSuccess
-		}
+		helper.Response(&res, data, err)
 	}()
 
 	// 参数校验
@@ -267,13 +255,7 @@ func UpdateProfileByAdmin(context controller.Context, userId string, input Updat
 			}
 		}
 
-		if err != nil {
-			res.Message = err.Error()
-			res.Data = nil
-		} else {
-			res.Data = data
-			res.Status = schema.StatusSuccess
-		}
+		helper.Response(&res, data, err)
 	}()
 
 	// 参数校验

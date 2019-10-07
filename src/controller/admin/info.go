@@ -110,13 +110,7 @@ func GetAdminInfoById(context controller.Context, adminId string) (res schema.Re
 			}
 		}
 
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		} else {
-			res.Data = data
-			res.Status = schema.StatusSuccess
-		}
+		helper.Response(&res, data, err)
 	}()
 
 	tx = database.Db.Begin()

@@ -136,13 +136,7 @@ func DeleteByUser(context controller.Context, messageId string) (res schema.Resp
 			}
 		}
 
-		if err != nil {
-			res.Message = err.Error()
-			res.Data = nil
-		} else {
-			res.Data = data
-			res.Status = schema.StatusSuccess
-		}
+		helper.Response(&res, data, err)
 	}()
 
 	tx = database.Db.Begin()

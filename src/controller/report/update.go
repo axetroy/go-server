@@ -176,13 +176,7 @@ func UpdateByAdmin(context controller.Context, reportId string, input UpdateByAd
 			}
 		}
 
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		} else {
-			res.Data = data
-			res.Status = schema.StatusSuccess
-		}
+		helper.Response(&res, data, err)
 	}()
 
 	// 参数校验
