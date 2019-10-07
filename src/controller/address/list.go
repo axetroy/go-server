@@ -80,6 +80,7 @@ func GetAddressListByUser(context controller.Context, input Query) (res schema.L
 	meta.Num = len(data)
 	meta.Page = query.Page
 	meta.Limit = query.Limit
+	meta.Sort = query.Sort
 
 	return
 }

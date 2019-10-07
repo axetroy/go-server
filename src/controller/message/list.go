@@ -92,6 +92,7 @@ func GetMessageListByUser(context controller.Context, input Query) (res schema.L
 	meta.Num = len(data)
 	meta.Page = query.Page
 	meta.Limit = query.Limit
+	meta.Sort = query.Sort
 
 	return
 }
@@ -171,6 +172,7 @@ func GetMessageListByAdmin(context controller.Context, input QueryAdmin) (res sc
 	meta.Num = len(data)
 	meta.Page = query.Page
 	meta.Limit = query.Limit
+	meta.Sort = query.Sort
 
 	return
 }

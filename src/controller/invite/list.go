@@ -58,6 +58,7 @@ func GetInviteListByUser(input Query) (res schema.List) {
 	meta.Num = len(data)
 	meta.Page = query.Page
 	meta.Limit = query.Limit
+	meta.Sort = query.Sort
 
 	return
 }

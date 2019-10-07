@@ -109,6 +109,7 @@ func GetNotificationListByUser(context controller.Context, input Query) (res sch
 	meta.Num = len(data)
 	meta.Page = query.Page
 	meta.Limit = query.Limit
+	meta.Sort = query.Sort
 
 	return
 }
@@ -188,6 +189,7 @@ func GetNotificationListByAdmin(context controller.Context, input Query) (res sc
 	meta.Num = len(data)
 	meta.Page = query.Page
 	meta.Limit = query.Limit
+	meta.Sort = query.Sort
 
 	return
 }

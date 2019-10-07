@@ -86,6 +86,7 @@ func GetBannerList(context controller.Context, q Query) (res schema.List) {
 	meta.Num = len(list)
 	meta.Page = query.Page
 	meta.Limit = query.Limit
+	meta.Sort = query.Sort
 
 	return
 }
