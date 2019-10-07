@@ -11,6 +11,7 @@ import (
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/helper"
 	"github.com/axetroy/go-server/src/logger"
+	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
@@ -261,7 +262,7 @@ func ToRouter(c *gin.Context) {
 	}
 
 	// 获取数据签名
-	signature := c.GetHeader("X-Signature")
+	signature := c.GetHeader(middleware.SignatureHeader)
 
 	res = To(controller.NewContext(c), input, signature)
 }

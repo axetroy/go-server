@@ -15,6 +15,7 @@ import (
 
 var (
 	PayPasswordHeader = "X-Pay-Password"
+	SignatureHeader   = "X-Signature"
 )
 
 // 交易密码的验证中间件

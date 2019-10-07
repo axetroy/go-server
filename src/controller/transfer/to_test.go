@@ -9,6 +9,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/user"
 	"github.com/axetroy/go-server/src/controller/wallet"
 	"github.com/axetroy/go-server/src/exception"
+	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
@@ -155,7 +156,7 @@ func TestToRouter(t *testing.T) {
 
 		signature, err := util.Signature(string(body))
 
-		header["X-Signature"] = signature
+		header[middleware.SignatureHeader] = signature
 
 		assert.Nil(t, err)
 
