@@ -120,7 +120,7 @@ golang.org/x/net/context/ctxhttp
 # golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
-# golang.org/x/sys v0.0.0-20191005200804-aed5e4c7ecf9
+# golang.org/x/sys v0.0.0-20191007092633-5f54ce542709
 golang.org/x/sys/cpu
 golang.org/x/sys/unix
 golang.org/x/sys/windows
