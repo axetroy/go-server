@@ -212,7 +212,7 @@ func TestResetPayPassword(t *testing.T) {
 	resetCode := user.GenerateResetPayPasswordCode(testUser.Id)
 
 	// redis缓存重置码
-	assert.Nil(t, redis.ResetCodeClient.Set(resetCode, testUser.Id, time.Minute*10).Err())
+	assert.Nil(t, redis.ClientResetCode.Set(resetCode, testUser.Id, time.Minute*10).Err())
 
 	{
 		// 2. 重置交易密码失败, 因为此时还没有交易密码

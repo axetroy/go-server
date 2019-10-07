@@ -8,8 +8,8 @@ import (
 
 var (
 	Client               *redis.Client // 默认的redis存储
-	ActivationCodeClient *redis.Client // 存储激活码的
-	ResetCodeClient      *redis.Client // 存储重置密码的
+	ClientActivationCode *redis.Client // 存储帐号激活码的
+	ClientResetCode      *redis.Client // 存储重置密码的
 	Config               = config.Redis
 )
 
@@ -21,18 +21,18 @@ func init() {
 
 	// 初始化3个DB连接
 	Client = redis.NewClient(&redis.Options{
-		Addr:     addr,
+		 Addr:     addr,
 		Password: password,
 		DB:       0, // use default DB
 	})
 
-	ActivationCodeClient = redis.NewClient(&redis.Options{
+	ClientActivationCode = redis.NewClient(&redis.Options{
 		Addr:     addr,
 		Password: password,
 		DB:       1,
 	})
 
-	ResetCodeClient = redis.NewClient(&redis.Options{
+	ClientResetCode = redis.NewClient(&redis.Options{
 		Addr:     addr,
 		Password: password,
 		DB:       2,

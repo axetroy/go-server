@@ -82,14 +82,14 @@ func TestActivationSuccess(t *testing.T) {
 	activationCode := email.GenerateActivationCode(testerUid)
 
 	// set activationCode to redis
-	if err := redis.ActivationCodeClient.Set(activationCode, testerUid, time.Minute*30).Err(); err != nil {
+	if err := redis.ClientActivationCode.Set(activationCode, testerUid, time.Minute*30).Err(); err != nil {
 		t.Error(err)
 		return
 	}
 
 	defer func() {
 		// remove activation code
-		_ = redis.ActivationCodeClient.Del(activationCode).Err()
+		_ = redis.ClientActivationCode.Del(activationCode).Err()
 	}()
 
 	body, _ := json.Marshal(&auth.ActivationParams{

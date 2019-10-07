@@ -178,7 +178,7 @@ func CreateUser(input CreateUserParams) (res schema.Response) {
 		activationCode := "activation-" + userInfo.Id
 
 		// 把激活码存到 redis
-		if err = redis.ActivationCodeClient.Set(activationCode, userInfo.Id, time.Minute*30).Err(); err != nil {
+		if err = redis.ClientActivationCode.Set(activationCode, userInfo.Id, time.Minute*30).Err(); err != nil {
 			return
 		}
 

@@ -58,7 +58,7 @@ func Activation(input ActivationParams) (res schema.Response) {
 		return
 	}
 
-	if uid, err = redis.ActivationCodeClient.Get(input.Code).Result(); err != nil {
+	if uid, err = redis.ClientActivationCode.Get(input.Code).Result(); err != nil {
 		err = exception.InvalidActiveCode
 		return
 	}
@@ -86,7 +86,7 @@ func Activation(input ActivationParams) (res schema.Response) {
 	}
 
 	// delete code from redis
-	if err = redis.ActivationCodeClient.Del(input.Code).Err(); err != nil {
+	if err = redis.ClientActivationCode.Del(input.Code).Err(); err != nil {
 		return
 	}
 	return

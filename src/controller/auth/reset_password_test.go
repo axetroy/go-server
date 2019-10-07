@@ -86,7 +86,7 @@ func TestResetPasswordSuccess(t *testing.T) {
 
 	// set to redis
 	// set activationCode to redis
-	if err := redis.ResetCodeClient.Set(resetCode, uid, time.Minute*30).Err(); err != nil {
+	if err := redis.ClientResetCode.Set(resetCode, uid, time.Minute*30).Err(); err != nil {
 		t.Error(err)
 		return
 	}

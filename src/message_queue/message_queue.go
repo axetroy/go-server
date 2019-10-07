@@ -60,7 +60,7 @@ func RunMessageQueueConsumer() (*nsq.Consumer, error) {
 		// 发送邮件
 		if err := mailer.SendActivationEmail(body.Email, body.Code); err != nil {
 			// 邮件没发出去的话，删除 redis 的 key
-			_ = redis.ActivationCodeClient.Del(body.Code).Err()
+			_ = redis.ClientActivationCode.Del(body.Code).Err()
 		}
 
 		log.Printf("发送验证码 %s 到 %s\n", body.Code, body.Email)

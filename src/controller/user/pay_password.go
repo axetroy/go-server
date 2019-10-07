@@ -274,7 +274,7 @@ func SendResetPayPassword(context controller.Context) (res schema.Response) {
 	var resetCode = GenerateResetPayPasswordCode(userInfo.Id)
 
 	// redis缓存重置码
-	if err = redis.ResetCodeClient.Set(resetCode, userInfo.Id, time.Minute*10).Err(); err != nil {
+	if err = redis.ClientResetCode.Set(resetCode, userInfo.Id, time.Minute*10).Err(); err != nil {
 		return
 	}
 
@@ -369,7 +369,7 @@ func ResetPayPassword(context controller.Context, input ResetPayPasswordParams) 
 		return
 	}
 
-	if uid, err = redis.ResetCodeClient.Get(input.Code).Result(); err != nil {
+	if uid, err = redis.ClientResetCode.Get(input.Code).Result(); err != nil {
 		err = exception.InvalidResetCode
 		return
 	}
@@ -386,7 +386,7 @@ func ResetPayPassword(context controller.Context, input ResetPayPasswordParams) 
 	}
 
 	// 重置密码之后，删除重置码
-	if _, err = redis.ResetCodeClient.Del(input.Code).Result(); err != nil {
+	if _, err = redis.ClientResetCode.Del(input.Code).Result(); err != nil {
 		return
 	}
 

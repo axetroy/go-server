@@ -73,7 +73,7 @@ func SendResetPasswordEmail(input SendResetPasswordEmailParams) (res schema.Resp
 	var code = GenerateResetCode(userInfo.Id)
 
 	// set activationCode to redis
-	if err = redis.ResetCodeClient.Set(code, userInfo.Id, time.Minute*30).Err(); err != nil {
+	if err = redis.ClientResetCode.Set(code, userInfo.Id, time.Minute*30).Err(); err != nil {
 		return
 	}
 
@@ -82,7 +82,7 @@ func SendResetPasswordEmail(input SendResetPasswordEmailParams) (res schema.Resp
 	// send email
 	if err = e.SendForgotPasswordEmail(input.To, code); err != nil {
 		// 邮件没发出去的话，删除redis的key
-		_ = redis.ResetCodeClient.Del(code).Err()
+		_ = redis.ClientResetCode.Del(code).Err()
 		return
 	}
 

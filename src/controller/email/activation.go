@@ -77,7 +77,7 @@ func SendActivationEmail(input SendActivationEmailParams) (res schema.Response) 
 	activationCode := GenerateActivationCode(userInfo.Id)
 
 	// set activationCode to redis
-	if err = redis.ActivationCodeClient.Set(activationCode, userInfo.Id, time.Minute*30).Err(); err != nil {
+	if err = redis.ClientActivationCode.Set(activationCode, userInfo.Id, time.Minute*30).Err(); err != nil {
 		return
 	}
 
@@ -86,7 +86,7 @@ func SendActivationEmail(input SendActivationEmailParams) (res schema.Response) 
 	// send email
 	if err = e.SendActivationEmail(input.To, activationCode); err != nil {
 		// 邮件没发出去的话，删除redis的key
-		_ = redis.ActivationCodeClient.Del(activationCode).Err()
+		_ = redis.ClientActivationCode.Del(activationCode).Err()
 		return
 	}
 
