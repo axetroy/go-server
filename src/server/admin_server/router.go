@@ -4,8 +4,10 @@ package admin_server
 import (
 	"fmt"
 	"github.com/axetroy/go-server/src/config"
+	"github.com/axetroy/go-server/src/controller/address"
 	"github.com/axetroy/go-server/src/controller/admin"
 	"github.com/axetroy/go-server/src/controller/banner"
+	"github.com/axetroy/go-server/src/controller/downloader"
 	"github.com/axetroy/go-server/src/controller/help"
 	loginLog "github.com/axetroy/go-server/src/controller/logger/login"
 	"github.com/axetroy/go-server/src/controller/menu"
@@ -13,8 +15,10 @@ import (
 	"github.com/axetroy/go-server/src/controller/news"
 	"github.com/axetroy/go-server/src/controller/notification"
 	"github.com/axetroy/go-server/src/controller/report"
+	"github.com/axetroy/go-server/src/controller/resource"
 	"github.com/axetroy/go-server/src/controller/role"
 	"github.com/axetroy/go-server/src/controller/system"
+	"github.com/axetroy/go-server/src/controller/uploader"
 	"github.com/axetroy/go-server/src/controller/user"
 	"github.com/axetroy/go-server/src/middleware"
 	"github.com/axetroy/go-server/src/schema"
@@ -177,6 +181,27 @@ func init() {
 			logRouter := v1.Group("log")
 			logRouter.GET("/login", loginLog.GetLoginLogsRouter)          // 获取用户的登陆日志列表
 			logRouter.GET("/login/l/:log_id", loginLog.GetLoginLogRouter) // 用户单条登陆记录
+		}
+
+		// 通用类
+		{
+			// 文件上传
+			v1.POST("/upload/file", uploader.File)      // 上传文件
+			v1.POST("/upload/image", uploader.Image)    // 上传图片
+			v1.GET("/upload/example", uploader.Example) // 上传文件的 example
+			// 单纯获取资源文本
+			v1.GET("/resource/file/:filename", resource.File)           // 获取文件纯文本
+			v1.GET("/resource/image/:filename", resource.Image)         // 获取图片纯文本
+			v1.GET("/resource/thumbnail/:filename", resource.Thumbnail) // 获取缩略图纯文本
+			// 下载资源
+			v1.GET("/download/file/:filename", downloader.File)           // 下载文件
+			v1.GET("/download/image/:filename", downloader.Image)         // 下载图片
+			v1.GET("/download/thumbnail/:filename", downloader.Thumbnail) // 下载缩略图
+			// 公共资源目录
+			v1.GET("/avatar/:filename", user.GetAvatarRouter) // 获取用户头像
+
+			v1.GET("/area/:area_code", address.FindAddressRouter) // 获取地区码对应的信息
+			v1.GET("/area", address.AreaListRouter)               // 获取地址选择列表
 		}
 
 		v1.GET("/system", system.GetSystemInfoRouter) // 获取系统相关信息
