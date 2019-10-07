@@ -44,7 +44,7 @@ type WechatResponse struct {
 
 type WechatCompleteParams struct {
 	Code     string  `json:"code" valid:"required~请输入微信授权代码"` // 微信小程序授权之后返回的 code
-	Phone    *string `json:"phone"`                           // 手机号 	TODO: 校验手机号
+	Phone    *string `json:"phone"`                           // 手机号
 	Username *string `json:"username"`                        // 用户名
 }
 
@@ -92,7 +92,7 @@ func SignIn(context controller.Context, input SignInParams) (res schema.Response
 		Password: util.GeneratePassword(input.Password),
 	}
 
-	if govalidator.Matches(input.Account, "^/d+$") && input.Code != nil { // 如果是手机号, 并且传入了code字段
+	if util.IsPhone(input.Account) && input.Code != nil { // 如果是手机号, 并且传入了code字段
 		// TODO: 这里手机登陆应该用验证码作为校验
 		userInfo.Phone = &input.Account
 	} else if govalidator.IsEmail(input.Account) { // 如果是邮箱的话
@@ -348,6 +348,13 @@ func WechatAccountComplete(context controller.Context, input WechatCompleteParam
 	} else if isValidInput == false {
 		err = exception.InvalidParams
 		return
+	}
+
+	if input.Phone != nil {
+		if !util.IsPhone(*input.Phone) {
+			err = exception.InvalidParams
+			return
+		}
 	}
 
 	wechatUrl := fmt.Sprintf("https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code", config.Wechat.AppID, config.Wechat.Secret, input.Code)

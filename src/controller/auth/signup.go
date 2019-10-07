@@ -72,12 +72,15 @@ func SignUp(input SignUpParams, userStatus model.UserStatus) (res schema.Respons
 	}
 
 	if input.Phone != nil {
+		if !util.IsPhone(*input.Phone) {
+			err = exception.InvalidParams
+			return
+		}
+
 		if input.MCode == nil {
 			err = errors.New("请输入短信验证码")
 			return
 		}
-
-		// TODO: 校验手机号码是否正确
 
 		// TODO: 验证短信验证码是否正确
 		// 因为现在没有引入短信服务, 所以暂时没有这一块的功能
