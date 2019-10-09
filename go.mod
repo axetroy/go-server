@@ -19,7 +19,7 @@ require (
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/lib/pq v1.2.0
 	github.com/mattn/go-colorable v0.1.4 // indirect
-	github.com/mattn/go-isatty v0.0.9 // indirect
+	github.com/mattn/go-isatty v0.0.10 // indirect
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/nsqio/go-nsq v1.0.7
@@ -34,5 +34,4 @@ require (
 	github.com/stretchr/testify v1.4.0
 	github.com/urfave/cli v1.22.1
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
-	golang.org/x/sys v0.0.0-20191008105621-543471e840be // indirect
 )
