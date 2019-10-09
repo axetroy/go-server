@@ -18,7 +18,7 @@ import (
 )
 
 type SendResetPasswordEmailParams struct {
-	To string `json:"to"` // 发送给谁
+	Email string `json:"email" valid:"required~请输入邮箱地址"` // 要发送的邮箱地址
 }
 
 func GenerateResetCode(uid string) string {
@@ -57,7 +57,7 @@ func SendResetPasswordEmail(input SendResetPasswordEmailParams) (res schema.Resp
 	}()
 
 	userInfo := model.User{
-		Email: &input.To,
+		Email: &input.Email,
 	}
 
 	tx = database.Db.Begin()
@@ -80,7 +80,7 @@ func SendResetPasswordEmail(input SendResetPasswordEmailParams) (res schema.Resp
 	e := email.NewMailer()
 
 	// send email
-	if err = e.SendForgotPasswordEmail(input.To, code); err != nil {
+	if err = e.SendForgotPasswordEmail(input.Email, code); err != nil {
 		// 邮件没发出去的话，删除redis的key
 		_ = redis.ClientResetCode.Del(code).Err()
 		return

@@ -223,7 +223,6 @@ func init() {
 		{
 			// 邮件服务
 			v1.POST("/email/send/register", auth.SignUpWithEmailActionRouter)         // 发送注册邮件
-			v1.POST("/email/send/activation", email.SendActivationEmailRouter)        // 发送激活邮件
 			v1.POST("/email/send/password/reset", email.SendResetPasswordEmailRouter) // 发送密码重置邮件
 
 			// 文件上传
