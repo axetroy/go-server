@@ -3,7 +3,6 @@ package admin
 
 import (
 	"errors"
-	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/helper"
 	"github.com/axetroy/go-server/src/middleware"
@@ -12,6 +11,7 @@ import (
 	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/service/token"
 	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/src/validator"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
@@ -28,10 +28,9 @@ type CreateAdminParams struct {
 // 创建管理员
 func CreateAdmin(input CreateAdminParams, isSuper bool) (res schema.Response) {
 	var (
-		err          error
-		data         schema.AdminProfileWithToken
-		tx           *gorm.DB
-		isValidInput bool
+		err  error
+		data schema.AdminProfileWithToken
+		tx   *gorm.DB
 	)
 
 	defer func() {
@@ -58,11 +57,7 @@ func CreateAdmin(input CreateAdminParams, isSuper bool) (res schema.Response) {
 	}()
 
 	// 参数校验
-	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
-		err = exception.WrapValidatorError(err)
-		return
-	} else if isValidInput == false {
-		err = exception.InvalidParams
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 

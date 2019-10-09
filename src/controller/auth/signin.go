@@ -17,6 +17,7 @@ import (
 	"github.com/axetroy/go-server/src/service/redis"
 	"github.com/axetroy/go-server/src/service/token"
 	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/src/validator"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
@@ -62,10 +63,9 @@ type WechatCompleteParams struct {
 // 普通帐号登陆
 func SignIn(c controller.Context, input SignInParams) (res schema.Response) {
 	var (
-		err          error
-		data         = &schema.ProfileWithToken{}
-		tx           *gorm.DB
-		isValidInput bool
+		err  error
+		data = &schema.ProfileWithToken{}
+		tx   *gorm.DB
 	)
 
 	defer func() {
@@ -91,12 +91,7 @@ func SignIn(c controller.Context, input SignInParams) (res schema.Response) {
 		helper.Response(&res, data, err)
 	}()
 
-	// 参数校验
-	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
-		err = exception.WrapValidatorError(err)
-		return
-	} else if isValidInput == false {
-		err = exception.InvalidParams
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 
@@ -163,10 +158,9 @@ func SignIn(c controller.Context, input SignInParams) (res schema.Response) {
 // 邮箱 + 验证码登陆
 func SignInWithEmail(c controller.Context, input SignInWithEmailParams) (res schema.Response) {
 	var (
-		err          error
-		data         = &schema.ProfileWithToken{}
-		tx           *gorm.DB
-		isValidInput bool
+		err  error
+		data = &schema.ProfileWithToken{}
+		tx   *gorm.DB
 	)
 
 	defer func() {
@@ -193,11 +187,7 @@ func SignInWithEmail(c controller.Context, input SignInWithEmailParams) (res sch
 	}()
 
 	// 参数校验
-	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
-		err = exception.WrapValidatorError(err)
-		return
-	} else if isValidInput == false {
-		err = exception.InvalidParams
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 
@@ -260,10 +250,9 @@ func SignInWithEmail(c controller.Context, input SignInWithEmailParams) (res sch
 // 手机 + 验证码登陆
 func SignInWithPhone(c controller.Context, input SignInWithPhoneParams) (res schema.Response) {
 	var (
-		err          error
-		data         = &schema.ProfileWithToken{}
-		tx           *gorm.DB
-		isValidInput bool
+		err  error
+		data = &schema.ProfileWithToken{}
+		tx   *gorm.DB
 	)
 
 	defer func() {
@@ -290,11 +279,7 @@ func SignInWithPhone(c controller.Context, input SignInWithPhoneParams) (res sch
 	}()
 
 	// 参数校验
-	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
-		err = exception.WrapValidatorError(err)
-		return
-	} else if isValidInput == false {
-		err = exception.InvalidParams
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 
@@ -381,10 +366,9 @@ func FetchWechatInfo(code string) (*WechatResponse, error) {
 // 使用微信小程序登陆
 func SignInWithWechat(context controller.Context, input SignInWithWechatParams) (res schema.Response) {
 	var (
-		err          error
-		data         = &schema.ProfileWithToken{}
-		tx           *gorm.DB
-		isValidInput bool
+		err  error
+		data = &schema.ProfileWithToken{}
+		tx   *gorm.DB
 	)
 
 	defer func() {
@@ -411,11 +395,7 @@ func SignInWithWechat(context controller.Context, input SignInWithWechatParams) 
 	}()
 
 	// 参数校验
-	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
-		err = exception.WrapValidatorError(err)
-		return
-	} else if isValidInput == false {
-		err = exception.InvalidParams
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 

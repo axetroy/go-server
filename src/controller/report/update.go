@@ -3,7 +3,6 @@ package report
 
 import (
 	"errors"
-	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/helper"
@@ -11,6 +10,7 @@ import (
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
+	"github.com/axetroy/go-server/src/validator"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
@@ -32,7 +32,6 @@ func Update(context controller.Context, reportId string, input UpdateParams) (re
 		err          error
 		data         schema.Report
 		tx           *gorm.DB
-		isValidInput bool
 		shouldUpdate bool
 	)
 
@@ -60,11 +59,7 @@ func Update(context controller.Context, reportId string, input UpdateParams) (re
 	}()
 
 	// 参数校验
-	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
-		err = exception.WrapValidatorError(err)
-		return
-	} else if isValidInput == false {
-		err = exception.InvalidParams
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 
@@ -153,7 +148,6 @@ func UpdateByAdmin(context controller.Context, reportId string, input UpdateByAd
 		err          error
 		data         schema.Report
 		tx           *gorm.DB
-		isValidInput bool
 		shouldUpdate bool
 	)
 
@@ -181,11 +175,7 @@ func UpdateByAdmin(context controller.Context, reportId string, input UpdateByAd
 	}()
 
 	// 参数校验
-	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
-		err = exception.WrapValidatorError(err)
-		return
-	} else if isValidInput == false {
-		err = exception.InvalidParams
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 

@@ -3,7 +3,6 @@ package user
 
 import (
 	"errors"
-	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/helper"
@@ -14,6 +13,7 @@ import (
 	"github.com/axetroy/go-server/src/service/redis"
 	"github.com/axetroy/go-server/src/service/telephone"
 	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/src/validator"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"net/http"
@@ -42,9 +42,8 @@ func GenerateResetPayPasswordCode(uid string) string {
 
 func SetPayPassword(context controller.Context, input SetPayPasswordParams) (res schema.Response) {
 	var (
-		err          error
-		tx           *gorm.DB
-		isValidInput bool
+		err error
+		tx  *gorm.DB
 	)
 
 	defer func() {
@@ -71,11 +70,7 @@ func SetPayPassword(context controller.Context, input SetPayPasswordParams) (res
 	}()
 
 	// 参数校验
-	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
-		err = exception.WrapValidatorError(err)
-		return
-	} else if isValidInput == false {
-		err = exception.InvalidParams
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 
@@ -135,9 +130,8 @@ func SetPayPasswordRouter(c *gin.Context) {
 
 func UpdatePayPassword(context controller.Context, input UpdatePayPasswordParams) (res schema.Response) {
 	var (
-		err          error
-		tx           *gorm.DB
-		isValidInput bool
+		err error
+		tx  *gorm.DB
 	)
 
 	defer func() {
@@ -164,11 +158,7 @@ func UpdatePayPassword(context controller.Context, input UpdatePayPasswordParams
 	}()
 
 	// 参数校验
-	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
-		err = exception.WrapValidatorError(err)
-		return
-	} else if isValidInput == false {
-		err = exception.InvalidParams
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 
@@ -324,10 +314,9 @@ func SendResetPayPasswordRouter(c *gin.Context) {
 
 func ResetPayPassword(context controller.Context, input ResetPayPasswordParams) (res schema.Response) {
 	var (
-		err          error
-		tx           *gorm.DB
-		isValidInput bool
-		uid          string
+		err error
+		tx  *gorm.DB
+		uid string
 	)
 
 	defer func() {
@@ -354,11 +343,7 @@ func ResetPayPassword(context controller.Context, input ResetPayPasswordParams) 
 	}()
 
 	// 参数校验
-	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
-		err = exception.WrapValidatorError(err)
-		return
-	} else if isValidInput == false {
-		err = exception.InvalidParams
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 

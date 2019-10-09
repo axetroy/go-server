@@ -3,7 +3,6 @@ package user
 
 import (
 	"errors"
-	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/helper"
@@ -11,6 +10,7 @@ import (
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
+	"github.com/axetroy/go-server/src/validator"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
@@ -145,7 +145,6 @@ func UpdateProfile(context controller.Context, input UpdateProfileParams) (res s
 		data         schema.Profile
 		tx           *gorm.DB
 		shouldUpdate bool
-		isValidInput bool
 	)
 
 	defer func() {
@@ -172,11 +171,7 @@ func UpdateProfile(context controller.Context, input UpdateProfileParams) (res s
 	}()
 
 	// 参数校验
-	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
-		err = exception.WrapValidatorError(err)
-		return
-	} else if isValidInput == false {
-		err = exception.InvalidParams
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 
@@ -233,7 +228,6 @@ func UpdateProfileByAdmin(context controller.Context, userId string, input Updat
 		data         schema.Profile
 		tx           *gorm.DB
 		shouldUpdate bool
-		isValidInput bool
 	)
 
 	defer func() {
@@ -260,11 +254,7 @@ func UpdateProfileByAdmin(context controller.Context, userId string, input Updat
 	}()
 
 	// 参数校验
-	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
-		err = exception.WrapValidatorError(err)
-		return
-	} else if isValidInput == false {
-		err = exception.InvalidParams
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 

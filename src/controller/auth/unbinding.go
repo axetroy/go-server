@@ -2,7 +2,6 @@ package auth
 
 import (
 	"errors"
-	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/helper"
@@ -10,6 +9,7 @@ import (
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/service/redis"
+	"github.com/axetroy/go-server/src/validator"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"net/http"
@@ -30,10 +30,9 @@ type UnbindingWechatParams struct {
 // 解除邮箱绑定
 func UnbindingEmail(c controller.Context, input UnbindingEmailParams) (res schema.Response) {
 	var (
-		err          error
-		data         schema.Profile
-		tx           *gorm.DB
-		isValidInput bool
+		err  error
+		data schema.Profile
+		tx   *gorm.DB
 	)
 
 	defer func() {
@@ -60,11 +59,7 @@ func UnbindingEmail(c controller.Context, input UnbindingEmailParams) (res schem
 	}()
 
 	// 参数校验
-	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
-		err = exception.WrapValidatorError(err)
-		return
-	} else if isValidInput == false {
-		err = exception.InvalidParams
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 
@@ -105,10 +100,9 @@ func UnbindingEmail(c controller.Context, input UnbindingEmailParams) (res schem
 // 解除手机绑定
 func UnbindingPhone(c controller.Context, input UnbindingPhoneParams) (res schema.Response) {
 	var (
-		err          error
-		data         schema.Profile
-		tx           *gorm.DB
-		isValidInput bool
+		err  error
+		data schema.Profile
+		tx   *gorm.DB
 	)
 
 	defer func() {
@@ -135,11 +129,7 @@ func UnbindingPhone(c controller.Context, input UnbindingPhoneParams) (res schem
 	}()
 
 	// 参数校验
-	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
-		err = exception.WrapValidatorError(err)
-		return
-	} else if isValidInput == false {
-		err = exception.InvalidParams
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 
@@ -180,10 +170,9 @@ func UnbindingPhone(c controller.Context, input UnbindingPhoneParams) (res schem
 // 解除微信绑定
 func UnbindingWechat(c controller.Context, input UnbindingWechatParams) (res schema.Response) {
 	var (
-		err          error
-		data         schema.Profile
-		tx           *gorm.DB
-		isValidInput bool
+		err  error
+		data schema.Profile
+		tx   *gorm.DB
 	)
 
 	defer func() {
@@ -210,11 +199,7 @@ func UnbindingWechat(c controller.Context, input UnbindingWechatParams) (res sch
 	}()
 
 	// 参数校验
-	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
-		err = exception.WrapValidatorError(err)
-		return
-	} else if isValidInput == false {
-		err = exception.InvalidParams
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 

@@ -3,7 +3,6 @@ package notification
 
 import (
 	"errors"
-	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/helper"
@@ -11,6 +10,7 @@ import (
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
+	"github.com/axetroy/go-server/src/validator"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
@@ -26,10 +26,9 @@ type UpdateParams struct {
 
 func Update(context controller.Context, notificationId string, input UpdateParams) (res schema.Response) {
 	var (
-		err          error
-		data         schema.Notification
-		tx           *gorm.DB
-		isValidInput bool
+		err  error
+		data schema.Notification
+		tx   *gorm.DB
 	)
 
 	defer func() {
@@ -56,11 +55,7 @@ func Update(context controller.Context, notificationId string, input UpdateParam
 	}()
 
 	// 参数校验
-	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
-		err = exception.WrapValidatorError(err)
-		return
-	} else if isValidInput == false {
-		err = exception.InvalidParams
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 

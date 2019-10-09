@@ -26,7 +26,7 @@ func TestGenerateResetCode(t *testing.T) {
 func TestSendResetPasswordEmail(t *testing.T) {
 
 	body, _ := json.Marshal(&email.SendResetPasswordEmailParams{
-		To: "123adsd@dasdad.com", // invalid email
+		Email: "123adsd@dasdad.com", // invalid email
 	})
 
 	r := tester.HttpUser.Post("/v1/email/send/password/reset", body, nil)

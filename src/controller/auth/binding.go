@@ -2,7 +2,6 @@ package auth
 
 import (
 	"errors"
-	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/helper"
@@ -10,6 +9,7 @@ import (
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/service/redis"
+	"github.com/axetroy/go-server/src/validator"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"net/http"
@@ -32,10 +32,9 @@ type BindingWechatMiniAppParams struct {
 // 绑定邮箱
 func BindingEmail(c controller.Context, input BindingEmailParams) (res schema.Response) {
 	var (
-		err          error
-		data         = &schema.ProfileWithToken{}
-		tx           *gorm.DB
-		isValidInput bool
+		err  error
+		data = &schema.ProfileWithToken{}
+		tx   *gorm.DB
 	)
 
 	defer func() {
@@ -62,11 +61,7 @@ func BindingEmail(c controller.Context, input BindingEmailParams) (res schema.Re
 	}()
 
 	// 参数校验
-	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
-		err = exception.WrapValidatorError(err)
-		return
-	} else if isValidInput == false {
-		err = exception.InvalidParams
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 
@@ -128,10 +123,9 @@ func BindingEmail(c controller.Context, input BindingEmailParams) (res schema.Re
 // 绑定手机号
 func BindingPhone(c controller.Context, input BindingPhoneParams) (res schema.Response) {
 	var (
-		err          error
-		data         = &schema.ProfileWithToken{}
-		tx           *gorm.DB
-		isValidInput bool
+		err  error
+		data = &schema.ProfileWithToken{}
+		tx   *gorm.DB
 	)
 
 	defer func() {
@@ -158,11 +152,7 @@ func BindingPhone(c controller.Context, input BindingPhoneParams) (res schema.Re
 	}()
 
 	// 参数校验
-	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
-		err = exception.WrapValidatorError(err)
-		return
-	} else if isValidInput == false {
-		err = exception.InvalidParams
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 
@@ -224,10 +214,9 @@ func BindingPhone(c controller.Context, input BindingPhoneParams) (res schema.Re
 // 绑定微信
 func BindingWechat(c controller.Context, input BindingWechatMiniAppParams) (res schema.Response) {
 	var (
-		err          error
-		data         = &schema.ProfileWithToken{}
-		tx           *gorm.DB
-		isValidInput bool
+		err  error
+		data = &schema.ProfileWithToken{}
+		tx   *gorm.DB
 	)
 
 	defer func() {
@@ -254,11 +243,7 @@ func BindingWechat(c controller.Context, input BindingWechatMiniAppParams) (res 
 	}()
 
 	// 参数校验
-	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
-		err = exception.WrapValidatorError(err)
-		return
-	} else if isValidInput == false {
-		err = exception.InvalidParams
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 

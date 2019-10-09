@@ -4,10 +4,10 @@ package admin
 import (
 	"errors"
 	"github.com/axetroy/go-server/src/helper"
+	"github.com/axetroy/go-server/src/validator"
 	"net/http"
 	"time"
 
-	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/middleware"
@@ -28,10 +28,9 @@ type UpdatePasswordParams struct {
 
 func UpdatePassword(context controller.Context, input UpdatePasswordParams) (res schema.Response) {
 	var (
-		err          error
-		data         schema.AdminProfile
-		tx           *gorm.DB
-		isValidInput bool
+		err  error
+		data schema.AdminProfile
+		tx   *gorm.DB
 	)
 
 	defer func() {
@@ -58,11 +57,7 @@ func UpdatePassword(context controller.Context, input UpdatePasswordParams) (res
 	}()
 
 	// 参数校验
-	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
-		err = exception.WrapValidatorError(err)
-		return
-	} else if isValidInput == false {
-		err = exception.InvalidParams
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 

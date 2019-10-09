@@ -3,7 +3,6 @@ package auth
 
 import (
 	"errors"
-	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/helper"
 	"github.com/axetroy/go-server/src/model"
@@ -11,6 +10,7 @@ import (
 	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/service/redis"
 	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/src/validator"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"net/http"
@@ -23,10 +23,9 @@ type ResetPasswordParams struct {
 
 func ResetPassword(input ResetPasswordParams) (res schema.Response) {
 	var (
-		err          error
-		tx           *gorm.DB
-		uid          string // 重置码对应的uid
-		isValidInput bool
+		err error
+		tx  *gorm.DB
+		uid string // 重置码对应的uid
 	)
 
 	defer func() {
@@ -53,11 +52,7 @@ func ResetPassword(input ResetPasswordParams) (res schema.Response) {
 	}()
 
 	// 参数校验
-	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
-		err = exception.WrapValidatorError(err)
-		return
-	} else if isValidInput == false {
-		err = exception.InvalidParams
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 

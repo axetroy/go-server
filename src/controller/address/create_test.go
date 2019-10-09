@@ -17,7 +17,9 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	testUser, _ := tester.CreateUser()
+	testUser, err := tester.CreateUser()
+
+	assert.Nil(t, err)
 
 	defer auth.DeleteUserByUserName(testUser.Username)
 

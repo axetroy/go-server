@@ -4,7 +4,6 @@ package auth
 import (
 	"errors"
 	"fmt"
-	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/controller/wallet"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/helper"
@@ -14,6 +13,7 @@ import (
 	"github.com/axetroy/go-server/src/service/email"
 	"github.com/axetroy/go-server/src/service/redis"
 	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/src/validator"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
@@ -57,11 +57,10 @@ type SignUpWithPhoneParams struct {
 
 func SignUpWithUsername(input SignUpWithUsernameParams) (res schema.Response) {
 	var (
-		err          error
-		data         schema.Profile
-		tx           *gorm.DB
-		inviter      *model.User // 邀请人信息
-		isValidInput bool
+		err     error
+		data    schema.Profile
+		tx      *gorm.DB
+		inviter *model.User // 邀请人信息
 	)
 
 	defer func() {
@@ -88,11 +87,7 @@ func SignUpWithUsername(input SignUpWithUsernameParams) (res schema.Response) {
 	}()
 
 	// 参数校验
-	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
-		err = exception.WrapValidatorError(err)
-		return
-	} else if isValidInput == false {
-		err = exception.InvalidParams
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 
@@ -181,11 +176,10 @@ func SignUpWithUsername(input SignUpWithUsernameParams) (res schema.Response) {
 
 func SignUpWithEmail(input SignUpWithEmailParams) (res schema.Response) {
 	var (
-		err          error
-		data         schema.Profile
-		tx           *gorm.DB
-		inviter      *model.User // 邀请人信息
-		isValidInput bool
+		err     error
+		data    schema.Profile
+		tx      *gorm.DB
+		inviter *model.User // 邀请人信息
 	)
 
 	defer func() {
@@ -212,11 +206,7 @@ func SignUpWithEmail(input SignUpWithEmailParams) (res schema.Response) {
 	}()
 
 	// 参数校验
-	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
-		err = exception.WrapValidatorError(err)
-		return
-	} else if isValidInput == false {
-		err = exception.InvalidParams
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 
@@ -319,10 +309,9 @@ func SignUpWithEmail(input SignUpWithEmailParams) (res schema.Response) {
 
 func SignUpWithEmailAction(input SignUpWithEmailActionParams) (res schema.Response) {
 	var (
-		err          error
-		data         schema.Profile
-		tx           *gorm.DB
-		isValidInput bool
+		err  error
+		data schema.Profile
+		tx   *gorm.DB
 	)
 
 	defer func() {
@@ -349,11 +338,7 @@ func SignUpWithEmailAction(input SignUpWithEmailActionParams) (res schema.Respon
 	}()
 
 	// 参数校验
-	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
-		err = exception.WrapValidatorError(err)
-		return
-	} else if isValidInput == false {
-		err = exception.InvalidParams
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 
@@ -386,11 +371,10 @@ func SignUpWithEmailAction(input SignUpWithEmailActionParams) (res schema.Respon
 
 func SignUpWithPhone(input SignUpWithPhoneParams) (res schema.Response) {
 	var (
-		err          error
-		data         schema.Profile
-		tx           *gorm.DB
-		inviter      *model.User // 邀请人信息
-		isValidInput bool
+		err     error
+		data    schema.Profile
+		tx      *gorm.DB
+		inviter *model.User // 邀请人信息
 	)
 
 	defer func() {
@@ -417,11 +401,7 @@ func SignUpWithPhone(input SignUpWithPhoneParams) (res schema.Response) {
 	}()
 
 	// 参数校验
-	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
-		err = exception.WrapValidatorError(err)
-		return
-	} else if isValidInput == false {
-		err = exception.InvalidParams
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 

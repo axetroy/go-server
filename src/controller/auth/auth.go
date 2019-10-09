@@ -2,7 +2,6 @@ package auth
 
 import (
 	"errors"
-	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/helper"
@@ -11,6 +10,7 @@ import (
 	"github.com/axetroy/go-server/src/service/redis"
 	"github.com/axetroy/go-server/src/service/telephone"
 	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/src/validator"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
@@ -31,8 +31,7 @@ func GenerateAuthCode() string {
 // 发送邮箱验证码 (不需要登陆)
 func SendEmailAuthCode(c controller.Context, input SendEmailAuthCodeParams) (res schema.Response) {
 	var (
-		err          error
-		isValidInput bool
+		err error
 	)
 
 	defer func() {
@@ -51,11 +50,7 @@ func SendEmailAuthCode(c controller.Context, input SendEmailAuthCodeParams) (res
 	}()
 
 	// 参数校验
-	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
-		err = exception.WrapValidatorError(err)
-		return
-	} else if isValidInput == false {
-		err = exception.InvalidParams
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 
@@ -82,8 +77,7 @@ func SendEmailAuthCode(c controller.Context, input SendEmailAuthCodeParams) (res
 // 发送手机验证码 (不需要登陆)
 func SendPhoneAuthCode(c controller.Context, input SendPhoneAuthCodeParams) (res schema.Response) {
 	var (
-		err          error
-		isValidInput bool
+		err error
 	)
 
 	defer func() {
@@ -102,11 +96,7 @@ func SendPhoneAuthCode(c controller.Context, input SendPhoneAuthCodeParams) (res
 	}()
 
 	// 参数校验
-	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
-		err = exception.WrapValidatorError(err)
-		return
-	} else if isValidInput == false {
-		err = exception.InvalidParams
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 
