@@ -11,7 +11,7 @@ require (
 	github.com/fatih/color v1.7.0
 	github.com/gin-gonic/gin v1.4.0
 	github.com/go-ole/go-ole v1.2.4 // indirect
-	github.com/go-redis/redis v6.15.5+incompatible
+	github.com/go-redis/redis v6.15.6+incompatible
 	github.com/holdno/snowFlakeByGo v0.0.0-20180510033652-d23f8a8cadd7
 	github.com/jinzhu/gorm v1.9.11
 	github.com/joho/godotenv v1.3.0
@@ -34,5 +34,5 @@ require (
 	github.com/stretchr/testify v1.4.0
 	github.com/urfave/cli v1.22.1
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
-	golang.org/x/sys v0.0.0-20191007154456-ef33b2fb2c41 // indirect
+	golang.org/x/sys v0.0.0-20191008105621-543471e840be // indirect
 )
