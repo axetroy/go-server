@@ -76,8 +76,8 @@ func TestGet(t *testing.T) {
 
 		// 删除测试记录
 		defer func() {
-			invite.DeleteUserById(v1.Id)
-			invite.DeleteUserById(v2.Id)
+			invite.DeleteById(v1.Id)
+			invite.DeleteById(v2.Id)
 		}()
 	}
 
@@ -163,8 +163,8 @@ func TestGetRouter(t *testing.T) {
 
 		// 删除测试记录
 		defer func() {
-			invite.DeleteUserById(v1.Id)
-			invite.DeleteUserById(v2.Id)
+			invite.DeleteById(v1.Id)
+			invite.DeleteById(v2.Id)
 		}()
 	}
 

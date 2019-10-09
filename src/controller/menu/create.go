@@ -103,7 +103,8 @@ func Create(context controller.Context, input CreateMenuParams) (res schema.Resp
 		// 查询是否有这个 parentId
 		if err = tx.Where(&model.Menu{Id: *input.ParentId}).Find(&model.Menu{}).Error; err != nil {
 			if err == gorm.ErrRecordNotFound {
-				// TODO: 完善错误信息
+				err = exception.NoData
+				return
 			}
 			return
 		}

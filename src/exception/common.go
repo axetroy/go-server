@@ -32,6 +32,7 @@ var (
 	InvalidPassword          = New("密码错误", 200012)
 	RequirePassword          = New("请输入密码", 200013)
 	RequirePayPassword       = New("请输入交易密码", 200014)
+	DuplicateBinding         = New("帐号重复绑定", 200015)
 
 	// 钱包
 	NotEnoughBalance = New("钱包余额不足", 0)

@@ -21,8 +21,7 @@ func DeleteAdminByAccount(account string) {
 	database.DeleteRowByTable("admin", "username", account)
 }
 
-// TODO: 添加测试用例
-func DeleteAdminById(context controller.Context, adminId string) (res schema.Response) {
+func DeleteAdminById(c controller.Context, adminId string) (res schema.Response) {
 	var (
 		err  error
 		data schema.AdminProfile
@@ -54,11 +53,11 @@ func DeleteAdminById(context controller.Context, adminId string) (res schema.Res
 
 	tx = database.Db.Begin()
 
-	adminInfo := model.Admin{
+	targetAdminInfo := model.Admin{
 		Id: adminId,
 	}
 
-	if err = tx.First(&adminInfo).Error; err != nil {
+	if err = tx.First(&targetAdminInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			err = exception.AdminNotExist
 			return
@@ -66,14 +65,28 @@ func DeleteAdminById(context controller.Context, adminId string) (res schema.Res
 		return
 	}
 
+	myInfo := model.Admin{
+		Id: c.Uid,
+	}
+
+	if err = tx.First(&myInfo).Error; err != nil {
+		return
+	}
+
+	// 超级管理员才能操作
+	if myInfo.IsSuper == false {
+		err = exception.NoPermission
+		return
+	}
+
 	if err = tx.Delete(model.Admin{
-		Id:      adminInfo.Id,
+		Id:      targetAdminInfo.Id,
 		IsSuper: false, // 超级管理员无法被删除
 	}).Error; err != nil {
 		return
 	}
 
-	if err = mapstructure.Decode(adminInfo, &data.AdminProfilePure); err != nil {
+	if err = mapstructure.Decode(targetAdminInfo, &data.AdminProfilePure); err != nil {
 		return
 	}
 
@@ -81,8 +94,8 @@ func DeleteAdminById(context controller.Context, adminId string) (res schema.Res
 		data.Accession = []string{}
 	}
 
-	data.CreatedAt = adminInfo.CreatedAt.Format(time.RFC3339Nano)
-	data.UpdatedAt = adminInfo.UpdatedAt.Format(time.RFC3339Nano)
+	data.CreatedAt = targetAdminInfo.CreatedAt.Format(time.RFC3339Nano)
+	data.UpdatedAt = targetAdminInfo.UpdatedAt.Format(time.RFC3339Nano)
 
 	return
 }

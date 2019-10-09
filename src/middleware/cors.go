@@ -18,8 +18,9 @@ var (
 		"Cache-Control",
 		"X-CSRF-Token",
 		"X-Requested-With",
-		SignatureHeader,
-		PayPasswordHeader,
+		SignatureHeader,    // 接受签名的 Header
+		PayPasswordHeader,  // 接收交易密码的 Header
+		"X-Wechat-Binding", // 激活微信帐号
 	}, ",")
 	allowMethods = strings.Join([]string{
 		http.MethodOptions,

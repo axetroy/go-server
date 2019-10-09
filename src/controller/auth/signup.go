@@ -82,8 +82,20 @@ func SignUp(input SignUpParams, userStatus model.UserStatus) (res schema.Respons
 			return
 		}
 
-		// TODO: 验证短信验证码是否正确
 		// 因为现在没有引入短信服务, 所以暂时没有这一块的功能
+		phone, err := redis.ClientAuthPhoneCode.Get(*input.MCode).Result()
+
+		if err != nil {
+			return
+		}
+
+		if phone != *input.Phone {
+			err = exception.InvalidParams
+			return
+		}
+
+		// 用手机号注册的，则为激活状态
+		userStatus = model.UserStatusInit
 	}
 
 	tx = database.Db.Begin()

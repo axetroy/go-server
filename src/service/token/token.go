@@ -34,3 +34,7 @@ func init() {
 		panic(errors.New("用户端的 Token 密钥不能和管理员端的相同，存在安全风险"))
 	}
 }
+
+func JoinPrefixToken(token string) string {
+	return Prefix + " " + token
+}

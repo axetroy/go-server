@@ -84,7 +84,6 @@ func ResetPassword(input ResetPasswordParams) (res schema.Response) {
 		return
 	}
 
-	// TODO: 安全起见，发送一封邮件/短信告知用户
 	return
 }
 

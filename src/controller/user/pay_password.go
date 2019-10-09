@@ -12,6 +12,7 @@ import (
 	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/service/email"
 	"github.com/axetroy/go-server/src/service/redis"
+	"github.com/axetroy/go-server/src/service/telephone"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -285,9 +286,12 @@ func SendResetPayPassword(context controller.Context) (res schema.Response) {
 			_ = e.SendForgotTradePasswordEmail(*userInfo.Email, resetCode)
 		}()
 	} else if userInfo.Phone != nil {
-		// TODO: 发送手机验证码
 		go func() {
-
+			if err = telephone.Send(*userInfo.Phone, telephone.TemplateResetPassword, resetCode); err != nil {
+				// 如果发送失败，则删除
+				_ = redis.ClientAuthPhoneCode.Del(resetCode).Err()
+				return
+			}
 		}()
 	} else {
 		// 无效的用户

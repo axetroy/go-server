@@ -12,10 +12,11 @@ import (
 )
 
 const (
-	prefix                 = "[GOTEST]: "
-	tmpActivation          = `<a href="javascript: void 0">点击这里激活</a>或使用激活码: %v`
-	tmpForgotPassword      = `<a href="javascript: void 0">点击连接重置密码</a>或使用重置码: %v`
-	tmpForgotTradePassword = `<a href="javascript: void 0">点击连接重置交易密码</a>或使用重置码: %v`
+	prefix                      = "[GOTEST]: "
+	TemplateActivation          = `<a href="javascript: void 0">点击这里激活</a>或使用激活码: %v`
+	TemplateForgotPassword      = `<a href="javascript: void 0">点击连接重置密码</a>或使用重置码: %v`
+	TemplateForgotTradePassword = `<a href="javascript: void 0">点击连接重置交易密码</a>或使用重置码: %v`
+	TemplateAuth                = `正在验证您的身份，你的验证码是 %s`
 )
 
 var Config = config.SMTP
@@ -86,7 +87,21 @@ func (e *Mailer) SendActivationEmail(toEmail string, code string) (err error) {
 		To:      []string{toEmail},
 		Subject: prefix + "账号激活",
 		Text:    []byte("请点击连接激活您的账号"),
-		HTML:    []byte(fmt.Sprintf(tmpActivation, code)),
+		HTML:    []byte(fmt.Sprintf(TemplateActivation, code)),
+	}); err != nil {
+		return
+	}
+
+	return nil
+}
+
+// 发送认证邮件
+func (e *Mailer) SendAuthEmail(toEmail string, code string) (err error) {
+	if err = e.Send(&Message{
+		To:      []string{toEmail},
+		Subject: prefix + "邮箱认证",
+		Text:    []byte(fmt.Sprintf("您的验证码是: %s", code)),
+		HTML:    []byte(fmt.Sprintf(TemplateAuth, code)),
 	}); err != nil {
 		return
 	}
@@ -100,7 +115,7 @@ func (e *Mailer) SendForgotPasswordEmail(toEmail string, code string) (err error
 		To:      []string{toEmail},
 		Subject: prefix + "忘记登陆密码",
 		Text:    []byte("请点击重置您的登陆密码"),
-		HTML:    []byte(fmt.Sprintf(tmpForgotPassword, code)),
+		HTML:    []byte(fmt.Sprintf(TemplateForgotPassword, code)),
 	}); err != nil {
 		return
 	}
@@ -114,7 +129,7 @@ func (e *Mailer) SendForgotTradePasswordEmail(toEmail string, code string) (err 
 		To:      []string{toEmail},
 		Subject: prefix + "忘记交易密码",
 		Text:    []byte("请点击连接激活您的账号"),
-		HTML:    []byte(fmt.Sprintf(tmpForgotTradePassword, code)),
+		HTML:    []byte(fmt.Sprintf(TemplateForgotTradePassword, code)),
 	}); err != nil {
 		return
 	}

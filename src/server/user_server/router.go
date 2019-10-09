@@ -74,12 +74,13 @@ func init() {
 		// 认证类
 		{
 			authRouter := v1.Group("/auth")
-			authRouter.POST("/signup", auth.SignUpRouter)                               // 注册账号
-			authRouter.POST("/signin/wechat", auth.SignInWithWechatRouter)              // 微信帐号登陆
-			authRouter.PUT("/signin/wechat_complete", auth.WechatAccountCompleteRouter) // 补全微信帐号信息
-			authRouter.POST("/signin", auth.SignInRouter)                               // 登陆账号
-			authRouter.POST("/activation", auth.ActivationRouter)                       // 激活账号
-			authRouter.PUT("/password/reset", auth.ResetPasswordRouter)                 // 密码重置
+			authRouter.POST("/signup", auth.SignUpRouter)                  // 注册账号
+			authRouter.POST("/signin/wechat", auth.SignInWithWechatRouter) // 微信帐号登陆
+			authRouter.POST("/signin", auth.SignInRouter)                  // 登陆账号
+			authRouter.POST("/activation", auth.ActivationRouter)          // 激活账号
+			authRouter.PUT("/password/reset", auth.ResetPasswordRouter)    // 密码重置
+			authRouter.POST("/code/email", auth.SendEmailAuthCodeRouter)   // 发送邮箱验证码，验证邮箱是否为用户所有 TODO: 缺少测试用例
+			authRouter.POST("/code/phone", auth.SendPhoneAuthCodeRouter)   // 发送手机验证码，验证手机是否为用户所有 TODO: 缺少测试用例
 		}
 
 		// oAuth2 认证
@@ -102,6 +103,28 @@ func init() {
 			userRouter.PUT("/password2/reset", rbac.Require(*accession.Password2Reset), user.ResetPayPasswordRouter)      // 重置交易密码
 			userRouter.POST("/password2/reset", rbac.Require(*accession.Password2Reset), user.SendResetPayPasswordRouter) // 发送重置交易密码的邮件/短信
 			userRouter.POST("/avatar", user.UploadAvatarRouter)                                                           // 上传用户头像
+
+			// 验证码类
+			{
+				authRouter := userRouter.Group("/auth")
+
+				authRouter.POST("/email", user.SendAuthEmailRouter) // 发送邮箱验证码到用户绑定的邮箱 TODO: 缺少测试用例
+				authRouter.POST("/phone", user.SendAuthPhoneRouter) // 发送手机验证码 TODO: 缺少测试用例
+			}
+
+			// 绑定类
+			{
+				bindRouter := userRouter.Group("/bind")
+				bindRouter.POST("/email", auth.BindingEmailRouter)   // 绑定邮箱 TODO: 缺少测试用例
+				bindRouter.POST("/phone", auth.BindingPhoneRouter)   // 绑定手机号 TODO: 缺少测试用例
+				bindRouter.POST("/wechat", auth.BindingWechatRouter) // 绑定微信小程序 TODO: 缺少测试用例
+
+				unbindRouter := userRouter.Group("/unbind")
+				unbindRouter.DELETE("/email", auth.UnbindingEmailRouter)   // 解除邮箱绑定 TODO: 缺少测试用例
+				unbindRouter.DELETE("/phone", auth.UnbindingPhoneRouter)   // 解除手机号绑定 TODO: 缺少测试用例
+				unbindRouter.DELETE("/wechat", auth.UnbindingWechatRouter) // 解除微信小程序绑定 TODO: 缺少测试用例
+			}
+
 			// 邀请人列表
 			{
 				inviteRouter := userRouter.Group("/invite")

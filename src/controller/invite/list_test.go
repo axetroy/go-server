@@ -10,7 +10,6 @@ import (
 	"testing"
 )
 
-// TODO: 完善测试用例
 func TestGetInviteListByUser(t *testing.T) {
 	{
 		var (

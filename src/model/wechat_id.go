@@ -8,7 +8,7 @@ import (
 
 type WechatOpenID struct {
 	Id        string `gorm:"primary_key;not null;unique;index;type:varchar(32)" json:"id"` // 微信的 open ID
-	Uid       string `gorm:"not null;unique;index" json:"uid"`                             // 对应的用户 ID
+	Uid       string `gorm:"null;unique;index" json:"uid"`                                 // 对应的用户 ID, 如果为空，则说明没有关联帐号
 	User      User   `gorm:"foreignkey:Uid" json:"user"`                                   // **外键**
 	CreatedAt time.Time
 	UpdatedAt time.Time
