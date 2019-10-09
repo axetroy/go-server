@@ -67,7 +67,7 @@ func SignUp(input SignUpParams, userStatus model.UserStatus) (res schema.Respons
 	}
 
 	if input.Username == nil && input.Phone == nil && input.Email == nil {
-		err = errors.New("请输入账号")
+		err = exception.InvalidParams
 		return
 	}
 
@@ -78,11 +78,10 @@ func SignUp(input SignUpParams, userStatus model.UserStatus) (res schema.Respons
 		}
 
 		if input.MCode == nil {
-			err = errors.New("请输入短信验证码")
+			err = exception.InvalidParams
 			return
 		}
 
-		// 因为现在没有引入短信服务, 所以暂时没有这一块的功能
 		phone, err := redis.ClientAuthPhoneCode.Get(*input.MCode).Result()
 
 		if err != nil {
