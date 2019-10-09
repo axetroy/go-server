@@ -6,6 +6,7 @@ import (
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/controller/address"
 	"github.com/axetroy/go-server/src/controller/auth"
+	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/token"
 	"github.com/axetroy/go-server/tester"
@@ -27,7 +28,7 @@ func TestCreate(t *testing.T) {
 		Name: "123",
 	})
 
-	assert.Equal(t, schema.StatusFail, r.Status)
+	assert.Equal(t, exception.InvalidParams.Code(), r.Status)
 
 	// 添加一个合法的地址
 	{

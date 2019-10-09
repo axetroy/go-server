@@ -63,6 +63,7 @@ func BindingEmail(c controller.Context, input BindingEmailParams) (res schema.Re
 
 	// 参数校验
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		err = exception.WrapValidatorError(err)
 		return
 	} else if isValidInput == false {
 		err = exception.InvalidParams
@@ -158,6 +159,7 @@ func BindingPhone(c controller.Context, input BindingPhoneParams) (res schema.Re
 
 	// 参数校验
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		err = exception.WrapValidatorError(err)
 		return
 	} else if isValidInput == false {
 		err = exception.InvalidParams
@@ -253,6 +255,7 @@ func BindingWechat(c controller.Context, input BindingWechatMiniAppParams) (res 
 
 	// 参数校验
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		err = exception.WrapValidatorError(err)
 		return
 	} else if isValidInput == false {
 		err = exception.InvalidParams

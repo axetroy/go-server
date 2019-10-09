@@ -2,6 +2,7 @@
 package model
 
 import (
+	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
@@ -46,11 +47,11 @@ type User struct {
 	DeletedAt     *time.Time `sql:"index"`
 }
 
-func (news *User) TableName() string {
+func (u *User) TableName() string {
 	return "user"
 }
 
-func (news *User) BeforeCreate(scope *gorm.Scope) error {
+func (u *User) BeforeCreate(scope *gorm.Scope) error {
 	// 生成ID
 	uid := util.GenerateId()
 	if err := scope.SetColumn("id", uid); err != nil {
@@ -73,6 +74,20 @@ func (news *User) BeforeCreate(scope *gorm.Scope) error {
 	} else {
 		if err := scope.SetColumn("secret", secret); err != nil {
 			return err
+		}
+	}
+
+	return nil
+}
+
+// 检查用户状态是否正常
+func (u *User) CheckStatusValid() error {
+	if u.Status != UserStatusInit {
+		switch u.Status {
+		case UserStatusInactivated:
+			return exception.UserIsInActive
+		case UserStatusBanned:
+			return exception.UserHaveBeenBan
 		}
 	}
 

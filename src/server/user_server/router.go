@@ -74,10 +74,13 @@ func init() {
 		// 认证类
 		{
 			authRouter := v1.Group("/auth")
-			authRouter.POST("/signup", auth.SignUpRouter)                  // 注册账号
+			authRouter.POST("/signup/email", auth.SignUpWithEmailRouter)   // 注册账号，通过邮箱+验证码
+			authRouter.POST("/signup/phone", auth.SignUpWithPhoneRouter)   // 注册账号，通过手机+验证码
+			authRouter.POST("/signup", auth.SignUpWithUsernameRouter)      // 注册账号, 通过用户名+密码
+			authRouter.POST("/signin/email", auth.SignInWithEmailRouter)   // 邮箱+验证码 登陆
+			authRouter.POST("/signin/phone", auth.SignInWithPhoneRouter)   // 手机+验证码 登陆
 			authRouter.POST("/signin/wechat", auth.SignInWithWechatRouter) // 微信帐号登陆
 			authRouter.POST("/signin", auth.SignInRouter)                  // 登陆账号
-			authRouter.POST("/activation", auth.ActivationRouter)          // 激活账号
 			authRouter.PUT("/password/reset", auth.ResetPasswordRouter)    // 密码重置
 			authRouter.POST("/code/email", auth.SendEmailAuthCodeRouter)   // 发送邮箱验证码，验证邮箱是否为用户所有 TODO: 缺少测试用例
 			authRouter.POST("/code/phone", auth.SendPhoneAuthCodeRouter)   // 发送手机验证码，验证手机是否为用户所有 TODO: 缺少测试用例
@@ -219,6 +222,7 @@ func init() {
 		// 通用类
 		{
 			// 邮件服务
+			v1.POST("/email/send/register", auth.SignUpWithEmailActionRouter)         // 发送注册邮件
 			v1.POST("/email/send/activation", email.SendActivationEmailRouter)        // 发送激活邮件
 			v1.POST("/email/send/password/reset", email.SendResetPasswordEmailRouter) // 发送密码重置邮件
 

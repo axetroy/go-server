@@ -6,7 +6,6 @@ import (
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/controller/address"
 	"github.com/axetroy/go-server/src/controller/auth"
-	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/token"
 	"github.com/axetroy/go-server/tester"
@@ -30,10 +29,10 @@ func TestUpdate(t *testing.T) {
 		rand.Seed(10331198)
 		password := "123123"
 
-		r := auth.SignUp(auth.SignUpParams{
-			Username: &username,
+		r := auth.SignUpWithUsername(auth.SignUpWithUsernameParams{
+			Username: username,
 			Password: password,
-		}, model.UserStatusInactivated)
+		})
 
 		profile := schema.Profile{}
 
@@ -129,10 +128,10 @@ func TestUpdateRouter(t *testing.T) {
 
 	// 创建测试账号
 	{
-		if r := auth.SignUp(auth.SignUpParams{
-			Username: &username,
+		if r := auth.SignUpWithUsername(auth.SignUpWithUsernameParams{
+			Username: username,
 			Password: password,
-		}, model.UserStatusInit); r.Status != schema.StatusSuccess {
+		}); r.Status != schema.StatusSuccess {
 			t.Error(r.Message)
 			return
 		} else {

@@ -52,6 +52,7 @@ func SendEmailAuthCode(c controller.Context, input SendEmailAuthCodeParams) (res
 
 	// 参数校验
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		err = exception.WrapValidatorError(err)
 		return
 	} else if isValidInput == false {
 		err = exception.InvalidParams
@@ -102,6 +103,7 @@ func SendPhoneAuthCode(c controller.Context, input SendPhoneAuthCodeParams) (res
 
 	// 参数校验
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		err = exception.WrapValidatorError(err)
 		return
 	} else if isValidInput == false {
 		err = exception.InvalidParams

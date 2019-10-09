@@ -70,7 +70,9 @@ func SetPayPassword(context controller.Context, input SetPayPasswordParams) (res
 		helper.Response(&res, nil, err)
 	}()
 
+	// 参数校验
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		err = exception.WrapValidatorError(err)
 		return
 	} else if isValidInput == false {
 		err = exception.InvalidParams
@@ -161,7 +163,9 @@ func UpdatePayPassword(context controller.Context, input UpdatePayPasswordParams
 		helper.Response(&res, nil, err)
 	}()
 
+	// 参数校验
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		err = exception.WrapValidatorError(err)
 		return
 	} else if isValidInput == false {
 		err = exception.InvalidParams
@@ -349,7 +353,9 @@ func ResetPayPassword(context controller.Context, input ResetPayPasswordParams) 
 		helper.Response(&res, nil, err)
 	}()
 
+	// 参数校验
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		err = exception.WrapValidatorError(err)
 		return
 	} else if isValidInput == false {
 		err = exception.InvalidParams

@@ -57,6 +57,7 @@ func Create(context controller.Context, input CreateParams) (res schema.Response
 
 	// 参数校验
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		err = exception.WrapValidatorError(err)
 		return
 	} else if isValidInput == false {
 		err = exception.InvalidParams

@@ -173,6 +173,7 @@ func UpdateProfile(context controller.Context, input UpdateProfileParams) (res s
 
 	// 参数校验
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		err = exception.WrapValidatorError(err)
 		return
 	} else if isValidInput == false {
 		err = exception.InvalidParams
@@ -260,6 +261,7 @@ func UpdateProfileByAdmin(context controller.Context, userId string, input Updat
 
 	// 参数校验
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		err = exception.WrapValidatorError(err)
 		return
 	} else if isValidInput == false {
 		err = exception.InvalidParams

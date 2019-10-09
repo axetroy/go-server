@@ -23,6 +23,10 @@ func New(text string, code int) *Error {
 	}
 }
 
+func WrapValidatorError(err error) *Error {
+	return New(err.Error(), InvalidParams.Code())
+}
+
 func (e *Error) Error() string {
 	return fmt.Sprintf("%s [%d]", e.message, e.code)
 }

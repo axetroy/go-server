@@ -64,7 +64,9 @@ func To(context controller.Context, input ToParams, signature string) (res schem
 		helper.Response(&res, data, err)
 	}()
 
+	// 参数校验
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		err = exception.WrapValidatorError(err)
 		return
 	} else if isValidInput == false {
 		err = exception.InvalidParams

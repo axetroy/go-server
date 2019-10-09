@@ -2,15 +2,16 @@
 package auth
 
 import (
-	"encoding/json"
 	"errors"
+	"fmt"
+	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/controller/wallet"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/helper"
-	"github.com/axetroy/go-server/src/message_queue"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
+	"github.com/axetroy/go-server/src/service/email"
 	"github.com/axetroy/go-server/src/service/redis"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/gin-gonic/gin"
@@ -30,12 +31,37 @@ type SignUpParams struct {
 	InviteCode *string `json:"invite_code"` // 邀请码
 }
 
-func SignUp(input SignUpParams, userStatus model.UserStatus) (res schema.Response) {
+type SignUpWithUsernameParams struct {
+	Username   string  `json:"username" valid:"required~请输入用户名"` // 用户名
+	Password   string  `json:"password" valid:"required~请输入密码"`  // 密码
+	InviteCode *string `json:"invite_code"`                      // 邀请码
+}
+
+type SignUpWithEmailParams struct {
+	Email      string  `json:"email" valid:"required~请输入邮箱"`    // 邮箱
+	Password   string  `json:"password" valid:"required~请输入密码"` // 密码
+	Code       string  `json:"code" valid:"required~请输入邮箱验证码"`  // 邮箱验证码
+	InviteCode *string `json:"invite_code"`                     // 邀请码
+}
+
+type SignUpWithEmailActionParams struct {
+	Email       string `json:"email" valid:"required~请输入邮箱"`            // 邮箱
+	RedirectURL string `json:"redirect_url" valid:"required~请输入跳转 URL"` // 发送的邮箱链接中，跳转到的前端 url
+}
+
+type SignUpWithPhoneParams struct {
+	Phone      string  `json:"phone" valid:"required~请输入手机号"`  // 手机号
+	Code       string  `json:"code" valid:"required~请输入手机验证码"` // 短信验证码
+	InviteCode *string `json:"invite_code"`                    // 邀请码
+}
+
+func SignUpWithUsername(input SignUpWithUsernameParams) (res schema.Response) {
 	var (
-		err     error
-		data    schema.Profile
-		tx      *gorm.DB
-		inviter *model.User // 邀请人信息
+		err          error
+		data         schema.Profile
+		tx           *gorm.DB
+		inviter      *model.User // 邀请人信息
+		isValidInput bool
 	)
 
 	defer func() {
@@ -61,102 +87,28 @@ func SignUp(input SignUpParams, userStatus model.UserStatus) (res schema.Respons
 		helper.Response(&res, data, err)
 	}()
 
-	if input.Password == "" {
-		err = exception.RequirePassword
+	// 参数校验
+	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		err = exception.WrapValidatorError(err)
 		return
-	}
-
-	if input.Username == nil && input.Phone == nil && input.Email == nil {
+	} else if isValidInput == false {
 		err = exception.InvalidParams
 		return
 	}
 
-	if input.Phone != nil {
-		if !util.IsPhone(*input.Phone) {
-			err = exception.InvalidParams
-			return
-		}
-
-		if input.MCode == nil {
-			err = exception.InvalidParams
-			return
-		}
-
-		phone, err := redis.ClientAuthPhoneCode.Get(*input.MCode).Result()
-
-		if err != nil {
-			return
-		}
-
-		if phone != *input.Phone {
-			err = exception.InvalidParams
-			return
-		}
-
-		// 用手机号注册的，则为激活状态
-		userStatus = model.UserStatusInit
-	}
-
 	tx = database.Db.Begin()
 
-	var (
-		username string
-		uid      = util.GenerateId()
-	)
+	u := model.User{Username: input.Username}
 
-	if input.Username == nil {
-		username = "用户" + uid
-	} else {
-		username = *input.Username
-	}
-
-	var (
-		existUserInfo = model.User{}
-	)
-
-	if input.Username != nil {
-		if err = tx.Where("username = ?", *input.Username).Find(&existUserInfo).Error; err != nil {
-			// 如果找不到这个用户
-			// 说明用户没存在
-			if err != gorm.ErrRecordNotFound {
-				return
-			}
-		}
-
-		if existUserInfo.Id != "" {
-			err = exception.UserExist
+	if err = tx.Where("username = ?", input.Username).Find(&u).Error; err != nil {
+		if err != gorm.ErrRecordNotFound {
 			return
 		}
 	}
 
-	if input.Email != nil {
-		if err = tx.Where("email = ?", *input.Email).Find(&existUserInfo).Error; err != nil {
-			// 如果找不到这个用户
-			// 说明用户没存在
-			if err != gorm.ErrRecordNotFound {
-				return
-			}
-		}
-
-		if existUserInfo.Id != "" {
-			err = exception.UserExist
-			return
-		}
-	}
-
-	if input.Phone != nil {
-		if err = tx.Where("phone = ?", *input.Phone).Find(&existUserInfo).Error; err != nil {
-			// 如果找不到这个用户
-			// 说明用户没存在
-			if err != gorm.ErrRecordNotFound {
-				return
-			}
-		}
-
-		if existUserInfo.Id != "" {
-			err = exception.UserExist
-			return
-		}
+	if u.Id != "" {
+		err = exception.UserExist
+		return
 	}
 
 	// 填入了邀请码，则去校验邀请码是否正确
@@ -175,13 +127,13 @@ func SignUp(input SignUpParams, userStatus model.UserStatus) (res schema.Respons
 	}
 
 	userInfo := model.User{
-		Username: username,
-		Nickname: &username,
+		Username: input.Username,
+		Nickname: &input.Username,
 		Password: util.GeneratePassword(input.Password),
-		Status:   userStatus,
+		Status:   model.UserStatusInit,
 		Role:     pq.StringArray{model.DefaultUser.Name},
-		Phone:    input.Phone,
-		Email:    input.Email,
+		Phone:    nil,
+		Email:    nil,
 		Gender:   model.GenderUnknown,
 	}
 
@@ -224,38 +176,356 @@ func SignUp(input SignUpParams, userStatus model.UserStatus) (res schema.Respons
 		}
 	}
 
-	// 如果是以邮箱注册的，那么发送激活链接
-	if userInfo.Email != nil && len(*userInfo.Email) != 0 {
-		// 生成激活码
-		activationCode := "activation-" + userInfo.Id
-
-		// 把激活码存到 redis
-		if err = redis.ClientActivationCode.Set(activationCode, userInfo.Id, time.Minute*30).Err(); err != nil {
-			return
-		}
-
-		// 把 "发送激活码" 加入消息队列
-		var body []byte
-
-		if body, err = json.Marshal(message_queue.SendActivationEmailBody{
-			Email: *input.Email,
-			Code:  activationCode,
-		}); err != nil {
-			return
-		}
-
-		if err = message_queue.Publish(message_queue.TopicSendEmail, body); err != nil {
-			return
-		}
-
-		return
-	}
 	return
 }
 
-func SignUpRouter(c *gin.Context) {
+func SignUpWithEmail(input SignUpWithEmailParams) (res schema.Response) {
 	var (
-		input SignUpParams
+		err          error
+		data         schema.Profile
+		tx           *gorm.DB
+		inviter      *model.User // 邀请人信息
+		isValidInput bool
+	)
+
+	defer func() {
+		if r := recover(); r != nil {
+			switch t := r.(type) {
+			case string:
+				err = errors.New(t)
+			case error:
+				err = t
+			default:
+				err = exception.Unknown
+			}
+		}
+
+		if tx != nil {
+			if err != nil {
+				_ = tx.Rollback().Error
+			} else {
+				err = tx.Commit().Error
+			}
+		}
+
+		helper.Response(&res, data, err)
+	}()
+
+	// 参数校验
+	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		err = exception.WrapValidatorError(err)
+		return
+	} else if isValidInput == false {
+		err = exception.InvalidParams
+		return
+	}
+
+	emailAddr, err := redis.ClientAuthEmailCode.Get(input.Code).Result()
+
+	if err != nil {
+		return
+	}
+
+	// 校验邮箱验证码是否一致
+	if emailAddr != input.Email {
+		err = exception.InvalidParams
+		return
+	}
+
+	tx = database.Db.Begin()
+
+	u := model.User{Email: &input.Email}
+
+	if err = tx.Where("email = ?", input.Email).Find(&u).Error; err != nil {
+		if err != gorm.ErrRecordNotFound {
+			return
+		}
+	}
+
+	if u.Id != "" {
+		err = exception.UserExist
+		return
+	}
+
+	// 填入了邀请码，则去校验邀请码是否正确
+	if input.InviteCode != nil && *input.InviteCode != "" {
+		u := model.User{
+			InviteCode: *input.InviteCode,
+		}
+		if err = tx.Where(&u).Find(&u).Error; err != nil {
+			if err == gorm.ErrRecordNotFound {
+				err = exception.InvalidInviteCode
+			}
+			return
+		}
+
+		inviter = &u
+	}
+
+	username := "u" + util.GenerateId()
+
+	userInfo := model.User{
+		Username: username,
+		Nickname: &username,
+		Password: util.GeneratePassword(input.Password),
+		Status:   model.UserStatusInit,
+		Role:     pq.StringArray{model.DefaultUser.Name},
+		Phone:    nil,
+		Email:    &input.Email,
+		Gender:   model.GenderUnknown,
+	}
+
+	if err = tx.Create(&userInfo).Error; err != nil {
+		return
+	}
+
+	// 如果存在邀请者的话，写入邀请列表中
+	if inviter != nil {
+		inviteHistory := model.InviteHistory{
+			Inviter:       inviter.Id,
+			Invitee:       userInfo.Id,
+			Status:        model.StatusInviteRegistered,
+			RewardSettled: false,
+		}
+
+		// 创建邀请记录
+		if err = tx.Create(&inviteHistory).Error; err != nil {
+			return
+		}
+	}
+
+	if err = mapstructure.Decode(userInfo, &data.ProfilePure); err != nil {
+		return
+	}
+
+	data.PayPassword = userInfo.PayPassword != nil && len(*userInfo.PayPassword) != 0
+	data.CreatedAt = userInfo.CreatedAt.Format(time.RFC3339Nano)
+	data.UpdatedAt = userInfo.UpdatedAt.Format(time.RFC3339Nano)
+
+	// 创建用户对应的钱包账号
+	for _, walletName := range model.Wallets {
+		if err = tx.Table(wallet.GetTableName(walletName)).Create(&model.Wallet{
+			Id:       userInfo.Id,
+			Currency: walletName,
+			Balance:  0,
+			Frozen:   0,
+		}).Error; err != nil {
+			return
+		}
+	}
+
+	return
+}
+
+func SignUpWithEmailAction(input SignUpWithEmailActionParams) (res schema.Response) {
+	var (
+		err          error
+		data         schema.Profile
+		tx           *gorm.DB
+		isValidInput bool
+	)
+
+	defer func() {
+		if r := recover(); r != nil {
+			switch t := r.(type) {
+			case string:
+				err = errors.New(t)
+			case error:
+				err = t
+			default:
+				err = exception.Unknown
+			}
+		}
+
+		if tx != nil {
+			if err != nil {
+				_ = tx.Rollback().Error
+			} else {
+				err = tx.Commit().Error
+			}
+		}
+
+		helper.Response(&res, data, err)
+	}()
+
+	// 参数校验
+	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		err = exception.WrapValidatorError(err)
+		return
+	} else if isValidInput == false {
+		err = exception.InvalidParams
+		return
+	}
+
+	tx = database.Db.Begin()
+
+	if err = tx.Where("email = ?", input.Email).Find(&model.User{Email: &input.Email}).Error; err != nil {
+		if err != gorm.ErrRecordNotFound {
+			err = exception.UserExist
+		}
+		return
+	}
+
+	code := GenerateAuthCode()
+
+	if err = redis.ClientAuthEmailCode.Set(code, input.Email, 10*time.Minute).Err(); err != nil {
+		return
+	}
+
+	e := email.NewMailer()
+
+	link := fmt.Sprintf("%s?code=%s&email=%s", input.RedirectURL, code, input.Email)
+
+	// 发送邮件
+	if err = e.SendAuthEmail(input.Email, link); err != nil {
+		return
+	}
+
+	return
+}
+
+func SignUpWithPhone(input SignUpWithPhoneParams) (res schema.Response) {
+	var (
+		err          error
+		data         schema.Profile
+		tx           *gorm.DB
+		inviter      *model.User // 邀请人信息
+		isValidInput bool
+	)
+
+	defer func() {
+		if r := recover(); r != nil {
+			switch t := r.(type) {
+			case string:
+				err = errors.New(t)
+			case error:
+				err = t
+			default:
+				err = exception.Unknown
+			}
+		}
+
+		if tx != nil {
+			if err != nil {
+				_ = tx.Rollback().Error
+			} else {
+				err = tx.Commit().Error
+			}
+		}
+
+		helper.Response(&res, data, err)
+	}()
+
+	// 参数校验
+	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		err = exception.WrapValidatorError(err)
+		return
+	} else if isValidInput == false {
+		err = exception.InvalidParams
+		return
+	}
+
+	phone, err := redis.ClientAuthPhoneCode.Get(input.Code).Result()
+
+	if err != nil {
+		return
+	}
+
+	// 校验短信验证码是否一致
+	if phone != input.Phone {
+		err = exception.InvalidParams
+		return
+	}
+
+	tx = database.Db.Begin()
+
+	u := model.User{Phone: &input.Phone}
+
+	if err = tx.Where("phone = ?", input.Phone).Find(&u).Error; err != nil {
+		if err != gorm.ErrRecordNotFound {
+			return
+		}
+	}
+
+	if u.Id != "" {
+		err = exception.UserExist
+		return
+	}
+
+	// 填入了邀请码，则去校验邀请码是否正确
+	if input.InviteCode != nil && *input.InviteCode != "" {
+		u := model.User{
+			InviteCode: *input.InviteCode,
+		}
+		if err = tx.Where(&u).Find(&u).Error; err != nil {
+			if err == gorm.ErrRecordNotFound {
+				err = exception.InvalidInviteCode
+			}
+			return
+		}
+
+		inviter = &u
+	}
+
+	username := "u" + util.GenerateId()
+	pwd := util.RandomString(6)
+
+	userInfo := model.User{
+		Username: username,
+		Nickname: &username,
+		Password: util.GeneratePassword(pwd),
+		Status:   model.UserStatusInit,
+		Role:     pq.StringArray{model.DefaultUser.Name},
+		Phone:    &input.Phone,
+		Email:    nil,
+		Gender:   model.GenderUnknown,
+	}
+
+	if err = tx.Create(&userInfo).Error; err != nil {
+		return
+	}
+
+	// 如果存在邀请者的话，写入邀请列表中
+	if inviter != nil {
+		inviteHistory := model.InviteHistory{
+			Inviter:       inviter.Id,
+			Invitee:       userInfo.Id,
+			Status:        model.StatusInviteRegistered,
+			RewardSettled: false,
+		}
+
+		// 创建邀请记录
+		if err = tx.Create(&inviteHistory).Error; err != nil {
+			return
+		}
+	}
+
+	if err = mapstructure.Decode(userInfo, &data.ProfilePure); err != nil {
+		return
+	}
+
+	data.PayPassword = userInfo.PayPassword != nil && len(*userInfo.PayPassword) != 0
+	data.CreatedAt = userInfo.CreatedAt.Format(time.RFC3339Nano)
+	data.UpdatedAt = userInfo.UpdatedAt.Format(time.RFC3339Nano)
+
+	// 创建用户对应的钱包账号
+	for _, walletName := range model.Wallets {
+		if err = tx.Table(wallet.GetTableName(walletName)).Create(&model.Wallet{
+			Id:       userInfo.Id,
+			Currency: walletName,
+			Balance:  0,
+			Frozen:   0,
+		}).Error; err != nil {
+			return
+		}
+	}
+
+	return
+}
+
+func SignUpWithUsernameRouter(c *gin.Context) {
+	var (
+		input SignUpWithUsernameParams
 		err   error
 		res   = schema.Response{}
 	)
@@ -273,5 +543,74 @@ func SignUpRouter(c *gin.Context) {
 		return
 	}
 
-	res = SignUp(input, model.UserStatusInactivated)
+	res = SignUpWithUsername(input)
+}
+
+func SignUpWithEmailRouter(c *gin.Context) {
+	var (
+		input SignUpWithEmailParams
+		err   error
+		res   = schema.Response{}
+	)
+
+	defer func() {
+		if err != nil {
+			res.Data = nil
+			res.Message = err.Error()
+		}
+		c.JSON(http.StatusOK, res)
+	}()
+
+	if err = c.ShouldBindJSON(&input); err != nil {
+		err = exception.InvalidParams
+		return
+	}
+
+	res = SignUpWithEmail(input)
+}
+
+func SignUpWithPhoneRouter(c *gin.Context) {
+	var (
+		input SignUpWithPhoneParams
+		err   error
+		res   = schema.Response{}
+	)
+
+	defer func() {
+		if err != nil {
+			res.Data = nil
+			res.Message = err.Error()
+		}
+		c.JSON(http.StatusOK, res)
+	}()
+
+	if err = c.ShouldBindJSON(&input); err != nil {
+		err = exception.InvalidParams
+		return
+	}
+
+	res = SignUpWithPhone(input)
+}
+
+func SignUpWithEmailActionRouter(c *gin.Context) {
+	var (
+		input SignUpWithEmailActionParams
+		err   error
+		res   = schema.Response{}
+	)
+
+	defer func() {
+		if err != nil {
+			res.Data = nil
+			res.Message = err.Error()
+		}
+		c.JSON(http.StatusOK, res)
+	}()
+
+	if err = c.ShouldBindJSON(&input); err != nil {
+		err = exception.InvalidParams
+		return
+	}
+
+	res = SignUpWithEmailAction(input)
 }

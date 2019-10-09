@@ -14,6 +14,7 @@ import (
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
+	"github.com/axetroy/go-server/src/service/redis"
 	"github.com/axetroy/go-server/src/service/token"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/gin-gonic/gin"
@@ -28,6 +29,16 @@ import (
 type SignInParams struct {
 	Account  string `json:"account" valid:"required~请输入登陆账号"`
 	Password string `json:"password" valid:"required~请输入密码"`
+}
+
+type SignInWithEmailParams struct {
+	Email string `json:"email" valid:"required~请输入邮箱"`
+	Code  string `json:"code" valid:"required~请输入验证码"`
+}
+
+type SignInWithPhoneParams struct {
+	Phone string `json:"phone" valid:"required~请输入手机号"`
+	Code  string `json:"code" valid:"required~请输入验证码"`
 }
 
 type SignInWithWechatParams struct {
@@ -82,6 +93,7 @@ func SignIn(c controller.Context, input SignInParams) (res schema.Response) {
 
 	// 参数校验
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		err = exception.WrapValidatorError(err)
 		return
 	} else if isValidInput == false {
 		err = exception.InvalidParams
@@ -112,15 +124,202 @@ func SignIn(c controller.Context, input SignInParams) (res schema.Response) {
 		return
 	}
 
-	if userInfo.Status != model.UserStatusInactivated {
-		switch userInfo.Status {
-		case model.UserStatusInactivated:
-			err = exception.UserIsInActive
-			return
-		case model.UserStatusBanned:
-			err = exception.UserHaveBeenBan
-			return
+	if err = userInfo.CheckStatusValid(); err != nil {
+		return
+	}
+
+	if err = mapstructure.Decode(userInfo, &data.ProfilePure); err != nil {
+		return
+	}
+
+	data.PayPassword = userInfo.PayPassword != nil && len(*userInfo.PayPassword) != 0
+	data.CreatedAt = userInfo.CreatedAt.Format(time.RFC3339Nano)
+	data.UpdatedAt = userInfo.UpdatedAt.Format(time.RFC3339Nano)
+
+	// generate token
+	if t, er := token.Generate(userInfo.Id, false); er != nil {
+		err = er
+		return
+	} else {
+		data.Token = t
+	}
+
+	// 写入登陆记录
+	log := model.LoginLog{
+		Uid:     userInfo.Id,                       // 用户ID
+		Type:    model.LoginLogTypeUserName,        // 默认用户名登陆
+		Command: model.LoginLogCommandLoginSuccess, // 登陆成功
+		Client:  c.UserAgent,                       // 用户的 userAgent
+		LastIp:  c.Ip,                              // 用户的IP
+	}
+
+	if err = tx.Create(&log).Error; err != nil {
+		return
+	}
+
+	return
+}
+
+// 邮箱 + 验证码登陆
+func SignInWithEmail(c controller.Context, input SignInWithEmailParams) (res schema.Response) {
+	var (
+		err          error
+		data         = &schema.ProfileWithToken{}
+		tx           *gorm.DB
+		isValidInput bool
+	)
+
+	defer func() {
+		if r := recover(); r != nil {
+			switch t := r.(type) {
+			case string:
+				err = errors.New(t)
+			case error:
+				err = t
+			default:
+				err = exception.Unknown
+			}
 		}
+
+		if tx != nil {
+			if err != nil {
+				_ = tx.Rollback().Error
+			} else {
+				err = tx.Commit().Error
+			}
+		}
+
+		helper.Response(&res, data, err)
+	}()
+
+	// 参数校验
+	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		err = exception.WrapValidatorError(err)
+		return
+	} else if isValidInput == false {
+		err = exception.InvalidParams
+		return
+	}
+
+	email, err := redis.ClientAuthEmailCode.Get(input.Code).Result()
+
+	// 校验验证码是否正确
+	if err != nil || email != input.Email {
+		err = exception.InvalidParams
+	}
+
+	userInfo := model.User{
+		Email: &input.Email,
+	}
+
+	tx = database.Db.Begin()
+
+	if err = tx.Where(&userInfo).Last(&userInfo).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = exception.InvalidAccountOrPassword
+		}
+		return
+	}
+
+	if err = userInfo.CheckStatusValid(); err != nil {
+		return
+	}
+
+	if err = mapstructure.Decode(userInfo, &data.ProfilePure); err != nil {
+		return
+	}
+
+	data.PayPassword = userInfo.PayPassword != nil && len(*userInfo.PayPassword) != 0
+	data.CreatedAt = userInfo.CreatedAt.Format(time.RFC3339Nano)
+	data.UpdatedAt = userInfo.UpdatedAt.Format(time.RFC3339Nano)
+
+	// generate token
+	if t, er := token.Generate(userInfo.Id, false); er != nil {
+		err = er
+		return
+	} else {
+		data.Token = t
+	}
+
+	// 写入登陆记录
+	log := model.LoginLog{
+		Uid:     userInfo.Id,                       // 用户ID
+		Type:    model.LoginLogTypeUserName,        // 默认用户名登陆
+		Command: model.LoginLogCommandLoginSuccess, // 登陆成功
+		Client:  c.UserAgent,                       // 用户的 userAgent
+		LastIp:  c.Ip,                              // 用户的IP
+	}
+
+	if err = tx.Create(&log).Error; err != nil {
+		return
+	}
+
+	return
+}
+
+// 手机 + 验证码登陆
+func SignInWithPhone(c controller.Context, input SignInWithPhoneParams) (res schema.Response) {
+	var (
+		err          error
+		data         = &schema.ProfileWithToken{}
+		tx           *gorm.DB
+		isValidInput bool
+	)
+
+	defer func() {
+		if r := recover(); r != nil {
+			switch t := r.(type) {
+			case string:
+				err = errors.New(t)
+			case error:
+				err = t
+			default:
+				err = exception.Unknown
+			}
+		}
+
+		if tx != nil {
+			if err != nil {
+				_ = tx.Rollback().Error
+			} else {
+				err = tx.Commit().Error
+			}
+		}
+
+		helper.Response(&res, data, err)
+	}()
+
+	// 参数校验
+	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		err = exception.WrapValidatorError(err)
+		return
+	} else if isValidInput == false {
+		err = exception.InvalidParams
+		return
+	}
+
+	phone, err := redis.ClientAuthPhoneCode.Get(input.Code).Result()
+
+	// 校验验证码是否正确
+	if err != nil || phone != input.Phone {
+		err = exception.InvalidParams
+	}
+
+	userInfo := model.User{
+		Email: &input.Phone,
+	}
+
+	tx = database.Db.Begin()
+
+	if err = tx.Where(&userInfo).Last(&userInfo).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = exception.InvalidAccountOrPassword
+		}
+		return
+	}
+
+	if err = userInfo.CheckStatusValid(); err != nil {
+		return
 	}
 
 	if err = mapstructure.Decode(userInfo, &data.ProfilePure); err != nil {
@@ -213,6 +412,7 @@ func SignInWithWechat(context controller.Context, input SignInWithWechatParams) 
 
 	// 参数校验
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		err = exception.WrapValidatorError(err)
 		return
 	} else if isValidInput == false {
 		err = exception.InvalidParams
@@ -345,6 +545,52 @@ func SignInRouter(c *gin.Context) {
 	}
 
 	res = SignIn(controller.NewContext(c), input)
+}
+
+func SignInWithEmailRouter(c *gin.Context) {
+	var (
+		input SignInWithEmailParams
+		err   error
+		res   = schema.Response{}
+	)
+
+	defer func() {
+		if err != nil {
+			res.Data = nil
+			res.Message = err.Error()
+		}
+		c.JSON(http.StatusOK, res)
+	}()
+
+	if err = c.ShouldBindJSON(&input); err != nil {
+		err = exception.InvalidParams
+		return
+	}
+
+	res = SignInWithEmail(controller.NewContext(c), input)
+}
+
+func SignInWithPhoneRouter(c *gin.Context) {
+	var (
+		input SignInWithPhoneParams
+		err   error
+		res   = schema.Response{}
+	)
+
+	defer func() {
+		if err != nil {
+			res.Data = nil
+			res.Message = err.Error()
+		}
+		c.JSON(http.StatusOK, res)
+	}()
+
+	if err = c.ShouldBindJSON(&input); err != nil {
+		err = exception.InvalidParams
+		return
+	}
+
+	res = SignInWithPhone(controller.NewContext(c), input)
 }
 
 func SignInWithWechatRouter(c *gin.Context) {

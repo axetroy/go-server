@@ -47,8 +47,7 @@ func TestSignUpWithNotFullBody(t *testing.T) {
 
 	assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res))
 
-	assert.Equal(t, exception.RequirePassword.Code(), res.Status)
-	assert.Equal(t, exception.RequirePassword.Error(), res.Message)
+	assert.Equal(t, exception.InvalidParams.Code(), res.Status)
 	assert.Nil(t, res.Data)
 }
 
@@ -57,10 +56,10 @@ func TestSignUpSuccess(t *testing.T) {
 
 	username := "test-TestSignUpSuccess"
 
-	res := auth.SignUp(auth.SignUpParams{
-		Username: &username,
+	res := auth.SignUpWithUsername(auth.SignUpWithUsernameParams{
+		Username: username,
 		Password: "123123",
-	}, model.UserStatusInactivated)
+	})
 
 	assert.Equal(t, schema.StatusSuccess, res.Status)
 	assert.Equal(t, "", res.Message)
@@ -72,7 +71,7 @@ func TestSignUpSuccess(t *testing.T) {
 	assert.Nil(t, tester.Decode(res.Data, &profile))
 
 	// 默认未激活状态
-	assert.Equal(t, int(profile.Status), int(model.UserStatusInactivated))
+	assert.Equal(t, int(profile.Status), int(model.UserStatusInit))
 	assert.Equal(t, profile.Username, username)
 	assert.Equal(t, *profile.Nickname, username)
 	assert.Equal(t, profile.Role, []string{model.DefaultUser.Name})
@@ -91,10 +90,10 @@ func TestSignUpInviteCode(t *testing.T) {
 
 	// 动态创建一个测试账号
 	{
-		r := auth.SignUp(auth.SignUpParams{
-			Username: &testerUsername,
+		r := auth.SignUpWithUsername(auth.SignUpWithUsernameParams{
+			Username: testerUsername,
 			Password: "123123",
-		}, model.UserStatusInactivated)
+		})
 
 		profile := schema.Profile{}
 
@@ -111,11 +110,11 @@ func TestSignUpInviteCode(t *testing.T) {
 
 	rand.Seed(1111) // 重置随机码，否则随机数会一样
 
-	res := auth.SignUp(auth.SignUpParams{
-		Username:   &username,
+	res := auth.SignUpWithUsername(auth.SignUpWithUsernameParams{
+		Username:   username,
 		Password:   "123123",
 		InviteCode: &inviteCode,
-	}, model.UserStatusInactivated)
+	})
 
 	assert.Equal(t, schema.StatusSuccess, res.Status)
 	assert.Equal(t, "", res.Message)
@@ -129,7 +128,7 @@ func TestSignUpInviteCode(t *testing.T) {
 	}
 
 	// 默认未激活状态
-	assert.Equal(t, int(model.UserStatusInactivated), int(profile.Status))
+	assert.Equal(t, int(model.UserStatusInit), int(profile.Status))
 	assert.Equal(t, username, profile.Username)
 	assert.Equal(t, username, *profile.Nickname)
 	assert.Nil(t, profile.Email)

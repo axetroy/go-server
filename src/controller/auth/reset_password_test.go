@@ -64,10 +64,10 @@ func TestResetPasswordSuccess(t *testing.T) {
 		resetCode   string
 		newPassword = "321321"
 	)
-	if r := auth.SignUp(auth.SignUpParams{
-		Username: &username,
+	if r := auth.SignUpWithUsername(auth.SignUpWithUsernameParams{
+		Username: username,
 		Password: oldPassword,
-	}, model.UserStatusInactivated); r.Status != schema.StatusSuccess {
+	}); r.Status != schema.StatusSuccess {
 		t.Error(r.Message)
 		return
 	} else {
@@ -77,9 +77,7 @@ func TestResetPasswordSuccess(t *testing.T) {
 			return
 		}
 		uid = userInfo.Id
-		defer func() {
-			auth.DeleteUserByUserName(username)
-		}()
+		defer auth.DeleteUserByUserName(username)
 	}
 
 	resetCode = email.GenerateResetCode(uid)

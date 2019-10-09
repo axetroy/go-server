@@ -77,7 +77,7 @@ func CreateUser(input CreateUserParams) (res schema.Response) {
 	)
 
 	if input.Username == nil {
-		username = "用户" + uid
+		username = "u" + uid
 	} else {
 		username = *input.Username
 	}

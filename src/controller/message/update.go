@@ -57,6 +57,7 @@ func Update(context controller.Context, messageId string, input UpdateParams) (r
 
 	// 参数校验
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		err = exception.WrapValidatorError(err)
 		return
 	} else if isValidInput == false {
 		err = exception.InvalidParams

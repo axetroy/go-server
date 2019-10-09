@@ -61,6 +61,7 @@ func UnbindingEmail(c controller.Context, input UnbindingEmailParams) (res schem
 
 	// 参数校验
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		err = exception.WrapValidatorError(err)
 		return
 	} else if isValidInput == false {
 		err = exception.InvalidParams
@@ -135,6 +136,7 @@ func UnbindingPhone(c controller.Context, input UnbindingPhoneParams) (res schem
 
 	// 参数校验
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		err = exception.WrapValidatorError(err)
 		return
 	} else if isValidInput == false {
 		err = exception.InvalidParams
@@ -209,6 +211,7 @@ func UnbindingWechat(c controller.Context, input UnbindingWechatParams) (res sch
 
 	// 参数校验
 	if isValidInput, err = govalidator.ValidateStruct(input); err != nil {
+		err = exception.WrapValidatorError(err)
 		return
 	} else if isValidInput == false {
 		err = exception.InvalidParams
