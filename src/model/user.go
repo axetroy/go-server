@@ -26,25 +26,26 @@ const (
 )
 
 type User struct {
-	Id            string         `gorm:"primary_key;not null;unique;index;type:varchar(32)" json:"id"` // 用户ID
-	Username      string         `gorm:"not null;unique;index" json:"username"`                        // 用户名
-	Password      string         `gorm:"not null;type:varchar(36);index" json:"password"`              // 登陆密码
-	PayPassword   *string        `gorm:"null;type:varchar(36)" json:"pay_password"`                    // 支付密码
-	Nickname      *string        `gorm:"null;type:varchar(36)" json:"nickname"`                        // 昵称
-	Phone         *string        `gorm:"null;type:varchar(16);index" json:"phone"`                     // 手机号
-	Email         *string        `gorm:"null;type:varchar(36);index" json:"email"`                     // 邮箱
-	Status        UserStatus     `gorm:"not null" json:"status"`                                       // 状态
-	Role          pq.StringArray `gorm:"not null;type:varchar(36)[]" json:"role"`                      // 角色, 用户可以拥有多个角色
-	Avatar        string         `gorm:"not null;type:varchar(128)" json:"avatar"`                     // 头像
-	Level         int32          `gorm:"default(1)" json:"level"`                                      // 用户等级
-	Gender        Gender         `gorm:"default(0)" json:"gender"`                                     // 性别
-	EnableTOTP    bool           `gorm:"not null;" json:"enable_totp"`                                 // 是否启用双重身份认证
-	Secret        string         `gorm:"not null;type:varchar(32)" json:"secret"`                      // 用户自己的密钥
-	InviteCode    string         `gorm:"not null;unique;type:varchar(8)" json:"invite_code"`           // 用户的邀请码，邀请码唯一
-	OauthGoogleId *string        `gorm:"null;unique;type:varchar(255)" json:"oauth_google_id"`         // 用户的GoogleAuth唯一标识符
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
-	DeletedAt     *time.Time `sql:"index"`
+	Id                      string         `gorm:"primary_key;not null;unique;index;type:varchar(32)" json:"id"` // 用户ID
+	Username                string         `gorm:"not null;unique;index" json:"username"`                        // 用户名
+	Password                string         `gorm:"not null;type:varchar(36);index" json:"password"`              // 登陆密码
+	PayPassword             *string        `gorm:"null;type:varchar(36)" json:"pay_password"`                    // 支付密码
+	Nickname                *string        `gorm:"null;type:varchar(36)" json:"nickname"`                        // 昵称
+	Phone                   *string        `gorm:"null;unique;type:varchar(16);index" json:"phone"`              // 手机号
+	Email                   *string        `gorm:"null;unique;type:varchar(36);index" json:"email"`              // 邮箱
+	Status                  UserStatus     `gorm:"not null" json:"status"`                                       // 状态
+	Role                    pq.StringArray `gorm:"not null;type:varchar(36)[]" json:"role"`                      // 角色, 用户可以拥有多个角色
+	Avatar                  string         `gorm:"not null;type:varchar(128)" json:"avatar"`                     // 头像
+	Level                   int32          `gorm:"default(1)" json:"level"`                                      // 用户等级
+	Gender                  Gender         `gorm:"default(0)" json:"gender"`                                     // 性别
+	EnableTOTP              bool           `gorm:"not null;" json:"enable_totp"`                                 // 是否启用双重身份认证
+	Secret                  string         `gorm:"not null;type:varchar(32)" json:"secret"`                      // 用户自己的密钥
+	InviteCode              string         `gorm:"not null;unique;type:varchar(8)" json:"invite_code"`           // 用户的邀请码，邀请码唯一
+	OauthGoogleId           *string        `gorm:"null;unique;type:varchar(255)" json:"oauth_google_id"`         // 用户的GoogleAuth唯一标识符
+	UsernameRenameRemaining int            `gorm:"not null" json:"username_rename_remaining"`                    // 用户名还有几次重新更改的机会， 主要是如果用第三方注册登陆，则用户名随机生成，这里给用户一个重新命名的机会
+	CreatedAt               time.Time
+	UpdatedAt               time.Time
+	DeletedAt               *time.Time `sql:"index"`
 }
 
 func (u *User) TableName() string {
