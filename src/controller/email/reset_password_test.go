@@ -7,6 +7,7 @@ import (
 	"github.com/axetroy/go-server/src/controller/email"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/schema"
+	"github.com/axetroy/go-server/src/service/captcha"
 	"github.com/axetroy/go-server/tester"
 	"github.com/stretchr/testify/assert"
 	"net/http"
@@ -18,9 +19,10 @@ func TestGenerateResetCode(t *testing.T) {
 
 	defer auth.DeleteUserByUserName(user.Username)
 
-	code := email.GenerateResetCode(user.Id)
+	code := captcha.GenerateResetCode(user.Id)
 
 	assert.IsType(t, "", code)
+	assert.NotEmpty(t, code)
 }
 
 func TestSendResetPasswordEmail(t *testing.T) {

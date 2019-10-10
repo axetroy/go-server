@@ -4,10 +4,10 @@ package auth_test
 import (
 	"encoding/json"
 	"github.com/axetroy/go-server/src/controller/auth"
-	"github.com/axetroy/go-server/src/controller/email"
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
+	"github.com/axetroy/go-server/src/service/captcha"
 	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/service/redis"
 	"github.com/axetroy/go-server/src/util"
@@ -80,7 +80,7 @@ func TestResetPasswordSuccess(t *testing.T) {
 		defer auth.DeleteUserByUserName(username)
 	}
 
-	resetCode = email.GenerateResetCode(uid)
+	resetCode = captcha.GenerateResetCode(uid)
 
 	// set to redis
 	// set activationCode to redis

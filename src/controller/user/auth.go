@@ -7,20 +7,16 @@ import (
 	"github.com/axetroy/go-server/src/helper"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/schema"
+	"github.com/axetroy/go-server/src/service/captcha"
 	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/service/email"
 	"github.com/axetroy/go-server/src/service/redis"
 	"github.com/axetroy/go-server/src/service/telephone"
-	"github.com/axetroy/go-server/src/util"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"net/http"
 	"time"
 )
-
-func GenerateAuthCode() string {
-	return util.RandomString(6)
-}
 
 func SendAuthEmail(c controller.Context) (res schema.Response) {
 	var (
@@ -67,7 +63,7 @@ func SendAuthEmail(c controller.Context) (res schema.Response) {
 	}
 
 	// 生成验证码
-	activationCode := GenerateAuthCode()
+	activationCode := captcha.GenerateEmailCaptcha()
 
 	// 缓存验证码到 redis
 	if err = redis.ClientAuthEmailCode.Set(activationCode, *userInfo.Email, time.Minute*10).Err(); err != nil {
@@ -131,7 +127,7 @@ func SendAuthPhone(c controller.Context) (res schema.Response) {
 	}
 
 	// 生成验证码
-	activationCode := GenerateAuthCode()
+	activationCode := captcha.GeneratePhoneCaptcha()
 
 	// 缓存验证码到 redis
 	if err = redis.ClientAuthPhoneCode.Set(activationCode, *userInfo.Phone, time.Minute*10).Err(); err != nil {
