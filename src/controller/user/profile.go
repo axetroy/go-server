@@ -19,6 +19,7 @@ import (
 )
 
 type UpdateProfileParams struct {
+	Username *string                    `json:"username"` // 用户名，部分用户有机会修改自己的用户名，比如微信注册的帐号
 	Nickname *string                    `json:"nickname" valid:"length(1|36)~昵称长度为1-36位"`
 	Gender   *model.Gender              `json:"gender"`
 	Avatar   *string                    `json:"avatar"`
@@ -197,6 +198,32 @@ func UpdateProfile(context controller.Context, input UpdateProfileParams) (res s
 
 	updated := model.User{}
 
+	if input.Username != nil {
+		shouldUpdate = true
+
+		if err = validator.ValidateUsername(*input.Username); err != nil {
+			return
+		}
+
+		u := model.User{Id: context.Uid}
+
+		if err = tx.Where(&u).First(&u).Error; err != nil {
+			if err == gorm.ErrRecordNotFound {
+				err = exception.UserNotExist
+			}
+			return
+		}
+
+		// 如果没有剩余的重命名次数的话
+		if u.UsernameRenameRemaining <= 0 {
+			err = exception.RenameUserNameFail
+			return
+		}
+
+		updated.Username = *input.Username
+		updated.UsernameRenameRemaining = u.UsernameRenameRemaining - 1
+	}
+
 	if input.Nickname != nil {
 		updated.Nickname = input.Nickname
 		shouldUpdate = true
@@ -222,7 +249,7 @@ func UpdateProfile(context controller.Context, input UpdateProfileParams) (res s
 		Id: context.Uid,
 	}
 
-	if err = tx.First(&userInfo).Error; err != nil {
+	if err = tx.Where(&userInfo).First(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			err = exception.UserNotExist
 		}

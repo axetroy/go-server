@@ -406,13 +406,14 @@ func SignInWithWechat(c controller.Context, input SignInWithWechatParams) (res s
 		)
 
 		userInfo = &model.User{
-			Username:     username,
-			Nickname:     &username,
-			Password:     util.GeneratePassword(uid),
-			Status:       model.UserStatusInit,
-			Role:         pq.StringArray{model.DefaultUser.Name},
-			Gender:       model.GenderUnknown,
-			WechatOpenID: &wechatOpenID.Id,
+			Username:                username,
+			Nickname:                &username,
+			Password:                util.GeneratePassword(uid),
+			Status:                  model.UserStatusInit,
+			Role:                    pq.StringArray{model.DefaultUser.Name},
+			Gender:                  model.GenderUnknown,
+			WechatOpenID:            &wechatOpenID.Id,
+			UsernameRenameRemaining: 1, // 允许微信注册的用户可以重命名一次
 		}
 
 		if err = tx.Create(userInfo).Error; err != nil {

@@ -33,6 +33,7 @@ var (
 	RequirePassword          = New("请输入密码", 200013)
 	RequirePayPassword       = New("请输入交易密码", 200014)
 	DuplicateBinding         = New("帐号重复绑定", 200015)
+	RenameUserNameFail       = New("无法重命名用户名", 200016)
 
 	// 钱包
 	NotEnoughBalance = New("钱包余额不足", 0)

@@ -259,14 +259,15 @@ func SignUpWithEmail(input SignUpWithEmailParams) (res schema.Response) {
 	username := "u" + util.GenerateId()
 
 	userInfo := model.User{
-		Username: username,
-		Nickname: &username,
-		Password: util.GeneratePassword(input.Password),
-		Status:   model.UserStatusInit,
-		Role:     pq.StringArray{model.DefaultUser.Name},
-		Phone:    nil,
-		Email:    &input.Email,
-		Gender:   model.GenderUnknown,
+		Username:                username,
+		Nickname:                &username,
+		Password:                util.GeneratePassword(input.Password),
+		Status:                  model.UserStatusInit,
+		Role:                    pq.StringArray{model.DefaultUser.Name},
+		Phone:                   nil,
+		Email:                   &input.Email,
+		Gender:                  model.GenderUnknown,
+		UsernameRenameRemaining: 1, // 允许重命名 username 一次
 	}
 
 	if err = tx.Create(&userInfo).Error; err != nil {
@@ -455,14 +456,15 @@ func SignUpWithPhone(input SignUpWithPhoneParams) (res schema.Response) {
 	pwd := util.RandomString(6)
 
 	userInfo := model.User{
-		Username: username,
-		Nickname: &username,
-		Password: util.GeneratePassword(pwd),
-		Status:   model.UserStatusInit,
-		Role:     pq.StringArray{model.DefaultUser.Name},
-		Phone:    &input.Phone,
-		Email:    nil,
-		Gender:   model.GenderUnknown,
+		Username:                username,
+		Nickname:                &username,
+		Password:                util.GeneratePassword(pwd),
+		Status:                  model.UserStatusInit,
+		Role:                    pq.StringArray{model.DefaultUser.Name},
+		Phone:                   &input.Phone,
+		Email:                   nil,
+		Gender:                  model.GenderUnknown,
+		UsernameRenameRemaining: 1, // 允许重命名 username 一次
 	}
 
 	if err = tx.Create(&userInfo).Error; err != nil {
