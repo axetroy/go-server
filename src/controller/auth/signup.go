@@ -91,6 +91,10 @@ func SignUpWithUsername(input SignUpWithUsernameParams) (res schema.Response) {
 		return
 	}
 
+	if err = validator.ValidateUsername(input.Username); err != nil {
+		return
+	}
+
 	tx = database.Db.Begin()
 
 	u := model.User{Username: input.Username}

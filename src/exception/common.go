@@ -8,7 +8,7 @@ var (
 	NoData            = New("找不到数据", 100001)
 	NoPermission      = New("没有权限", 100002)
 	InvalidSignature  = New("数据签名不正确", 100003)
-	InvalidActiveCode = New("激活链接已超时", 100004)
+	InvalidFormat     = New("格式不正确", 100004)
 	InvalidInviteCode = New("无效的邀请码", 100005)
 	UserNotLogin      = New("请先登陆", 999999)
 	InvalidAuth       = New("无效的身份认证方式", 999999)
