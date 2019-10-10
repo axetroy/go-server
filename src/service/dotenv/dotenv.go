@@ -18,7 +18,6 @@ import (
 
 var (
 	Test    bool   // 当前是否是测试环境
-	Env     string // 当前的运行环境
 	RootDir string // 当前运行的二进制所在的目录
 	loaded  bool   // 是否已初始化过
 )
@@ -41,6 +40,11 @@ func Load() (err error) {
 	isRunInTest := flag.Lookup("test.v") != nil
 	isRunInTravis := os.Getenv("TRAVIS") != ""
 
+	// 如果设置环境变量 GO_TESTING=1 则认为是测试环境
+	if !isRunInTest {
+		isRunInTest = len(os.Getenv("GO_TESTING")) > 0
+	}
+
 	if !isRunInTest {
 		if isRunInTravis {
 			isRunInTest = true
@@ -51,7 +55,6 @@ func Load() (err error) {
 	}
 
 	Test = isRunInTest
-	Env = os.Getenv("GO_ENV")
 
 	var pwd string
 

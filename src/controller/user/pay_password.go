@@ -281,7 +281,7 @@ func SendResetPayPassword(context controller.Context) (res schema.Response) {
 		}()
 	} else if userInfo.Phone != nil {
 		go func() {
-			if err = telephone.Send(*userInfo.Phone, telephone.TemplateResetPassword, resetCode); err != nil {
+			if err = telephone.GetClient().SendResetPasswordCode(*userInfo.Phone, resetCode); err != nil {
 				// 如果发送失败，则删除
 				_ = redis.ClientAuthPhoneCode.Del(resetCode).Err()
 				return

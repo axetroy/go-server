@@ -10,6 +10,8 @@ var (
 	InvalidSignature  = New("数据签名不正确", 100003)
 	InvalidFormat     = New("格式不正确", 100004)
 	InvalidInviteCode = New("无效的邀请码", 100005)
+	SendMsgFail       = New("发送短信失败", 101000)
+	SendEmailFail     = New("发送邮件失败", 101001)
 	UserNotLogin      = New("请先登陆", 999999)
 	InvalidAuth       = New("无效的身份认证方式", 999999)
 	InvalidToken      = New("无效的身份令牌", 999999)

@@ -108,7 +108,7 @@ func SendPhoneAuthCode(c controller.Context, input SendPhoneAuthCodeParams) (res
 		return
 	}
 
-	if err = telephone.Send(input.Phone, telephone.TemplateAuth, activationCode); err != nil {
+	if err = telephone.GetClient().SendAuthCode(input.Phone, activationCode); err != nil {
 		// 如果发送失败，则删除
 		_ = redis.ClientAuthPhoneCode.Del(activationCode).Err()
 		return

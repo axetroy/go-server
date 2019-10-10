@@ -1,23 +1,45 @@
 package telephone
 
 import (
-	"github.com/axetroy/go-server/src/validator"
+	"fmt"
+	"github.com/axetroy/go-server/src/config"
 	"log"
 )
 
 type TemplateID string
 
-const (
-	TemplateAuth          TemplateID = "1" // 身份验证的模版
-	TemplateResetPassword TemplateID = "2" // 重置密码的模版
+var (
+	client *Telephone // 发送短信的客户端
 )
 
-// 发送短信验证码
-func Send(phone string, templateID TemplateID, values ...interface{}) error {
-	if err := validator.ValidatePhone(phone); err != nil {
-		return err
+// 邮箱提供这应提供的对象
+type Telephone interface {
+	// 内部实现方法
+	getAuthTemplateID() string                                                 // 身份验证的模版 ID
+	getResetPasswordTemplateID() string                                        // 重置密码的模版 ID
+	getRegisterTemplateID() string                                             // 注册帐号的模版 ID
+	send(phone string, templateID string, templateMap map[string]string) error // 发送验证码
+	// 暴露的方法
+	SendRegisterCode(phone string, code string) error      // 发送注册验证码
+	SendAuthCode(phone string, code string) error          // 发送身份验证码
+	SendResetPasswordCode(phone string, code string) error // 发送重置密码验证码
+}
+
+func init() {
+	switch config.Telephone.Provider {
+	case "aliyun":
+		ali := Aliyun{}
+		initClient(&ali)
+		break
+	default:
+		log.Fatal(fmt.Sprintf(`Invalid telephone provider "%s"`, config.Telephone.Provider))
 	}
-	// TODO: 接入发送短信验证码
-	log.Printf("发送短信验证码")
-	return nil
+}
+
+func initClient(s Telephone) {
+	client = &s
+}
+
+func GetClient() Telephone {
+	return *client
 }
