@@ -44,8 +44,8 @@ const oauthStateString = "go-server"
 
 // 调用谷歌登陆，然后重定向到谷歌认证页面
 func GoogleLoginRouter(c *gin.Context) {
-	config := GetgoogleOAuth2Config()
-	url := config.AuthCodeURL(oauthStateString)
+	cc := GetgoogleOAuth2Config()
+	url := cc.AuthCodeURL(oauthStateString)
 	c.Redirect(http.StatusTemporaryRedirect, url)
 }
 
@@ -82,9 +82,9 @@ func GoogleCallbackRouter(c *gin.Context) {
 		return
 	}
 
-	config := GetgoogleOAuth2Config()
+	cc := GetgoogleOAuth2Config()
 
-	token, err := config.Exchange(oauth2.NoContext, query.Code)
+	token, err := cc.Exchange(oauth2.NoContext, query.Code)
 
 	if err != nil {
 		res := fmt.Sprintf("code exchange failed with '%s'\n", err)
