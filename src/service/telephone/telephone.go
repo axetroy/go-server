@@ -1,8 +1,7 @@
 package telephone
 
 import (
-	"github.com/axetroy/go-server/src/exception"
-	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/src/validator"
 	"log"
 )
 
@@ -15,8 +14,8 @@ const (
 
 // 发送短信验证码
 func Send(phone string, templateID TemplateID, values ...interface{}) error {
-	if !util.IsPhone(phone) {
-		return exception.InvalidParams
+	if err := validator.ValidatePhone(phone); err != nil {
+		return err
 	}
 	// TODO: 接入发送短信验证码
 	log.Printf("发送短信验证码")

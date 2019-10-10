@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/src/config"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/controller/wallet"
@@ -99,10 +98,10 @@ func SignIn(c controller.Context, input SignInParams) (res schema.Response) {
 		Password: util.GeneratePassword(input.Password),
 	}
 
-	if util.IsPhone(input.Account) {
+	if validator.IsPhone(input.Account) {
 		// 用手机号登陆
 		userInfo.Phone = &input.Account
-	} else if govalidator.IsEmail(input.Account) {
+	} else if validator.IsEmail(input.Account) {
 		// 用邮箱登陆
 		userInfo.Email = &input.Account
 	} else {
