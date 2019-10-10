@@ -8,11 +8,19 @@
 
 [PUT] /v1/user/profile
 
-| 参数     | 类型     | 说明         | 必选 |
-| -------- | -------- | ------------ | ---- |
-| nickname | `string` | 用户昵称     |      |
-| gender   | `string` | 用户性别     |      |
-| avatar   | `string` | 用户头像 URL |      |
+| 参数              | 类型     | 说明                                                                                                                                                                   | 必选 |
+| ----------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| nickname          | `string` | 用户昵称                                                                                                                                                               |      |
+| gender            | `string` | 用户性别                                                                                                                                                               |      |
+| avatar            | `string` | 用户头像 URL                                                                                                                                                           |      |
+| wechat            | `object` | 更新微信绑定的相关信息<br/> 由于绑定微信后，还没有拿到微信的昵称/性别等信息。所以需要客户端手动调用更新信息<br/>相关的信息由微信小程序接口接口 `wx.getUserInfo()` 获得 |      |
+| wechat.nickname   | `string` | 微信昵称                                                                                                                                                               |      |
+| wechat.avatar_url | `string` | 微信头像 URL                                                                                                                                                           |      |
+| wechat.gender     | `int`    | 性别                                                                                                                                                                   |      |
+| wechat.country    | `string` | 国家                                                                                                                                                                   |      |
+| wechat.province   | `string` | 省份                                                                                                                                                                   |      |
+| wechat.city       | `string` | 城市                                                                                                                                                                   |      |
+| wechat.language   | `string` | 语言                                                                                                                                                                   |      |
 
 ### 修改登陆密码
 

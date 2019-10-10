@@ -41,11 +41,16 @@ type User struct {
 	EnableTOTP              bool           `gorm:"not null;" json:"enable_totp"`                                 // 是否启用双重身份认证
 	Secret                  string         `gorm:"not null;type:varchar(32)" json:"secret"`                      // 用户自己的密钥
 	InviteCode              string         `gorm:"not null;unique;type:varchar(8)" json:"invite_code"`           // 用户的邀请码，邀请码唯一
-	OauthGoogleId           *string        `gorm:"null;unique;type:varchar(255)" json:"oauth_google_id"`         // 用户的GoogleAuth唯一标识符
 	UsernameRenameRemaining int            `gorm:"not null" json:"username_rename_remaining"`                    // 用户名还有几次重新更改的机会， 主要是如果用第三方注册登陆，则用户名随机生成，这里给用户一个重新命名的机会
-	CreatedAt               time.Time
-	UpdatedAt               time.Time
-	DeletedAt               *time.Time `sql:"index"`
+
+	// 外键关联
+	WechatOpenID *string       `gorm:"null;unique;index" json:"wechat_open_id"`        // 绑定的微信帐号 open_id
+	Wechat       *WechatOpenID `gorm:"foreignkey:wechatOpenID" json:"wechat"`          // **外键**
+	GoogleId     *string       `gorm:"null;unique;type:varchar(255)" json:"google_id"` // 用户的GoogleAuth唯一标识符
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt *time.Time `sql:"index"`
 }
 
 func (u *User) TableName() string {

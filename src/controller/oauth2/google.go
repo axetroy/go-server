@@ -120,7 +120,7 @@ func GoogleCallbackRouter(c *gin.Context) {
 	}
 
 	// 查询是否有这个用户存在
-	user := model.User{OauthGoogleId: &res.Id}
+	user := model.User{GoogleId: &res.Id}
 
 	if err = database.Db.Where(&user).Last(&user).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {

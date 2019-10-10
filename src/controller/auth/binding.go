@@ -9,6 +9,7 @@ import (
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/service/redis"
+	"github.com/axetroy/go-server/src/service/wechat"
 	"github.com/axetroy/go-server/src/validator"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -247,7 +248,7 @@ func BindingWechat(c controller.Context, input BindingWechatMiniAppParams) (res 
 		return
 	}
 
-	wechatRes, err := FetchWechatInfo(input.Code)
+	wechatRes, err := wechat.FetchOpenID(input.Code)
 
 	if err != nil {
 		return
@@ -257,6 +258,17 @@ func BindingWechat(c controller.Context, input BindingWechatMiniAppParams) (res 
 
 	wechatInfo := model.WechatOpenID{
 		Id: wechatRes.OpenID,
+	}
+
+	userInfo := model.User{Id: c.Uid}
+
+	if err = tx.Where(&userInfo).First(&userInfo).Error; err != nil {
+		return
+	}
+
+	if userInfo.WechatOpenID != nil {
+		err = exception.DuplicateBinding
+		return
 	}
 
 	err = tx.Where(&wechatInfo).Preload("User").First(&wechatInfo).Error
@@ -282,8 +294,13 @@ func BindingWechat(c controller.Context, input BindingWechatMiniAppParams) (res 
 		return
 	}
 
-	// 乳沟没有绑定，则更新绑定信息
-	if err = tx.Where(&wechatInfo).Update("uid", c.Context).Error; err != nil {
+	// 如果没有绑定，则更新绑定信息
+	if err = tx.Model(&wechatInfo).Where("id = ?", wechatInfo.Id).Update(model.WechatOpenID{Uid: c.Uid}).Error; err != nil {
+		return
+	}
+
+	// 更新用户信息
+	if err = tx.Model(&userInfo).Where("id = ?", userInfo.Id).Update(model.User{WechatOpenID: &wechatInfo.Id}).Error; err != nil {
 		return
 	}
 

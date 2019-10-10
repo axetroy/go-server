@@ -19,9 +19,21 @@ import (
 )
 
 type UpdateProfileParams struct {
-	Nickname *string       `json:"nickname" valid:"length(1|36)~昵称长度为1-36位"`
-	Gender   *model.Gender `json:"gender"`
-	Avatar   *string       `json:"avatar"`
+	Nickname *string                    `json:"nickname" valid:"length(1|36)~昵称长度为1-36位"`
+	Gender   *model.Gender              `json:"gender"`
+	Avatar   *string                    `json:"avatar"`
+	Wechat   *UpdateWechatProfileParams `json:"wechat"` // 更新微信绑定的帐号相关
+}
+
+// 绑定的微信信息帐号相关
+type UpdateWechatProfileParams struct {
+	Nickname  *string `json:"nickname"`   // 用户昵称
+	AvatarUrl *string `json:"avatar_url"` // 用户头像
+	Gender    *int    `json:"gender"`     // 性别
+	Country   *string `json:"country"`    // 国家
+	Province  *string `json:"province"`   // 省份
+	City      *string `json:"city"`       // 城市
+	Language  *string `json:"language"`   // 语言
 }
 
 func GetProfile(context controller.Context) (res schema.Response) {
@@ -56,22 +68,28 @@ func GetProfile(context controller.Context) (res schema.Response) {
 
 	tx = database.Db.Begin()
 
-	user := model.User{Id: context.Uid}
+	userInfo := model.User{Id: context.Uid}
 
-	if err = tx.Last(&user).Error; err != nil {
+	if err = tx.Where(&userInfo).Preload("Wechat").Last(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			err = exception.UserNotExist
 		}
 		return
 	}
 
-	if err = mapstructure.Decode(user, &data.ProfilePure); err != nil {
+	if err = mapstructure.Decode(userInfo, &data.ProfilePure); err != nil {
 		return
 	}
 
-	data.PayPassword = user.PayPassword != nil && len(*user.PayPassword) != 0
-	data.CreatedAt = user.CreatedAt.Format(time.RFC3339Nano)
-	data.UpdatedAt = user.UpdatedAt.Format(time.RFC3339Nano)
+	if userInfo.WechatOpenID != nil {
+		if err = mapstructure.Decode(userInfo.Wechat, &data.Wechat); err != nil {
+			return
+		}
+	}
+
+	data.PayPassword = userInfo.PayPassword != nil && len(*userInfo.PayPassword) != 0
+	data.CreatedAt = userInfo.CreatedAt.Format(time.RFC3339Nano)
+	data.UpdatedAt = userInfo.UpdatedAt.Format(time.RFC3339Nano)
 
 	return
 }
@@ -209,6 +227,77 @@ func UpdateProfile(context controller.Context, input UpdateProfileParams) (res s
 			err = exception.UserNotExist
 		}
 		return
+	}
+
+	if input.Wechat != nil {
+		wechatInfo := model.WechatOpenID{
+			Uid: userInfo.Id,
+		}
+		// 判断该用户是否绑定了微信帐号
+		if err = tx.Where(&wechatInfo).First(&wechatInfo).Error; err != nil {
+			// 如果没有找到，说明帐号没有绑定微信，抛出异常
+			if err == gorm.ErrRecordNotFound {
+				err = exception.InvalidParams
+			}
+			return
+		}
+
+		// 更新对应的字段
+		wechatUpdated := model.WechatOpenID{}
+		shouldUpdateWechat := false
+
+		if input.Wechat.Nickname != nil {
+			wechatUpdated.Nickname = input.Wechat.Nickname
+			shouldUpdateWechat = true
+		}
+
+		if input.Wechat.AvatarUrl != nil {
+			wechatUpdated.AvatarUrl = input.Wechat.AvatarUrl
+			shouldUpdateWechat = true
+		}
+
+		if input.Wechat.Gender != nil {
+			wechatUpdated.Gender = input.Wechat.Gender
+			shouldUpdateWechat = true
+		}
+
+		if input.Wechat.Country != nil {
+			wechatUpdated.Country = input.Wechat.Country
+			shouldUpdateWechat = true
+		}
+
+		if input.Wechat.Province != nil {
+			wechatUpdated.Province = input.Wechat.Province
+			shouldUpdateWechat = true
+		}
+
+		if input.Wechat.City != nil {
+			wechatUpdated.City = input.Wechat.City
+			shouldUpdateWechat = true
+		}
+
+		if input.Wechat.Language != nil {
+			wechatUpdated.Language = input.Wechat.Language
+			shouldUpdateWechat = true
+		}
+
+		if shouldUpdateWechat {
+			info := model.WechatOpenID{Id: wechatInfo.Id}
+			if err = tx.Where(&info).Updates(wechatUpdated).Error; err != nil {
+				if err == gorm.ErrRecordNotFound {
+					err = exception.InvalidParams
+				}
+				return
+			}
+
+			wechat := schema.WechatBindingInfo{}
+
+			if err = mapstructure.Decode(info, &wechat); err != nil {
+				return
+			}
+
+			data.Wechat = &wechat
+		}
 	}
 
 	if err = mapstructure.Decode(userInfo, &data.ProfilePure); err != nil {

@@ -9,6 +9,7 @@ import (
 	"github.com/axetroy/go-server/src/schema"
 	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/service/redis"
+	"github.com/axetroy/go-server/src/service/wechat"
 	"github.com/axetroy/go-server/src/validator"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -244,7 +245,7 @@ func UnbindingWechat(c controller.Context, input UnbindingWechatParams) (res sch
 		}
 	} else {
 		// 否则按照 `wx.login()` 返回的 code
-		weRes, err := FetchWechatInfo(input.Code)
+		weRes, err := wechat.FetchOpenID(input.Code)
 
 		if err != nil {
 			return

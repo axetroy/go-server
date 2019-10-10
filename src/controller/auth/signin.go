@@ -2,10 +2,7 @@
 package auth
 
 import (
-	"encoding/json"
 	"errors"
-	"fmt"
-	"github.com/axetroy/go-server/src/config"
 	"github.com/axetroy/go-server/src/controller"
 	"github.com/axetroy/go-server/src/controller/wallet"
 	"github.com/axetroy/go-server/src/exception"
@@ -15,13 +12,13 @@ import (
 	"github.com/axetroy/go-server/src/service/database"
 	"github.com/axetroy/go-server/src/service/redis"
 	"github.com/axetroy/go-server/src/service/token"
+	"github.com/axetroy/go-server/src/service/wechat"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/axetroy/go-server/src/validator"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
 	"github.com/mitchellh/mapstructure"
-	"io/ioutil"
 	"net/http"
 	"time"
 )
@@ -43,14 +40,6 @@ type SignInWithPhoneParams struct {
 
 type SignInWithWechatParams struct {
 	Code string `json:"code" valid:"required~请输入微信授权代码"` // 微信小程序授权之后返回的 code
-}
-
-type WechatResponse struct {
-	OpenID     string `json:"openid"`      // 用户唯一标识
-	SessionKey string `json:"session_key"` // 会话密钥
-	UnionID    string `json:"unionid"`     // 用户在开放平台的唯一标识符，在满足 UnionID 下发条件的情况下会返回
-	ErrCode    int    `json:"errcode"`     // 错误码
-	ErrMsg     string `json:"errmsg"`      // 错误信息
 }
 
 type WechatCompleteParams struct {
@@ -111,7 +100,7 @@ func SignIn(c controller.Context, input SignInParams) (res schema.Response) {
 
 	tx = database.Db.Begin()
 
-	if err = tx.Where(&userInfo).Last(&userInfo).Error; err != nil {
+	if err = tx.Where(&userInfo).Preload("Wechat").Last(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			err = exception.InvalidAccountOrPassword
 		}
@@ -124,6 +113,12 @@ func SignIn(c controller.Context, input SignInParams) (res schema.Response) {
 
 	if err = mapstructure.Decode(userInfo, &data.ProfilePure); err != nil {
 		return
+	}
+
+	if userInfo.WechatOpenID != nil {
+		if err = mapstructure.Decode(userInfo.Wechat, &data.Wechat); err != nil {
+			return
+		}
 	}
 
 	data.PayPassword = userInfo.PayPassword != nil && len(*userInfo.PayPassword) != 0
@@ -203,7 +198,7 @@ func SignInWithEmail(c controller.Context, input SignInWithEmailParams) (res sch
 
 	tx = database.Db.Begin()
 
-	if err = tx.Where(&userInfo).Last(&userInfo).Error; err != nil {
+	if err = tx.Where(&userInfo).Preload("Wechat").Last(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			err = exception.InvalidAccountOrPassword
 		}
@@ -216,6 +211,12 @@ func SignInWithEmail(c controller.Context, input SignInWithEmailParams) (res sch
 
 	if err = mapstructure.Decode(userInfo, &data.ProfilePure); err != nil {
 		return
+	}
+
+	if userInfo.WechatOpenID != nil {
+		if err = mapstructure.Decode(userInfo.Wechat, &data.Wechat); err != nil {
+			return
+		}
 	}
 
 	data.PayPassword = userInfo.PayPassword != nil && len(*userInfo.PayPassword) != 0
@@ -295,7 +296,7 @@ func SignInWithPhone(c controller.Context, input SignInWithPhoneParams) (res sch
 
 	tx = database.Db.Begin()
 
-	if err = tx.Where(&userInfo).Last(&userInfo).Error; err != nil {
+	if err = tx.Where(&userInfo).Preload("Wechat").Last(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			err = exception.InvalidAccountOrPassword
 		}
@@ -308,6 +309,12 @@ func SignInWithPhone(c controller.Context, input SignInWithPhoneParams) (res sch
 
 	if err = mapstructure.Decode(userInfo, &data.ProfilePure); err != nil {
 		return
+	}
+
+	if userInfo.WechatOpenID != nil {
+		if err = mapstructure.Decode(userInfo.Wechat, &data.Wechat); err != nil {
+			return
+		}
 	}
 
 	data.PayPassword = userInfo.PayPassword != nil && len(*userInfo.PayPassword) != 0
@@ -338,32 +345,8 @@ func SignInWithPhone(c controller.Context, input SignInWithPhoneParams) (res sch
 	return
 }
 
-func FetchWechatInfo(code string) (*WechatResponse, error) {
-	wechatUrl := fmt.Sprintf("https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code", config.Wechat.AppID, config.Wechat.Secret, code)
-
-	r, reqErr := http.Get(wechatUrl)
-
-	if reqErr != nil {
-		return nil, reqErr
-	}
-
-	resBytes, ioErr := ioutil.ReadAll(r.Body)
-
-	if ioErr != nil {
-		return nil, ioErr
-	}
-
-	reqRes := WechatResponse{}
-
-	if jsonErr := json.Unmarshal(resBytes, &reqRes); jsonErr != nil {
-		return nil, jsonErr
-	}
-
-	return &reqRes, nil
-}
-
 // 使用微信小程序登陆
-func SignInWithWechat(context controller.Context, input SignInWithWechatParams) (res schema.Response) {
+func SignInWithWechat(c controller.Context, input SignInWithWechatParams) (res schema.Response) {
 	var (
 		err  error
 		data = &schema.ProfileWithToken{}
@@ -398,7 +381,7 @@ func SignInWithWechat(context controller.Context, input SignInWithWechatParams) 
 		return
 	}
 
-	wechatInfo, wechatErr := FetchWechatInfo(input.Code)
+	wechatInfo, wechatErr := wechat.FetchOpenID(input.Code)
 
 	if wechatErr != nil {
 		err = wechatErr
@@ -423,12 +406,13 @@ func SignInWithWechat(context controller.Context, input SignInWithWechatParams) 
 		)
 
 		userInfo = &model.User{
-			Username: username,
-			Nickname: &username,
-			Password: util.GeneratePassword(uid),
-			Status:   model.UserStatusInit,
-			Role:     pq.StringArray{model.DefaultUser.Name},
-			Gender:   model.GenderUnknown,
+			Username:     username,
+			Nickname:     &username,
+			Password:     util.GeneratePassword(uid),
+			Status:       model.UserStatusInit,
+			Role:         pq.StringArray{model.DefaultUser.Name},
+			Gender:       model.GenderUnknown,
+			WechatOpenID: &wechatOpenID.Id,
 		}
 
 		if err = tx.Create(userInfo).Error; err != nil {
@@ -454,7 +438,6 @@ func SignInWithWechat(context controller.Context, input SignInWithWechatParams) 
 			}
 		}
 
-		return
 	} else {
 		userInfo = &wechatOpenID.User
 	}
@@ -464,17 +447,17 @@ func SignInWithWechat(context controller.Context, input SignInWithWechatParams) 
 		return
 	}
 
-	if err = tx.Where(&userInfo).Last(&userInfo).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			err = exception.InvalidAccountOrPassword
-		}
-		return
-	}
-
 	if err = mapstructure.Decode(userInfo, &data.ProfilePure); err != nil {
 		return
 	}
 
+	wechatBindingInfo := schema.WechatBindingInfo{}
+
+	if err = mapstructure.Decode(wechatOpenID, &wechatBindingInfo); err != nil {
+		return
+	}
+
+	data.Wechat = &wechatBindingInfo
 	data.PayPassword = userInfo.PayPassword != nil && len(*userInfo.PayPassword) != 0
 	data.CreatedAt = userInfo.CreatedAt.Format(time.RFC3339Nano)
 	data.UpdatedAt = userInfo.UpdatedAt.Format(time.RFC3339Nano)
@@ -492,8 +475,8 @@ func SignInWithWechat(context controller.Context, input SignInWithWechatParams) 
 		Uid:     userInfo.Id,                       // 用户ID
 		Type:    model.LoginLogTypeWechat,          // 微信登陆
 		Command: model.LoginLogCommandLoginSuccess, // 登陆成功
-		Client:  context.UserAgent,                 // 用户的 userAgent
-		LastIp:  context.Ip,                        // 用户的IP
+		Client:  c.UserAgent,                       // 用户的 userAgent
+		LastIp:  c.Ip,                              // 用户的IP
 	}
 
 	if err = tx.Create(&log).Error; err != nil {

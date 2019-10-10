@@ -41,6 +41,15 @@ func Load() (err error) {
 	isRunInTest := flag.Lookup("test.v") != nil
 	isRunInTravis := os.Getenv("TRAVIS") != ""
 
+	if !isRunInTest {
+		if isRunInTravis {
+			isRunInTest = true
+		} else {
+			e, _ := os.Executable()
+			isRunInTest = regexp.MustCompile("\\/T\\/___").MatchString(e)
+		}
+	}
+
 	Test = isRunInTest
 	Env = os.Getenv("GO_ENV")
 

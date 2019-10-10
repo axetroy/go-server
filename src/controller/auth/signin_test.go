@@ -64,9 +64,7 @@ func TestSignInSuccess(t *testing.T) {
 		t.Error(r.Message)
 		return
 	} else {
-		defer func() {
-			auth.DeleteUserByUserName(username)
-		}()
+		defer auth.DeleteUserByUserName(username)
 	}
 
 	res := auth.SignIn(controller.Context{
@@ -94,4 +92,19 @@ func TestSignInSuccess(t *testing.T) {
 	} else {
 		assert.IsType(t, "", c.Uid, "UID必须是字符串")
 	}
+}
+
+func TestSignInWithWechat(t *testing.T) {
+	res := auth.SignInWithWechat(controller.Context{}, auth.SignInWithWechatParams{
+		Code: "test code",
+	})
+
+	profile := schema.ProfileWithToken{}
+
+	assert.Equal(t, schema.StatusSuccess, res.Status)
+	assert.Equal(t, "", res.Message)
+	assert.Nil(t, mapstructure.Decode(res.Data, &profile))
+	assert.NotEmpty(t, profile)
+
+	defer auth.DeleteUserByUid(profile.Id)
 }
