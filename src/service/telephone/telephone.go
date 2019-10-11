@@ -1,3 +1,4 @@
+// Copyright 2019 Axetroy. All rights reserved. MIT license.
 package telephone
 
 import (
@@ -10,8 +11,9 @@ type TemplateID string
 type Provider string
 
 var (
-	client         *Telephone // 发送短信的客户端
-	ProviderAliyun Provider   = "aliyun"
+	client          *Telephone             // 发送短信的客户端
+	ProviderAliyun  Provider   = "aliyun"  // 阿里云
+	ProviderTencent Provider   = "tencent" // 腾讯云
 )
 
 // 邮箱提供这应提供的对象
@@ -31,6 +33,9 @@ func init() {
 	switch Provider(config.Telephone.Provider) {
 	case ProviderAliyun:
 		initClient(NewAliyun())
+		break
+	case ProviderTencent:
+		initClient(NewTencent())
 		break
 	default:
 		log.Fatal(fmt.Sprintf(`Invalid telephone provider "%s"`, config.Telephone.Provider))
