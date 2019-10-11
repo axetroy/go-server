@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 type Error struct {
@@ -13,7 +14,7 @@ type Error struct {
 }
 
 var (
-	errReg = regexp.MustCompile("\\s\\[(\\d+)\\]$")
+	errReg = regexp.MustCompile("\\s*\\[(\\d+)\\]$")
 )
 
 func New(text string, code int) *Error {
@@ -23,8 +24,14 @@ func New(text string, code int) *Error {
 	}
 }
 
+// 包装无效参数错误
 func WrapValidatorError(err error) *Error {
-	return New(err.Error(), InvalidParams.Code())
+	return InheritError(err, InvalidParams)
+}
+
+// 继承错误
+func InheritError(source error, target *Error) *Error {
+	return New(source.Error(), target.Code())
 }
 
 func (e *Error) Error() string {
@@ -44,7 +51,7 @@ func GetCodeFromError(err error) int {
 		return 0
 	}
 
-	result, err := strconv.Atoi(matchers[1])
+	result, err := strconv.Atoi(strings.TrimSpace(matchers[1]))
 
 	if err != nil {
 		return 0
