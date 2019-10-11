@@ -7,6 +7,12 @@ import (
 	"github.com/axetroy/go-server/src/exception"
 )
 
+func NewAliyun() *Aliyun {
+	c := &Aliyun{}
+
+	return c
+}
+
 type Aliyun struct {
 }
 

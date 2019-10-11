@@ -7,9 +7,11 @@ import (
 )
 
 type TemplateID string
+type Provider string
 
 var (
-	client *Telephone // 发送短信的客户端
+	client         *Telephone // 发送短信的客户端
+	ProviderAliyun Provider   = "aliyun"
 )
 
 // 邮箱提供这应提供的对象
@@ -26,10 +28,9 @@ type Telephone interface {
 }
 
 func init() {
-	switch config.Telephone.Provider {
-	case "aliyun":
-		ali := Aliyun{}
-		initClient(&ali)
+	switch Provider(config.Telephone.Provider) {
+	case ProviderAliyun:
+		initClient(NewAliyun())
 		break
 	default:
 		log.Fatal(fmt.Sprintf(`Invalid telephone provider "%s"`, config.Telephone.Provider))
