@@ -11,8 +11,8 @@ type provider string
 
 var (
 	client          *Telephone             // 发送短信的客户端
-	ProviderAliyun  provider   = "aliyun"  // 阿里云
-	ProviderTencent provider   = "tencent" // 腾讯云
+	providerAliyun  provider   = "aliyun"  // 阿里云
+	providerTencent provider   = "tencent" // 腾讯云
 )
 
 // 邮箱提供这应提供的对象
@@ -28,10 +28,10 @@ type Telephone interface {
 
 func init() {
 	switch provider(config.Telephone.Provider) {
-	case ProviderAliyun:
+	case providerAliyun:
 		initClient(NewAliyun())
 		break
-	case ProviderTencent:
+	case providerTencent:
 		initClient(NewTencent())
 		break
 	default:
