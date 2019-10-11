@@ -14,7 +14,7 @@ type Error struct {
 }
 
 var (
-	errReg = regexp.MustCompile("\\s*\\[(\\d+)\\]$")
+	errReg = regexp.MustCompile("\\s\\[(\\d+)\\]$")
 )
 
 func New(text string, code int) *Error {
