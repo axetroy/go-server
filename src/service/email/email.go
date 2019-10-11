@@ -6,7 +6,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/axetroy/go-server/src/config"
+	"github.com/axetroy/go-server/src/exception"
 	"github.com/jordan-wright/email"
+	"net"
 	"net/smtp"
 	"net/textproto"
 )
@@ -69,7 +71,7 @@ func (e *Mailer) Send(message *Message) (err error) {
 		Headers: textproto.MIMEHeader{},
 	}
 
-	var addr = Config.Host + ":" + Config.Port
+	var addr = net.JoinHostPort(Config.Host, Config.Port)
 
 	if err = msg.SendWithTLS(
 		addr,
@@ -77,6 +79,7 @@ func (e *Mailer) Send(message *Message) (err error) {
 			ServerName:         Config.Host,
 			InsecureSkipVerify: true,
 		}); err != nil {
+		err = exception.SendEmailFail
 		return
 	}
 
