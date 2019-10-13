@@ -1,6 +1,6 @@
 # github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d
 github.com/StackExchange/wmi
-# github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20191011111844-85d596f413ab
+# github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20191013052223-af3ea354f957
 github.com/aliyun/alibaba-cloud-sdk-go/sdk
 github.com/aliyun/alibaba-cloud-sdk-go/sdk/auth
 github.com/aliyun/alibaba-cloud-sdk-go/sdk/auth/credentials
