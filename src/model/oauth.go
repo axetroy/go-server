@@ -16,12 +16,19 @@ var (
 	ProviderTwitter  OAuthProvider = "twitter"
 	ProviderFacebook OAuthProvider = "facebook"
 	ProviderGoogle   OAuthProvider = "google"
+	providerMap                    = map[OAuthProvider]bool{
+		ProviderGithub:   true,
+		ProviderGitlab:   true,
+		ProviderTwitter:  true,
+		ProviderFacebook: true,
+		ProviderGoogle:   true,
+	}
 )
 
 type OAuth struct {
-	Id       string        `gorm:"primary_key;unique;not null;index;type:varchar(32)" json:"id"` // ID
-	Provider OAuthProvider `gorm:"type:varchar(32)" json:"provider"`                             // 绑定的服务提供商
-	Uid      string        `gorm:"not null;index;type:varchar(32)" json:"uid"`                   // 对应的平台 UID
+	Id       string        `gorm:"primary_key;unique;not null;index;type:varchar(32)" json:"id"`    // ID
+	Provider OAuthProvider `gorm:"not null;index;unique(user_id);type:varchar(32)" json:"provider"` // 绑定的服务提供商
+	Uid      string        `gorm:"not null;index;unique(provider);type:varchar(32)" json:"uid"`     // 对应的平台 UID
 
 	// 以下是 oAuth 返回的字段
 	UserID            string    `gorm:"not null;type:varchar(255);index" json:"user_id"` // 用户 ID
@@ -45,6 +52,13 @@ type OAuth struct {
 
 func (o *OAuth) TableName() string {
 	return "oauth"
+}
+
+func (o *OAuth) IsValidProvider() bool {
+	if _, ok := providerMap[o.Provider]; ok == false {
+		return false
+	}
+	return true
 }
 
 func (o *OAuth) BeforeCreate(scope *gorm.Scope) (err error) {
