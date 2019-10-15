@@ -2,11 +2,12 @@
 package model
 
 import (
+	"time"
+
 	"github.com/axetroy/go-server/src/exception"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
-	"time"
 )
 
 type UserStatus int32
@@ -46,7 +47,7 @@ type User struct {
 	// 外键关联
 	WechatOpenID *string       `gorm:"null;unique;type:varchar(255);index" json:"wechat_open_id"` // 绑定的微信帐号 open_id
 	Wechat       *WechatOpenID `gorm:"foreignkey:wechatOpenID" json:"wechat"`                     // **外键**
-	GoogleId     *string       `gorm:"null;unique;type:varchar(255)" json:"google_id"`            // 用户的GoogleAuth唯一标识符
+	OAuth        []OAuth       `gorm:"foreignkey:Uid" json:"oauth"`                               // **外键**
 
 	CreatedAt time.Time
 	UpdatedAt time.Time

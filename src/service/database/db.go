@@ -3,13 +3,14 @@ package database
 
 import (
 	"fmt"
+	"log"
+
 	"github.com/axetroy/go-server/src/config"
 	"github.com/axetroy/go-server/src/model"
 	"github.com/axetroy/go-server/src/service/dotenv"
 	"github.com/axetroy/go-server/src/util"
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
-	"log"
 )
 
 var (
@@ -59,6 +60,7 @@ func init() {
 			new(model.Menu),             // 后台管理员菜单
 			new(model.Help),             // 帮助中心
 			new(model.WechatOpenID),     // 微信 open_id 外键表
+			new(model.OAuth),            // oAuth2 表
 		)
 
 		log.Println("数据库同步完成.")

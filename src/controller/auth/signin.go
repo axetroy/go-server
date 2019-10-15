@@ -42,6 +42,10 @@ type SignInWithWechatParams struct {
 	Code string `json:"code" valid:"required~请输入微信授权代码"` // 微信小程序授权之后返回的 code
 }
 
+type SignInWithOAuthParams struct {
+	Code string `json:"code" valid:"required~请输入授权代码"` // oAuth 授权之后回调返回的 code
+}
+
 type WechatCompleteParams struct {
 	Code     string  `json:"code" valid:"required~请输入微信授权代码"` // 微信小程序授权之后返回的 code
 	Phone    *string `json:"phone"`                           // 手机号
@@ -487,6 +491,98 @@ func SignInWithWechat(c controller.Context, input SignInWithWechatParams) (res s
 	return
 }
 
+// 使用 oAuth 认证方式登陆
+func SignInWithOAuth(c controller.Context, input SignInWithOAuthParams) (res schema.Response) {
+	var (
+		err  error
+		data = &schema.ProfileWithToken{}
+		tx   *gorm.DB
+	)
+
+	defer func() {
+		if r := recover(); r != nil {
+			switch t := r.(type) {
+			case string:
+				err = errors.New(t)
+			case error:
+				err = t
+			default:
+				err = exception.Unknown
+			}
+		}
+
+		if tx != nil {
+			if err != nil {
+				_ = tx.Rollback().Error
+			} else {
+				err = tx.Commit().Error
+			}
+		}
+
+		helper.Response(&res, data, err)
+	}()
+
+	// 参数校验
+	if err = validator.ValidateStruct(input); err != nil {
+		return
+	}
+
+	uid, err := redis.ClientOAuthCode.Get(input.Code).Result()
+
+	if err != nil {
+		return
+	}
+
+	var userInfo = model.User{
+		Id: uid,
+	}
+
+	if err = tx.Where(&userInfo).Preload("Wechat").Find(&userInfo).Error; err != nil {
+		return
+	}
+
+	if err = mapstructure.Decode(userInfo, &data.ProfilePure); err != nil {
+		return
+	}
+
+	if userInfo.WechatOpenID != nil {
+		wechatBindingInfo := schema.WechatBindingInfo{}
+
+		if err = mapstructure.Decode(userInfo.Wechat, &wechatBindingInfo); err != nil {
+			return
+		}
+
+		data.Wechat = &wechatBindingInfo
+	}
+
+	// generate token
+	if t, er := token.Generate(userInfo.Id, false); er != nil {
+		err = er
+		return
+	} else {
+		data.Token = t
+	}
+
+	// 写入登陆记录
+	log := model.LoginLog{
+		Uid:     userInfo.Id,                       // 用户ID
+		Type:    model.LoginLogTypeUserName,        // 默认用户名登陆
+		Command: model.LoginLogCommandLoginSuccess, // 登陆成功
+		Client:  c.UserAgent,                       // 用户的 userAgent
+		LastIp:  c.Ip,                              // 用户的IP
+	}
+
+	if err = tx.Create(&log).Error; err != nil {
+		return
+	}
+
+	data.PayPassword = userInfo.PayPassword != nil && len(*userInfo.PayPassword) != 0
+	data.CreatedAt = userInfo.CreatedAt.Format(time.RFC3339Nano)
+	data.UpdatedAt = userInfo.UpdatedAt.Format(time.RFC3339Nano)
+
+	return
+}
+
 func SignInRouter(c *gin.Context) {
 	var (
 		input SignInParams
@@ -577,4 +673,27 @@ func SignInWithWechatRouter(c *gin.Context) {
 	}
 
 	res = SignInWithWechat(controller.NewContext(c), input)
+}
+
+func SignInWithOAuthRouter(c *gin.Context) {
+	var (
+		input SignInWithOAuthParams
+		err   error
+		res   = schema.Response{}
+	)
+
+	defer func() {
+		if err != nil {
+			res.Data = nil
+			res.Message = err.Error()
+		}
+		c.JSON(http.StatusOK, res)
+	}()
+
+	if err = c.ShouldBindJSON(&input); err != nil {
+		err = exception.InvalidParams
+		return
+	}
+
+	res = SignInWithOAuth(controller.NewContext(c), input)
 }

@@ -80,6 +80,7 @@ func init() {
 			authRouter.POST("/signin/email", auth.SignInWithEmailRouter)   // 邮箱+验证码 登陆
 			authRouter.POST("/signin/phone", auth.SignInWithPhoneRouter)   // 手机+验证码 登陆
 			authRouter.POST("/signin/wechat", auth.SignInWithWechatRouter) // 微信帐号登陆
+			authRouter.POST("/signin/oauth2", auth.SignInWithOAuthRouter)  // oAuth 码登陆
 			authRouter.POST("/signin", auth.SignInRouter)                  // 登陆账号
 			authRouter.PUT("/password/reset", auth.ResetPasswordRouter)    // 密码重置
 			authRouter.POST("/code/email", auth.SendEmailAuthCodeRouter)   // 发送邮箱验证码，验证邮箱是否为用户所有 TODO: 缺少测试用例
@@ -89,8 +90,8 @@ func init() {
 		// oAuth2 认证
 		{
 			oAuthRouter := v1.Group("/oauth2")
-			oAuthRouter.GET("/google", oauth2.GoogleLoginRouter)             // 用 Google 登陆
-			oAuthRouter.GET("/google_callback", oauth2.GoogleCallbackRouter) // Google 认证完成后跳转到这里，用户不应该访问这个地址
+			oAuthRouter.GET("/:provider", oauth2.AuthRouter)                  // 前去进行 oAuth 认证
+			oAuthRouter.GET("/:provider/callback", oauth2.AuthCallbackRouter) // 认证成功后，跳转回来的回调地址
 		}
 
 		// 用户类

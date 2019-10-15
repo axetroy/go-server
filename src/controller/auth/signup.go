@@ -55,12 +55,80 @@ type SignUpWithPhoneParams struct {
 	InviteCode *string `json:"invite_code"`                    // 邀请码
 }
 
+// 创建用户帐号，包括创建的邀请码，钱包数据等，继承到一起
+func CreateUserTx(tx *gorm.DB, userInfo *model.User, inviterCode *string) (err error) {
+	var (
+		newTx bool
+	)
+	if tx == nil {
+		tx = database.Db.Begin()
+		newTx = true
+	}
+
+	defer func() {
+		if newTx {
+			if err != nil {
+				_ = tx.Rollback().Error
+			} else {
+				err = tx.Commit().Error
+			}
+		}
+	}()
+
+	if err = tx.Create(userInfo).Error; err != nil {
+		return err
+	}
+
+	if inviterCode != nil && len(*inviterCode) > 0 {
+
+		inviter := model.User{
+			InviteCode: *inviterCode,
+		}
+
+		if err := tx.Where(&inviter).Find(&inviter).Error; err != nil {
+			if err == gorm.ErrRecordNotFound {
+				err = exception.InvalidInviteCode
+			}
+			return err
+		}
+
+		// 如果存在邀请者的话，写入邀请列表中
+		if inviter.Id != "" {
+			inviteHistory := model.InviteHistory{
+				Inviter:       inviter.Id,
+				Invitee:       userInfo.Id,
+				Status:        model.StatusInviteRegistered,
+				RewardSettled: false,
+			}
+
+			// 创建邀请记录
+			if err = tx.Create(&inviteHistory).Error; err != nil {
+				return err
+			}
+		}
+	}
+
+	// 创建用户对应的钱包账号
+	for _, walletName := range model.Wallets {
+		if err = tx.Table(wallet.GetTableName(walletName)).Create(&model.Wallet{
+			Id:       userInfo.Id,
+			Currency: walletName,
+			Balance:  0,
+			Frozen:   0,
+		}).Error; err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// 使用用户名注册
 func SignUpWithUsername(input SignUpWithUsernameParams) (res schema.Response) {
 	var (
-		err     error
-		data    schema.Profile
-		tx      *gorm.DB
-		inviter *model.User // 邀请人信息
+		err  error
+		data schema.Profile
+		tx   *gorm.DB
 	)
 
 	defer func() {
@@ -110,21 +178,6 @@ func SignUpWithUsername(input SignUpWithUsernameParams) (res schema.Response) {
 		return
 	}
 
-	// 填入了邀请码，则去校验邀请码是否正确
-	if input.InviteCode != nil && *input.InviteCode != "" {
-		u := model.User{
-			InviteCode: *input.InviteCode,
-		}
-		if err = tx.Where(&u).Find(&u).Error; err != nil {
-			if err == gorm.ErrRecordNotFound {
-				err = exception.InvalidInviteCode
-			}
-			return
-		}
-
-		inviter = &u
-	}
-
 	userInfo := model.User{
 		Username: input.Username,
 		Nickname: &input.Username,
@@ -136,23 +189,8 @@ func SignUpWithUsername(input SignUpWithUsernameParams) (res schema.Response) {
 		Gender:   model.GenderUnknown,
 	}
 
-	if err = tx.Create(&userInfo).Error; err != nil {
+	if err = CreateUserTx(tx, &userInfo, input.InviteCode); err != nil {
 		return
-	}
-
-	// 如果存在邀请者的话，写入邀请列表中
-	if inviter != nil {
-		inviteHistory := model.InviteHistory{
-			Inviter:       inviter.Id,
-			Invitee:       userInfo.Id,
-			Status:        model.StatusInviteRegistered,
-			RewardSettled: false,
-		}
-
-		// 创建邀请记录
-		if err = tx.Create(&inviteHistory).Error; err != nil {
-			return
-		}
 	}
 
 	if err = mapstructure.Decode(userInfo, &data.ProfilePure); err != nil {
@@ -163,27 +201,15 @@ func SignUpWithUsername(input SignUpWithUsernameParams) (res schema.Response) {
 	data.CreatedAt = userInfo.CreatedAt.Format(time.RFC3339Nano)
 	data.UpdatedAt = userInfo.UpdatedAt.Format(time.RFC3339Nano)
 
-	// 创建用户对应的钱包账号
-	for _, walletName := range model.Wallets {
-		if err = tx.Table(wallet.GetTableName(walletName)).Create(&model.Wallet{
-			Id:       userInfo.Id,
-			Currency: walletName,
-			Balance:  0,
-			Frozen:   0,
-		}).Error; err != nil {
-			return
-		}
-	}
-
 	return
 }
 
+// 使用邮箱注册
 func SignUpWithEmail(input SignUpWithEmailParams) (res schema.Response) {
 	var (
-		err     error
-		data    schema.Profile
-		tx      *gorm.DB
-		inviter *model.User // 邀请人信息
+		err  error
+		data schema.Profile
+		tx   *gorm.DB
 	)
 
 	defer func() {
@@ -241,21 +267,6 @@ func SignUpWithEmail(input SignUpWithEmailParams) (res schema.Response) {
 		return
 	}
 
-	// 填入了邀请码，则去校验邀请码是否正确
-	if input.InviteCode != nil && *input.InviteCode != "" {
-		u := model.User{
-			InviteCode: *input.InviteCode,
-		}
-		if err = tx.Where(&u).Find(&u).Error; err != nil {
-			if err == gorm.ErrRecordNotFound {
-				err = exception.InvalidInviteCode
-			}
-			return
-		}
-
-		inviter = &u
-	}
-
 	username := "u" + util.GenerateId()
 
 	userInfo := model.User{
@@ -274,19 +285,8 @@ func SignUpWithEmail(input SignUpWithEmailParams) (res schema.Response) {
 		return
 	}
 
-	// 如果存在邀请者的话，写入邀请列表中
-	if inviter != nil {
-		inviteHistory := model.InviteHistory{
-			Inviter:       inviter.Id,
-			Invitee:       userInfo.Id,
-			Status:        model.StatusInviteRegistered,
-			RewardSettled: false,
-		}
-
-		// 创建邀请记录
-		if err = tx.Create(&inviteHistory).Error; err != nil {
-			return
-		}
+	if err = CreateUserTx(tx, &userInfo, input.InviteCode); err != nil {
+		return
 	}
 
 	if err = mapstructure.Decode(userInfo, &data.ProfilePure); err != nil {
@@ -296,22 +296,10 @@ func SignUpWithEmail(input SignUpWithEmailParams) (res schema.Response) {
 	data.PayPassword = userInfo.PayPassword != nil && len(*userInfo.PayPassword) != 0
 	data.CreatedAt = userInfo.CreatedAt.Format(time.RFC3339Nano)
 	data.UpdatedAt = userInfo.UpdatedAt.Format(time.RFC3339Nano)
-
-	// 创建用户对应的钱包账号
-	for _, walletName := range model.Wallets {
-		if err = tx.Table(wallet.GetTableName(walletName)).Create(&model.Wallet{
-			Id:       userInfo.Id,
-			Currency: walletName,
-			Balance:  0,
-			Frozen:   0,
-		}).Error; err != nil {
-			return
-		}
-	}
-
 	return
 }
 
+// 使用邮箱登陆 (发送邮件)
 func SignUpWithEmailAction(input SignUpWithEmailActionParams) (res schema.Response) {
 	var (
 		err  error
@@ -374,12 +362,12 @@ func SignUpWithEmailAction(input SignUpWithEmailActionParams) (res schema.Respon
 	return
 }
 
+// 使用手机注册
 func SignUpWithPhone(input SignUpWithPhoneParams) (res schema.Response) {
 	var (
-		err     error
-		data    schema.Profile
-		tx      *gorm.DB
-		inviter *model.User // 邀请人信息
+		err  error
+		data schema.Profile
+		tx   *gorm.DB
 	)
 
 	defer func() {
@@ -437,21 +425,6 @@ func SignUpWithPhone(input SignUpWithPhoneParams) (res schema.Response) {
 		return
 	}
 
-	// 填入了邀请码，则去校验邀请码是否正确
-	if input.InviteCode != nil && *input.InviteCode != "" {
-		u := model.User{
-			InviteCode: *input.InviteCode,
-		}
-		if err = tx.Where(&u).Find(&u).Error; err != nil {
-			if err == gorm.ErrRecordNotFound {
-				err = exception.InvalidInviteCode
-			}
-			return
-		}
-
-		inviter = &u
-	}
-
 	username := "u" + util.GenerateId()
 	pwd := util.RandomString(6)
 
@@ -471,19 +444,8 @@ func SignUpWithPhone(input SignUpWithPhoneParams) (res schema.Response) {
 		return
 	}
 
-	// 如果存在邀请者的话，写入邀请列表中
-	if inviter != nil {
-		inviteHistory := model.InviteHistory{
-			Inviter:       inviter.Id,
-			Invitee:       userInfo.Id,
-			Status:        model.StatusInviteRegistered,
-			RewardSettled: false,
-		}
-
-		// 创建邀请记录
-		if err = tx.Create(&inviteHistory).Error; err != nil {
-			return
-		}
+	if err = CreateUserTx(tx, &userInfo, input.InviteCode); err != nil {
+		return
 	}
 
 	if err = mapstructure.Decode(userInfo, &data.ProfilePure); err != nil {
@@ -493,19 +455,6 @@ func SignUpWithPhone(input SignUpWithPhoneParams) (res schema.Response) {
 	data.PayPassword = userInfo.PayPassword != nil && len(*userInfo.PayPassword) != 0
 	data.CreatedAt = userInfo.CreatedAt.Format(time.RFC3339Nano)
 	data.UpdatedAt = userInfo.UpdatedAt.Format(time.RFC3339Nano)
-
-	// 创建用户对应的钱包账号
-	for _, walletName := range model.Wallets {
-		if err = tx.Table(wallet.GetTableName(walletName)).Create(&model.Wallet{
-			Id:       userInfo.Id,
-			Currency: walletName,
-			Balance:  0,
-			Frozen:   0,
-		}).Error; err != nil {
-			return
-		}
-	}
-
 	return
 }
 

@@ -12,6 +12,7 @@ var (
 	ClientAuthEmailCode  *redis.Client // 存储邮箱验证码，存储结构 key: 验证码, value: 邮箱
 	ClientAuthPhoneCode  *redis.Client // 存储手机验证码，存储结构 key: 验证码, value: 手机号
 	ClientResetCode      *redis.Client // 存储重置密码的
+	ClientOAuthCode      *redis.Client // 存储 oAuth2 对应的激活码
 	Config               = config.Redis
 )
 
@@ -50,6 +51,12 @@ func init() {
 		Addr:     addr,
 		Password: password,
 		DB:       4,
+	})
+
+	ClientOAuthCode = redis.NewClient(&redis.Options{
+		Addr:     addr,
+		Password: password,
+		DB:       5,
 	})
 
 }
