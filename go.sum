@@ -12,6 +12,14 @@ github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuy
 github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf/go.mod h1:ybxpYRFXyAe+OPACYpWeL0wqObRcbAqCMya13uyzqw0=
 github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20191010082856-e76f4c50e182 h1:O5/THFCvYdMFc+CELQAnVMfzTjAFUgIi9SeV4L1RZm4=
 github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20191010082856-e76f4c50e182/go.mod h1:myCDvQSzCW+wB1WAlocEru4wMGJxy+vlxHdhegi1CDQ=
+github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20191011101339-a9f865ab6c4e h1:3RXJHwCI2WvW4+V8wiWzeFUU4k0KbFwu99Kwz+2/1Eg=
+github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20191011101339-a9f865ab6c4e/go.mod h1:myCDvQSzCW+wB1WAlocEru4wMGJxy+vlxHdhegi1CDQ=
+github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20191011111844-85d596f413ab h1:Uk9DKG+y6njFcGPGXFFh3UNpd9nYGD8tXiLVTD2PaBQ=
+github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20191011111844-85d596f413ab/go.mod h1:myCDvQSzCW+wB1WAlocEru4wMGJxy+vlxHdhegi1CDQ=
+github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20191013052223-af3ea354f957 h1:df9LVzK95cJULZAnbGdOVXf4WColNR4NrHbpHhGPyME=
+github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20191013052223-af3ea354f957/go.mod h1:myCDvQSzCW+wB1WAlocEru4wMGJxy+vlxHdhegi1CDQ=
+github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20191014065940-8899d95cb5f0 h1:gMH55WGZ/DFxbC/zR9zQkz3zj6KzARt74+V9CJFDLJo=
+github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20191014065940-8899d95cb5f0/go.mod h1:myCDvQSzCW+wB1WAlocEru4wMGJxy+vlxHdhegi1CDQ=
 github.com/aliyun/aliyun-oss-go-sdk v0.0.0-20190307165228-86c17b95fcd5/go.mod h1:T/Aws4fEfogEE9v+HPhhw+CntffsBHJ8nXQCwKr0/g8=
 github.com/apache/thrift v0.12.0/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
 github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a h1:idn718Q4B6AGu/h5Sxe66HYVdqdGu2l9Iebqhi/AEoA=
