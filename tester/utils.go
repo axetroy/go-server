@@ -2,11 +2,11 @@ package tester
 
 import (
 	"errors"
-	"github.com/axetroy/go-server/src/controller"
-	"github.com/axetroy/go-server/src/controller/admin"
-	"github.com/axetroy/go-server/src/controller/auth"
-	"github.com/axetroy/go-server/src/schema"
-	"github.com/axetroy/go-server/src/util"
+	"github.com/axetroy/go-server/core/controller"
+	"github.com/axetroy/go-server/core/controller/admin"
+	"github.com/axetroy/go-server/core/controller/auth"
+	"github.com/axetroy/go-server/core/schema"
+	"github.com/axetroy/go-server/core/util"
 )
 
 // 创建一个测试用户
