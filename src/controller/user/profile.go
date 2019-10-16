@@ -37,7 +37,7 @@ type UpdateWechatProfileParams struct {
 	Language  *string `json:"language"`   // 语言
 }
 
-func GetProfile(context controller.Context) (res schema.Response) {
+func GetProfile(c controller.Context) (res schema.Response) {
 	var (
 		err  error
 		data schema.Profile
@@ -69,7 +69,7 @@ func GetProfile(context controller.Context) (res schema.Response) {
 
 	tx = database.Db.Begin()
 
-	userInfo := model.User{Id: context.Uid}
+	userInfo := model.User{Id: c.Uid}
 
 	if err = tx.Where(&userInfo).Preload("Wechat").Last(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -95,7 +95,7 @@ func GetProfile(context controller.Context) (res schema.Response) {
 	return
 }
 
-func GetProfileByAdmin(context controller.Context, userId string) (res schema.Response) {
+func GetProfileByAdmin(c controller.Context, userId string) (res schema.Response) {
 	var (
 		err  error
 		data schema.Profile
@@ -128,7 +128,7 @@ func GetProfileByAdmin(context controller.Context, userId string) (res schema.Re
 	tx = database.Db.Begin()
 
 	adminInfo := model.Admin{
-		Id: context.Uid,
+		Id: c.Uid,
 	}
 
 	if err = tx.Last(&adminInfo).Error; err != nil {
@@ -158,7 +158,7 @@ func GetProfileByAdmin(context controller.Context, userId string) (res schema.Re
 	return
 }
 
-func UpdateProfile(context controller.Context, input UpdateProfileParams) (res schema.Response) {
+func UpdateProfile(c controller.Context, input UpdateProfileParams) (res schema.Response) {
 	var (
 		err          error
 		data         schema.Profile
@@ -205,7 +205,7 @@ func UpdateProfile(context controller.Context, input UpdateProfileParams) (res s
 			return
 		}
 
-		u := model.User{Id: context.Uid}
+		u := model.User{Id: c.Uid}
 
 		if err = tx.Where(&u).First(&u).Error; err != nil {
 			if err == gorm.ErrRecordNotFound {
@@ -240,13 +240,13 @@ func UpdateProfile(context controller.Context, input UpdateProfileParams) (res s
 	}
 
 	if shouldUpdate {
-		if err = tx.Table(updated.TableName()).Where(model.User{Id: context.Uid}).Updates(updated).Error; err != nil {
+		if err = tx.Table(updated.TableName()).Where(model.User{Id: c.Uid}).Updates(updated).Error; err != nil {
 			return
 		}
 	}
 
 	userInfo := model.User{
-		Id: context.Uid,
+		Id: c.Uid,
 	}
 
 	if err = tx.Where(&userInfo).First(&userInfo).Error; err != nil {
@@ -338,7 +338,7 @@ func UpdateProfile(context controller.Context, input UpdateProfileParams) (res s
 	return
 }
 
-func UpdateProfileByAdmin(context controller.Context, userId string, input UpdateProfileParams) (res schema.Response) {
+func UpdateProfileByAdmin(c controller.Context, userId string, input UpdateProfileParams) (res schema.Response) {
 	var (
 		err          error
 		data         schema.Profile
@@ -378,7 +378,7 @@ func UpdateProfileByAdmin(context controller.Context, userId string, input Updat
 
 	// 检查是不是管理员
 	adminInfo := model.Admin{
-		Id: context.Uid,
+		Id: c.Uid,
 	}
 
 	if err = tx.First(&adminInfo).Error; err != nil {

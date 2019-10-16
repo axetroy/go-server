@@ -20,7 +20,7 @@ type Query struct {
 	schema.Query
 }
 
-func GetList(context controller.Context, input Query) (res schema.List) {
+func GetList(c controller.Context, input Query) (res schema.List) {
 	var (
 		err  error
 		data = make([]schema.Profile, 0)

@@ -21,7 +21,7 @@ func DeleteMessageById(id string) {
 	database.DeleteRowByTable("message", "id", id)
 }
 
-func DeleteByAdmin(context controller.Context, messageId string) (res schema.Response) {
+func DeleteByAdmin(c controller.Context, messageId string) (res schema.Response) {
 	var (
 		err  error
 		data schema.Message
@@ -53,7 +53,7 @@ func DeleteByAdmin(context controller.Context, messageId string) (res schema.Res
 
 	tx = database.Db.Begin()
 
-	adminInfo := model.Admin{Id: context.Uid}
+	adminInfo := model.Admin{Id: c.Uid}
 
 	if err = tx.First(&adminInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -109,7 +109,7 @@ func DeleteByAdminRouter(c *gin.Context) {
 	}, id)
 }
 
-func DeleteByUser(context controller.Context, messageId string) (res schema.Response) {
+func DeleteByUser(c controller.Context, messageId string) (res schema.Response) {
 	var (
 		err  error
 		data schema.Message
@@ -143,7 +143,7 @@ func DeleteByUser(context controller.Context, messageId string) (res schema.Resp
 
 	messageInfo := model.Message{
 		Id:  messageId,
-		Uid: context.Uid,
+		Uid: c.Uid,
 	}
 
 	if err = tx.First(&messageInfo).Error; err != nil {

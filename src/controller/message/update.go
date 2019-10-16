@@ -23,7 +23,7 @@ type UpdateParams struct {
 	Content *string `json:"content"` // 消息内容
 }
 
-func Update(context controller.Context, messageId string, input UpdateParams) (res schema.Response) {
+func Update(c controller.Context, messageId string, input UpdateParams) (res schema.Response) {
 	var (
 		err          error
 		data         schema.Message
@@ -62,7 +62,7 @@ func Update(context controller.Context, messageId string, input UpdateParams) (r
 	tx = database.Db.Begin()
 
 	adminInfo := model.Admin{
-		Id: context.Uid,
+		Id: c.Uid,
 	}
 
 	if err = tx.First(&adminInfo).Error; err != nil {

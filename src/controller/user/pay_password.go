@@ -40,7 +40,7 @@ func GenerateResetPayPasswordCode(uid string) string {
 	return util.MD5(codeId)
 }
 
-func SetPayPassword(context controller.Context, input SetPayPasswordParams) (res schema.Response) {
+func SetPayPassword(c controller.Context, input SetPayPasswordParams) (res schema.Response) {
 	var (
 		err error
 		tx  *gorm.DB
@@ -79,7 +79,7 @@ func SetPayPassword(context controller.Context, input SetPayPasswordParams) (res
 		return
 	}
 
-	userInfo := model.User{Id: context.Uid}
+	userInfo := model.User{Id: c.Uid}
 
 	tx = database.Db.Begin()
 
@@ -128,7 +128,7 @@ func SetPayPasswordRouter(c *gin.Context) {
 	res = SetPayPassword(controller.NewContext(c), input)
 }
 
-func UpdatePayPassword(context controller.Context, input UpdatePayPasswordParams) (res schema.Response) {
+func UpdatePayPassword(c controller.Context, input UpdatePayPasswordParams) (res schema.Response) {
 	var (
 		err error
 		tx  *gorm.DB
@@ -167,7 +167,7 @@ func UpdatePayPassword(context controller.Context, input UpdatePayPasswordParams
 		return
 	}
 
-	userInfo := model.User{Id: context.Uid}
+	userInfo := model.User{Id: c.Uid}
 
 	tx = database.Db.Begin()
 
@@ -225,7 +225,7 @@ func UpdatePayPasswordRouter(c *gin.Context) {
 	res = UpdatePayPassword(controller.NewContext(c), input)
 }
 
-func SendResetPayPassword(context controller.Context) (res schema.Response) {
+func SendResetPayPassword(c controller.Context) (res schema.Response) {
 	var (
 		err error
 		tx  *gorm.DB
@@ -254,7 +254,7 @@ func SendResetPayPassword(context controller.Context) (res schema.Response) {
 		helper.Response(&res, nil, err)
 	}()
 
-	userInfo := model.User{Id: context.Uid}
+	userInfo := model.User{Id: c.Uid}
 
 	tx = database.Db.Begin()
 
@@ -312,7 +312,7 @@ func SendResetPayPasswordRouter(c *gin.Context) {
 	res = SendResetPayPassword(controller.NewContext(c))
 }
 
-func ResetPayPassword(context controller.Context, input ResetPayPasswordParams) (res schema.Response) {
+func ResetPayPassword(c controller.Context, input ResetPayPasswordParams) (res schema.Response) {
 	var (
 		err error
 		tx  *gorm.DB
@@ -347,7 +347,7 @@ func ResetPayPassword(context controller.Context, input ResetPayPasswordParams) 
 		return
 	}
 
-	userInfo := model.User{Id: context.Uid}
+	userInfo := model.User{Id: c.Uid}
 
 	tx = database.Db.Begin()
 

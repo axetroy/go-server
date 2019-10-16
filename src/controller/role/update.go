@@ -28,7 +28,7 @@ type UpdateUserRoleParams struct {
 	Roles []string `json:"role"` // 要更新的用户角色
 }
 
-func Update(context controller.Context, roleName string, input UpdateParams) (res schema.Response) {
+func Update(c controller.Context, roleName string, input UpdateParams) (res schema.Response) {
 	var (
 		err          error
 		data         schema.Role
@@ -67,7 +67,7 @@ func Update(context controller.Context, roleName string, input UpdateParams) (re
 	tx = database.Db.Begin()
 
 	adminInfo := model.Admin{
-		Id: context.Uid,
+		Id: c.Uid,
 	}
 
 	if err = tx.First(&adminInfo).Error; err != nil {
@@ -165,7 +165,7 @@ func UpdateRouter(c *gin.Context) {
 	res = Update(controller.NewContext(c), roleName, input)
 }
 
-func UpdateUserRole(context controller.Context, userId string, input UpdateUserRoleParams) (res schema.Response) {
+func UpdateUserRole(c controller.Context, userId string, input UpdateUserRoleParams) (res schema.Response) {
 	var (
 		err  error
 		data schema.Profile
@@ -198,7 +198,7 @@ func UpdateUserRole(context controller.Context, userId string, input UpdateUserR
 	tx = database.Db.Begin()
 
 	adminInfo := model.Admin{
-		Id: context.Uid,
+		Id: c.Uid,
 	}
 
 	if err = tx.First(&adminInfo).Error; err != nil {

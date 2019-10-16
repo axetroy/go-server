@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-func MarkRead(context controller.Context, id string) (res schema.Response) {
+func MarkRead(c controller.Context, id string) (res schema.Response) {
 	var (
 		err  error
 		data schema.Message
@@ -50,7 +50,7 @@ func MarkRead(context controller.Context, id string) (res schema.Response) {
 
 	MessageInfo := model.Message{
 		Id:  id,
-		Uid: context.Uid,
+		Uid: c.Uid,
 	}
 
 	if err = tx.Where(&MessageInfo).Last(&MessageInfo).Error; err != nil {

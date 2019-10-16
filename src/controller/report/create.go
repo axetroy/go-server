@@ -24,7 +24,7 @@ type CreateParams struct {
 	Screenshots []string         `json:"screenshots"`                      // 截图
 }
 
-func Create(context controller.Context, input CreateParams) (res schema.Response) {
+func Create(c controller.Context, input CreateParams) (res schema.Response) {
 	var (
 		err  error
 		data schema.Report
@@ -67,7 +67,7 @@ func Create(context controller.Context, input CreateParams) (res schema.Response
 	tx = database.Db.Begin()
 
 	reportInfo := model.Report{
-		Uid:         context.Uid,
+		Uid:         c.Uid,
 		Title:       input.Title,
 		Content:     input.Content,
 		Type:        input.Type,

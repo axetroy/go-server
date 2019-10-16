@@ -20,7 +20,7 @@ type Query struct {
 	//Status model.NewsStatus `json:"status" form:"status"`
 }
 
-func GetList(context controller.Context, input Query) (res schema.List) {
+func GetList(c controller.Context, input Query) (res schema.List) {
 	var (
 		err  error
 		data = make([]schema.Role, 0)

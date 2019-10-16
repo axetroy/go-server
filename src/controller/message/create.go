@@ -24,7 +24,7 @@ type CreateMessageParams struct {
 	Content string `json:"content" valid:"required~请填写消息内容"`
 }
 
-func Create(context controller.Context, input CreateMessageParams) (res schema.Response) {
+func Create(c controller.Context, input CreateMessageParams) (res schema.Response) {
 	var (
 		err  error
 		data schema.Message
@@ -62,7 +62,7 @@ func Create(context controller.Context, input CreateMessageParams) (res schema.R
 	tx = database.Db.Begin()
 
 	adminInfo := model.Admin{
-		Id: context.Uid,
+		Id: c.Uid,
 	}
 
 	if err = tx.First(&adminInfo).Error; err != nil {

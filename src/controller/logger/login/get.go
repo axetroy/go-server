@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-func GetLatestLoginLog(context controller.Context) (res schema.Response) {
+func GetLatestLoginLog(c controller.Context) (res schema.Response) {
 	var (
 		err  error
 		data = schema.LogLogin{}
@@ -38,7 +38,7 @@ func GetLatestLoginLog(context controller.Context) (res schema.Response) {
 	}()
 
 	logInfo := model.LoginLog{
-		Uid: context.Uid,
+		Uid: c.Uid,
 	}
 
 	query := schema.Query{}

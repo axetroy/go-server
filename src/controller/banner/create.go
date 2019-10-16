@@ -28,7 +28,7 @@ type CreateParams struct {
 	FallbackUrl *string              `json:"fallback_url"`                    // APP 跳转标识符的备选方案
 }
 
-func Create(context controller.Context, input CreateParams) (res schema.Response) {
+func Create(c controller.Context, input CreateParams) (res schema.Response) {
 	var (
 		err  error
 		data schema.Banner
@@ -66,7 +66,7 @@ func Create(context controller.Context, input CreateParams) (res schema.Response
 	tx = database.Db.Begin()
 
 	adminInfo := model.Admin{
-		Id: context.Uid,
+		Id: c.Uid,
 	}
 
 	if err = tx.First(&adminInfo).Error; err != nil {

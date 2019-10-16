@@ -24,7 +24,7 @@ type Query struct {
 	Ip      *string `json:"ip"`                     // 根据 IP 筛选
 }
 
-func GetLoginLogs(context controller.Context, q Query) (res schema.List) {
+func GetLoginLogs(c controller.Context, q Query) (res schema.List) {
 	var (
 		err  error
 		data = make([]schema.LogLogin, 0)

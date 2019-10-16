@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-func GetDetail(context controller.Context, id string) (res schema.Response) {
+func GetDetail(c controller.Context, id string) (res schema.Response) {
 	var (
 		err  error
 		data = schema.Address{}
@@ -40,7 +40,7 @@ func GetDetail(context controller.Context, id string) (res schema.Response) {
 
 	addressInfo := model.Address{
 		Id:  id,
-		Uid: context.Uid,
+		Uid: c.Uid,
 	}
 
 	if err = database.Db.Model(&addressInfo).Where(&addressInfo).First(&addressInfo).Error; err != nil {

@@ -13,7 +13,7 @@ import (
 	"net/http"
 )
 
-func Encryption(context controller.Context, input string) (res schema.Response) {
+func Encryption(c controller.Context, input string) (res schema.Response) {
 	var (
 		err  error
 		data string

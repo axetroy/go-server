@@ -18,7 +18,7 @@ import (
 )
 
 // Get Message detail
-func Get(context controller.Context, id string) (res schema.Response) {
+func Get(c controller.Context, id string) (res schema.Response) {
 	var (
 		err  error
 		data schema.Message
@@ -52,7 +52,7 @@ func Get(context controller.Context, id string) (res schema.Response) {
 
 	MessageInfo := model.Message{
 		Id:  id,
-		Uid: context.Uid,
+		Uid: c.Uid,
 	}
 
 	if err = tx.Last(&MessageInfo).Error; err != nil {
@@ -79,7 +79,7 @@ func Get(context controller.Context, id string) (res schema.Response) {
 }
 
 // Get Message detail
-func GetByAdmin(context controller.Context, id string) (res schema.Response) {
+func GetByAdmin(c controller.Context, id string) (res schema.Response) {
 	var (
 		err  error
 		data schema.MessageAdmin
@@ -112,7 +112,7 @@ func GetByAdmin(context controller.Context, id string) (res schema.Response) {
 	tx = database.Db.Begin()
 
 	adminInfo := model.Admin{
-		Id: context.Uid,
+		Id: c.Uid,
 	}
 
 	if err = tx.First(&adminInfo).Error; err != nil {

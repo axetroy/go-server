@@ -25,7 +25,7 @@ type UpdatePasswordByAdminParams struct {
 	NewPassword string `json:"new_password" valid:"required~请输入新密码"`
 }
 
-func UpdatePassword(context controller.Context, input UpdatePasswordParams) (res schema.Response) {
+func UpdatePassword(c controller.Context, input UpdatePasswordParams) (res schema.Response) {
 	var (
 		err error
 		tx  *gorm.DB
@@ -66,7 +66,7 @@ func UpdatePassword(context controller.Context, input UpdatePasswordParams) (res
 
 	tx = database.Db.Begin()
 
-	userInfo := model.User{Id: context.Uid}
+	userInfo := model.User{Id: c.Uid}
 
 	if err = tx.First(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -90,7 +90,7 @@ func UpdatePassword(context controller.Context, input UpdatePasswordParams) (res
 	return
 }
 
-func UpdatePasswordByAdmin(context controller.Context, userId string, input UpdatePasswordByAdminParams) (res schema.Response) {
+func UpdatePasswordByAdmin(c controller.Context, userId string, input UpdatePasswordByAdminParams) (res schema.Response) {
 	var (
 		err error
 		tx  *gorm.DB
@@ -127,7 +127,7 @@ func UpdatePasswordByAdmin(context controller.Context, userId string, input Upda
 	tx = database.Db.Begin()
 
 	// 检查是否是管理员
-	adminInfo := model.Admin{Id: context.Uid}
+	adminInfo := model.Admin{Id: c.Uid}
 
 	if err = tx.First(&adminInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {

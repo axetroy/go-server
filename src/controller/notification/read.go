@@ -16,7 +16,7 @@ import (
 )
 
 // MarkRead mark notification as read
-func MarkRead(context controller.Context, notificationID string) (res schema.Response) {
+func MarkRead(c controller.Context, notificationID string) (res schema.Response) {
 	var (
 		err error
 		tx  *gorm.DB
@@ -48,7 +48,7 @@ func MarkRead(context controller.Context, notificationID string) (res schema.Res
 	tx = database.Db.Begin()
 
 	userInfo := model.User{
-		Id: context.Uid,
+		Id: c.Uid,
 	}
 
 	if err = tx.Where(&userInfo).First(&userInfo).Error; err != nil {
@@ -73,7 +73,7 @@ func MarkRead(context controller.Context, notificationID string) (res schema.Res
 
 	mark := model.NotificationMark{
 		Id:  notificationInfo.Id,
-		Uid: context.Uid,
+		Uid: c.Uid,
 	}
 
 	// 再确认以读表有没有这个用户的已读记录

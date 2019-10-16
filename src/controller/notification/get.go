@@ -19,7 +19,7 @@ import (
 )
 
 // Get notification detail
-func Get(context controller.Context, id string) (res schema.Response) {
+func Get(c controller.Context, id string) (res schema.Response) {
 	var (
 		err  error
 		data schema.Notification

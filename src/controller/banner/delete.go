@@ -21,7 +21,7 @@ func DeleteBannerById(id string) {
 	database.DeleteRowByTable(b.TableName(), "id", id)
 }
 
-func Delete(context controller.Context, addressId string) (res schema.Response) {
+func Delete(c controller.Context, addressId string) (res schema.Response) {
 	var (
 		err  error
 		data schema.Banner
@@ -53,7 +53,7 @@ func Delete(context controller.Context, addressId string) (res schema.Response) 
 
 	tx = database.Db.Begin()
 
-	adminInfo := model.Admin{Id: context.Uid}
+	adminInfo := model.Admin{Id: c.Uid}
 
 	if err = tx.First(&adminInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {

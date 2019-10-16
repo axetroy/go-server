@@ -21,7 +21,7 @@ type Query struct {
 	Active   *bool                 `json:"active" form:"active"`     // 是否激活
 }
 
-func GetBannerList(context controller.Context, q Query) (res schema.List) {
+func GetBannerList(c controller.Context, q Query) (res schema.List) {
 	var (
 		err  error
 		data = make([]schema.Banner, 0)

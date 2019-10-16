@@ -23,7 +23,7 @@ type CreateNewParams struct {
 	Tags    []string       `json:"tags"`
 }
 
-func Create(context controller.Context, input CreateNewParams) (res schema.Response) {
+func Create(c controller.Context, input CreateNewParams) (res schema.Response) {
 	var (
 		err  error
 		data schema.News
@@ -62,7 +62,7 @@ func Create(context controller.Context, input CreateNewParams) (res schema.Respo
 	tx = database.Db.Begin()
 
 	adminInfo := model.Admin{
-		Id: context.Uid,
+		Id: c.Uid,
 	}
 
 	if err = tx.First(&adminInfo).Error; err != nil {
@@ -79,7 +79,7 @@ func Create(context controller.Context, input CreateNewParams) (res schema.Respo
 	}
 
 	NewsInfo := model.News{
-		Author:  context.Uid,
+		Author:  c.Uid,
 		Title:   input.Title,
 		Content: input.Content,
 		Type:    input.Type,

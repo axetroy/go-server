@@ -15,7 +15,7 @@ import (
 	"net/http"
 )
 
-func GetWallets(context controller.Context) (res schema.Response) {
+func GetWallets(c controller.Context) (res schema.Response) {
 	var (
 		err  error
 		data []schema.Wallet
@@ -47,7 +47,7 @@ func GetWallets(context controller.Context) (res schema.Response) {
 	}()
 
 	// 获取用户信息
-	userInfo := model.User{Id: context.Uid}
+	userInfo := model.User{Id: c.Uid}
 
 	tx = database.Db.Begin()
 

@@ -27,7 +27,7 @@ type UpdateParams struct {
 	IsDefault    *bool   `json:"is_default"`
 }
 
-func Update(context controller.Context, addressId string, input UpdateParams) (res schema.Response) {
+func Update(c controller.Context, addressId string, input UpdateParams) (res schema.Response) {
 	var (
 		err          error
 		data         schema.Address
@@ -67,7 +67,7 @@ func Update(context controller.Context, addressId string, input UpdateParams) (r
 	tx = database.Db.Begin()
 
 	userInfo := model.User{
-		Id: context.Uid,
+		Id: c.Uid,
 	}
 
 	if err = tx.First(&userInfo).Error; err != nil {
@@ -79,7 +79,7 @@ func Update(context controller.Context, addressId string, input UpdateParams) (r
 
 	addressInfo := model.Address{
 		Id:  addressId,
-		Uid: context.Uid,
+		Uid: c.Uid,
 	}
 
 	if err = tx.First(&addressInfo).Error; err != nil {

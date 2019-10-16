@@ -27,7 +27,7 @@ type CreateAddressParams struct {
 	IsDefault    *bool  `json:"is_default"`                           // 是否是默认地址
 }
 
-func Create(context controller.Context, input CreateAddressParams) (res schema.Response) {
+func Create(c controller.Context, input CreateAddressParams) (res schema.Response) {
 	var (
 		err       error
 		data      schema.Address
@@ -84,7 +84,7 @@ func Create(context controller.Context, input CreateAddressParams) (res schema.R
 	tx = database.Db.Begin()
 
 	userInfo := model.User{
-		Id: context.Uid,
+		Id: c.Uid,
 	}
 
 	if err = tx.First(&userInfo).Error; err != nil {
@@ -98,7 +98,7 @@ func Create(context controller.Context, input CreateAddressParams) (res schema.R
 		isDefault = *input.IsDefault
 
 		defaultAddress := model.Address{
-			Uid:       context.Uid,
+			Uid:       c.Uid,
 			IsDefault: true,
 		}
 		if err = tx.First(&defaultAddress).Error; err != nil {
@@ -118,7 +118,7 @@ func Create(context controller.Context, input CreateAddressParams) (res schema.R
 
 	} else {
 		firstAddress := model.Address{
-			Uid: context.Uid,
+			Uid: c.Uid,
 		}
 		if err = tx.Where(&firstAddress).First(&firstAddress).Error; err != nil {
 			// 如果还没有设置过地址，那么这次设置就是默认地址
@@ -132,7 +132,7 @@ func Create(context controller.Context, input CreateAddressParams) (res schema.R
 	}
 
 	AddressInfo := model.Address{
-		Uid:          context.Uid,
+		Uid:          c.Uid,
 		Name:         input.Name,
 		Phone:        input.Phone,
 		ProvinceCode: input.ProvinceCode,

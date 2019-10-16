@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-func GetDetail(context controller.Context, transferId string) (res schema.Response) {
+func GetDetail(c controller.Context, transferId string) (res schema.Response) {
 	var (
 		err  error
 		tx   *gorm.DB
@@ -49,7 +49,7 @@ func GetDetail(context controller.Context, transferId string) (res schema.Respon
 
 	tx = database.Db.Begin()
 
-	userInfo := model.User{Id: context.Uid}
+	userInfo := model.User{Id: c.Uid}
 
 	if err = tx.Last(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -70,8 +70,8 @@ func GetDetail(context controller.Context, transferId string) (res schema.Respon
 		return
 	}
 
-	if log.From != context.Uid {
-		if log.To != context.Uid {
+	if log.From != c.Uid {
+		if log.To != c.Uid {
 			// 既不是转账人，也不是收款人, 没有权限获取这条记录
 			err = exception.NoPermission
 			return

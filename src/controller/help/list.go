@@ -21,7 +21,7 @@ type Query struct {
 	Type   *model.HelpType   `json:"type" form:"type"`     // 根据类型筛选
 }
 
-func GetHelpList(context controller.Context, q Query) (res schema.List) {
+func GetHelpList(c controller.Context, q Query) (res schema.List) {
 	var (
 		err  error
 		data = make([]schema.Help, 0)

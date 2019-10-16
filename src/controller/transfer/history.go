@@ -21,7 +21,7 @@ type Query struct {
 	schema.Query
 }
 
-func GetHistory(context controller.Context, input Query) (res schema.List) {
+func GetHistory(c controller.Context, input Query) (res schema.List) {
 	var (
 		err  error
 		tx   *gorm.DB
@@ -54,7 +54,7 @@ func GetHistory(context controller.Context, input Query) (res schema.List) {
 
 	tx = database.Db.Begin()
 
-	userInfo := model.User{Id: context.Uid}
+	userInfo := model.User{Id: c.Uid}
 
 	if err = tx.Last(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -70,7 +70,7 @@ func GetHistory(context controller.Context, input Query) (res schema.List) {
 	list := make([]model.TransferLog, 0)
 
 	condition := QueryParams{
-		From: &context.Uid,
+		From: &c.Uid,
 	}
 
 	// 联表查询

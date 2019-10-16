@@ -25,7 +25,7 @@ func IsValidWallet(walletName string) bool {
 	return false
 }
 
-func GetWallet(context controller.Context, currencyName string) (res schema.Response) {
+func GetWallet(c controller.Context, currencyName string) (res schema.Response) {
 	var (
 		err  error
 		data schema.Wallet
@@ -56,7 +56,7 @@ func GetWallet(context controller.Context, currencyName string) (res schema.Resp
 	}()
 
 	// 获取用户信息
-	userInfo := model.User{Id: context.Uid}
+	userInfo := model.User{Id: c.Uid}
 
 	tx = database.Db.Begin()
 
@@ -77,7 +77,7 @@ func GetWallet(context controller.Context, currencyName string) (res schema.Resp
 		return
 	}
 
-	if err = tx.Table("wallet_"+strings.ToLower(currencyName)).Where("id = ?", context.Uid).Scan(&walletInfo).Error; err != nil {
+	if err = tx.Table("wallet_"+strings.ToLower(currencyName)).Where("id = ?", c.Uid).Scan(&walletInfo).Error; err != nil {
 		return
 	}
 

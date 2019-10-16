@@ -27,7 +27,7 @@ type UpdateByAdminParams struct {
 	Locked *bool `json:"locked"` // 是否锁定
 }
 
-func Update(context controller.Context, reportId string, input UpdateParams) (res schema.Response) {
+func Update(c controller.Context, reportId string, input UpdateParams) (res schema.Response) {
 	var (
 		err          error
 		data         schema.Report
@@ -67,7 +67,7 @@ func Update(context controller.Context, reportId string, input UpdateParams) (re
 
 	reportInfo := model.Report{
 		Id:  reportId,
-		Uid: context.Uid,
+		Uid: c.Uid,
 	}
 
 	if err = tx.First(&reportInfo).Error; err != nil {
@@ -101,7 +101,7 @@ func Update(context controller.Context, reportId string, input UpdateParams) (re
 
 	if err = tx.Model(&reportInfo).Where(&model.Report{
 		Id:  reportId,
-		Uid: context.Uid,
+		Uid: c.Uid,
 	}).Update(updatedModel).Error; err != nil {
 		return
 	}
@@ -143,7 +143,7 @@ func UpdateRouter(c *gin.Context) {
 	}, reportId, input)
 }
 
-func UpdateByAdmin(context controller.Context, reportId string, input UpdateByAdminParams) (res schema.Response) {
+func UpdateByAdmin(c controller.Context, reportId string, input UpdateByAdminParams) (res schema.Response) {
 	var (
 		err          error
 		data         schema.Report

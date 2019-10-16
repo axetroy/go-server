@@ -27,7 +27,7 @@ type UpdateParams struct {
 	ParentId  *string   `json:"parent_id"` // 该菜单的父级 ID
 }
 
-func Update(context controller.Context, bannerId string, input UpdateParams) (res schema.Response) {
+func Update(c controller.Context, bannerId string, input UpdateParams) (res schema.Response) {
 	var (
 		err          error
 		data         schema.Menu
@@ -75,7 +75,7 @@ func Update(context controller.Context, bannerId string, input UpdateParams) (re
 	tx = database.Db.Begin()
 
 	adminInfo := model.Admin{
-		Id: context.Uid,
+		Id: c.Uid,
 	}
 
 	if err = tx.First(&adminInfo).Error; err != nil {

@@ -32,7 +32,7 @@ type ToParams struct {
 	Note     *string `json:"note"`                                              // 转账备注
 }
 
-func To(context controller.Context, input ToParams, signature string) (res schema.Response) {
+func To(c controller.Context, input ToParams, signature string) (res schema.Response) {
 	var (
 		err  error
 		tx   *gorm.DB
@@ -55,7 +55,7 @@ func To(context controller.Context, input ToParams, signature string) (res schem
 			if err != nil {
 				_ = tx.Rollback().Error
 			} else {
-				logger.Infof("User %s transfer %v", context.Uid, input)
+				logger.Infof("User %s transfer %v", c.Uid, input)
 				err = tx.Commit().Error
 			}
 		}
@@ -89,7 +89,7 @@ func To(context controller.Context, input ToParams, signature string) (res schem
 
 	tx = database.Db.Begin()
 
-	fromUserInfo := model.User{Id: context.Uid}
+	fromUserInfo := model.User{Id: c.Uid}
 	toUserInfo := model.User{Id: input.To}
 
 	if err = tx.Where(&fromUserInfo).Last(&fromUserInfo).Error; err != nil {
@@ -111,7 +111,7 @@ func To(context controller.Context, input ToParams, signature string) (res schem
 	financeLogTableName := finance.GetTableName(input.Currency) // 对应的财务日志表名
 
 	fromUserWallet := model.Wallet{
-		Id: context.Uid,
+		Id: c.Uid,
 	}
 
 	toUserWallet := model.Wallet{
@@ -177,7 +177,7 @@ func To(context controller.Context, input ToParams, signature string) (res schem
 
 	transferLog := model.TransferLog{
 		Currency: strings.ToUpper(input.Currency),
-		From:     context.Uid,
+		From:     c.Uid,
 		To:       input.To,
 		Status:   model.TransferStatusConfirmed,
 		Amount:   util.FloatToStr(amount), // 保留 8 未小数
@@ -205,7 +205,7 @@ func To(context controller.Context, input ToParams, signature string) (res schem
 	// 生成我的财务日志
 	fromUserFinanceLog := model.FinanceLog{
 		OrderId:         transferLog.Id, // 可用余额的变动
-		Uid:             context.Uid,
+		Uid:             c.Uid,
 		BeforeBalance:   fromUserBeforeBalance,
 		BalanceMutation: -amount,
 		AfterBalance:    fromUserAfterBalance,

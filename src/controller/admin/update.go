@@ -25,7 +25,7 @@ type UpdateParams struct {
 	Accession *[]string          `json:"accession"` // 管理员的权限
 }
 
-func Update(context controller.Context, adminId string, input UpdateParams) (res schema.Response) {
+func Update(c controller.Context, adminId string, input UpdateParams) (res schema.Response) {
 	var (
 		err          error
 		data         schema.AdminProfile
@@ -64,7 +64,7 @@ func Update(context controller.Context, adminId string, input UpdateParams) (res
 	tx = database.Db.Begin()
 
 	myInfo := model.Admin{
-		Id: context.Uid,
+		Id: c.Uid,
 	}
 
 	if err = tx.First(&myInfo).Error; err != nil {

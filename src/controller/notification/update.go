@@ -24,7 +24,7 @@ type UpdateParams struct {
 	Note    *string `json:"note"`    // 备注
 }
 
-func Update(context controller.Context, notificationId string, input UpdateParams) (res schema.Response) {
+func Update(c controller.Context, notificationId string, input UpdateParams) (res schema.Response) {
 	var (
 		err  error
 		data schema.Notification
@@ -62,7 +62,7 @@ func Update(context controller.Context, notificationId string, input UpdateParam
 	tx = database.Db.Begin()
 
 	adminInfo := model.Admin{
-		Id: context.Uid,
+		Id: c.Uid,
 	}
 
 	if err = tx.Where(&adminInfo).First(&adminInfo).Error; err != nil {

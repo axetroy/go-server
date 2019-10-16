@@ -20,7 +20,7 @@ func DeleteAddressById(id string) {
 	database.DeleteRowByTable("address", "id", id)
 }
 
-func Delete(context controller.Context, addressId string) (res schema.Response) {
+func Delete(c controller.Context, addressId string) (res schema.Response) {
 	var (
 		err  error
 		data schema.Address
@@ -53,7 +53,7 @@ func Delete(context controller.Context, addressId string) (res schema.Response) 
 
 	tx = database.Db.Begin()
 
-	userInfo := model.User{Id: context.Uid}
+	userInfo := model.User{Id: c.Uid}
 
 	if err = tx.First(&userInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -64,7 +64,7 @@ func Delete(context controller.Context, addressId string) (res schema.Response) 
 
 	addressInfo := model.Address{
 		Id:  addressId,
-		Uid: context.Uid,
+		Uid: c.Uid,
 	}
 
 	if err = tx.First(&addressInfo).Error; err != nil {

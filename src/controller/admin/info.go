@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-func GetAdminInfo(context controller.Context) (res schema.Response) {
+func GetAdminInfo(c controller.Context) (res schema.Response) {
 	var (
 		err  error
 		data = schema.AdminProfile{}
@@ -51,7 +51,7 @@ func GetAdminInfo(context controller.Context) (res schema.Response) {
 	tx = database.Db.Begin()
 
 	adminInfo := model.Admin{
-		Id: context.Uid,
+		Id: c.Uid,
 	}
 
 	if err = tx.First(&adminInfo).Error; err != nil {
@@ -83,7 +83,7 @@ func GetAdminInfo(context controller.Context) (res schema.Response) {
 	return
 }
 
-func GetAdminInfoById(context controller.Context, adminId string) (res schema.Response) {
+func GetAdminInfoById(c controller.Context, adminId string) (res schema.Response) {
 	var (
 		err  error
 		data = schema.AdminProfileWithToken{}
@@ -116,7 +116,7 @@ func GetAdminInfoById(context controller.Context, adminId string) (res schema.Re
 	tx = database.Db.Begin()
 
 	handlerInfo := model.Admin{
-		Id: context.Uid,
+		Id: c.Uid,
 	}
 
 	if err = tx.First(&handlerInfo).Error; err != nil {

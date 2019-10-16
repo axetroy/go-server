@@ -21,7 +21,7 @@ type Query struct {
 	//Status model.NewsStatus `json:"status" form:"status"`
 }
 
-func GetAddressListByUser(context controller.Context, input Query) (res schema.List) {
+func GetAddressListByUser(c controller.Context, input Query) (res schema.List) {
 	var (
 		err  error
 		data = make([]schema.Address, 0) // 输出到外部的结果
@@ -53,7 +53,7 @@ func GetAddressListByUser(context controller.Context, input Query) (res schema.L
 
 	filter := map[string]interface{}{}
 
-	filter["uid"] = context.Uid
+	filter["uid"] = c.Uid
 
 	var total int64
 

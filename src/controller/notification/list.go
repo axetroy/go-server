@@ -23,7 +23,7 @@ type Query struct {
 }
 
 // GetList get notification list
-func GetNotificationListByUser(context controller.Context, input Query) (res schema.List) {
+func GetNotificationListByUser(c controller.Context, input Query) (res schema.List) {
 	var (
 		err  error
 		data = make([]schema.Notification, 0)
@@ -86,7 +86,7 @@ func GetNotificationListByUser(context controller.Context, input Query) (res sch
 		// 查询用户是否已读通知
 		mark := model.NotificationMark{
 			Id:  v.Id,
-			Uid: context.Uid,
+			Uid: c.Uid,
 		}
 
 		if err = tx.Last(&mark).Error; err != nil {
@@ -115,7 +115,7 @@ func GetNotificationListByUser(context controller.Context, input Query) (res sch
 }
 
 // GetList get notification list
-func GetNotificationListByAdmin(context controller.Context, input Query) (res schema.List) {
+func GetNotificationListByAdmin(c controller.Context, input Query) (res schema.List) {
 	var (
 		err  error
 		data = make([]schema.NotificationAdmin, 0)

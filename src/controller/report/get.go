@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-func GetReportByUser(context controller.Context, id string) (res schema.Response) {
+func GetReportByUser(c controller.Context, id string) (res schema.Response) {
 	var (
 		err  error
 		data = schema.Report{}
@@ -39,7 +39,7 @@ func GetReportByUser(context controller.Context, id string) (res schema.Response
 
 	reportInfo := model.Report{
 		Id:  id,
-		Uid: context.Uid,
+		Uid: c.Uid,
 	}
 
 	if err = database.Db.First(&reportInfo).Error; err != nil {
@@ -78,7 +78,7 @@ func GetReportRouter(c *gin.Context) {
 	res = GetReportByUser(controller.NewContext(c), id)
 }
 
-func GetReportByAdmin(context controller.Context, id string) (res schema.Response) {
+func GetReportByAdmin(c controller.Context, id string) (res schema.Response) {
 	var (
 		err  error
 		data = schema.Report{}

@@ -27,7 +27,7 @@ type UpdateParams struct {
 	FallbackUrl *string               `json:"fallback_url"` // APP 跳转标识符的备选方案
 }
 
-func Update(context controller.Context, bannerId string, input UpdateParams) (res schema.Response) {
+func Update(c controller.Context, bannerId string, input UpdateParams) (res schema.Response) {
 	var (
 		err          error
 		data         schema.Banner
@@ -66,7 +66,7 @@ func Update(context controller.Context, bannerId string, input UpdateParams) (re
 	tx = database.Db.Begin()
 
 	adminInfo := model.Admin{
-		Id: context.Uid,
+		Id: c.Uid,
 	}
 
 	if err = tx.First(&adminInfo).Error; err != nil {

@@ -26,7 +26,7 @@ type UpdateParams struct {
 	ParentId *string           `json:"parent_id"`
 }
 
-func Update(context controller.Context, helpId string, input UpdateParams) (res schema.Response) {
+func Update(c controller.Context, helpId string, input UpdateParams) (res schema.Response) {
 	var (
 		err          error
 		data         schema.Help
@@ -65,7 +65,7 @@ func Update(context controller.Context, helpId string, input UpdateParams) (res 
 	tx = database.Db.Begin()
 
 	adminInfo := model.Admin{
-		Id: context.Uid,
+		Id: c.Uid,
 	}
 
 	if err = tx.First(&adminInfo).Error; err != nil {

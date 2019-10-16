@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-func GetDefault(context controller.Context) (res schema.Response) {
+func GetDefault(c controller.Context) (res schema.Response) {
 	var (
 		err  error
 		data = schema.Address{}
@@ -38,7 +38,7 @@ func GetDefault(context controller.Context) (res schema.Response) {
 	}()
 
 	addressInfo := model.Address{
-		Uid:       context.Uid,
+		Uid:       c.Uid,
 		IsDefault: true,
 	}
 

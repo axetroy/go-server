@@ -26,7 +26,7 @@ type UpdatePasswordParams struct {
 	ConfirmPassword string `json:"confirm_password" valid:"required~请输入确认密码"` // 确认密码
 }
 
-func UpdatePassword(context controller.Context, input UpdatePasswordParams) (res schema.Response) {
+func UpdatePassword(c controller.Context, input UpdatePasswordParams) (res schema.Response) {
 	var (
 		err  error
 		data schema.AdminProfile
@@ -69,7 +69,7 @@ func UpdatePassword(context controller.Context, input UpdatePasswordParams) (res
 	tx = database.Db.Begin()
 
 	myInfo := model.Admin{
-		Id: context.Uid,
+		Id: c.Uid,
 	}
 
 	if err = tx.First(&myInfo).Error; err != nil {

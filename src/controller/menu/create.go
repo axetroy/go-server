@@ -26,7 +26,7 @@ type CreateMenuParams struct {
 	ParentId  *string   `json:"parent_id"`                    // 该菜单的父级 ID
 }
 
-func Create(context controller.Context, input CreateMenuParams) (res schema.Response) {
+func Create(c controller.Context, input CreateMenuParams) (res schema.Response) {
 	var (
 		err  error
 		data schema.Menu
@@ -64,7 +64,7 @@ func Create(context controller.Context, input CreateMenuParams) (res schema.Resp
 	tx = database.Db.Begin()
 
 	adminInfo := model.Admin{
-		Id: context.Uid,
+		Id: c.Uid,
 	}
 
 	if err = tx.First(&adminInfo).Error; err != nil {

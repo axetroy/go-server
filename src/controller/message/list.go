@@ -28,7 +28,7 @@ type QueryAdmin struct {
 }
 
 // 用户获取自己的消息列表
-func GetMessageListByUser(context controller.Context, input Query) (res schema.List) {
+func GetMessageListByUser(c controller.Context, input Query) (res schema.List) {
 	var (
 		err  error
 		data = make([]schema.Message, 0) // 接口输出的数据
@@ -59,7 +59,7 @@ func GetMessageListByUser(context controller.Context, input Query) (res schema.L
 
 	filter := map[string]interface{}{}
 
-	filter["uid"] = context.Uid
+	filter["uid"] = c.Uid
 
 	if input.Read != nil {
 		filter["read"] = *input.Read
@@ -98,7 +98,7 @@ func GetMessageListByUser(context controller.Context, input Query) (res schema.L
 }
 
 // 用户获取自己的消息列表
-func GetMessageListByAdmin(context controller.Context, input QueryAdmin) (res schema.List) {
+func GetMessageListByAdmin(c controller.Context, input QueryAdmin) (res schema.List) {
 	var (
 		err  error
 		data = make([]schema.MessageAdmin, 0) // 接口输出的数据

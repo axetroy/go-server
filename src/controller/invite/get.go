@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-func Get(context controller.Context, id string) (res schema.Response) {
+func Get(c controller.Context, id string) (res schema.Response) {
 	var (
 		err  error
 		data schema.Invite
@@ -53,7 +53,7 @@ func Get(context controller.Context, id string) (res schema.Response) {
 	tx = database.Db.Begin()
 
 	// 只能获取跟自己相关的
-	if err = tx.Where(model.InviteHistory{Inviter: context.Uid}).Or(model.InviteHistory{Invitee: context.Uid}).First(&inviteDetail).Error; err != nil {
+	if err = tx.Where(model.InviteHistory{Inviter: c.Uid}).Or(model.InviteHistory{Invitee: c.Uid}).First(&inviteDetail).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			err = exception.InviteNotExist
 			return

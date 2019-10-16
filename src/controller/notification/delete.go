@@ -25,7 +25,7 @@ func DeleteNotificationMarkById(id string) {
 	database.DeleteRowByTable("notification_mark", "id", id)
 }
 
-func Delete(context controller.Context, notificationId string) (res schema.Response) {
+func Delete(c controller.Context, notificationId string) (res schema.Response) {
 	var (
 		err  error
 		data schema.Notification
@@ -57,7 +57,7 @@ func Delete(context controller.Context, notificationId string) (res schema.Respo
 
 	tx = database.Db.Begin()
 
-	adminInfo := model.Admin{Id: context.Uid}
+	adminInfo := model.Admin{Id: c.Uid}
 
 	if err = tx.First(&adminInfo).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {

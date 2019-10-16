@@ -24,7 +24,7 @@ type CreateParams struct {
 	Note    *string `json:"note"`                             // 备注
 }
 
-func Create(context controller.Context, input CreateParams) (res schema.Response) {
+func Create(c controller.Context, input CreateParams) (res schema.Response) {
 	var (
 		err  error
 		data schema.Notification
@@ -62,7 +62,7 @@ func Create(context controller.Context, input CreateParams) (res schema.Response
 	tx = database.Db.Begin()
 
 	adminInfo := model.Admin{
-		Id: context.Uid,
+		Id: c.Uid,
 	}
 
 	if err = tx.Where(&adminInfo).First(&adminInfo).Error; err != nil {

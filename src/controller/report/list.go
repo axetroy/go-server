@@ -27,7 +27,7 @@ type QueryAdmin struct {
 	Uid string `json:"uid"`
 }
 
-func GetList(context controller.Context, input Query) (res schema.List) {
+func GetList(c controller.Context, input Query) (res schema.List) {
 	var (
 		err  error
 		data = make([]schema.Report, 0)
@@ -57,7 +57,7 @@ func GetList(context controller.Context, input Query) (res schema.List) {
 
 	filter := map[string]interface{}{}
 
-	filter["uid"] = context.Uid
+	filter["uid"] = c.Uid
 
 	if input.Type != nil {
 		filter["type"] = *input.Type
@@ -122,7 +122,7 @@ func GetListRouter(c *gin.Context) {
 	}, input)
 }
 
-func GetListByAdmin(context controller.Context, input QueryAdmin) (res schema.List) {
+func GetListByAdmin(c controller.Context, input QueryAdmin) (res schema.List) {
 	var (
 		err  error
 		data = make([]schema.Report, 0)

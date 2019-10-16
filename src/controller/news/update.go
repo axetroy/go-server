@@ -24,7 +24,7 @@ type UpdateParams struct {
 	Status  *model.NewsStatus `json:"status"`
 }
 
-func Update(context controller.Context, newsId string, input UpdateParams) (res schema.Response) {
+func Update(c controller.Context, newsId string, input UpdateParams) (res schema.Response) {
 	var (
 		err          error
 		data         schema.News
@@ -58,7 +58,7 @@ func Update(context controller.Context, newsId string, input UpdateParams) (res 
 
 	tx = database.Db.Begin()
 
-	adminInfo := model.Admin{Id: context.Uid}
+	adminInfo := model.Admin{Id: c.Uid}
 
 	// 判断管理员是否存在
 	if err = tx.First(&adminInfo).Error; err != nil {

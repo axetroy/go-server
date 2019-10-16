@@ -106,7 +106,7 @@ func transform(menus []schema.Menu, myAccession []string, isSuperAdmin bool) (da
 	return
 }
 
-func GetList(context controller.Context, input Query) (res schema.Response) {
+func GetList(c controller.Context, input Query) (res schema.Response) {
 	var (
 		err  error
 		data = make([]schema.Menu, 0)
@@ -138,7 +138,7 @@ func GetList(context controller.Context, input Query) (res schema.Response) {
 	}()
 
 	adminInfo := model.Admin{
-		Id: context.Uid,
+		Id: c.Uid,
 	}
 
 	if err = database.Db.First(&adminInfo).Error; err != nil {

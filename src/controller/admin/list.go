@@ -20,7 +20,7 @@ type Query struct {
 	Status *model.AdminStatus `json:"status"` // 管理员状态
 }
 
-func GetList(context controller.Context, input Query) (res schema.List) {
+func GetList(c controller.Context, input Query) (res schema.List) {
 	var (
 		err  error
 		data = make([]schema.AdminProfile, 0)

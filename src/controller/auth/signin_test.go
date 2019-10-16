@@ -96,7 +96,7 @@ func TestSignInSuccess(t *testing.T) {
 
 func TestSignInWithWechat(t *testing.T) {
 	res := auth.SignInWithWechat(controller.Context{}, auth.SignInWithWechatParams{
-		Code: "test code",
+		Code: "test_code",
 	})
 
 	profile := schema.ProfileWithToken{}
