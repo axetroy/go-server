@@ -22,15 +22,6 @@ import (
 	"time"
 )
 
-type SignUpParams struct {
-	Username   *string `json:"username"`
-	Email      *string `json:"email"`
-	Phone      *string `json:"phone"`
-	Password   string  `json:"password"`
-	MCode      *string `json:"mcode"`       // 手机验证码
-	InviteCode *string `json:"invite_code"` // 邀请码
-}
-
 type SignUpWithUsernameParams struct {
 	Username   string  `json:"username" valid:"required~请输入用户名"` // 用户名
 	Password   string  `json:"password" valid:"required~请输入密码"`  // 密码

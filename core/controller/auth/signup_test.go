@@ -34,8 +34,8 @@ func TestSignUpWithNotFullBody(t *testing.T) {
 	username := "username"
 
 	// 没有输入密码
-	body, _ := json.Marshal(&auth.SignUpParams{
-		Username: &username,
+	body, _ := json.Marshal(&auth.SignUpWithUsernameParams{
+		Username: username,
 	})
 
 	// empty body

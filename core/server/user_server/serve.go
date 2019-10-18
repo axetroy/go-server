@@ -5,6 +5,7 @@ import (
 	"context"
 	"crypto/tls"
 	"github.com/axetroy/go-server/core/config"
+	"github.com/axetroy/go-server/core/service/database"
 	"log"
 	"net/http"
 	"os"
@@ -81,6 +82,8 @@ func Serve() error {
 	case <-ctx.Done():
 		log.Println("Timeout of 5 seconds.")
 	}
+
+	_ = database.Db.Close()
 
 	log.Println("Server exiting")
 
