@@ -4,7 +4,7 @@ go 1.13.1
 
 require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
-	github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20191016063755-82808b8a45c1
+	github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20191024094415-fb2b46a256d9
 	github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a
 	github.com/axetroy/go-fs v1.0.0
 	github.com/axetroy/mocker v1.1.0
@@ -20,7 +20,7 @@ require (
 	github.com/joho/godotenv v1.3.0
 	github.com/jordan-wright/email v0.0.0-20190819015918-041e0cec78b0
 	github.com/lib/pq v1.2.0
-	github.com/markbates/goth v1.57.0
+	github.com/markbates/goth v1.58.0
 	github.com/mattn/go-colorable v0.1.4 // indirect
 	github.com/mattn/go-isatty v0.0.10 // indirect
 	github.com/mitchellh/mapstructure v1.1.2
