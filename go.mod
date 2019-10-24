@@ -4,7 +4,7 @@ go 1.13.1
 
 require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
-	github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20191024015554-3dc1a0c04c65
+	github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20191024094415-fb2b46a256d9
 	github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a
 	github.com/axetroy/go-fs v1.0.0
 	github.com/axetroy/mocker v1.1.0
