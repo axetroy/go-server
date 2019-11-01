@@ -31,7 +31,7 @@ require (
 	github.com/sec51/gf256 v0.0.0-20160126143050-2454accbeb9e // indirect
 	github.com/sec51/qrcode v0.0.0-20160126144534-b7779abbcaf1 // indirect
 	github.com/sec51/twofactor v1.0.1-0.20180911112802-cd97c894b2cc
-	github.com/shirou/gopsutil v2.19.9+incompatible
+	github.com/shirou/gopsutil v2.19.10+incompatible
 	github.com/shirou/w32 v0.0.0-20160930032740-bb4de0191aa4 // indirect
 	github.com/sirupsen/logrus v1.4.2
 	github.com/stretchr/testify v1.4.0
