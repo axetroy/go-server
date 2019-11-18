@@ -2,7 +2,7 @@
 cloud.google.com/go/compute/metadata
 # github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d
 github.com/StackExchange/wmi
-# github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20191024094415-fb2b46a256d9
+# github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20191115143122-2863a2c99a71
 github.com/aliyun/alibaba-cloud-sdk-go/sdk
 github.com/aliyun/alibaba-cloud-sdk-go/sdk/auth
 github.com/aliyun/alibaba-cloud-sdk-go/sdk/auth/credentials
@@ -78,7 +78,7 @@ github.com/konsorten/go-windows-terminal-sequences
 github.com/lib/pq
 github.com/lib/pq/oid
 github.com/lib/pq/scram
-# github.com/markbates/goth v1.58.0
+# github.com/markbates/goth v1.59.0
 github.com/markbates/goth
 github.com/markbates/goth/gothic
 github.com/markbates/goth/providers/facebook
@@ -119,7 +119,7 @@ github.com/sec51/qrcode
 github.com/sec51/qrcode/coding
 # github.com/sec51/twofactor v1.0.1-0.20180911112802-cd97c894b2cc
 github.com/sec51/twofactor
-# github.com/shirou/gopsutil v2.19.9+incompatible
+# github.com/shirou/gopsutil v2.19.10+incompatible
 github.com/shirou/gopsutil/cpu
 github.com/shirou/gopsutil/disk
 github.com/shirou/gopsutil/host
