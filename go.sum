@@ -108,6 +108,8 @@ github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20191115091738-a32c5ae72767 h1:iVW
 github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20191115091738-a32c5ae72767/go.mod h1:mNZkuqaeM5UCiAdkV4r+lrheu8Q5fe/487bRFrGYZ8A=
 github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20191115143122-2863a2c99a71 h1:403lX+Je3enjqcePi8bSN6QWzhuzx71dBViv+PhqHUA=
 github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20191115143122-2863a2c99a71/go.mod h1:mNZkuqaeM5UCiAdkV4r+lrheu8Q5fe/487bRFrGYZ8A=
+github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20191119071557-bcb02064ded9 h1:qZQc3Eijs4hbjpyco2eSI3Q0Q45+BxNfG8gHVbCUwbU=
+github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20191119071557-bcb02064ded9/go.mod h1:mNZkuqaeM5UCiAdkV4r+lrheu8Q5fe/487bRFrGYZ8A=
 github.com/aliyun/aliyun-oss-go-sdk v0.0.0-20190307165228-86c17b95fcd5/go.mod h1:T/Aws4fEfogEE9v+HPhhw+CntffsBHJ8nXQCwKr0/g8=
 github.com/apache/thrift v0.12.0/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
 github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a h1:idn718Q4B6AGu/h5Sxe66HYVdqdGu2l9Iebqhi/AEoA=
