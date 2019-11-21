@@ -35,7 +35,7 @@ require (
 	github.com/shirou/w32 v0.0.0-20160930032740-bb4de0191aa4 // indirect
 	github.com/sirupsen/logrus v1.4.2
 	github.com/stretchr/testify v1.4.0
-	github.com/urfave/cli v1.22.1
+	github.com/urfave/cli v1.22.2
 	golang.org/x/net v0.0.0-20191009170851-d66e71096ffb // indirect
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45 // indirect
 	google.golang.org/appengine v1.6.5 // indirect
