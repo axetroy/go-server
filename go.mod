@@ -18,7 +18,7 @@ require (
 	github.com/jinzhu/gorm v1.9.11
 	github.com/joho/godotenv v1.3.0
 	github.com/jordan-wright/email v0.0.0-20190819015918-041e0cec78b0
-	github.com/lib/pq v1.2.0
+	github.com/lib/pq v1.3.0
 	github.com/markbates/goth v1.59.0
 	github.com/mattn/go-colorable v0.1.4 // indirect
 	github.com/mattn/go-isatty v0.0.10 // indirect
