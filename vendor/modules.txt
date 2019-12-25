@@ -53,7 +53,7 @@ github.com/go-redis/redis/internal/proto
 github.com/go-redis/redis/internal/util
 # github.com/golang/protobuf v1.3.2
 github.com/golang/protobuf/proto
-# github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db
+# github.com/golang/snappy v0.0.1
 github.com/golang/snappy
 # github.com/gorilla/context v1.1.1
 github.com/gorilla/context
@@ -107,7 +107,7 @@ github.com/modern-go/reflect2
 github.com/mrjones/oauth
 # github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 github.com/nfnt/resize
-# github.com/nsqio/go-nsq v1.0.7
+# github.com/nsqio/go-nsq v1.0.8
 github.com/nsqio/go-nsq
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
