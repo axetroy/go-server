@@ -9,7 +9,7 @@ require (
 	github.com/axetroy/go-fs v1.0.0
 	github.com/axetroy/mocker v1.1.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/fatih/color v1.7.0
+	github.com/fatih/color v1.8.0
 	github.com/gin-gonic/gin v1.5.0
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/go-redis/redis v6.15.6+incompatible
