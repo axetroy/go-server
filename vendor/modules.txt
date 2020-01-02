@@ -26,7 +26,7 @@ github.com/cpuguy83/go-md2man/v2/md2man
 github.com/davecgh/go-spew/spew
 # github.com/dgrijalva/jwt-go v3.2.0+incompatible
 github.com/dgrijalva/jwt-go
-# github.com/fatih/color v1.7.0
+# github.com/fatih/color v1.8.0
 github.com/fatih/color
 # github.com/gin-contrib/sse v0.1.0
 github.com/gin-contrib/sse
