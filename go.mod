@@ -9,7 +9,7 @@ require (
 	github.com/axetroy/go-fs v1.0.0
 	github.com/axetroy/mocker v1.1.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/fatih/color v1.8.0
+	github.com/fatih/color v1.9.0
 	github.com/gin-gonic/gin v1.5.0
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/go-redis/redis v6.15.6+incompatible
@@ -20,8 +20,6 @@ require (
 	github.com/jordan-wright/email v0.0.0-20190819015918-041e0cec78b0
 	github.com/lib/pq v1.3.0
 	github.com/markbates/goth v1.60.0
-	github.com/mattn/go-colorable v0.1.4 // indirect
-	github.com/mattn/go-isatty v0.0.10 // indirect
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/nsqio/go-nsq v1.0.8
