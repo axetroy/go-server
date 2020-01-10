@@ -15,7 +15,7 @@ require (
 	github.com/go-redis/redis v6.15.6+incompatible
 	github.com/gorilla/mux v1.7.3
 	github.com/holdno/snowFlakeByGo v0.0.0-20180510033652-d23f8a8cadd7
-	github.com/jinzhu/gorm v1.9.11
+	github.com/jinzhu/gorm v1.9.12
 	github.com/joho/godotenv v1.3.0
 	github.com/jordan-wright/email v0.0.0-20190819015918-041e0cec78b0
 	github.com/lib/pq v1.3.0

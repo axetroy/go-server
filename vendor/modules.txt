@@ -1,4 +1,4 @@
-# cloud.google.com/go v0.37.4
+# cloud.google.com/go v0.34.0
 cloud.google.com/go/compute/metadata
 # github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d
 github.com/StackExchange/wmi
@@ -65,7 +65,7 @@ github.com/gorilla/securecookie
 github.com/gorilla/sessions
 # github.com/holdno/snowFlakeByGo v0.0.0-20180510033652-d23f8a8cadd7
 github.com/holdno/snowFlakeByGo
-# github.com/jinzhu/gorm v1.9.11
+# github.com/jinzhu/gorm v1.9.12
 github.com/jinzhu/gorm
 # github.com/jinzhu/inflection v1.0.0
 github.com/jinzhu/inflection
@@ -145,7 +145,7 @@ github.com/stretchr/testify/assert
 github.com/ugorji/go/codec
 # github.com/urfave/cli v1.22.2
 github.com/urfave/cli
-# golang.org/x/crypto v0.0.0-20190325154230-a5d413f7728c
+# golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
 golang.org/x/crypto/curve25519
 golang.org/x/crypto/hkdf
 golang.org/x/crypto/internal/subtle
