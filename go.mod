@@ -17,7 +17,7 @@ require (
 	github.com/holdno/snowFlakeByGo v0.0.0-20180510033652-d23f8a8cadd7
 	github.com/jinzhu/gorm v1.9.12
 	github.com/joho/godotenv v1.3.0
-	github.com/jordan-wright/email v0.0.0-20190819015918-041e0cec78b0
+	github.com/jordan-wright/email v0.0.0-20200121133829-a0b5c5b58bb6
 	github.com/lib/pq v1.3.0
 	github.com/markbates/goth v1.61.0
 	github.com/mitchellh/mapstructure v1.1.2
