@@ -382,6 +382,8 @@ github.com/markbates/goth v1.60.0 h1:JD9CX1zqgxfhjDjtZ+JrTOIMI5cs8JFUExnhPEU9hUA
 github.com/markbates/goth v1.60.0/go.mod h1:qh2QfwZoWRucQ+DR5KVKC6dUGkNCToWh4vS45GIzFsY=
 github.com/markbates/goth v1.61.0 h1:nSJ3onFSJDvFirv4ERcl/mgMzZWMYVp+g5IX9xaJVw0=
 github.com/markbates/goth v1.61.0/go.mod h1:qh2QfwZoWRucQ+DR5KVKC6dUGkNCToWh4vS45GIzFsY=
+github.com/markbates/goth v1.61.1 h1:xTL/K3TllYbUm3zOJ6NfGVaTOc6+e3GMDGEaurRkJXo=
+github.com/markbates/goth v1.61.1/go.mod h1:qh2QfwZoWRucQ+DR5KVKC6dUGkNCToWh4vS45GIzFsY=
 github.com/mattn/go-colorable v0.0.9/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=
 github.com/mattn/go-colorable v0.1.2 h1:/bC9yWikZXAL9uJdulbSfyVNIR3n3trXl+v8+1sx8mU=
 github.com/mattn/go-colorable v0.1.2/go.mod h1:U0ppj6V5qS13XJ6of8GYAs25YV2eR4EVcfRqFIhoBtE=
