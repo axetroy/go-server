@@ -126,7 +126,7 @@ github.com/sec51/qrcode
 github.com/sec51/qrcode/coding
 # github.com/sec51/twofactor v1.0.1-0.20180911112802-cd97c894b2cc
 github.com/sec51/twofactor
-# github.com/shirou/gopsutil v2.19.12+incompatible
+# github.com/shirou/gopsutil v2.20.1+incompatible
 github.com/shirou/gopsutil/cpu
 github.com/shirou/gopsutil/disk
 github.com/shirou/gopsutil/host
