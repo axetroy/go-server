@@ -57,7 +57,7 @@ github.com/golang/protobuf/proto
 github.com/golang/snappy
 # github.com/gorilla/context v1.1.1
 github.com/gorilla/context
-# github.com/gorilla/mux v1.7.3
+# github.com/gorilla/mux v1.7.4
 github.com/gorilla/mux
 # github.com/gorilla/securecookie v1.1.1
 github.com/gorilla/securecookie
