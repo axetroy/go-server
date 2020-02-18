@@ -32,7 +32,7 @@ require (
 	github.com/shirou/gopsutil v2.20.1+incompatible
 	github.com/shirou/w32 v0.0.0-20160930032740-bb4de0191aa4 // indirect
 	github.com/sirupsen/logrus v1.4.2
-	github.com/stretchr/testify v1.4.0
+	github.com/stretchr/testify v1.5.0
 	github.com/urfave/cli v1.22.2
 	github.com/urfave/cli/v2 v2.0.0 // indirect
 	golang.org/x/net v0.0.0-20191009170851-d66e71096ffb // indirect
