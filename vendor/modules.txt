@@ -2,7 +2,7 @@
 cloud.google.com/go/compute/metadata
 # github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d
 github.com/StackExchange/wmi
-# github.com/aliyun/alibaba-cloud-sdk-go v1.60.380
+# github.com/aliyun/alibaba-cloud-sdk-go v1.60.382
 github.com/aliyun/alibaba-cloud-sdk-go/sdk
 github.com/aliyun/alibaba-cloud-sdk-go/sdk/auth
 github.com/aliyun/alibaba-cloud-sdk-go/sdk/auth/credentials
