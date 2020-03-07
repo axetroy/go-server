@@ -73,7 +73,7 @@ github.com/jinzhu/inflection
 github.com/jmespath/go-jmespath
 # github.com/joho/godotenv v1.3.0
 github.com/joho/godotenv
-# github.com/jordan-wright/email v0.0.0-20200121133829-a0b5c5b58bb6
+# github.com/jordan-wright/email v0.0.0-20200307200233-de844847de93
 github.com/jordan-wright/email
 # github.com/json-iterator/go v1.1.7
 github.com/json-iterator/go
