@@ -404,6 +404,8 @@ github.com/jordan-wright/email v0.0.0-20190819015918-041e0cec78b0 h1:9RqhD4eIjDT
 github.com/jordan-wright/email v0.0.0-20190819015918-041e0cec78b0/go.mod h1:1c7szIrayyPPB/987hsnvNzLushdWf4o/79s3P08L8A=
 github.com/jordan-wright/email v0.0.0-20200121133829-a0b5c5b58bb6 h1:gI29NnCaNU8N7rZT2svjtas5SrbL0XsutOPtInVvGIA=
 github.com/jordan-wright/email v0.0.0-20200121133829-a0b5c5b58bb6/go.mod h1:1c7szIrayyPPB/987hsnvNzLushdWf4o/79s3P08L8A=
+github.com/jordan-wright/email v0.0.0-20200307200233-de844847de93 h1:s0xz1IUoy2D16OkiNxZLRttvut0en4cjOppP034hmeY=
+github.com/jordan-wright/email v0.0.0-20200307200233-de844847de93/go.mod h1:Fy2gCFfZhay8jplf/Csj6cyH/oshQTkLQYZbKkcV+SY=
 github.com/json-iterator/go v1.1.5/go.mod h1:+SdeFBvtyEkXs7REEP0seUULqWtbJapLOCVDaaPEHmU=
 github.com/json-iterator/go v1.1.6 h1:MrUvLMLTMxbqFJ9kzlvat/rYZqZnW3u4wkLzWTaFwKs=
 github.com/json-iterator/go v1.1.6/go.mod h1:+SdeFBvtyEkXs7REEP0seUULqWtbJapLOCVDaaPEHmU=
