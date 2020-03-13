@@ -20,7 +20,7 @@ require (
 	github.com/joho/godotenv v1.3.0
 	github.com/jordan-wright/email v0.0.0-20200307200233-de844847de93
 	github.com/lib/pq v1.3.0
-	github.com/markbates/goth v1.61.3
+	github.com/markbates/goth v1.62.0
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/nsqio/go-nsq v1.0.8
