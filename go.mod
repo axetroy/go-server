@@ -31,7 +31,7 @@ require (
 	github.com/sec51/twofactor v1.0.1-0.20180911112802-cd97c894b2cc
 	github.com/shirou/gopsutil v2.20.2+incompatible
 	github.com/shirou/w32 v0.0.0-20160930032740-bb4de0191aa4 // indirect
-	github.com/sirupsen/logrus v1.4.2
+	github.com/sirupsen/logrus v1.5.0
 	github.com/stretchr/testify v1.5.1
 	github.com/urfave/cli v1.22.3
 	github.com/urfave/cli/v2 v2.0.0 // indirect
