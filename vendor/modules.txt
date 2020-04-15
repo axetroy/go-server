@@ -178,7 +178,7 @@ github.com/sirupsen/logrus
 github.com/stretchr/testify/assert
 # github.com/ugorji/go/codec v1.1.7
 github.com/ugorji/go/codec
-# github.com/urfave/cli v1.22.3
+# github.com/urfave/cli v1.22.4
 ## explicit
 github.com/urfave/cli
 # github.com/urfave/cli/v2 v2.0.0
