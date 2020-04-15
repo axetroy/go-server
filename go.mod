@@ -1,6 +1,6 @@
 module github.com/axetroy/go-server
 
-go 1.13.1
+go 1.14
 
 require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
@@ -18,7 +18,7 @@ require (
 	github.com/holdno/snowFlakeByGo v0.0.0-20180510033652-d23f8a8cadd7
 	github.com/jinzhu/gorm v1.9.12
 	github.com/joho/godotenv v1.3.0
-	github.com/jordan-wright/email 8eef2508c362
+	github.com/jordan-wright/email v0.0.0-20200322182553-8eef2508c362
 	github.com/lib/pq v1.3.0
 	github.com/markbates/goth v1.64.0
 	github.com/mitchellh/mapstructure v1.2.2
