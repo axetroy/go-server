@@ -10,7 +10,6 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/gin-gonic/gin/internal/bytesconv"
 	"github.com/gin-gonic/gin/internal/json"
 )
 
@@ -69,11 +68,8 @@ func (r JSON) WriteContentType(w http.ResponseWriter) {
 // WriteJSON marshals the given interface object and writes it with custom ContentType.
 func WriteJSON(w http.ResponseWriter, obj interface{}) error {
 	writeContentType(w, jsonContentType)
-	jsonBytes, err := json.Marshal(obj)
-	if err != nil {
-		return err
-	}
-	_, err = w.Write(jsonBytes)
+	encoder := json.NewEncoder(w)
+	err := encoder.Encode(&obj)
 	return err
 }
 
@@ -101,9 +97,8 @@ func (r SecureJSON) Render(w http.ResponseWriter) error {
 		return err
 	}
 	// if the jsonBytes is array values
-	if bytes.HasPrefix(jsonBytes, bytesconv.StringToBytes("[")) && bytes.HasSuffix(jsonBytes,
-		bytesconv.StringToBytes("]")) {
-		_, err = w.Write(bytesconv.StringToBytes(r.Prefix))
+	if bytes.HasPrefix(jsonBytes, []byte("[")) && bytes.HasSuffix(jsonBytes, []byte("]")) {
+		_, err = w.Write([]byte(r.Prefix))
 		if err != nil {
 			return err
 		}
@@ -131,11 +126,11 @@ func (r JsonpJSON) Render(w http.ResponseWriter) (err error) {
 	}
 
 	callback := template.JSEscapeString(r.Callback)
-	_, err = w.Write(bytesconv.StringToBytes(callback))
+	_, err = w.Write([]byte(callback))
 	if err != nil {
 		return err
 	}
-	_, err = w.Write(bytesconv.StringToBytes("("))
+	_, err = w.Write([]byte("("))
 	if err != nil {
 		return err
 	}
@@ -143,7 +138,7 @@ func (r JsonpJSON) Render(w http.ResponseWriter) (err error) {
 	if err != nil {
 		return err
 	}
-	_, err = w.Write(bytesconv.StringToBytes(");"))
+	_, err = w.Write([]byte(");"))
 	if err != nil {
 		return err
 	}
@@ -165,7 +160,7 @@ func (r AsciiJSON) Render(w http.ResponseWriter) (err error) {
 	}
 
 	var buffer bytes.Buffer
-	for _, r := range bytesconv.BytesToString(ret) {
+	for _, r := range string(ret) {
 		cvt := string(r)
 		if r >= 128 {
 			cvt = fmt.Sprintf("\\u%04x", int64(r))

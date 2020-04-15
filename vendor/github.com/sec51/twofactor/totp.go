@@ -12,16 +12,17 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"github.com/sec51/convert"
-	"github.com/sec51/convert/bigendian"
-	"github.com/sec51/cryptoengine"
-	qr "github.com/sec51/qrcode"
 	"hash"
 	"io"
 	"math"
 	"net/url"
 	"strconv"
 	"time"
+
+	"github.com/sec51/convert"
+	"github.com/sec51/convert/bigendian"
+	"github.com/sec51/cryptoengine"
+	qr "github.com/sec51/qrcode"
 )
 
 const (
@@ -43,7 +44,7 @@ type Totp struct {
 	counter                   [counter_size]byte // this is the counter used to synchronize with the client device
 	digits                    int                // total amount of digits of the code displayed on the device
 	issuer                    string             // the company which issues the 2FA
-	account                   string             // usually the suer email or the account id
+	account                   string             // usually the user email or the account id
 	stepSize                  int                // by default 30 seconds
 	clientOffset              int                // the amount of steps the client is off
 	totalVerificationFailures int                // the total amount of verification failures from the client - by default 10
@@ -76,7 +77,7 @@ func (otp *Totp) getIntCounter() uint64 {
 // hash: is the crypto function used: crypto.SHA1, crypto.SHA256, crypto.SHA512
 // digits: is the token amount of digits (6 or 7 or 8)
 // steps: the amount of second the token is valid
-// it autmatically generates a secret key using the golang crypto rand package. If there is not enough entropy the function returns an error
+// it automatically generates a secret key using the golang crypto rand package. If there is not enough entropy the function returns an error
 // The key is not encrypted in this package. It's a secret key. Therefore if you transfer the key bytes in the network,
 // please take care of protecting the key or in fact all the bytes.
 func NewTOTP(account, issuer string, hash crypto.Hash, digits int) (*Totp, error) {
@@ -98,7 +99,7 @@ func NewTOTP(account, issuer string, hash crypto.Hash, digits int) (*Totp, error
 }
 
 // Private function which initialize the TOTP so that it's easier to unit test it
-// Used internnaly
+// Used internally
 func makeTOTP(key []byte, account, issuer string, hash crypto.Hash, digits int) (*Totp, error) {
 	otp := new(Totp)
 	otp.key = key
@@ -111,7 +112,7 @@ func makeTOTP(key []byte, account, issuer string, hash crypto.Hash, digits int) 
 	return otp, nil
 }
 
-// This function validates the user privided token
+// This function validates the user provided token
 // It calculates 3 different tokens. The current one, one before now and one after now.
 // The difference is driven by the TOTP step size
 // Based on which of the 3 steps it succeeds to validates, the client offset is updated.
@@ -270,6 +271,14 @@ func calculateToken(counter []byte, digits int, h hash.Hash) string {
 	return fmt.Sprintf(fmtStr, mod)
 }
 
+// Secret returns the underlying base32 encoded secret.
+// This should only be displayed the first time a user enables 2FA,
+// and should be transmitted over a secure connection.
+// Useful for supporting TOTP clients that don't support QR scanning.
+func (otp *Totp) Secret() string {
+	return base32.StdEncoding.EncodeToString(otp.key)
+}
+
 // URL returns a suitable URL, such as for the Google Authenticator app
 // example: otpauth://totp/Example:alice@google.com?secret=JBSWY3DPEHPK3PXP&issuer=Example
 func (otp *Totp) url() (string, error) {
@@ -343,15 +352,15 @@ func (otp *Totp) ToBytes() ([]byte, error) {
 
 	var buffer bytes.Buffer
 
-	// caluclate the length of the key and create its byte representation
+	// calculate the length of the key and create its byte representation
 	keySize := len(otp.key)
 	keySizeBytes := bigendian.ToInt(keySize) //bigEndianInt(keySize)
 
-	// caluclate the length of the issuer and create its byte representation
+	// calculate the length of the issuer and create its byte representation
 	issuerSize := len(otp.issuer)
 	issuerSizeBytes := bigendian.ToInt(issuerSize)
 
-	// caluclate the length of the account and create its byte representation
+	// calculate the length of the account and create its byte representation
 	accountSize := len(otp.account)
 	accountSizeBytes := bigendian.ToInt(accountSize)
 
@@ -490,14 +499,14 @@ func TOTPFromBytes(encryptedMessage []byte, issuer string) (*Totp, error) {
 	// otp object
 	otp := new(Totp)
 
-	// get the lenght
-	lenght := make([]byte, 4)
-	_, err = reader.Read(lenght) // read the 4 bytes for the total lenght
+	// get the length
+	length := make([]byte, 4)
+	_, err = reader.Read(length) // read the 4 bytes for the total length
 	if err != nil && err != io.EOF {
 		return otp, err
 	}
 
-	totalSize := bigendian.FromInt([4]byte{lenght[0], lenght[1], lenght[2], lenght[3]})
+	totalSize := bigendian.FromInt([4]byte{length[0], length[1], length[2], length[3]})
 	buffer := make([]byte, totalSize-4)
 	_, err = reader.Read(buffer)
 	if err != nil && err != io.EOF {
@@ -562,7 +571,7 @@ func TOTPFromBytes(encryptedMessage []byte, issuer string) (*Totp, error) {
 	b = buffer[startOffset:endOffset]
 	otp.clientOffset = bigendian.FromInt([4]byte{b[0], b[1], b[2], b[3]})
 
-	// read the total failuers
+	// read the total failures
 	startOffset = endOffset
 	endOffset = startOffset + 4
 	b = buffer[startOffset:endOffset]

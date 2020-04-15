@@ -32,25 +32,25 @@ This package implements the RFC 6238 OATH-TOTP algorithm;
 
 ### Storing Keys
 
-> **The key is created using Golang crypto random function. It's a secret key and therefore**
-> it needs to be protected against unauthorized access. The key cannot be leaked, otherwise the security is complitely compromised.
-> The key is presented to the user in a form of QR Code. Once scanned the key should be revealed again.
-> In addition when the QR cide is shared with the client for scanning, the connection used must be secured.
+> The key is created using Golang crypto random function. It's a **secret key** and therefore
+> it needs to be **protected against unauthorized access**. The key cannot be leaked, otherwise the security is completely compromised.
+> The key is presented to the user in a form of QR Code. Once scanned the key should never be revealed again.
+> In addition when the QR code is shared with the client for scanning, the connection used must be secured (HTTPS).
 
 The `totp` struct can be easily serialized using the `ToBytes()` function. 
-The bytes can then be stored on a persistent layer. The bytes are encrypted using `cryptoengine` library (NaCl)
+The bytes can then be stored on a persistent layer (database for example). The bytes are encrypted using `cryptoengine` library (NaCl)
 You can then retrieve the object back with the function: `TOTPFromBytes`
 
-> You can transfer the bytes securely via a network connection because they are encrypted and authenticated.
+> You can transfer the bytes securely via a network connection (Ex. if the database is in a different server) because they are encrypted and authenticated.
 
 The struct needs to be stored in a persistent layer becase its values, like last token verification time, 
-max user authentication failures, etc.. needs to be preserved.
+max user authentication failures, etc.. need to be preserved.
 The secret key needs to be preserved too, between the user accound and the user device.
-The secret key is used to derive tokens.
+The secret key is in fact used to derive tokens.
 
 ### Upcoming features
 
-* Securely store the secret keys in the persistent layer and allow secure transfer on the network
+* Generation of recovery tokens.
 
 * Integration with Twilio for sending the token via SMS, in case the user loses its entry in the Google authenticator app.
 
@@ -103,7 +103,7 @@ import github.com/sec51/twofactor
 
 * [RFC 6238 - *TOTP: Time-Based One-Time Password Algorithm*](https://tools.ietf.org/rfc/rfc6238.txt)
 
-* The [Key URI Format](https://code.google.com/p/google-authenticator/wiki/KeyUriFormat)
+* The [Key URI Format](https://github.com/google/google-authenticator/wiki/Key-Uri-Format)
 
 
 ### Author

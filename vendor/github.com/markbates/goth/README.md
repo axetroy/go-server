@@ -41,7 +41,6 @@ $ go get github.com/markbates/goth
 * InfluxCloud
 * Instagram
 * Intercom
-* Kakao
 * Lastfm
 * Linkedin
 * LINE

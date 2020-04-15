@@ -27,13 +27,7 @@ func Generate2FASecret(uid string) (secret string, err error) {
 		return "", err
 	}
 
-	b, err := otp.ToBytes()
-
-	if err != nil {
-		return "", err
-	}
-
-	return string(b), nil
+	return otp.Secret(), nil
 }
 
 // 验证用户token是否正确
