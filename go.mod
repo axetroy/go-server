@@ -21,7 +21,7 @@ require (
 	github.com/jordan-wright/email v0.0.0-20200322182553-8eef2508c362
 	github.com/lib/pq v1.4.0
 	github.com/markbates/goth v1.64.0
-	github.com/mitchellh/mapstructure v1.2.2
+	github.com/mitchellh/mapstructure v1.2.3
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/nsqio/go-nsq v1.0.8
 	github.com/sec51/convert v0.0.0-20190309075348-ebe586d87951 // indirect
