@@ -19,7 +19,7 @@ require (
 	github.com/jinzhu/gorm v1.9.12
 	github.com/joho/godotenv v1.3.0
 	github.com/jordan-wright/email v0.0.0-20200322182553-8eef2508c362
-	github.com/lib/pq v1.4.0
+	github.com/lib/pq v1.5.0
 	github.com/markbates/goth v1.64.0
 	github.com/mitchellh/mapstructure v1.3.0
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
