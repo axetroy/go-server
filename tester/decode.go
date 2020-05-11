@@ -3,7 +3,7 @@ package tester
 import (
 	"encoding/json"
 	"errors"
-	"github.com/axetroy/go-server/core/util"
+	"github.com/axetroy/go-server/internal/util"
 )
 
 func Decode(source interface{}, dest interface{}) (err error) {

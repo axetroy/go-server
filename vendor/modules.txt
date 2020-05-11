@@ -64,8 +64,6 @@ github.com/go-redis/redis/internal/hashtag
 github.com/go-redis/redis/internal/pool
 github.com/go-redis/redis/internal/proto
 github.com/go-redis/redis/internal/util
-# github.com/go-redis/redis/v7 v7.2.0
-## explicit
 # github.com/golang/protobuf v1.3.3
 github.com/golang/protobuf/proto
 # github.com/golang/snappy v0.0.1
@@ -99,6 +97,8 @@ github.com/jordan-wright/email
 github.com/json-iterator/go
 # github.com/konsorten/go-windows-terminal-sequences v1.0.3
 github.com/konsorten/go-windows-terminal-sequences
+# github.com/kr/pretty v0.1.0
+## explicit
 # github.com/leodido/go-urn v1.2.0
 github.com/leodido/go-urn
 # github.com/lib/pq v1.5.2
@@ -134,6 +134,10 @@ github.com/nfnt/resize
 # github.com/nsqio/go-nsq v1.0.8
 ## explicit
 github.com/nsqio/go-nsq
+# github.com/onsi/ginkgo v1.10.1
+## explicit
+# github.com/onsi/gomega v1.7.0
+## explicit
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
 # github.com/russross/blackfriday/v2 v2.0.1
@@ -166,8 +170,6 @@ github.com/shirou/gopsutil/load
 github.com/shirou/gopsutil/mem
 github.com/shirou/gopsutil/net
 github.com/shirou/gopsutil/process
-# github.com/shirou/w32 v0.0.0-20160930032740-bb4de0191aa4
-## explicit
 # github.com/shurcooL/sanitized_anchor_name v1.0.0
 github.com/shurcooL/sanitized_anchor_name
 # github.com/sirupsen/logrus v1.6.0
@@ -181,8 +183,6 @@ github.com/ugorji/go/codec
 # github.com/urfave/cli v1.22.4
 ## explicit
 github.com/urfave/cli
-# github.com/urfave/cli/v2 v2.0.0
-## explicit
 # golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
 golang.org/x/crypto/curve25519
 golang.org/x/crypto/hkdf
@@ -218,6 +218,8 @@ google.golang.org/appengine/internal/modules
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
+# gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15
+## explicit
 # gopkg.in/ini.v1 v1.42.0
 gopkg.in/ini.v1
 # gopkg.in/yaml.v2 v2.2.8

@@ -3,9 +3,9 @@ package main
 
 import (
 	App "github.com/axetroy/go-server"
-	"github.com/axetroy/go-server/core/helper/daemon"
-	"github.com/axetroy/go-server/core/server/message_queue_server"
-	"github.com/axetroy/go-server/core/util"
+	"github.com/axetroy/go-server/internal/helper/daemon"
+	"github.com/axetroy/go-server/internal/server/message_queue_server"
+	"github.com/axetroy/go-server/internal/util"
 	"github.com/urfave/cli"
 	"log"
 	"os"

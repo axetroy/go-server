@@ -1,8 +1,8 @@
 package tester
 
 import (
-	"github.com/axetroy/go-server/core/server/admin_server"
-	"github.com/axetroy/go-server/core/server/user_server"
+	"github.com/axetroy/go-server/internal/server/admin_server"
+	"github.com/axetroy/go-server/internal/server/user_server"
 	"github.com/axetroy/mocker"
 )
 
