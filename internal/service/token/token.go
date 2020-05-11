@@ -3,7 +3,7 @@ package token
 
 import (
 	"errors"
-	"github.com/axetroy/go-server/internal/config"
+	"github.com/axetroy/go-server/internal/library/config"
 	"github.com/dgrijalva/jwt-go"
 )
 

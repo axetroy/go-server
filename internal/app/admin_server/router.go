@@ -3,23 +3,20 @@ package admin_server
 
 import (
 	"fmt"
-	"github.com/axetroy/go-server/internal/config"
-	"github.com/axetroy/go-server/internal/controller/address"
-	"github.com/axetroy/go-server/internal/controller/admin"
-	"github.com/axetroy/go-server/internal/controller/banner"
-	"github.com/axetroy/go-server/internal/controller/downloader"
-	"github.com/axetroy/go-server/internal/controller/help"
-	loginLog "github.com/axetroy/go-server/internal/controller/logger/login"
-	"github.com/axetroy/go-server/internal/controller/menu"
-	"github.com/axetroy/go-server/internal/controller/message"
-	"github.com/axetroy/go-server/internal/controller/news"
-	"github.com/axetroy/go-server/internal/controller/notification"
-	"github.com/axetroy/go-server/internal/controller/report"
-	"github.com/axetroy/go-server/internal/controller/resource"
-	"github.com/axetroy/go-server/internal/controller/role"
-	"github.com/axetroy/go-server/internal/controller/system"
-	"github.com/axetroy/go-server/internal/controller/uploader"
-	"github.com/axetroy/go-server/internal/controller/user"
+	"github.com/axetroy/go-server/internal/app/admin_server/controller/address"
+	"github.com/axetroy/go-server/internal/app/admin_server/controller/admin"
+	"github.com/axetroy/go-server/internal/app/admin_server/controller/banner"
+	"github.com/axetroy/go-server/internal/app/admin_server/controller/help"
+	loginLog "github.com/axetroy/go-server/internal/app/admin_server/controller/logger/login"
+	"github.com/axetroy/go-server/internal/app/admin_server/controller/menu"
+	"github.com/axetroy/go-server/internal/app/admin_server/controller/message"
+	"github.com/axetroy/go-server/internal/app/admin_server/controller/news"
+	"github.com/axetroy/go-server/internal/app/admin_server/controller/notification"
+	"github.com/axetroy/go-server/internal/app/admin_server/controller/report"
+	"github.com/axetroy/go-server/internal/app/admin_server/controller/role"
+	"github.com/axetroy/go-server/internal/app/admin_server/controller/system"
+	"github.com/axetroy/go-server/internal/app/admin_server/controller/user"
+	"github.com/axetroy/go-server/internal/library/config"
 	"github.com/axetroy/go-server/internal/middleware"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/dotenv"
@@ -111,7 +108,7 @@ func init() {
 		{
 			newsRouter := v1.Group("/news")
 			newsRouter.POST("", news.CreateRouter)              // 新建新闻公告
-			newsRouter.GET("", news.GetNewsListByUserRouter)    // 获取新闻列表
+			newsRouter.GET("", news.GetNewsListRouter)          // 获取新闻列表
 			newsRouter.GET("/n/:news_id", news.GetNewsRouter)   // 获取新闻详情
 			newsRouter.PUT("/n/:news_id", news.UpdateRouter)    // 更新新闻公告
 			newsRouter.DELETE("/n/:news_id", news.DeleteRouter) // 删除新闻
@@ -185,21 +182,6 @@ func init() {
 
 		// 通用类
 		{
-			// 文件上传
-			v1.POST("/upload/file", uploader.File)      // 上传文件
-			v1.POST("/upload/image", uploader.Image)    // 上传图片
-			v1.GET("/upload/example", uploader.Example) // 上传文件的 example
-			// 单纯获取资源文本
-			v1.GET("/resource/file/:filename", resource.File)           // 获取文件纯文本
-			v1.GET("/resource/image/:filename", resource.Image)         // 获取图片纯文本
-			v1.GET("/resource/thumbnail/:filename", resource.Thumbnail) // 获取缩略图纯文本
-			// 下载资源
-			v1.GET("/download/file/:filename", downloader.File)           // 下载文件
-			v1.GET("/download/image/:filename", downloader.Image)         // 下载图片
-			v1.GET("/download/thumbnail/:filename", downloader.Thumbnail) // 下载缩略图
-			// 公共资源目录
-			v1.GET("/avatar/:filename", user.GetAvatarRouter) // 获取用户头像
-
 			v1.GET("/area/:area_code", address.FindAddressRouter) // 获取地区码对应的信息
 			v1.GET("/area", address.AreaListRouter)               // 获取地址选择列表
 		}

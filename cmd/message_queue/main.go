@@ -4,8 +4,8 @@ package main
 import (
 	App "github.com/axetroy/go-server"
 	message_queue_server2 "github.com/axetroy/go-server/internal/app/message_queue_server"
-	"github.com/axetroy/go-server/internal/helper/daemon"
-	"github.com/axetroy/go-server/internal/util"
+	"github.com/axetroy/go-server/internal/library/helper/daemon"
+	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/urfave/cli"
 	"log"
 	"os"
@@ -13,7 +13,7 @@ import (
 
 func main() {
 	app := cli.NewApp()
-	app.Usage = "message queue server controller"
+	app.Usage = "message queue server"
 	app.Author = App.Author
 	app.Email = App.Email
 	app.Version = App.Version
@@ -22,7 +22,7 @@ func main() {
 	app.Commands = []cli.Command{
 		{
 			Name:  "start",
-			Usage: "start message queue server",
+			Usage: "start server",
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "daemon, d",
@@ -36,7 +36,7 @@ func main() {
 		},
 		{
 			Name:  "stop",
-			Usage: "stop message queue server",
+			Usage: "stop message queue",
 			Action: func(c *cli.Context) error {
 				return daemon.Stop()
 			},

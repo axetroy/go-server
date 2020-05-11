@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/axetroy/go-server/internal/config"
+	"github.com/axetroy/go-server/internal/library/config"
+	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/service/dotenv"
-	"github.com/axetroy/go-server/internal/util"
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
 )
@@ -113,6 +113,8 @@ func init() {
 
 }
 
+// WANING: 该操作会删除数据，并且不可恢复
+// 通常只用于测试中
 func DeleteRowByTable(tableName string, field string, value interface{}) {
 	var (
 		err error
@@ -131,7 +133,7 @@ func DeleteRowByTable(tableName string, field string, value interface{}) {
 
 	tx = Db.Begin()
 
-	raw := fmt.Sprintf("DELETE FROM \"%v\" WHERE %s = '%v'", tableName, field, value)
+	raw := fmt.Sprintf("DELETE FROM \"%s\" WHERE %s = '%s'", tableName, field, value)
 
 	if err = tx.Exec(raw).Error; err != nil {
 		return

@@ -2,7 +2,7 @@
 package redis
 
 import (
-	"github.com/axetroy/go-server/internal/config"
+	"github.com/axetroy/go-server/internal/library/config"
 	"github.com/go-redis/redis"
 )
 

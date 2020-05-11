@@ -2,8 +2,8 @@
 package middleware
 
 import (
-	"github.com/axetroy/go-server/internal/config"
-	"github.com/axetroy/go-server/internal/exception"
+	"github.com/axetroy/go-server/internal/library/config"
+	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/gin-gonic/gin"
 	"net/http"

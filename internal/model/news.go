@@ -2,7 +2,7 @@
 package model
 
 import (
-	"github.com/axetroy/go-server/internal/util"
+	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
 	"time"

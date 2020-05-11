@@ -3,7 +3,7 @@ package wechat
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/axetroy/go-server/internal/config"
+	"github.com/axetroy/go-server/internal/library/config"
 	"github.com/axetroy/go-server/internal/service/dotenv"
 	"io/ioutil"
 	"net/http"

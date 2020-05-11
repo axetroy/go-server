@@ -4,7 +4,7 @@ package user_server
 import (
 	"context"
 	"crypto/tls"
-	"github.com/axetroy/go-server/internal/config"
+	"github.com/axetroy/go-server/internal/library/config"
 	"github.com/axetroy/go-server/internal/service/database"
 	"log"
 	"net/http"

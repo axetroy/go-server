@@ -63,11 +63,15 @@
 
 > 启用消息队列消费服务器，用于消费在队列里面的事物。
 
-2. user_server
+2. resource_server
+
+> 静态文件服务器。用于静态文件的上传/下载/缩略图等
+
+3. user_server
 
 > 监听用户相关的接口服务
 
-3. admin_server
+4. admin_server
 
 > 监听管理员相关的接口服务
 
@@ -104,8 +108,7 @@ $ go run ./cmd/admin/main.go # 运行管理员端的接口服务
 ## 如何构建?
 
 ```bash
-$ make build-simple # 仅构建目前的主流平台，构建时间短【推荐】
-$ make build # 构建全平台的可执行文件，构建时间很久
+$ make build
 ```
 
 在生成的 bin 目录下查找对应平台的可执行文件运行即可

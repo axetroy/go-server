@@ -3,7 +3,7 @@ package storage
 
 import (
 	"fmt"
-	"github.com/axetroy/go-server/internal/config"
+	"github.com/axetroy/go-server/internal/library/config"
 	"log"
 )
 

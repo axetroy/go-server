@@ -4,8 +4,8 @@ package model
 import (
 	"time"
 
-	"github.com/axetroy/go-server/internal/exception"
-	"github.com/axetroy/go-server/internal/util"
+	"github.com/axetroy/go-server/internal/library/exception"
+	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
 )

@@ -3,14 +3,10 @@
 # last commit there is Fri Oct 16 21:33:39 2015 +0200, from https://github.com/apache/thrift
 
 test:
-	GO_TESTING=1 go test --cover -covermode=count -coverprofile=coverage.out ./...
+	GO_TESTING=1 go test -mod=vendor --cover -covermode=count -coverprofile=coverage.out ./...
 
 build:
 	bash ./scripts/build.sh
-	echo "Build Success!"
-
-build-simple:
-	bash ./scripts/build-simple.sh
 	echo "Build Success!"
 
 clean:

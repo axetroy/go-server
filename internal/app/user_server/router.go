@@ -3,26 +3,23 @@ package user_server
 
 import (
 	"fmt"
-	"github.com/axetroy/go-server/internal/config"
-	"github.com/axetroy/go-server/internal/controller/address"
-	"github.com/axetroy/go-server/internal/controller/auth"
-	"github.com/axetroy/go-server/internal/controller/banner"
-	"github.com/axetroy/go-server/internal/controller/downloader"
-	"github.com/axetroy/go-server/internal/controller/email"
-	"github.com/axetroy/go-server/internal/controller/finance"
-	"github.com/axetroy/go-server/internal/controller/help"
-	"github.com/axetroy/go-server/internal/controller/invite"
-	"github.com/axetroy/go-server/internal/controller/message"
-	"github.com/axetroy/go-server/internal/controller/news"
-	"github.com/axetroy/go-server/internal/controller/notification"
-	"github.com/axetroy/go-server/internal/controller/oauth2"
-	"github.com/axetroy/go-server/internal/controller/report"
-	"github.com/axetroy/go-server/internal/controller/resource"
-	"github.com/axetroy/go-server/internal/controller/signature"
-	"github.com/axetroy/go-server/internal/controller/transfer"
-	"github.com/axetroy/go-server/internal/controller/uploader"
-	"github.com/axetroy/go-server/internal/controller/user"
-	"github.com/axetroy/go-server/internal/controller/wallet"
+	"github.com/axetroy/go-server/internal/app/user_server/controller/address"
+	"github.com/axetroy/go-server/internal/app/user_server/controller/auth"
+	"github.com/axetroy/go-server/internal/app/user_server/controller/banner"
+	"github.com/axetroy/go-server/internal/app/user_server/controller/email"
+	"github.com/axetroy/go-server/internal/app/user_server/controller/finance"
+	"github.com/axetroy/go-server/internal/app/user_server/controller/help"
+	"github.com/axetroy/go-server/internal/app/user_server/controller/invite"
+	"github.com/axetroy/go-server/internal/app/user_server/controller/message"
+	"github.com/axetroy/go-server/internal/app/user_server/controller/news"
+	"github.com/axetroy/go-server/internal/app/user_server/controller/notification"
+	"github.com/axetroy/go-server/internal/app/user_server/controller/oauth2"
+	"github.com/axetroy/go-server/internal/app/user_server/controller/report"
+	"github.com/axetroy/go-server/internal/app/user_server/controller/signature"
+	"github.com/axetroy/go-server/internal/app/user_server/controller/transfer"
+	"github.com/axetroy/go-server/internal/app/user_server/controller/user"
+	"github.com/axetroy/go-server/internal/app/user_server/controller/wallet"
+	"github.com/axetroy/go-server/internal/library/config"
 	"github.com/axetroy/go-server/internal/middleware"
 	"github.com/axetroy/go-server/internal/rbac"
 	"github.com/axetroy/go-server/internal/rbac/accession"
@@ -173,8 +170,8 @@ func init() {
 		// 新闻咨询类
 		{
 			newsRouter := v1.Group("/news")
-			newsRouter.GET("", news.GetNewsListByUserRouter) // 获取新闻公告列表
-			newsRouter.GET("/n/:id", news.GetNewsRouter)     // 获取单个新闻公告详情
+			newsRouter.GET("", news.GetNewsListRouter)   // 获取新闻公告列表
+			newsRouter.GET("/n/:id", news.GetNewsRouter) // 获取单个新闻公告详情
 		}
 
 		// 系统通知
@@ -226,18 +223,6 @@ func init() {
 			v1.POST("/email/send/register", auth.SignUpWithEmailActionRouter)         // 发送注册邮件
 			v1.POST("/email/send/password/reset", email.SendResetPasswordEmailRouter) // 发送密码重置邮件
 
-			// 文件上传
-			v1.POST("/upload/file", uploader.File)      // 上传文件
-			v1.POST("/upload/image", uploader.Image)    // 上传图片
-			v1.GET("/upload/example", uploader.Example) // 上传文件的 example
-			// 单纯获取资源文本
-			v1.GET("/resource/file/:filename", resource.File)           // 获取文件纯文本
-			v1.GET("/resource/image/:filename", resource.Image)         // 获取图片纯文本
-			v1.GET("/resource/thumbnail/:filename", resource.Thumbnail) // 获取缩略图纯文本
-			// 下载资源
-			v1.GET("/download/file/:filename", downloader.File)           // 下载文件
-			v1.GET("/download/image/:filename", downloader.Image)         // 下载图片
-			v1.GET("/download/thumbnail/:filename", downloader.Thumbnail) // 下载缩略图
 			// 公共资源目录
 			v1.GET("/avatar/:filename", user.GetAvatarRouter) // 获取用户头像
 

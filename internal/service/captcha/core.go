@@ -1,6 +1,6 @@
 package captcha
 
-import "github.com/axetroy/go-server/internal/util"
+import "github.com/axetroy/go-server/internal/library/util"
 
 // 该包生成各种码
 // 1. 验证码

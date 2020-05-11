@@ -191,7 +191,7 @@ golang.org/x/crypto/nacl/box
 golang.org/x/crypto/nacl/secretbox
 golang.org/x/crypto/poly1305
 golang.org/x/crypto/salsa20/salsa
-# golang.org/x/net v0.0.0-20191009170851-d66e71096ffb
+# golang.org/x/net v0.0.0-20200226121028-0de0cce0169b
 ## explicit
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp

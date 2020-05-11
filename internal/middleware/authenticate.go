@@ -2,7 +2,7 @@
 package middleware
 
 import (
-	"github.com/axetroy/go-server/internal/exception"
+	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/token"
 	"github.com/gin-gonic/gin"

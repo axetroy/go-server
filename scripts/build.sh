@@ -2,14 +2,23 @@
 
 # Reference:
 # https://github.com/golang/go/blob/master/src/go/build/syslist.go
-os_archs=$(go tool dist list)
-
-os_archs=(${os_archs//$'\n'/ })
+os_archs=(
+    darwin/386
+    darwin/amd64
+    linux/386
+    linux/amd64
+    linux/arm
+    linux/arm64
+    windows/386
+    windows/amd64
+    windows/arm
+)
 
 releases=()
 targets=(
     user
     admin
+    resource
     message_queue
 )
 
@@ -28,7 +37,7 @@ do
 
         echo building ${target} ${os_arch}
 
-        CGO_ENABLED=0 GOOS=${goos} GOARCH=${goarch} go build -gcflags=-trimpath=$GOPATH -asmflags=-trimpath=$GOPATH -ldflags "-w -s" -o ./bin/${filename} ./cmd/${target}/main.go >/dev/null 2>&1
+        CGO_ENABLED=0 GOOS=${goos} GOARCH=${goarch} go build -mod=vendor -gcflags=-trimpath=$GOPATH -asmflags=-trimpath=$GOPATH -ldflags "-w -s" -o ./bin/${filename} ./cmd/${target}/main.go
 
         # if build success
         if [[ $? == 0 ]];then

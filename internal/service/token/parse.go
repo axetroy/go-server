@@ -2,8 +2,8 @@
 package token
 
 import (
-	"github.com/axetroy/go-server/internal/exception"
-	"github.com/axetroy/go-server/internal/util"
+	"github.com/axetroy/go-server/internal/library/exception"
+	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/dgrijalva/jwt-go"
 	"strings"
 )

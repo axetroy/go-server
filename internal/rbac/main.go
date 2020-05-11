@@ -2,7 +2,7 @@
 package rbac
 
 import (
-	"github.com/axetroy/go-server/internal/exception"
+	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/rbac/accession"
 	"github.com/axetroy/go-server/internal/rbac/role"

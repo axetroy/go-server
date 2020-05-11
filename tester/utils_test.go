@@ -1,8 +1,7 @@
 package tester_test
 
 import (
-	"github.com/axetroy/go-server/internal/controller/admin"
-	"github.com/axetroy/go-server/internal/controller/auth"
+	"github.com/axetroy/go-server/internal/app/admin_server/controller/admin"
 	"github.com/axetroy/go-server/tester"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -21,7 +20,7 @@ func TestCreateUser(t *testing.T) {
 
 	assert.Nil(t, err)
 
-	defer auth.DeleteUserByUserName(user.Username)
+	defer tester.DeleteUserByUserName(user.Username)
 
 	assert.NotEmpty(t, user.Username)
 	assert.NotEmpty(t, user.Token)
@@ -29,12 +28,12 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestLoginAdmin(t *testing.T) {
-	admin, err := tester.LoginAdmin()
+	adminInfo, err := tester.LoginAdmin()
 
 	assert.Nil(t, err)
 
-	assert.NotEmpty(t, admin.Token)
-	assert.NotEmpty(t, admin.Id)
-	assert.Equal(t, "admin", admin.Username)
-	assert.Equal(t, "admin", admin.Name)
+	assert.NotEmpty(t, adminInfo.Token)
+	assert.NotEmpty(t, adminInfo.Id)
+	assert.Equal(t, "admin", adminInfo.Username)
+	assert.Equal(t, "admin", adminInfo.Name)
 }

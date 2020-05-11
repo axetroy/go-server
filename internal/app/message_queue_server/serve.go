@@ -3,8 +3,8 @@ package message_queue_server
 
 import (
 	"context"
-	"github.com/axetroy/go-server/internal/config"
-	"github.com/axetroy/go-server/internal/message_queue"
+	"github.com/axetroy/go-server/internal/library/config"
+	"github.com/axetroy/go-server/internal/library/message_queue"
 	"github.com/axetroy/go-server/internal/service/database"
 	"github.com/nsqio/go-nsq"
 	"log"

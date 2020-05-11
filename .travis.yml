@@ -3,7 +3,7 @@ language: go
 sudo: required
 
 go:
-  - "1.13.1"
+  - "1.14.2"
 
 dist: trusty
 
@@ -46,11 +46,9 @@ before_script:
 
 script:
   - make test
-
-after_success:
+  - make build
   # report code cover
-  - go get golang.org/x/tools/cmd/cover
-  - go get github.com/mattn/goveralls
+  - GO111MODULE=off go get golang.org/x/tools/cmd/cover
+  - GO111MODULE=off go get github.com/mattn/goveralls
   - $GOPATH/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
-  - make build-simple
   - ls -lh ./bin

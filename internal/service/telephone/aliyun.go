@@ -4,8 +4,8 @@ package telephone
 import (
 	"encoding/json"
 	"github.com/aliyun/alibaba-cloud-sdk-go/services/dysmsapi"
-	"github.com/axetroy/go-server/internal/config"
-	"github.com/axetroy/go-server/internal/exception"
+	"github.com/axetroy/go-server/internal/library/config"
+	"github.com/axetroy/go-server/internal/library/exception"
 )
 
 func NewAliyun() *Aliyun {

@@ -2,11 +2,13 @@ package tester
 
 import (
 	"errors"
-	"github.com/axetroy/go-server/internal/controller"
-	"github.com/axetroy/go-server/internal/controller/admin"
-	"github.com/axetroy/go-server/internal/controller/auth"
+
+	"github.com/axetroy/go-server/internal/app/admin_server/controller/admin"
+	"github.com/axetroy/go-server/internal/app/user_server/controller/auth"
+	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/axetroy/go-server/internal/schema"
-	"github.com/axetroy/go-server/internal/util"
+	"github.com/axetroy/go-server/internal/service/database"
 )
 
 // 创建一个测试用户
@@ -28,7 +30,7 @@ func CreateUser() (profile schema.ProfileWithToken, err error) {
 	}
 
 	// 登陆获取 token
-	r := auth.SignIn(controller.Context{
+	r := auth.SignIn(helper.Context{
 		UserAgent: userAgent,
 		Ip:        ip,
 	}, auth.SignInParams{
@@ -65,4 +67,15 @@ func LoginAdmin() (profile schema.AdminProfileWithToken, err error) {
 	}
 
 	return
+}
+
+// 删除用户
+func DeleteUserByUserName(username string) {
+	database.DeleteRowByTable("user", "username", username)
+}
+
+// 删除用户
+func DeleteUserByUid(uid string) {
+	database.DeleteRowByTable("user", "id", uid)
+	database.DeleteRowByTable("wechat_open_id", "uid", uid)
 }

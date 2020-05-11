@@ -3,11 +3,11 @@ package middleware
 
 import (
 	"errors"
-	"github.com/axetroy/go-server/internal/exception"
+	"github.com/axetroy/go-server/internal/library/exception"
+	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
-	"github.com/axetroy/go-server/internal/util"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"net/http"
