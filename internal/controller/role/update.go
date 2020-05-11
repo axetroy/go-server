@@ -1,4 +1,4 @@
-// Copyright 2019 Axetroy. All rights reserved. MIT license.
+// Copyright 2019-2020 Axetroy. All rights reserved. MIT license.
 package role
 
 import (
