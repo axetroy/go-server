@@ -8,6 +8,8 @@ github.com/aliyun/alibaba-cloud-sdk-go v1.61.179 h1:ixYgRSPBi3zfxDb1eYmhxPyHqzOT
 github.com/aliyun/alibaba-cloud-sdk-go v1.61.179/go.mod h1:pUKYbK5JQ+1Dfxk80P0qxGqe5dkxDoabbZS7zOcouyA=
 github.com/aliyun/alibaba-cloud-sdk-go v1.61.180 h1:pyVNlbYsH20rZ6naw1wkt7T96Jem/azawEyrjXmnj8g=
 github.com/aliyun/alibaba-cloud-sdk-go v1.61.180/go.mod h1:pUKYbK5JQ+1Dfxk80P0qxGqe5dkxDoabbZS7zOcouyA=
+github.com/aliyun/alibaba-cloud-sdk-go v1.61.181 h1:larG69fkbsnAHugJEEVAtVkt73Uovy0y5yDQqd8ahbM=
+github.com/aliyun/alibaba-cloud-sdk-go v1.61.181/go.mod h1:pUKYbK5JQ+1Dfxk80P0qxGqe5dkxDoabbZS7zOcouyA=
 github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a h1:idn718Q4B6AGu/h5Sxe66HYVdqdGu2l9Iebqhi/AEoA=
 github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a/go.mod h1:lB+ZfQJz7igIIfQNfa7Ml4HSf2uFQQRzpGGRXenZAgY=
 github.com/axetroy/go-fs v1.0.0 h1:un0mpbpYjOQirgdlKlZlzTjF30DZwYwK+ObWMxubAXA=
