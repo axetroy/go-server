@@ -3,8 +3,8 @@ package main
 
 import (
 	App "github.com/axetroy/go-server"
+	message_queue_server2 "github.com/axetroy/go-server/internal/app/message_queue_server"
 	"github.com/axetroy/go-server/internal/helper/daemon"
-	"github.com/axetroy/go-server/internal/server/message_queue_server"
 	"github.com/axetroy/go-server/internal/util"
 	"github.com/urfave/cli"
 	"log"
@@ -31,7 +31,7 @@ func main() {
 			},
 			Action: func(c *cli.Context) error {
 				// 判断当其是否是子进程，当父进程return之后，子进程会被系统1号进程接管
-				return daemon.Start(message_queue_server.Serve, c.Bool("daemon"))
+				return daemon.Start(message_queue_server2.Serve, c.Bool("daemon"))
 			},
 		},
 		{

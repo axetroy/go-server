@@ -76,7 +76,7 @@ func (c *Controller) Has(a accession.Accession) bool {
 }
 
 // 根据 RBAC 鉴权的中间件
-func Require(accesions ...accession.Accession) gin.HandlerFunc {
+func Require(accessions ...accession.Accession) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var (
 			err error
@@ -102,7 +102,7 @@ func Require(accesions ...accession.Accession) gin.HandlerFunc {
 			return
 		}
 
-		if cc.Require(accesions) == false {
+		if cc.Require(accessions) == false {
 			err = exception.NoPermission
 		}
 	}

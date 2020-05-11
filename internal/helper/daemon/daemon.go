@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"strconv"
 	"syscall"
@@ -14,13 +15,21 @@ import (
 type Action func() error
 
 func getPidFilePath() (string, error) {
-	executableNamePath, err := os.Executable()
+	cwd, err := os.Getwd()
 
 	if err != nil {
 		return "", err
 	}
 
-	return executableNamePath + ".pid", nil
+	executableFilePath, err := os.Executable()
+
+	executableName := path.Base(executableFilePath)
+
+	if err != nil {
+		return "", err
+	}
+
+	return path.Join(cwd, executableName) + ".pid", nil
 }
 
 func Start(action Action, shouldRunInDaemon bool) error {
