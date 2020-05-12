@@ -16,5 +16,5 @@ var Redis redis
 func init() {
 	Redis.Host = dotenv.GetByDefault("REDIS_SERVER", "127.0.0.1")
 	Redis.Port = dotenv.GetByDefault("REDIS_PORT", "6379")
-	Redis.Password = dotenv.GetByDefault("REDIS_PASSWORD", "password")
+	Redis.Password = dotenv.GetByDefault("REDIS_PASSWORD", "")
 }

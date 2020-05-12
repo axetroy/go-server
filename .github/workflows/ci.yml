@@ -1,0 +1,99 @@
+name: ci
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        go: ['1.14.2']
+        os: [ubuntu-latest]
+    name: Go ${{ matrix.go }} test in ${{ matrix.os }}
+
+    services:
+      postgres:
+        image: postgres:9.6.16
+        env:
+          POSTGRES_USER: gotest
+          POSTGRES_PASSWORD: gotest
+          POSTGRES_DB: gotest
+        ports:
+          - 54321:5432
+        # needed because the postgres container does not provide a health check
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+      redis:
+        # Docker Hub image
+        image: redis
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        # env:
+          # "redis-cli ping"
+        ports:
+          # Maps port 6379 on service container to the host
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@master
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-go@v1
+        with:
+          go-version: ${{ matrix.go }}
+
+      - name: Environment
+        run: |
+          go version
+          go env
+
+      - name: Test
+        env:
+          DB_DRIVER: postgres
+          DB_NAME: gotest
+          DB_USERNAME: gotest
+          DB_PASSWORD: gotest
+          DB_PORT: 54321
+          DB_SYNC: on
+        run: make test
+
+      - name: Build
+        run: make build
+
+      - name: Send Coverage
+        if: github.repository == 'axetroy/go-server'
+        env:
+          COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
+        run: |
+          GO111MODULE=off go get golang.org/x/tools/cmd/cover
+          GO111MODULE=off go get github.com/mattn/goveralls
+          $(go env GOPATH)/bin/goveralls -coverprofile=coverage.out -service=github
+      # after success
+      #      - name: Coverage
+      #        if: startsWith(matrix.os, 'ubuntu')
+      #        run: |
+      #          go get golang.org/x/tools/cmd/cover
+      #          go get github.com/mattn/goveralls
+      #          /home/runner/go/bin/goveralls -coverprofile=coverage.out -service=github-action -repotoken ${{ secrets.COVERALLS_TOKEN }}
+
+#  release:
+#    name: Release to Github
+#    if: startsWith(github.ref, 'refs/tags/') && github.repository == 'axetroy/go-server'
+#    needs: build
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: softprops/action-gh-release@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+#        with:
+#          files: |
+#            bin/wsm_darwin_amd64.tar.gz
+#            bin/wsm_linux_amd64.tar.gz
+#            bin/wsm_windows_amd64.tar.gz
+#          draft: false

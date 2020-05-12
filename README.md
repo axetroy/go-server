@@ -101,6 +101,7 @@ $ cd $GOPATH/github/axetroy/go-server # 切换到项目目录
 $ go run ./cmd/message_queue/main.go # 启动消息队列
 $ go run ./cmd/user/main.go # 运行用户端的接口服务
 $ go run ./cmd/admin/main.go # 运行管理员端的接口服务
+$ go run ./cmd/resource/main.go # 运行资源类的接口服务
 ```
 
 可以通过 [.env](.env) 文件进行配置
