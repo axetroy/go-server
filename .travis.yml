@@ -29,7 +29,8 @@ services:
 before_script:
   # restart redis
   - redis-cli shutdown
-  - sudo redis-server --requirepass 'password' & echo "完成redis的启动"
+#  - sudo redis-server --requirepass 'password' & echo "完成redis的启动"
+  - sudo redis-server & echo "完成redis的启动"
   # restart postgres
   - sudo /etc/init.d/postgresql stop
   - sudo /etc/init.d/postgresql start
