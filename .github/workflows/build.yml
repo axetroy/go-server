@@ -1,4 +1,4 @@
-name: ci
+name: build
 
 on: [push, pull_request]
 
@@ -34,15 +34,13 @@ jobs:
           --health-timeout 5s
           --health-retries 5
         # env:
-          # "redis-cli ping"
+        # "redis-cli ping"
         ports:
           # Maps port 6379 on service container to the host
           - 6379:6379
 
     steps:
-      - uses: actions/checkout@master
-        with:
-          fetch-depth: 1
+      - uses: actions/checkout@v2
 
       - uses: actions/setup-go@v1
         with:
@@ -73,27 +71,27 @@ jobs:
         run: |
           GO111MODULE=off go get golang.org/x/tools/cmd/cover
           GO111MODULE=off go get github.com/mattn/goveralls
-          $(go env GOPATH)/bin/goveralls -coverprofile=coverage.out -service=github
-      # after success
-      #      - name: Coverage
-      #        if: startsWith(matrix.os, 'ubuntu')
-      #        run: |
-      #          go get golang.org/x/tools/cmd/cover
-      #          go get github.com/mattn/goveralls
-      #          /home/runner/go/bin/goveralls -coverprofile=coverage.out -service=github-action -repotoken ${{ secrets.COVERALLS_TOKEN }}
+          $(go env GOPATH)/bin/goveralls -coverprofile=coverage.out -service="GitHub Action" -jobid="${{ github.run_id }}" -jobnumber="${{ github.run_number }}" -reponame="${{ github.repository }}"
 
-#  release:
-#    name: Release to Github
-#    if: startsWith(github.ref, 'refs/tags/') && github.repository == 'axetroy/go-server'
-#    needs: build
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: softprops/action-gh-release@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-#        with:
-#          files: |
-#            bin/wsm_darwin_amd64.tar.gz
-#            bin/wsm_linux_amd64.tar.gz
-#            bin/wsm_windows_amd64.tar.gz
-#          draft: false
+      - uses: softprops/action-gh-release@v1
+        name: Release to Github
+        if: startsWith(github.ref, 'refs/tags/') && github.repository == 'axetroy/go-server'
+        env:
+          # require Github Personal Access Token
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          files: |
+            ./bin/vscode-deno.vsix
+            ./bin/user_server_darwin_amd64.tar.gz
+            ./bin/user_server_linux_amd64.tar.gz
+            ./bin/user_server_windows_amd64.tar.gz
+            ./bin/admin_server_darwin_amd64.tar.gz
+            ./bin/admin_server_linux_amd64.tar.gz
+            ./bin/admin_server_windows_amd64.tar.gz
+            ./bin/resource_server_darwin_amd64.tar.gz
+            ./bin/resource_server_linux_amd64.tar.gz
+            ./bin/resource_server_windows_amd64.tar.gz
+            ./bin/message_queue_server_darwin_amd64.tar.gz
+            ./bin/message_queue_server_linux_amd64.tar.gz
+            ./bin/message_queue_server_windows_amd64.tar.gz
+          draft: false
