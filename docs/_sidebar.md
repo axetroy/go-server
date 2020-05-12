@@ -37,3 +37,7 @@
   - [帮助中心](admin/help)
   - [文件上传](admin/upload)
   - [文件下载](admin/download)
+- 资源管理
+  - [文件上传](resource/upload)
+  - [文件下载](resource/download)
+
