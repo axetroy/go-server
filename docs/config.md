@@ -11,7 +11,7 @@
 | 通用配置                                       | -        | -                                                            | -            |
 | MACHINE_ID                                     | `int`    | 机器 ID, 在集群中，每个机器 ID 都应该不同，用于产出不同的 ID | `0`          |
 | GO_MOD                                         | `string` | 处于开发模式(development)/生产模式(production)               | `production` |
-| USER_HTTP_PORT                                 | `int`    | 用户接口服务监听的端口                                       | `9000`       |
+| USER_HTTP_PORT                                 | `int`    | 用户接口服务监听的端口                                       | `9001`       |
 | USER_HTTP_DOMAIN                               | `string` | 用户接口服务的域名                                           | `localhost`  |
 | USER_TOKEN_SECRET_KEY                          | `string` | 用户接口服务的密钥，用于签发 `token`, 该配置不可泄           | `""`         |
 | 数据库配置                                     | -        | -                                                            | -            |
@@ -80,9 +80,10 @@
 | 通用配置               | -        | -                                                            | -            |
 | MACHINE_ID             | `int`    | 机器 ID, 在集群中，每个机器 ID 都应该不同，用于产出不同的 ID | `0`          |
 | GO_MOD                 | `string` | 处于开发模式(development)/生产模式(production)               | `production` |
-| ADMIN_HTTP_PORT        | `int`    | 管理员接口服务监听的端口                                     | `9001`       |
+| ADMIN_HTTP_PORT        | `int`    | 管理员接口服务监听的端口                                     | `9002`       |
 | ADMIN_HTTP_DOMAIN      | `string` | 管理员接口服务的域名                                         | `localhost`  |
 | ADMIN_TOKEN_SECRET_KEY | `string` | 管理员接口服务的密钥，用于签发 `token`, 该配置不可泄         | `""`         |
+| ADMIN_DEFAULT_PASSWORD | `string` | 第一次启动时，默认的管理员密码                               | `"admin"`    |
 | 数据库配置             | -        | -                                                            | -            |
 | DB_HOST                | `string` | 连接的数据库地址                                             | `localhost`  |
 | DB_PORT                | `int`    | 连接的数据库端口                                             | `65432`      |
@@ -107,7 +108,7 @@
 | ----------------------------- | -------- | ---------------------------------------------- | ------------ |
 | 通用配置                      | -        | -                                              | -            |
 | GO_MOD                        | `string` | 处于开发模式(development)/生产模式(production) | `production` |
-| RESOURCE_HTTP_PORT            | `int`    | 资源接口服务监听的端口                         | `9002`       |
+| RESOURCE_HTTP_PORT            | `int`    | 资源接口服务监听的端口                         | `9003`       |
 | RESOURCE_HTTP_DOMAIN          | `string` | 资源接口服务的域名                             | `localhost`  |
 | UPLOAD_DIR                    | `string` | 图片上传储存的目录                             | `upload`     |
 | UPLOAD_FILE_MAX_SIZE          | `int`    | 文件上传的最大大小                             | `10485760`   |
