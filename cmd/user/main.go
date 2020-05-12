@@ -4,7 +4,7 @@ package main
 import (
 	App "github.com/axetroy/go-server"
 	"github.com/axetroy/go-server/internal/app/user_server"
-	"github.com/axetroy/go-server/internal/library/helper/daemon"
+	"github.com/axetroy/go-server/internal/library/daemon"
 	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/urfave/cli"
 	"log"
