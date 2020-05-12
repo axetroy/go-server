@@ -13,8 +13,6 @@
   - [个人消息](user/message)
   - [新闻资讯](user/news)
   - [邮件服务](user/email)
-  - [文件上传](user/upload)
-  - [文件下载](user/download)
   - [静态文件服务](user/static)
   - [Banner 管理](user/banner)
   - [用户反馈](user/report)
@@ -35,8 +33,6 @@
   - [后台菜单](admin/menu)
   - [日志模块](admin/log)
   - [帮助中心](admin/help)
-  - [文件上传](admin/upload)
-  - [文件下载](admin/download)
 - 资源管理
   - [文件上传](resource/upload)
   - [文件下载](resource/download)
