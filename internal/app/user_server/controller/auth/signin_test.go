@@ -3,7 +3,6 @@ package auth_test
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/axetroy/go-server/internal/app/user_server/controller/auth"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
@@ -14,7 +13,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"math/rand"
 	"net/http"
-	"os"
 	"testing"
 )
 
@@ -34,7 +32,6 @@ func TestSignInWithEmptyBody(t *testing.T) {
 }
 
 func TestSignInWithInvalidPassword(t *testing.T) {
-	fmt.Println(os.Environ())
 	body, _ := json.Marshal(&auth.SignInParams{
 		Account:  "TestSignInWithInvalidPassword",
 		Password: "abc", // 输入错误的密码
