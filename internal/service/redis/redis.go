@@ -4,6 +4,7 @@ package redis
 import (
 	"github.com/axetroy/go-server/internal/library/config"
 	"github.com/go-redis/redis"
+	"os"
 )
 
 var (
@@ -15,6 +16,12 @@ var (
 	ClientOAuthCode      *redis.Client // 存储 oAuth2 对应的激活码
 	Config               = config.Redis
 )
+
+func init() {
+	if os.Getenv("GO_TESTING") != "" {
+		Connect()
+	}
+}
 
 func Dispose() {
 	if Client != nil {

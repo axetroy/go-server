@@ -4,6 +4,7 @@ package database
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/axetroy/go-server/internal/library/config"
 	"github.com/axetroy/go-server/internal/library/util"
@@ -21,6 +22,12 @@ var (
 func Dispose() {
 	if Db != nil {
 		_ = Db.Close()
+	}
+}
+
+func init() {
+	if os.Getenv("GO_TESTING") != "" {
+		Connect()
 	}
 }
 
