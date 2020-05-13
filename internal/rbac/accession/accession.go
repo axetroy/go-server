@@ -7,6 +7,16 @@ type Accession struct {
 }
 
 // 校验一个权限是否是合法的字符串
+func ValidAdmin(s []string) bool {
+	for _, v := range s {
+		if _, ok := AdminMap[v]; ok == false {
+			return false
+		}
+	}
+	return true
+}
+
+// 校验一个权限是否是合法的字符串
 func Valid(s []string) bool {
 	for _, v := range s {
 		if _, ok := Map[v]; ok == false {

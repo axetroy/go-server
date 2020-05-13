@@ -21,6 +21,7 @@ services:
       - 6379:6379
     volumes:
       - "./volumes/redis:/data"
-    environment:
-      - REDIS_PASSWORD=password
-    command: [ "redis-server", "--requirepass", "password" ]
+#    environment:
+#      - REDIS_PASSWORD=password
+#    command: [ "redis-server", "--requirepass", "password" ]
+    command: [ "redis-server"]

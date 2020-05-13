@@ -2,7 +2,9 @@
 package model
 
 import (
+	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/util"
+	"github.com/axetroy/go-server/internal/rbac/accession"
 	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
 	"time"
@@ -26,5 +28,10 @@ func (news *Menu) TableName() string {
 }
 
 func (news *Menu) BeforeCreate(scope *gorm.Scope) error {
+	// 检验传入的权限是否正确
+	if !accession.ValidAdmin(news.Accession) {
+		return exception.InvalidParams
+	}
+
 	return scope.SetColumn("id", util.GenerateId())
 }

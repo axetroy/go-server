@@ -21,7 +21,7 @@ type CreateMenuParams struct {
 	Url       *string   `json:"url"`                          // 菜单链接的 URL 地址
 	Icon      *string   `json:"icon"`                         // 菜单的图标
 	Accession *[]string `json:"accession"`                    // 该菜单所需要的权限
-	Sort      int       `json:"sort" `                        // 菜单排序, 越大的越靠前
+	Sort      *int      `json:"sort" `                        // 菜单排序, 越大的越靠前
 	ParentId  *string   `json:"parent_id"`                    // 该菜单的父级 ID
 }
 
@@ -84,6 +84,10 @@ func Create(c helper.Context, input CreateMenuParams) (res schema.Response) {
 
 	if input.Icon != nil {
 		menuInfo.Icon = *input.Icon
+	}
+
+	if input.Sort != nil {
+		menuInfo.Sort = *input.Sort
 	}
 
 	if input.Accession != nil {
