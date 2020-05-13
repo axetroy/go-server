@@ -21,14 +21,6 @@
 | code        | `string` | 邮箱验证码, 通过 `/v1/email/send/register` 发送 | \*   |
 | invite_code | `string` | 邀请码                                          |      |
 
-在调用接口之前，现在调用，先发送一封邮件到目标邮箱，既调用 `/v1/email/send/register` 接口。
-
-用户邮箱收到邮件后，里面包含跳转链接，打开即可在前端读取到 `code` 和 `email` 字段
-
-最后再提交接口完成注册。
-
-> 通过邮箱注册的帐号，密码为随机，如有需要，则自行修改密码
-
 #### 手机注册
 
 [POST] /v1/auth/signup/phone
@@ -38,8 +30,6 @@
 | phone       | `string` | 手机号                                              | \*   |
 | code        | `string` | 手机号收到的验证码, 通过 `/v1/auth/code/phone` 发送 | \*   |
 | invite_code | `string` | 邀请码                                              |      |
-
-> 通过手机注册的帐号，密码为随机，如有需要，则自行修改密码
 
 ### 用户登陆
 
