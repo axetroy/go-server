@@ -14,7 +14,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:9.6.16
+        image: postgres:9.6.17-alpine
         env:
           POSTGRES_USER: gotest
           POSTGRES_PASSWORD: gotest
@@ -26,7 +26,7 @@ jobs:
 
       redis:
         # Docker Hub image
-        image: redis
+        image: redis:5.0.9-alpine
         # Set health checks to wait until redis has started
         options: >-
           --health-cmd "redis-cli ping"
