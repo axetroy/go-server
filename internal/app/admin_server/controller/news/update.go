@@ -52,7 +52,7 @@ func Update(c helper.Context, newsId string, input UpdateParams) (res schema.Res
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	tx = database.Db.Begin()

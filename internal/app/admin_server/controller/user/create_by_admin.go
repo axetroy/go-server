@@ -56,7 +56,7 @@ func CreateUser(input CreateUserParams) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	if input.Password == "" {

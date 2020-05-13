@@ -48,7 +48,7 @@ func Delete(c helper.Context, roleName string) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	tx = database.Db.Begin()

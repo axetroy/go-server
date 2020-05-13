@@ -63,7 +63,7 @@ func Update(c helper.Context, bannerId string, input UpdateParams) (res schema.R
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	// 参数校验

@@ -50,7 +50,7 @@ func Update(c helper.Context, notificationId string, input UpdateParams) (res sc
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	// 参数校验

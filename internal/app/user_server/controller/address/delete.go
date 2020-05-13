@@ -47,7 +47,7 @@ func Delete(c helper.Context, addressId string) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	tx = database.Db.Begin()

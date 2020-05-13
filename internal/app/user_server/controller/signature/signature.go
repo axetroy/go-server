@@ -31,7 +31,7 @@ func Encryption(c helper.Context, input string) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	hash, err = util.Signature(input)

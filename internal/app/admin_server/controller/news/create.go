@@ -49,7 +49,7 @@ func Create(c helper.Context, input CreateNewParams) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	// 参数校验

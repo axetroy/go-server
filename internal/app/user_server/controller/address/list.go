@@ -20,7 +20,7 @@ type Query struct {
 	//Status model.NewsStatus `json:"status" form:"status"`
 }
 
-func GetAddressListByUser(c helper.Context, input Query) (res schema.List) {
+func GetAddressListByUser(c helper.Context, input Query) (res schema.Response) {
 	var (
 		err  error
 		data = make([]schema.Address, 0) // 输出到外部的结果
@@ -41,7 +41,7 @@ func GetAddressListByUser(c helper.Context, input Query) (res schema.List) {
 			}
 		}
 
-		helper.ResponseList(&res, data, meta, err)
+		helper.Response(&res, data, meta, err)
 	}()
 
 	query := input.Query
@@ -87,7 +87,7 @@ func GetAddressListByUser(c helper.Context, input Query) (res schema.List) {
 func GetAddressListByUserRouter(c *gin.Context) {
 	var (
 		err   error
-		res   = schema.List{}
+		res   = schema.Response{}
 		input Query
 	)
 

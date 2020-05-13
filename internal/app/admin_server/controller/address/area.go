@@ -40,7 +40,7 @@ func AreaList() (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	data = schema.Area{

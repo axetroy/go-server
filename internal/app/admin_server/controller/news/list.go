@@ -20,7 +20,7 @@ type Query struct {
 	Type   *model.NewsType   `json:"type" form:"type"`
 }
 
-func GetNewsList(input Query) (res schema.List) {
+func GetNewsList(input Query) (res schema.Response) {
 	var (
 		err  error
 		data = make([]schema.News, 0) // 接口输出的数据
@@ -40,7 +40,7 @@ func GetNewsList(input Query) (res schema.List) {
 			}
 		}
 
-		helper.ResponseList(&res, data, meta, err)
+		helper.Response(&res, data, meta, err)
 	}()
 
 	query := input.Query
@@ -90,7 +90,7 @@ func GetNewsList(input Query) (res schema.List) {
 func GetNewsListRouter(c *gin.Context) {
 	var (
 		err   error
-		res   = schema.List{}
+		res   = schema.Response{}
 		input Query
 	)
 

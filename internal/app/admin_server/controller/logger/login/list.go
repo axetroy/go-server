@@ -23,7 +23,7 @@ type Query struct {
 	Ip      *string `json:"ip"`                     // 根据 IP 筛选
 }
 
-func GetLoginLogs(c helper.Context, q Query) (res schema.List) {
+func GetLoginLogs(c helper.Context, q Query) (res schema.Response) {
 	var (
 		err  error
 		data = make([]schema.LogLogin, 0)
@@ -42,7 +42,7 @@ func GetLoginLogs(c helper.Context, q Query) (res schema.List) {
 			}
 		}
 
-		helper.ResponseList(&res, data, meta, err)
+		helper.Response(&res, data, meta, err)
 	}()
 
 	query := q.Query
@@ -102,7 +102,7 @@ func GetLoginLogs(c helper.Context, q Query) (res schema.List) {
 func GetLoginLogsRouter(c *gin.Context) {
 	var (
 		err   error
-		res   = schema.List{}
+		res   = schema.Response{}
 		query Query
 	)
 

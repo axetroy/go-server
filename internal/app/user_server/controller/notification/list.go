@@ -22,7 +22,7 @@ type Query struct {
 }
 
 // GetList get notification list
-func GetNotificationListByUser(c helper.Context, input Query) (res schema.List) {
+func GetNotificationListByUser(c helper.Context, input Query) (res schema.Response) {
 	var (
 		err  error
 		data = make([]schema.Notification, 0)
@@ -50,7 +50,7 @@ func GetNotificationListByUser(c helper.Context, input Query) (res schema.List) 
 			}
 		}
 
-		helper.ResponseList(&res, data, meta, err)
+		helper.Response(&res, data, meta, err)
 	}()
 
 	query := input.Query
@@ -114,7 +114,7 @@ func GetNotificationListByUser(c helper.Context, input Query) (res schema.List) 
 }
 
 // GetList get notification list
-func GetNotificationListByAdmin(c helper.Context, input Query) (res schema.List) {
+func GetNotificationListByAdmin(c helper.Context, input Query) (res schema.Response) {
 	var (
 		err  error
 		data = make([]schema.NotificationAdmin, 0)
@@ -142,7 +142,7 @@ func GetNotificationListByAdmin(c helper.Context, input Query) (res schema.List)
 			}
 		}
 
-		helper.ResponseList(&res, data, meta, err)
+		helper.Response(&res, data, meta, err)
 	}()
 
 	query := input.Query
@@ -189,7 +189,7 @@ func GetNotificationListByAdmin(c helper.Context, input Query) (res schema.List)
 func GetNotificationListByUserRouter(c *gin.Context) {
 	var (
 		err   error
-		res   = schema.List{}
+		res   = schema.Response{}
 		input Query
 	)
 
@@ -215,7 +215,7 @@ func GetNotificationListByUserRouter(c *gin.Context) {
 func GetNotificationListByAdminRouter(c *gin.Context) {
 	var (
 		err   error
-		res   = schema.List{}
+		res   = schema.Response{}
 		input Query
 	)
 

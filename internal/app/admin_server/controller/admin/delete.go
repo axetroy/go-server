@@ -47,7 +47,7 @@ func DeleteAdminById(c helper.Context, adminId string) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	tx = database.Db.Begin()

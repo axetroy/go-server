@@ -42,7 +42,7 @@ func GetWallets(c helper.Context) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	// 获取用户信息

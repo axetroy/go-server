@@ -26,7 +26,7 @@ type QueryAdmin struct {
 	Uid string `json:"uid"`
 }
 
-func GetList(c helper.Context, input Query) (res schema.List) {
+func GetList(c helper.Context, input Query) (res schema.Response) {
 	var (
 		err  error
 		data = make([]schema.Report, 0)
@@ -45,7 +45,7 @@ func GetList(c helper.Context, input Query) (res schema.List) {
 			}
 		}
 
-		helper.ResponseList(&res, data, meta, err)
+		helper.Response(&res, data, meta, err)
 	}()
 
 	query := input.Query
@@ -99,7 +99,7 @@ func GetList(c helper.Context, input Query) (res schema.List) {
 func GetListRouter(c *gin.Context) {
 	var (
 		err   error
-		res   = schema.List{}
+		res   = schema.Response{}
 		input Query
 	)
 
@@ -121,7 +121,7 @@ func GetListRouter(c *gin.Context) {
 	}, input)
 }
 
-func GetListByAdmin(c helper.Context, input QueryAdmin) (res schema.List) {
+func GetListByAdmin(c helper.Context, input QueryAdmin) (res schema.Response) {
 	var (
 		err  error
 		data = make([]schema.Report, 0)
@@ -140,7 +140,7 @@ func GetListByAdmin(c helper.Context, input QueryAdmin) (res schema.List) {
 			}
 		}
 
-		helper.ResponseList(&res, data, meta, err)
+		helper.Response(&res, data, meta, err)
 	}()
 
 	query := input.Query
@@ -188,7 +188,7 @@ func GetListByAdmin(c helper.Context, input QueryAdmin) (res schema.List) {
 func GetListByAdminRouter(c *gin.Context) {
 	var (
 		err   error
-		res   = schema.List{}
+		res   = schema.Response{}
 		input QueryAdmin
 	)
 

@@ -52,7 +52,7 @@ func Create(c helper.Context, input CreateMenuParams) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	// 参数校验

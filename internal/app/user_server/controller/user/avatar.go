@@ -71,7 +71,7 @@ func UploadAvatar(uid string, input UploadAvatarParams, file *multipart.FileHead
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	tx = database.Db.Begin()

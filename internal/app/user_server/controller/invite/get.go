@@ -42,7 +42,7 @@ func Get(c helper.Context, id string) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	inviteDetail := model.InviteHistory{
@@ -97,7 +97,7 @@ func GetByStruct(m *model.InviteHistory) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	tx = database.Db.Begin()

@@ -20,7 +20,7 @@ type Query struct {
 	schema.Query
 }
 
-func GetHistory(c helper.Context, input Query) (res schema.List) {
+func GetHistory(c helper.Context, input Query) (res schema.Response) {
 	var (
 		err  error
 		tx   *gorm.DB
@@ -48,7 +48,7 @@ func GetHistory(c helper.Context, input Query) (res schema.List) {
 			}
 		}
 
-		helper.ResponseList(&res, data, meta, err)
+		helper.Response(&res, data, meta, err)
 	}()
 
 	tx = database.Db.Begin()
@@ -109,7 +109,7 @@ func GetHistory(c helper.Context, input Query) (res schema.List) {
 func GetHistoryRouter(c *gin.Context) {
 	var (
 		err   error
-		res   = schema.List{}
+		res   = schema.Response{}
 		input Query
 	)
 

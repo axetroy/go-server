@@ -140,7 +140,7 @@ func SignUpWithUsername(input SignUpWithUsernameParams) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	// 参数校验
@@ -221,7 +221,7 @@ func SignUpWithEmail(input SignUpWithEmailParams) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	// 参数校验
@@ -316,7 +316,7 @@ func SignUpWithEmailAction(input SignUpWithEmailActionParams) (res schema.Respon
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	// 参数校验
@@ -377,7 +377,7 @@ func SignUpWithPhone(input SignUpWithPhoneParams) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	// 参数校验

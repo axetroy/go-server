@@ -55,7 +55,7 @@ func Update(c helper.Context, addressId string, input UpdateParams) (res schema.
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	// 参数校验

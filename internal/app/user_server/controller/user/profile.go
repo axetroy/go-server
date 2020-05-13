@@ -63,7 +63,7 @@ func GetProfile(c helper.Context) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	tx = database.Db.Begin()
@@ -121,7 +121,7 @@ func GetProfileByAdmin(c helper.Context, userId string) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	tx = database.Db.Begin()
@@ -185,7 +185,7 @@ func UpdateProfile(c helper.Context, input UpdateProfileParams) (res schema.Resp
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	// 参数校验
@@ -365,7 +365,7 @@ func UpdateProfileByAdmin(c helper.Context, userId string, input UpdateProfilePa
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	// 参数校验

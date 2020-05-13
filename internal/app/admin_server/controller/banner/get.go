@@ -33,7 +33,7 @@ func GetBanner(id string) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	bannerInfo := model.Banner{

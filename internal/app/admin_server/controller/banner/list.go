@@ -20,7 +20,7 @@ type Query struct {
 	Active   *bool                 `json:"active" form:"active"`     // 是否激活
 }
 
-func GetBannerList(c helper.Context, q Query) (res schema.List) {
+func GetBannerList(c helper.Context, q Query) (res schema.Response) {
 	var (
 		err  error
 		data = make([]schema.Banner, 0)
@@ -39,7 +39,7 @@ func GetBannerList(c helper.Context, q Query) (res schema.List) {
 			}
 		}
 
-		helper.ResponseList(&res, data, meta, err)
+		helper.Response(&res, data, meta, err)
 	}()
 
 	query := q.Query
@@ -93,7 +93,7 @@ func GetBannerList(c helper.Context, q Query) (res schema.List) {
 func GetBannerListRouter(c *gin.Context) {
 	var (
 		err   error
-		res   = schema.List{}
+		res   = schema.Response{}
 		query Query
 	)
 

@@ -45,7 +45,7 @@ func SendEmailAuthCode(c helper.Context, input SendEmailAuthCodeParams) (res sch
 			}
 		}
 
-		helper.Response(&res, nil, err)
+		helper.Response(&res, nil, nil, err)
 	}()
 
 	// 参数校验
@@ -91,7 +91,7 @@ func SendPhoneAuthCode(c helper.Context, input SendPhoneAuthCodeParams) (res sch
 			}
 		}
 
-		helper.Response(&res, nil, err)
+		helper.Response(&res, nil, nil, err)
 	}()
 
 	// 参数校验

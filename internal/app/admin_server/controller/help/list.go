@@ -20,7 +20,7 @@ type Query struct {
 	Type   *model.HelpType   `json:"type" form:"type"`     // 根据类型筛选
 }
 
-func GetHelpList(c helper.Context, q Query) (res schema.List) {
+func GetHelpList(c helper.Context, q Query) (res schema.Response) {
 	var (
 		err  error
 		data = make([]schema.Help, 0)
@@ -39,7 +39,7 @@ func GetHelpList(c helper.Context, q Query) (res schema.List) {
 			}
 		}
 
-		helper.ResponseList(&res, data, meta, err)
+		helper.Response(&res, data, meta, err)
 	}()
 
 	query := q.Query
@@ -91,7 +91,7 @@ func GetHelpList(c helper.Context, q Query) (res schema.List) {
 func GetHelpListRouter(c *gin.Context) {
 	var (
 		err   error
-		res   = schema.List{}
+		res   = schema.Response{}
 		query Query
 	)
 

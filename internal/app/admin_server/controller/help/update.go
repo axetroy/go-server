@@ -53,7 +53,7 @@ func Update(c helper.Context, helpId string, input UpdateParams) (res schema.Res
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	// 参数校验

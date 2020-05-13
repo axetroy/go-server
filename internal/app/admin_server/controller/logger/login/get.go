@@ -33,7 +33,7 @@ func GetLatestLoginLog(c helper.Context) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	logInfo := model.LoginLog{
@@ -83,7 +83,7 @@ func GetLoginLog(id string) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	logInfo := model.LoginLog{

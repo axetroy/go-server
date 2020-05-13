@@ -41,7 +41,7 @@ func MarkRead(c helper.Context, notificationID string) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, nil, err)
+		helper.Response(&res, nil, nil, err)
 	}()
 
 	tx = database.Db.Begin()

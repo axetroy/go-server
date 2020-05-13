@@ -44,7 +44,7 @@ func GetAdminInfo(c helper.Context) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	tx = database.Db.Begin()
@@ -109,7 +109,7 @@ func GetAdminInfoById(c helper.Context, adminId string) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	tx = database.Db.Begin()

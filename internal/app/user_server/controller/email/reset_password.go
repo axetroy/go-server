@@ -47,7 +47,7 @@ func SendResetPasswordEmail(input SendResetPasswordEmailParams) (res schema.Resp
 			}
 		}
 
-		helper.Response(&res, nil, err)
+		helper.Response(&res, nil, nil, err)
 	}()
 
 	userInfo := model.User{

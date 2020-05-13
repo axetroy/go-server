@@ -48,7 +48,7 @@ func ResetPassword(input ResetPasswordParams) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, nil, err)
+		helper.Response(&res, nil, nil, err)
 	}()
 
 	// 参数校验

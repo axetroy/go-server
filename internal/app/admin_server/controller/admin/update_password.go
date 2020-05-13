@@ -52,7 +52,7 @@ func UpdatePassword(c helper.Context, input UpdatePasswordParams) (res schema.Re
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	// 参数校验

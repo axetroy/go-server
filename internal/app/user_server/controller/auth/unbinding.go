@@ -55,7 +55,7 @@ func UnbindingEmail(c helper.Context, input UnbindingEmailParams) (res schema.Re
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	// 参数校验
@@ -125,7 +125,7 @@ func UnbindingPhone(c helper.Context, input UnbindingPhoneParams) (res schema.Re
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	// 参数校验
@@ -195,7 +195,7 @@ func UnbindingWechat(c helper.Context, input UnbindingWechatParams) (res schema.
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	// 参数校验

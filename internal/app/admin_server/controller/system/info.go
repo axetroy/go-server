@@ -57,7 +57,7 @@ func GetSystemInfo() (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	v, _ := mem.VirtualMemory()

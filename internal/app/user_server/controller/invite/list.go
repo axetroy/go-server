@@ -16,7 +16,7 @@ type Query struct {
 	schema.Query
 }
 
-func GetInviteListByUser(input Query) (res schema.List) {
+func GetInviteListByUser(input Query) (res schema.Response) {
 	var (
 		err  error
 		data = make([]model.InviteHistory, 0)
@@ -35,7 +35,7 @@ func GetInviteListByUser(input Query) (res schema.List) {
 			}
 		}
 
-		helper.ResponseList(&res, data, meta, err)
+		helper.Response(&res, data, meta, err)
 	}()
 
 	query := input.Query
@@ -66,7 +66,7 @@ func GetInviteListByUser(input Query) (res schema.List) {
 func GetInviteListByUserRouter(c *gin.Context) {
 	var (
 		err   error
-		res   = schema.List{}
+		res   = schema.Response{}
 		input Query
 	)
 

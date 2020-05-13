@@ -129,7 +129,7 @@ func TestGetListRouter(t *testing.T) {
 	{
 		r := tester.HttpAdmin.Get("/v1/help", nil, &header)
 
-		res := schema.List{}
+		res := schema.Response{}
 
 		if !assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res)) {
 			return

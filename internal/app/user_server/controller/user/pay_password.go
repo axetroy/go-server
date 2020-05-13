@@ -65,7 +65,7 @@ func SetPayPassword(c helper.Context, input SetPayPasswordParams) (res schema.Re
 			}
 		}
 
-		helper.Response(&res, nil, err)
+		helper.Response(&res, nil, nil, err)
 	}()
 
 	// 参数校验
@@ -153,7 +153,7 @@ func UpdatePayPassword(c helper.Context, input UpdatePayPasswordParams) (res sch
 			}
 		}
 
-		helper.Response(&res, nil, err)
+		helper.Response(&res, nil, nil, err)
 	}()
 
 	// 参数校验
@@ -250,7 +250,7 @@ func SendResetPayPassword(c helper.Context) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, nil, err)
+		helper.Response(&res, nil, nil, err)
 	}()
 
 	userInfo := model.User{Id: c.Uid}
@@ -338,7 +338,7 @@ func ResetPayPassword(c helper.Context, input ResetPayPasswordParams) (res schem
 			}
 		}
 
-		helper.Response(&res, nil, err)
+		helper.Response(&res, nil, nil, err)
 	}()
 
 	// 参数校验

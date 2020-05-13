@@ -79,7 +79,7 @@ func SignIn(c helper.Context, input SignInParams) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	if err = validator.ValidateStruct(input); err != nil {
@@ -180,7 +180,7 @@ func SignInWithEmail(c helper.Context, input SignInWithEmailParams) (res schema.
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	// 参数校验
@@ -278,7 +278,7 @@ func SignInWithPhone(c helper.Context, input SignInWithPhoneParams) (res schema.
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	// 参数校验
@@ -376,7 +376,7 @@ func SignInWithWechat(c helper.Context, input SignInWithWechatParams) (res schem
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	// 参数校验
@@ -518,7 +518,7 @@ func SignInWithOAuth(c helper.Context, input SignInWithOAuthParams) (res schema.
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	// 参数校验

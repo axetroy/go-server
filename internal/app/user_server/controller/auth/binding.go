@@ -57,7 +57,7 @@ func BindingEmail(c helper.Context, input BindingEmailParams) (res schema.Respon
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	// 参数校验
@@ -148,7 +148,7 @@ func BindingPhone(c helper.Context, input BindingPhoneParams) (res schema.Respon
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	// 参数校验
@@ -239,7 +239,7 @@ func BindingWechat(c helper.Context, input BindingWechatMiniAppParams) (res sche
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	// 参数校验

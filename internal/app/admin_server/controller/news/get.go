@@ -33,7 +33,7 @@ func GetNews(id string) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	newsInfo := model.News{

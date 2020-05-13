@@ -29,7 +29,7 @@ func GetAccession() (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	data = accession.List

@@ -33,7 +33,7 @@ func GetHelp(id string) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	helpInfo := model.Help{

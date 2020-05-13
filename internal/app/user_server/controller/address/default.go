@@ -33,7 +33,7 @@ func GetDefault(c helper.Context) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	addressInfo := model.Address{

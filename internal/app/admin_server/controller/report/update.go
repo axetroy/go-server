@@ -54,7 +54,7 @@ func Update(c helper.Context, reportId string, input UpdateParams) (res schema.R
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	// 参数校验
@@ -170,7 +170,7 @@ func UpdateByAdmin(c helper.Context, reportId string, input UpdateByAdminParams)
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	// 参数校验

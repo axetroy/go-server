@@ -33,7 +33,7 @@ func GetReportByUser(c helper.Context, id string) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	reportInfo := model.Report{
@@ -95,7 +95,7 @@ func GetReportByAdmin(c helper.Context, id string) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	reportInfo := model.Report{

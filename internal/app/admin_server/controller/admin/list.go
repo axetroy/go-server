@@ -19,7 +19,7 @@ type Query struct {
 	Status *model.AdminStatus `json:"status"` // 管理员状态
 }
 
-func GetList(c helper.Context, input Query) (res schema.List) {
+func GetList(c helper.Context, input Query) (res schema.Response) {
 	var (
 		err  error
 		data = make([]schema.AdminProfile, 0)
@@ -38,7 +38,7 @@ func GetList(c helper.Context, input Query) (res schema.List) {
 			}
 		}
 
-		helper.ResponseList(&res, data, meta, err)
+		helper.Response(&res, data, meta, err)
 	}()
 
 	query := input.Query
@@ -85,7 +85,7 @@ func GetList(c helper.Context, input Query) (res schema.List) {
 func GetListRouter(c *gin.Context) {
 	var (
 		err   error
-		res   = schema.List{}
+		res   = schema.Response{}
 		input Query
 	)
 

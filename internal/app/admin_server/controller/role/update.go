@@ -55,7 +55,7 @@ func Update(c helper.Context, roleName string, input UpdateParams) (res schema.R
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	// 参数校验
@@ -191,7 +191,7 @@ func UpdateUserRole(c helper.Context, userId string, input UpdateUserRoleParams)
 			}
 		}
 
-		helper.Response(&res, data, err)
+		helper.Response(&res, data, nil, err)
 	}()
 
 	tx = database.Db.Begin()

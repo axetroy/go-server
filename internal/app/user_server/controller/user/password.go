@@ -50,7 +50,7 @@ func UpdatePassword(c helper.Context, input UpdatePasswordParams) (res schema.Re
 			}
 		}
 
-		helper.Response(&res, nil, err)
+		helper.Response(&res, nil, nil, err)
 	}()
 
 	// 参数校验
@@ -115,7 +115,7 @@ func UpdatePasswordByAdmin(c helper.Context, userId string, input UpdatePassword
 			}
 		}
 
-		helper.Response(&res, nil, err)
+		helper.Response(&res, nil, nil, err)
 	}()
 
 	// 参数校验

@@ -14,22 +14,16 @@ func TrimCode(message string) string {
 	return codeReg.ReplaceAllString(message, "")
 }
 
-func Response(res *schema.Response, data interface{}, err error) {
+func Response(res *schema.Response, data interface{}, meta *schema.Meta, err error) {
 	if err != nil {
-		res.Data = nil
 		res.Message = err.Error()
-		res.Status = exception.GetCodeFromError(err)
-	} else {
-		res.Data = data
-		res.Status = schema.StatusSuccess
-	}
-}
 
-func ResponseList(res *schema.List, data interface{}, meta *schema.Meta, err error) {
-	if err != nil {
+		if t, ok := err.(exception.Error); ok {
+			res.Status = t.Code()
+		} else {
+			res.Status = exception.Unknown.Code()
+		}
 		res.Data = nil
-		res.Message = err.Error()
-		res.Status = exception.GetCodeFromError(err)
 		res.Meta = nil
 	} else {
 		res.Data = data

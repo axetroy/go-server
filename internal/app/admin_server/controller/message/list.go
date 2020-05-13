@@ -27,7 +27,7 @@ type QueryAdmin struct {
 }
 
 // 用户获取自己的消息列表
-func GetMessageListByUser(c helper.Context, input Query) (res schema.List) {
+func GetMessageListByUser(c helper.Context, input Query) (res schema.Response) {
 	var (
 		err  error
 		data = make([]schema.Message, 0) // 接口输出的数据
@@ -47,7 +47,7 @@ func GetMessageListByUser(c helper.Context, input Query) (res schema.List) {
 			}
 		}
 
-		helper.ResponseList(&res, data, meta, err)
+		helper.Response(&res, data, meta, err)
 	}()
 
 	query := input.Query
@@ -97,7 +97,7 @@ func GetMessageListByUser(c helper.Context, input Query) (res schema.List) {
 }
 
 // 用户获取自己的消息列表
-func GetMessageListByAdmin(c helper.Context, input QueryAdmin) (res schema.List) {
+func GetMessageListByAdmin(c helper.Context, input QueryAdmin) (res schema.Response) {
 	var (
 		err  error
 		data = make([]schema.MessageAdmin, 0) // 接口输出的数据
@@ -117,7 +117,7 @@ func GetMessageListByAdmin(c helper.Context, input QueryAdmin) (res schema.List)
 			}
 		}
 
-		helper.ResponseList(&res, data, meta, err)
+		helper.Response(&res, data, meta, err)
 	}()
 
 	query := input.Query
@@ -171,7 +171,7 @@ func GetMessageListByAdmin(c helper.Context, input QueryAdmin) (res schema.List)
 func GetMessageListByUserRouter(c *gin.Context) {
 	var (
 		err   error
-		res   = schema.List{}
+		res   = schema.Response{}
 		input Query
 	)
 
@@ -196,7 +196,7 @@ func GetMessageListByUserRouter(c *gin.Context) {
 func GetMessageListByAdminRouter(c *gin.Context) {
 	var (
 		err   error
-		res   = schema.List{}
+		res   = schema.Response{}
 		input QueryAdmin
 	)
 
