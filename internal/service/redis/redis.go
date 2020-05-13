@@ -5,6 +5,7 @@ import (
 	"github.com/axetroy/go-server/internal/library/config"
 	"github.com/go-redis/redis"
 	"os"
+	"strings"
 )
 
 var (
@@ -18,7 +19,7 @@ var (
 )
 
 func init() {
-	if os.Getenv("GO_TESTING") != "" {
+	if os.Getenv("GO_TESTING") != "" || strings.Index(os.Getenv("XPC_SERVICE_NAME"), "com.jetbrains.goland") >= 0 {
 		Connect()
 	}
 }
