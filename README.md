@@ -57,7 +57,7 @@
 
 然后获取[构建好的可执行文件](https://github.com/axetroy/go-server/releases), 找到对应的平台，并且下载。或者自行构建。
 
-你需要使用 3 个文件
+你需要使用 4 个文件
 
 1. message_queue_server
 
