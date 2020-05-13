@@ -9,53 +9,59 @@ const rootPath = path.join(__dirname, "..")
 const provinces = []
 
 for (const code in province_list) {
-    const provinceName = province_list[code]
-    const [_, provinceCode] = reg.exec(code)
+    if (province_list.hasOwnProperty(code)) {
+        const provinceName = province_list[code]
+        const [_, provinceCode] = reg.exec(code)
 
-    if (provinceName === "海外") {
-        continue
-    }
+        if (provinceName === "海外") {
+            continue
+        }
 
-    provinces.push({
-        code: provinceCode,
-        fullCode: code,
-        name: provinceName,
-        children: []
-    })
-}
-
-for (const code in city_list) {
-    const cityName = city_list[code]
-    const [_, provinceCode, cityCode] = reg.exec(code)
-
-    const province = provinces.find(v => v.code === provinceCode)
-
-    if (province) {
-        province.children.push({
-            code: cityCode,
+        provinces.push({
+            code: provinceCode,
             fullCode: code,
-            name: cityName,
+            name: provinceName,
             children: []
         })
     }
 }
 
-for (const code in county_list) {
-    const countryName = county_list[code]
-    const [_, provinceCode, cityCode, countryCode] = reg.exec(code)
+for (const code in city_list) {
+    if (city_list.hasOwnProperty(code)) {
+        const cityName = city_list[code]
+        const [_, provinceCode, cityCode] = reg.exec(code)
 
-    const province = provinces.find(v => v.code === provinceCode)
+        const province = provinces.find(v => v.code === provinceCode)
 
-    if (province) {
-        const city = province.children.find(v => v.code === cityCode)
-        if (city) {
-            city.children.push({
-                code: countryCode,
+        if (province) {
+            province.children.push({
+                code: cityCode,
                 fullCode: code,
-                name: countryName
+                name: cityName,
+                children: []
             })
         }
+    }
+}
 
+for (const code in county_list) {
+    if (county_list.hasOwnProperty(code)) {
+        const countryName = county_list[code]
+        const [_, provinceCode, cityCode, countryCode] = reg.exec(code)
+
+        const province = provinces.find(v => v.code === provinceCode)
+
+        if (province) {
+            const city = province.children.find(v => v.code === cityCode)
+            if (city) {
+                city.children.push({
+                    code: countryCode,
+                    fullCode: code,
+                    name: countryName
+                })
+            }
+
+        }
     }
 }
 
@@ -79,7 +85,7 @@ function genearte() {
         }
     }
 
-    let raw = `// Generate by scripts/generate_area.js. DO NOT MODIFY.
+    return `// Generate by scripts/generate_area.js. DO NOT MODIFY.
 package address
 
 var (
@@ -88,12 +94,16 @@ var (
 	CountryCode  = map[string]string{${countryList.join(', ')}}
 )
 `
-
-    return raw
 }
 
 const raw = genearte()
 
-const distFilePath = path.join(rootPath, "src", "controller", "address", "code.go")
+const files = [
+    path.join(rootPath, "internal", "app", "user_server", "controller", "address", "code.go"),
+    path.join(rootPath, "internal", "app", "admin_server", "controller", "address", "code.go"),
+]
 
-fs.writeFileSync(distFilePath, raw)
+for (const file of files) {
+    fs.writeFileSync(file, raw)
+}
+
