@@ -16,7 +16,7 @@ import (
 )
 
 func DeleteMenuById(id string) {
-	b := model.Banner{}
+	b := model.Menu{}
 	database.DeleteRowByTable(b.TableName(), "id", id)
 }
 
