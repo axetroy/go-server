@@ -3,7 +3,6 @@ package auth
 
 import (
 	"errors"
-	"fmt"
 	"github.com/axetroy/go-server/internal/app/user_server/controller/wallet"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
@@ -36,8 +35,7 @@ type SignUpWithEmailParams struct {
 }
 
 type SignUpWithEmailActionParams struct {
-	Email       string `json:"email" valid:"required~请输入邮箱"`            // 邮箱
-	RedirectURL string `json:"redirect_url" valid:"required~请输入跳转 URL"` // 发送的邮箱链接中，跳转到的前端 url
+	Email string `json:"email" valid:"required~请输入邮箱"` // 邮箱
 }
 
 type SignUpWithPhoneParams struct {
@@ -343,10 +341,8 @@ func SignUpWithEmailAction(input SignUpWithEmailActionParams) (res schema.Respon
 
 	e := email.NewMailer()
 
-	link := fmt.Sprintf("%s?code=%s&email=%s", input.RedirectURL, code, input.Email)
-
 	// 发送邮件
-	if err = e.SendAuthEmail(input.Email, link); err != nil {
+	if err = e.SendAuthEmail(input.Email, code); err != nil {
 		return
 	}
 

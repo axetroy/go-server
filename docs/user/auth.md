@@ -16,7 +16,8 @@
 
 | 参数        | 类型     | 说明                                            | 必选 |
 | ----------- | -------- | ----------------------------------------------- | ---- |
-| email       | `string` | 用户名                                          | \*   |
+| email       | `string` | 邮箱地址                                        | \*   |
+| password    | `string` | 账号密码                                        | \*   |
 | code        | `string` | 邮箱验证码, 通过 `/v1/email/send/register` 发送 | \*   |
 | invite_code | `string` | 邀请码                                          |      |
 
