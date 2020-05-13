@@ -5,6 +5,8 @@ import (
 	"context"
 	"github.com/axetroy/go-server/internal/library/config"
 	"github.com/axetroy/go-server/internal/library/message_queue"
+	"github.com/axetroy/go-server/internal/service/database"
+	"github.com/axetroy/go-server/internal/service/redis"
 	"github.com/nsqio/go-nsq"
 	"log"
 	"os"
@@ -17,6 +19,9 @@ func Serve() error {
 	var (
 		c *nsq.Consumer
 	)
+
+	redis.Connect()
+	database.Connect()
 
 	go func() {
 		if ctx, err := message_queue.RunMessageQueueConsumer(); err != nil {
@@ -56,6 +61,9 @@ func Serve() error {
 	case <-ctx.Done():
 		log.Println("Timeout of 5 seconds.")
 	}
+
+	redis.Dispose()
+	database.Dispose()
 
 	log.Println("Server exiting")
 

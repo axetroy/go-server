@@ -5,6 +5,7 @@ import (
 	"context"
 	"github.com/axetroy/go-server/internal/library/config"
 	"github.com/axetroy/go-server/internal/service/database"
+	"github.com/axetroy/go-server/internal/service/redis"
 	"log"
 	"net/http"
 	"os"
@@ -15,6 +16,9 @@ import (
 
 func Serve() error {
 	port := config.User.Port
+
+	redis.Connect()
+	database.Connect()
 
 	s := &http.Server{
 		Addr:           ":" + port,
@@ -59,7 +63,8 @@ func Serve() error {
 		log.Println("Timeout of 5 seconds.")
 	}
 
-	_ = database.Db.Close()
+	redis.Dispose()
+	database.Dispose()
 
 	log.Println("Server exiting")
 

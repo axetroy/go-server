@@ -18,7 +18,13 @@ var (
 	Config = config.Database
 )
 
-func init() {
+func Dispose() {
+	if Db != nil {
+		_ = Db.Close()
+	}
+}
+
+func Connect() {
 	DataSourceName := fmt.Sprintf("%s://%s:%s@%s:%s/%s?sslmode=disable", Config.Driver, Config.Username, Config.Password, Config.Host, Config.Port, Config.DatabaseName)
 
 	log.Println("正在连接数据库...")
@@ -26,7 +32,7 @@ func init() {
 	db, err := gorm.Open(Config.Driver, DataSourceName)
 
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
 	db.LogMode(config.Common.Mode != "production")
@@ -81,10 +87,10 @@ func init() {
 			}).Error
 
 			if err != nil {
-				panic(err)
+				log.Fatalln(err)
 			}
 		} else {
-			panic(err)
+			log.Fatalln(err)
 		}
 	}
 
@@ -100,14 +106,14 @@ func init() {
 				BuildIn:     true,
 			}).Error
 		} else {
-			panic(err)
+			log.Fatalln(err)
 		}
 	} else {
 		// 如果角色已存在，则同步角色的权限
 		if err := db.Model(&defaultRole).Update(&model.Role{
 			Accession: model.DefaultUser.AccessionArray(),
 		}).Error; err != nil {
-			panic(err)
+			log.Fatalln(err)
 		}
 	}
 

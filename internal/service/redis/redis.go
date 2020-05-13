@@ -16,7 +16,28 @@ var (
 	Config               = config.Redis
 )
 
-func init() {
+func Dispose() {
+	if Client != nil {
+		_ = Client.Close()
+	}
+	if ClientActivationCode != nil {
+		_ = ClientActivationCode.Close()
+	}
+	if ClientAuthEmailCode != nil {
+		_ = ClientAuthEmailCode.Close()
+	}
+	if ClientAuthPhoneCode != nil {
+		_ = ClientAuthPhoneCode.Close()
+	}
+	if ClientResetCode != nil {
+		_ = ClientResetCode.Close()
+	}
+	if ClientOAuthCode != nil {
+		_ = ClientOAuthCode.Close()
+	}
+}
+
+func Connect() {
 	var (
 		addr     = Config.Host + ":" + Config.Port
 		password = Config.Password
