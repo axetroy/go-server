@@ -5,7 +5,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
-	"github.com/axetroy/go-server/internal/library/config"
+	config2 "github.com/axetroy/go-server/internal/app/resource_server/config"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/gin-gonic/gin"
@@ -19,8 +19,8 @@ import (
 func File(c *gin.Context) {
 	var (
 		isSupportFile bool
-		maxUploadSize = config.Upload.File.MaxSize   // 最大上传大小
-		allowTypes    = config.Upload.File.AllowType // 可上传的文件类型
+		maxUploadSize = config2.Upload.File.MaxSize   // 最大上传大小
+		allowTypes    = config2.Upload.File.AllowType // 可上传的文件类型
 		err           error
 		data          = make([]schema.FileResponse, 0)
 	)
@@ -114,7 +114,7 @@ func File(c *gin.Context) {
 		fileName := md5string + extname
 
 		// 输出到最终文件
-		distPath := path.Join(config.Upload.Path, config.Upload.File.Path, fileName)
+		distPath := path.Join(config2.Upload.Path, config2.Upload.File.Path, fileName)
 
 		if dist, err = os.Create(distPath); err != nil {
 			return

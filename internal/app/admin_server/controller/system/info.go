@@ -3,7 +3,7 @@ package system
 
 import (
 	"errors"
-	"github.com/axetroy/go-server/internal/library/config"
+	config2 "github.com/axetroy/go-server/internal/app/resource_server/config"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
 	"github.com/axetroy/go-server/internal/schema"
@@ -74,7 +74,7 @@ func GetSystemInfo() (res schema.Response) {
 		return
 	}
 
-	if uploadUsageStat, err = disk.Usage(config.Upload.Path); err != nil {
+	if uploadUsageStat, err = disk.Usage(config2.Upload.Path); err != nil {
 		return
 	}
 

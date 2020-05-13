@@ -5,7 +5,6 @@ import (
 	App "github.com/axetroy/go-server"
 	message_queue_server2 "github.com/axetroy/go-server/internal/app/message_queue_server"
 	"github.com/axetroy/go-server/internal/library/daemon"
-	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/urfave/cli"
 	"log"
 	"os"
@@ -39,14 +38,6 @@ func main() {
 			Usage: "stop message queue",
 			Action: func(c *cli.Context) error {
 				return daemon.Stop()
-			},
-		},
-		{
-			Name:  "env",
-			Usage: "print runtime environment",
-			Action: func(c *cli.Context) error {
-				util.PrintEnv()
-				return nil
 			},
 		},
 	}

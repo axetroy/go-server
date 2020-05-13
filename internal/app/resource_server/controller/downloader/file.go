@@ -4,7 +4,7 @@ package downloader
 import (
 	"fmt"
 	"github.com/axetroy/go-fs"
-	"github.com/axetroy/go-server/internal/library/config"
+	config2 "github.com/axetroy/go-server/internal/app/resource_server/config"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"path"
@@ -12,7 +12,7 @@ import (
 
 func File(c *gin.Context) {
 	filename := c.Param("filename")
-	filePath := path.Join(config.Upload.Path, config.Upload.File.Path, filename)
+	filePath := path.Join(config2.Upload.Path, config2.Upload.File.Path, filename)
 	if isExistFile := fs.PathExists(filePath); isExistFile == false {
 		// if the path not found
 		http.NotFound(c.Writer, c.Request)

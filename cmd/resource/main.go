@@ -5,7 +5,6 @@ import (
 	App "github.com/axetroy/go-server"
 	"github.com/axetroy/go-server/internal/app/resource_server"
 	"github.com/axetroy/go-server/internal/library/daemon"
-	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/urfave/cli"
 	"log"
 	"os"
@@ -39,14 +38,6 @@ func main() {
 			Usage: "stop server",
 			Action: func(c *cli.Context) error {
 				return daemon.Stop()
-			},
-		},
-		{
-			Name:  "env",
-			Usage: "print runtime environment",
-			Action: func(c *cli.Context) error {
-				util.PrintEnv()
-				return nil
 			},
 		},
 	}

@@ -3,7 +3,7 @@ package resource
 
 import (
 	"github.com/axetroy/go-fs"
-	"github.com/axetroy/go-server/internal/library/config"
+	config2 "github.com/axetroy/go-server/internal/app/resource_server/config"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"path"
@@ -11,7 +11,7 @@ import (
 
 func Thumbnail(c *gin.Context) {
 	filename := c.Param("filename")
-	Config := config.Upload
+	Config := config2.Upload
 	originImagePath := path.Join(Config.Path, Config.Image.Path, filename)
 	thumbnailImagePath := path.Join(Config.Path, Config.Image.Thumbnail.Path, filename)
 	if fs.PathExists(thumbnailImagePath) == false {
