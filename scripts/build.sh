@@ -44,7 +44,7 @@ do
 
             cd ../
         else
-          exe $?
+          exit $?
         fi
     done
 
