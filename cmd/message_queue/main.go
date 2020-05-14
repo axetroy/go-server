@@ -5,7 +5,7 @@ import (
 	App "github.com/axetroy/go-server"
 	message_queue_server2 "github.com/axetroy/go-server/internal/app/message_queue_server"
 	"github.com/axetroy/go-server/internal/library/daemon"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 	"log"
 	"os"
 )
@@ -13,17 +13,21 @@ import (
 func main() {
 	app := cli.NewApp()
 	app.Usage = "message queue server"
-	app.Author = App.Author
-	app.Email = App.Email
+	app.Authors = []*cli.Author{
+		{
+			Name:  App.Author,
+			Email: App.Email,
+		},
+	}
 	app.Version = App.Version
 	cli.AppHelpTemplate = App.CliTemplate
 
-	app.Commands = []cli.Command{
+	app.Commands = []*cli.Command{
 		{
 			Name:  "start",
 			Usage: "start server",
 			Flags: []cli.Flag{
-				cli.BoolFlag{
+				&cli.BoolFlag{
 					Name:  "daemon, d",
 					Usage: "running in daemon mode",
 				},
