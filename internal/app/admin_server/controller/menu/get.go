@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-func GetMenu(id string) (res schema.Response) {
+func GetMenu(ctx helper.Context, id string) (res schema.Response) {
 	var (
 		err  error
 		data = schema.Menu{}
@@ -79,5 +79,5 @@ func GetMenuRouter(c *gin.Context) {
 
 	id := c.Param("menu_id")
 
-	res = GetMenu(id)
+	res = GetMenu(helper.NewContext(c), id)
 }
