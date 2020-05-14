@@ -46,7 +46,7 @@ func TestMarkRead(t *testing.T) {
 
 		testMessage = schema.Message{}
 
-		assert.Nil(t, tester.Decode(r.Data, &testMessage))
+		assert.Nil(t, r.Decode(&testMessage))
 
 		defer message.DeleteMessageById(testMessage.Id)
 
@@ -115,7 +115,7 @@ func TestReadRouter(t *testing.T) {
 
 		testMessage = schema.Message{}
 
-		assert.Nil(t, tester.Decode(r.Data, &testMessage))
+		assert.Nil(t, r.Decode(&testMessage))
 
 		defer message.DeleteMessageById(testMessage.Id)
 
@@ -138,6 +138,6 @@ func TestReadRouter(t *testing.T) {
 
 		n := schema.Message{}
 
-		assert.Nil(t, tester.Decode(res.Data, &n))
+		assert.Nil(t, res.Decode(&n))
 	}
 }

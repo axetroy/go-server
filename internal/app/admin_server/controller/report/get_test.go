@@ -38,7 +38,7 @@ func TestGetReportByUser(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &reportInfo))
+		assert.Nil(t, r.Decode(&reportInfo))
 
 		defer report.DeleteReportById(reportInfo.Id)
 
@@ -54,7 +54,7 @@ func TestGetReportByUser(t *testing.T) {
 		assert.Equal(t, "", r.Message)
 
 		data := schema.Report{}
-		assert.Nil(t, tester.Decode(r.Data, &data))
+		assert.Nil(t, r.Decode(&data))
 
 		assert.Equal(t, title, data.Title)
 		assert.Equal(t, content, data.Content)
@@ -85,7 +85,7 @@ func TestGetReportRouter(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &reportInfo))
+		assert.Nil(t, r.Decode(&reportInfo))
 
 		defer report.DeleteReportById(reportInfo.Id)
 
@@ -116,7 +116,7 @@ func TestGetReportRouter(t *testing.T) {
 
 		data := schema.Report{}
 
-		assert.Nil(t, tester.Decode(r.Data, &data))
+		assert.Nil(t, r.Decode(&data))
 
 		assert.Equal(t, title, data.Title)
 		assert.Equal(t, content, data.Content)
@@ -148,7 +148,7 @@ func TestGetReportByAdmin(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &reportInfo))
+		assert.Nil(t, r.Decode(&reportInfo))
 
 		defer report.DeleteReportById(reportInfo.Id)
 
@@ -164,7 +164,7 @@ func TestGetReportByAdmin(t *testing.T) {
 		assert.Equal(t, "", r.Message)
 
 		data := schema.Report{}
-		assert.Nil(t, tester.Decode(r.Data, &data))
+		assert.Nil(t, r.Decode(&data))
 
 		assert.Equal(t, title, data.Title)
 		assert.Equal(t, content, data.Content)
@@ -196,7 +196,7 @@ func TestGetReportByAdminRouter(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &reportInfo))
+		assert.Nil(t, r.Decode(&reportInfo))
 
 		defer report.DeleteReportById(reportInfo.Id)
 
@@ -227,7 +227,7 @@ func TestGetReportByAdminRouter(t *testing.T) {
 
 		data := schema.Report{}
 
-		assert.Nil(t, tester.Decode(r.Data, &data))
+		assert.Nil(t, r.Decode(&data))
 
 		assert.Equal(t, title, data.Title)
 		assert.Equal(t, content, data.Content)

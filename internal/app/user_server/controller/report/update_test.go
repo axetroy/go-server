@@ -38,7 +38,7 @@ func TestUpdate(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &reportInfo))
+		assert.Nil(t, r.Decode(&reportInfo))
 
 		defer report.DeleteReportById(reportInfo.Id)
 
@@ -58,7 +58,7 @@ func TestUpdate(t *testing.T) {
 
 		reportInfo := schema.Report{}
 
-		assert.Nil(t, tester.Decode(r.Data, &reportInfo))
+		assert.Nil(t, r.Decode(&reportInfo))
 
 		defer report.DeleteReportById(reportInfo.Id)
 
@@ -92,7 +92,7 @@ func TestUpdateRouter(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &reportInfo))
+		assert.Nil(t, r.Decode(&reportInfo))
 
 		defer report.DeleteReportById(reportInfo.Id)
 
@@ -121,7 +121,7 @@ func TestUpdateRouter(t *testing.T) {
 
 		data := schema.Report{}
 
-		assert.Nil(t, tester.Decode(r.Data, &data))
+		assert.Nil(t, r.Decode(&data))
 
 		assert.Equal(t, title, data.Title)
 		assert.Equal(t, content, data.Content)
@@ -154,7 +154,7 @@ func TestUpdateByAdmin(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &reportInfo))
+		assert.Nil(t, r.Decode(&reportInfo))
 
 		defer report.DeleteReportById(reportInfo.Id)
 
@@ -178,7 +178,7 @@ func TestUpdateByAdmin(t *testing.T) {
 
 		reportInfo := schema.Report{}
 
-		assert.Nil(t, tester.Decode(r.Data, &reportInfo))
+		assert.Nil(t, r.Decode(&reportInfo))
 
 		defer report.DeleteReportById(reportInfo.Id)
 
@@ -214,7 +214,7 @@ func TestUpdateByAdminRouter(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &reportInfo))
+		assert.Nil(t, r.Decode(&reportInfo))
 
 		defer report.DeleteReportById(reportInfo.Id)
 
@@ -247,7 +247,7 @@ func TestUpdateByAdminRouter(t *testing.T) {
 
 		data := schema.Report{}
 
-		assert.Nil(t, tester.Decode(r.Data, &data))
+		assert.Nil(t, r.Decode(&data))
 
 		assert.Equal(t, title, data.Title)
 		assert.Equal(t, content, data.Content)

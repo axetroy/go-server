@@ -39,7 +39,7 @@ func TestCreate(t *testing.T) {
 
 	n := schema.Role{}
 
-	assert.Nil(t, tester.Decode(r.Data, &n))
+	assert.Nil(t, r.Decode(&n))
 
 	assert.Equal(t, name, n.Name)
 	assert.Equal(t, description, n.Description)
@@ -76,7 +76,7 @@ func TestCreateRouter(t *testing.T) {
 
 		n := schema.Role{}
 
-		assert.Nil(t, tester.Decode(res.Data, &n))
+		assert.Nil(t, res.Decode(&n))
 
 		defer role.DeleteRoleByName(n.Name)
 

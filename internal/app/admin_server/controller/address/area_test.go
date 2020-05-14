@@ -35,7 +35,7 @@ func TestAreaRouter(t *testing.T) {
 
 	areaInfo := schema.Area{}
 
-	assert.Nil(t, tester.Decode(res.Data, &areaInfo))
+	assert.Nil(t, res.Decode(&areaInfo))
 }
 
 func TestFindAddress(t *testing.T) {

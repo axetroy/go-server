@@ -32,7 +32,7 @@ func TestUpdatePassword(t *testing.T) {
 
 	testAdminInfo := schema.AdminProfile{}
 
-	assert.Nil(t, tester.Decode(r.Data, &testAdminInfo))
+	assert.Nil(t, r.Decode(&testAdminInfo))
 
 	context := helper.Context{
 		Uid: testAdminInfo.Id,
@@ -67,7 +67,7 @@ func TestUpdatePasswordRouter(t *testing.T) {
 
 	testAdminInfo := schema.AdminProfileWithToken{}
 
-	assert.Nil(t, tester.Decode(r1.Data, &testAdminInfo))
+	assert.Nil(t, r1.Decode(&testAdminInfo))
 
 	header := mocker.Header{
 		"Authorization": token.Prefix + " " + testAdminInfo.Token,
@@ -88,7 +88,7 @@ func TestUpdatePasswordRouter(t *testing.T) {
 	assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res))
 	assert.Equal(t, "", res.Message)
 	assert.Equal(t, schema.StatusSuccess, res.Status)
-	assert.Nil(t, tester.Decode(res.Data, &testProfile))
+	assert.Nil(t, res.Decode(&testProfile))
 
 	// 检查密码是否已被更改
 }

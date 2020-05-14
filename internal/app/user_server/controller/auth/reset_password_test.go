@@ -72,7 +72,7 @@ func TestResetPasswordSuccess(t *testing.T) {
 		return
 	} else {
 		userInfo := schema.Profile{}
-		if err := tester.Decode(r.Data, &userInfo); err != nil {
+		if err := r.Decode(&userInfo); err != nil {
 			t.Error(err)
 			return
 		}

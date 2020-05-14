@@ -51,7 +51,7 @@ func TestGetHelp(t *testing.T) {
 
 			n := schema.Help{}
 
-			assert.Nil(t, tester.Decode(r.Data, &n))
+			assert.Nil(t, r.Decode(&n))
 
 			helpId = n.Id
 
@@ -67,7 +67,7 @@ func TestGetHelp(t *testing.T) {
 
 			helpInfo := schema.Help{}
 
-			assert.Nil(t, tester.Decode(r.Data, &helpInfo))
+			assert.Nil(t, r.Decode(&helpInfo))
 
 			assert.Equal(t, title, helpInfo.Title)
 			assert.Equal(t, content, helpInfo.Content)
@@ -103,7 +103,7 @@ func TestGetHelpRouter(t *testing.T) {
 
 		n := schema.Help{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		defer help.DeleteHelpById(n.Id)
 
@@ -133,7 +133,7 @@ func TestGetHelpRouter(t *testing.T) {
 
 		n := schema.Help{}
 
-		assert.Nil(t, tester.Decode(res.Data, &n))
+		assert.Nil(t, res.Decode(&n))
 
 		assert.Equal(t, title, n.Title)
 		assert.Equal(t, content, n.Content)

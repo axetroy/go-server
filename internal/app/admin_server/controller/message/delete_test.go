@@ -48,7 +48,7 @@ func TestDeleteByAdmin(t *testing.T) {
 
 		testMessage = schema.Message{}
 
-		assert.Nil(t, tester.Decode(r.Data, &testMessage))
+		assert.Nil(t, r.Decode(&testMessage))
 
 		defer message.DeleteMessageById(testMessage.Id)
 
@@ -123,7 +123,7 @@ func TestDeleteByAdminRouter(t *testing.T) {
 
 		messageInfo := schema.Message{}
 
-		assert.Nil(t, tester.Decode(res.Data, &messageInfo))
+		assert.Nil(t, res.Decode(&messageInfo))
 
 		messageId = messageInfo.Id
 
@@ -184,7 +184,7 @@ func TestDeleteByUser(t *testing.T) {
 
 		testMessage = schema.Message{}
 
-		assert.Nil(t, tester.Decode(r.Data, &testMessage))
+		assert.Nil(t, r.Decode(&testMessage))
 
 		defer message.DeleteMessageById(testMessage.Id)
 
@@ -258,7 +258,7 @@ func TestDeleteByUserRouter(t *testing.T) {
 
 		messageInfo = schema.Message{}
 
-		assert.Nil(t, tester.Decode(r.Data, &messageInfo))
+		assert.Nil(t, r.Decode(&messageInfo))
 
 		defer message.DeleteMessageById(messageInfo.Id)
 

@@ -45,7 +45,7 @@ func TestGetMessage(t *testing.T) {
 
 		n := schema.Message{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		messageId = n.Id
 
@@ -100,7 +100,7 @@ func TestGetAdmin(t *testing.T) {
 
 		n := schema.Message{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		messageId = n.Id
 
@@ -155,7 +155,7 @@ func TestGetRouter(t *testing.T) {
 
 		n := schema.Message{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		messageId = n.Id
 
@@ -179,7 +179,7 @@ func TestGetRouter(t *testing.T) {
 
 		n := schema.Message{}
 
-		assert.Nil(t, tester.Decode(res.Data, &n))
+		assert.Nil(t, res.Decode(&n))
 
 		assert.Equal(t, "test", n.Title)
 		assert.Equal(t, "test", n.Content)
@@ -220,7 +220,7 @@ func TestGetAdminRouter(t *testing.T) {
 
 		n := schema.Message{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		messageId = n.Id
 
@@ -244,7 +244,7 @@ func TestGetAdminRouter(t *testing.T) {
 
 		n := schema.MessageAdmin{}
 
-		assert.Nil(t, tester.Decode(res.Data, &n))
+		assert.Nil(t, res.Decode(&n))
 
 		assert.Equal(t, "test", n.Title)
 		assert.Equal(t, "test", n.Content)

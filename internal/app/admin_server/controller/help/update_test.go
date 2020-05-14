@@ -43,7 +43,7 @@ func TestUpdate(t *testing.T) {
 
 		n := schema.Help{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		defer help2.DeleteHelpById(n.Id)
 
@@ -74,7 +74,7 @@ func TestUpdate(t *testing.T) {
 
 		helpInfo := schema.Help{}
 
-		assert.Nil(t, tester.Decode(r.Data, &helpInfo))
+		assert.Nil(t, r.Decode(&helpInfo))
 
 		assert.Equal(t, newTitle, helpInfo.Title)
 	}
@@ -96,7 +96,7 @@ func TestUpdate(t *testing.T) {
 
 		helpInfo := schema.Help{}
 
-		assert.Nil(t, tester.Decode(r.Data, &helpInfo))
+		assert.Nil(t, r.Decode(&helpInfo))
 
 		assert.Equal(t, newTitle, helpInfo.Title)
 		assert.Equal(t, newContent, helpInfo.Content)
@@ -131,7 +131,7 @@ func TestUpdateRouter(t *testing.T) {
 
 		n := schema.Help{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		defer help2.DeleteHelpById(n.Id)
 
@@ -172,7 +172,7 @@ func TestUpdateRouter(t *testing.T) {
 
 		helpInfo := schema.Help{}
 
-		assert.Nil(t, tester.Decode(res.Data, &helpInfo))
+		assert.Nil(t, res.Decode(&helpInfo))
 
 		assert.Equal(t, newTitle, helpInfo.Title)
 		assert.Equal(t, newContent, helpInfo.Content)

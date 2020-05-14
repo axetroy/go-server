@@ -40,7 +40,7 @@ func TestGetList(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &reportInfo))
+		assert.Nil(t, r.Decode(&reportInfo))
 
 		defer report.DeleteReportById(reportInfo.Id)
 
@@ -58,7 +58,7 @@ func TestGetList(t *testing.T) {
 
 		reports := make([]schema.Report, 0)
 
-		assert.Nil(t, tester.Decode(r.Data, &reports))
+		assert.Nil(t, r.Decode(&reports))
 
 		assert.Equal(t, schema.DefaultLimit, r.Meta.Limit)
 		assert.Equal(t, schema.DefaultPage, r.Meta.Page)
@@ -108,7 +108,7 @@ func TestGetListRouter(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &reportInfo))
+		assert.Nil(t, r.Decode(&reportInfo))
 
 		defer report.DeleteReportById(reportInfo.Id)
 
@@ -128,7 +128,7 @@ func TestGetListRouter(t *testing.T) {
 
 		reports := make([]schema.Report, 0)
 
-		assert.Nil(t, tester.Decode(res.Data, &reports))
+		assert.Nil(t, res.Decode(&reports))
 
 		for _, b := range reports {
 			assert.IsType(t, "string", b.Title)
@@ -168,7 +168,7 @@ func TestGetListByAdmin(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &reportInfo))
+		assert.Nil(t, r.Decode(&reportInfo))
 
 		defer report.DeleteReportById(reportInfo.Id)
 
@@ -186,7 +186,7 @@ func TestGetListByAdmin(t *testing.T) {
 
 		reports := make([]schema.Report, 0)
 
-		assert.Nil(t, tester.Decode(r.Data, &reports))
+		assert.Nil(t, r.Decode(&reports))
 
 		assert.Equal(t, schema.DefaultLimit, r.Meta.Limit)
 		assert.Equal(t, schema.DefaultPage, r.Meta.Page)
@@ -237,7 +237,7 @@ func TestGetListByAdminRouter(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &reportInfo))
+		assert.Nil(t, r.Decode(&reportInfo))
 
 		defer report.DeleteReportById(reportInfo.Id)
 
@@ -257,7 +257,7 @@ func TestGetListByAdminRouter(t *testing.T) {
 
 		reports := make([]schema.Report, 0)
 
-		assert.Nil(t, tester.Decode(res.Data, &reports))
+		assert.Nil(t, res.Decode(&reports))
 
 		for _, b := range reports {
 			assert.IsType(t, "string", b.Title)

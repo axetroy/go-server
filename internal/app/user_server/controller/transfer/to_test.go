@@ -76,7 +76,7 @@ func TestTo(t *testing.T) {
 
 	assert.Equal(t, "", res2.Message)
 	assert.Equal(t, schema.StatusSuccess, res2.Status)
-	assert.Nil(t, tester.Decode(res2.Data, &data))
+	assert.Nil(t, res2.Decode(&data))
 
 	assert.Equal(t, userFrom.Id, data.From)
 	assert.Equal(t, userTo.Id, data.To)
@@ -88,7 +88,7 @@ func TestTo(t *testing.T) {
 
 	assert.Equal(t, "", r3.Message)
 	assert.Equal(t, schema.StatusSuccess, r3.Status)
-	assert.Nil(t, tester.Decode(r3.Data, &fromUserWallet))
+	assert.Nil(t, r3.Decode(&fromUserWallet))
 	assert.Equal(t, "80.00000000", fromUserWallet.Balance)
 	assert.Equal(t, "0.00000000", fromUserWallet.Frozen)
 
@@ -97,7 +97,7 @@ func TestTo(t *testing.T) {
 
 	assert.Equal(t, "", r4.Message)
 	assert.Equal(t, schema.StatusSuccess, r4.Status)
-	assert.Nil(t, tester.Decode(r4.Data, &toUserWallet))
+	assert.Nil(t, r4.Decode(&toUserWallet))
 	assert.Equal(t, "20.00000000", toUserWallet.Balance)
 	assert.Equal(t, "0.00000000", toUserWallet.Frozen)
 
@@ -174,7 +174,7 @@ func TestToRouter(t *testing.T) {
 
 		assert.Equal(t, "", r3.Message)
 		assert.Equal(t, schema.StatusSuccess, r3.Status)
-		assert.Nil(t, tester.Decode(r3.Data, &fromUserWallet))
+		assert.Nil(t, r3.Decode(&fromUserWallet))
 		assert.Equal(t, "80.00000000", fromUserWallet.Balance)
 		assert.Equal(t, "0.00000000", fromUserWallet.Frozen)
 
@@ -183,7 +183,7 @@ func TestToRouter(t *testing.T) {
 
 		assert.Equal(t, "", r4.Message)
 		assert.Equal(t, schema.StatusSuccess, r4.Status)
-		assert.Nil(t, tester.Decode(r4.Data, &toUserWallet))
+		assert.Nil(t, r4.Decode(&toUserWallet))
 		assert.Equal(t, "20.00000000", toUserWallet.Balance)
 		assert.Equal(t, "0.00000000", toUserWallet.Frozen)
 	}

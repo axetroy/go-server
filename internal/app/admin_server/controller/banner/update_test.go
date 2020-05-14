@@ -43,7 +43,7 @@ func TestUpdate(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &bannerInfo))
+		assert.Nil(t, r.Decode(&bannerInfo))
 
 		defer banner2.DeleteBannerById(bannerInfo.Id)
 
@@ -66,7 +66,7 @@ func TestUpdate(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &bannerInfo))
+		assert.Nil(t, r.Decode(&bannerInfo))
 
 		assert.Equal(t, newDescription, *bannerInfo.Description)
 	}
@@ -85,7 +85,7 @@ func TestUpdate(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &bannerInfo))
+		assert.Nil(t, r.Decode(&bannerInfo))
 
 		assert.Equal(t, newDescription, *bannerInfo.Description)
 		assert.Equal(t, newHref, bannerInfo.Href)
@@ -132,7 +132,7 @@ func TestUpdateRouter(t *testing.T) {
 			return
 		}
 
-		assert.Nil(t, tester.Decode(res.Data, &bannerInfo))
+		assert.Nil(t, res.Decode(&bannerInfo))
 
 		defer banner2.DeleteBannerById(bannerInfo.Id)
 	}
@@ -170,7 +170,7 @@ func TestUpdateRouter(t *testing.T) {
 			return
 		}
 
-		assert.Nil(t, tester.Decode(res.Data, &bannerInfo))
+		assert.Nil(t, res.Decode(&bannerInfo))
 
 		assert.Equal(t, newImage, bannerInfo.Image)
 		assert.Equal(t, newDescription, *bannerInfo.Description)

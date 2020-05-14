@@ -68,7 +68,7 @@ func TestSignUpSuccess(t *testing.T) {
 
 	profile := schema.Profile{}
 
-	assert.Nil(t, tester.Decode(res.Data, &profile))
+	assert.Nil(t, res.Decode(&profile))
 
 	// 默认未激活状态
 	assert.Equal(t, int(profile.Status), int(model.UserStatusInit))
@@ -100,7 +100,7 @@ func TestSignUpInviteCode(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &profile))
+		assert.Nil(t, r.Decode(&profile))
 
 		inviteCode = profile.InviteCode
 		testerUid = profile.Id
@@ -123,7 +123,7 @@ func TestSignUpInviteCode(t *testing.T) {
 
 	profile := schema.Profile{}
 
-	if !assert.Nil(t, tester.Decode(res.Data, &profile)) {
+	if !assert.Nil(t, res.Decode(&profile)) {
 		return
 	}
 
@@ -138,7 +138,7 @@ func TestSignUpInviteCode(t *testing.T) {
 	resInvite := invite.GetByStruct(&model.InviteHistory{Invitee: profile.Id})
 	InviteeData := schema.Invite{}
 
-	assert.Nil(t, tester.Decode(resInvite.Data, &InviteeData))
+	assert.Nil(t, resInvite.Decode(&InviteeData))
 	assert.Equal(t, profile.Id, InviteeData.Invitee)
 	assert.Equal(t, testerUid, InviteeData.Inviter)
 }

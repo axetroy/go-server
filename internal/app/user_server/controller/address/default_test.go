@@ -64,7 +64,7 @@ func TestGetDefault(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &addressInfo))
+		assert.Nil(t, r.Decode(&addressInfo))
 
 		defer address.DeleteAddressById(addressInfo.Id)
 
@@ -86,7 +86,7 @@ func TestGetDefault(t *testing.T) {
 
 		add := schema.Address{}
 
-		assert.Nil(t, tester.Decode(r.Data, &add))
+		assert.Nil(t, r.Decode(&add))
 
 		assert.Equal(t, addressInfo.Name, add.Name)
 		assert.Equal(t, addressInfo.Phone, add.Phone)
@@ -145,7 +145,7 @@ func TestGetDefaultRouter(t *testing.T) {
 			return
 		}
 
-		assert.Nil(t, tester.Decode(res.Data, &addressInfo))
+		assert.Nil(t, res.Decode(&addressInfo))
 
 		defer address.DeleteAddressById(addressInfo.Id)
 	}
@@ -174,7 +174,7 @@ func TestGetDefaultRouter(t *testing.T) {
 
 		defaultAddress := schema.Address{}
 
-		assert.Nil(t, tester.Decode(res.Data, &defaultAddress))
+		assert.Nil(t, res.Decode(&defaultAddress))
 
 		assert.Equal(t, "张三", defaultAddress.Name)
 		assert.Equal(t, "18888888888", defaultAddress.Phone)

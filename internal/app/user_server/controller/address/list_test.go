@@ -48,7 +48,7 @@ func TestGetList(t *testing.T) {
 
 		addressInfo := schema.Address{}
 
-		assert.Nil(t, tester.Decode(r.Data, &addressInfo))
+		assert.Nil(t, r.Decode(&addressInfo))
 
 		defer address.DeleteAddressById(addressInfo.Id)
 
@@ -70,7 +70,7 @@ func TestGetList(t *testing.T) {
 
 		addresses := make([]schema.Address, 0)
 
-		assert.Nil(t, tester.Decode(r.Data, &addresses))
+		assert.Nil(t, r.Decode(&addresses))
 
 		assert.Equal(t, schema.DefaultLimit, r.Meta.Limit)
 		assert.Equal(t, schema.DefaultPage, r.Meta.Page)
@@ -131,7 +131,7 @@ func TestGetListRouter(t *testing.T) {
 
 		addressInfo := schema.Address{}
 
-		assert.Nil(t, tester.Decode(r.Data, &addressInfo))
+		assert.Nil(t, r.Decode(&addressInfo))
 
 		defer address.DeleteAddressById(addressInfo.Id)
 
@@ -165,7 +165,7 @@ func TestGetListRouter(t *testing.T) {
 
 		addresses := make([]schema.Address, 0)
 
-		assert.Nil(t, tester.Decode(res.Data, &addresses))
+		assert.Nil(t, res.Decode(&addresses))
 
 		for _, b := range addresses {
 			assert.IsType(t, "string", b.Phone)

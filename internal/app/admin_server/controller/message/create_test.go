@@ -43,7 +43,7 @@ func TestCreate(t *testing.T) {
 
 		n := model.Message{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		defer message.DeleteMessageById(n.Id)
 
@@ -103,7 +103,7 @@ func TestCreateRouter(t *testing.T) {
 
 		n := schema.Message{}
 
-		assert.Nil(t, tester.Decode(res.Data, &n))
+		assert.Nil(t, res.Decode(&n))
 
 		defer message.DeleteMessageById(n.Id)
 

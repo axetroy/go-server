@@ -56,7 +56,7 @@ func TestCreate(t *testing.T) {
 
 		n := model.News{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		defer news.DeleteNewsById(n.Id)
 
@@ -122,7 +122,7 @@ func TestCreateRouter(t *testing.T) {
 
 		n := schema.News{}
 
-		assert.Nil(t, tester.Decode(res.Data, &n))
+		assert.Nil(t, res.Decode(&n))
 
 		defer news.DeleteNewsById(n.Id)
 

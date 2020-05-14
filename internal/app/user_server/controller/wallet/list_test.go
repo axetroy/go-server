@@ -27,7 +27,7 @@ func TestGetWallets(t *testing.T) {
 	assert.Len(t, r.Data, len(model.WalletTableNames))
 
 	list := make([]schema.Wallet, 0)
-	assert.Nil(t, tester.Decode(r.Data, &list))
+	assert.Nil(t, r.Decode(&list))
 
 	assert.True(t, len(list) >= 1)
 
@@ -60,7 +60,7 @@ func TestGetWalletsRouter(t *testing.T) {
 	assert.Equal(t, "", res.Message)
 
 	list := make([]schema.Wallet, 0)
-	assert.Nil(t, tester.Decode(res.Data, &list))
+	assert.Nil(t, res.Decode(&list))
 
 	assert.True(t, len(list) >= 1)
 

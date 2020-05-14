@@ -5,7 +5,6 @@ import (
 	"github.com/axetroy/go-server/internal/app/user_server/controller/invite"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
-	"github.com/axetroy/go-server/tester"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -25,7 +24,7 @@ func TestGetInviteListByUser(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &data))
+		assert.Nil(t, r.Decode(&data))
 		assert.Equal(t, query.Limit, r.Meta.Limit)
 		assert.Equal(t, schema.DefaultPage, r.Meta.Page)
 		assert.IsType(t, int(0), r.Meta.Num)

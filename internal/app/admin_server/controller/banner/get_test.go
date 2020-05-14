@@ -50,7 +50,7 @@ func TestGetBanner(t *testing.T) {
 
 			n := schema.Banner{}
 
-			assert.Nil(t, tester.Decode(r.Data, &n))
+			assert.Nil(t, r.Decode(&n))
 
 			bannerId = n.Id
 
@@ -66,7 +66,7 @@ func TestGetBanner(t *testing.T) {
 
 			bannerInfo := schema.Banner{}
 
-			assert.Nil(t, tester.Decode(r.Data, &bannerInfo))
+			assert.Nil(t, r.Decode(&bannerInfo))
 
 			assert.Equal(t, image, bannerInfo.Image)
 			assert.Equal(t, href, bannerInfo.Href)
@@ -101,7 +101,7 @@ func TestGetBannerRouter(t *testing.T) {
 
 		n := schema.Banner{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		bannerId = n.Id
 
@@ -125,7 +125,7 @@ func TestGetBannerRouter(t *testing.T) {
 
 		n := schema.Banner{}
 
-		assert.Nil(t, tester.Decode(res.Data, &n))
+		assert.Nil(t, res.Decode(&n))
 
 		assert.Equal(t, image, n.Image)
 		assert.Equal(t, href, n.Href)

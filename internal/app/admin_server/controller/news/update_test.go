@@ -34,7 +34,7 @@ func TestUpdate(t *testing.T) {
 
 		adminInfo := schema.AdminProfileWithToken{}
 
-		assert.Nil(t, tester.Decode(r.Data, &adminInfo))
+		assert.Nil(t, r.Decode(&adminInfo))
 
 		if c, er := token.Parse(token.Prefix+" "+adminInfo.Token, true); er != nil {
 			t.Error(er)
@@ -65,7 +65,7 @@ func TestUpdate(t *testing.T) {
 
 		n := schema.News{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		newsId = n.Id
 
@@ -97,7 +97,7 @@ func TestUpdate(t *testing.T) {
 
 		newsInfo := schema.News{}
 
-		assert.Nil(t, tester.Decode(r.Data, &newsInfo))
+		assert.Nil(t, r.Decode(&newsInfo))
 
 		assert.Equal(t, newTittle, newsInfo.Title)
 		assert.Equal(t, newContent, newsInfo.Content)
@@ -121,7 +121,7 @@ func TestUpdate(t *testing.T) {
 
 		newsInfo2 := schema.News{}
 
-		assert.Nil(t, tester.Decode(r2.Data, &newsInfo2))
+		assert.Nil(t, r2.Decode(&newsInfo2))
 
 		assert.Equal(t, newTittle2, newsInfo2.Title)
 		assert.Equal(t, newContent, newsInfo2.Content)
@@ -159,7 +159,7 @@ func TestUpdateRouter(t *testing.T) {
 
 		n := schema.News{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		newsId = n.Id
 
@@ -191,7 +191,7 @@ func TestUpdateRouter(t *testing.T) {
 
 		n := schema.News{}
 
-		assert.Nil(t, tester.Decode(res.Data, &n))
+		assert.Nil(t, res.Decode(&n))
 
 		assert.Equal(t, newTitle, n.Title)
 		assert.Equal(t, newContent, n.Content)
@@ -203,7 +203,7 @@ func TestUpdateRouter(t *testing.T) {
 
 		n := schema.News{}
 
-		assert.Nil(t, tester.Decode(res.Data, &n))
+		assert.Nil(t, res.Decode(&n))
 
 		assert.Equal(t, newTitle, n.Title)
 		assert.Equal(t, newContent, n.Content)

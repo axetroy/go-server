@@ -36,7 +36,7 @@ func TestDelete(t *testing.T) {
 
 		adminInfo := schema.AdminProfileWithToken{}
 
-		if err := tester.Decode(r.Data, &adminInfo); err != nil {
+		if err := r.Decode(&adminInfo); err != nil {
 			t.Error(err)
 			return
 		}
@@ -74,7 +74,7 @@ func TestDelete(t *testing.T) {
 
 		testNotification = schema.Notification{}
 
-		assert.Nil(t, tester.Decode(r.Data, &testNotification))
+		assert.Nil(t, r.Decode(&testNotification))
 
 		defer notification.DeleteNotificationById(testNotification.Id)
 
@@ -132,7 +132,7 @@ func TestDeleteRouter(t *testing.T) {
 
 		adminInfo := schema.AdminProfileWithToken{}
 
-		if err := tester.Decode(r.Data, &adminInfo); err != nil {
+		if err := r.Decode(&adminInfo); err != nil {
 			t.Error(err)
 			return
 		}
@@ -169,7 +169,7 @@ func TestDeleteRouter(t *testing.T) {
 		assert.Equal(t, http.StatusOK, r.Code)
 		assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res))
 
-		assert.Nil(t, tester.Decode(res.Data, &notificationInfo))
+		assert.Nil(t, res.Decode(&notificationInfo))
 
 		defer notification.DeleteNotificationById(notificationInfo.Id)
 

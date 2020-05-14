@@ -46,7 +46,7 @@ func TestLogin(t *testing.T) {
 
 		adminInfo := schema.AdminProfileWithToken{}
 
-		if err := tester.Decode(r.Data, &adminInfo); err != nil {
+		if err := r.Decode(&adminInfo); err != nil {
 			t.Error(err)
 			return
 		}
@@ -104,7 +104,7 @@ func TestLoginRouter(t *testing.T) {
 
 		adminInfo := schema.AdminProfileWithToken{}
 
-		if err := tester.Decode(res.Data, &adminInfo); err != nil {
+		if err := res.Decode(&adminInfo); err != nil {
 			t.Error(err)
 		}
 

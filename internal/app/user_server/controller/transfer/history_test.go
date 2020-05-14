@@ -61,7 +61,7 @@ func TestGetHistory(t *testing.T) {
 	assert.Equal(t, schema.StatusSuccess, r.Status)
 
 	list := make([]schema.TransferLog, 0)
-	assert.Nil(t, tester.Decode(r.Data, &list))
+	assert.Nil(t, r.Decode(&list))
 
 	assert.Equal(t, schema.DefaultLimit, r.Meta.Limit)
 	assert.Equal(t, schema.DefaultPage, r.Meta.Page)
@@ -130,7 +130,7 @@ func TestGetHistoryRouter(t *testing.T) {
 
 	list := make([]schema.TransferLog, 0)
 
-	assert.Nil(t, tester.Decode(res.Data, &list))
+	assert.Nil(t, res.Decode(&list))
 
 	assert.True(t, len(list) >= 1)
 

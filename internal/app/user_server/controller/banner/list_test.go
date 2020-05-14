@@ -42,7 +42,7 @@ func TestGetList(t *testing.T) {
 
 		n := schema.Banner{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
@@ -59,7 +59,7 @@ func TestGetList(t *testing.T) {
 
 		banners := make([]schema.Banner, 0)
 
-		assert.Nil(t, tester.Decode(r.Data, &banners))
+		assert.Nil(t, r.Decode(&banners))
 
 		assert.Equal(t, schema.DefaultLimit, r.Meta.Limit)
 		assert.Equal(t, schema.DefaultPage, r.Meta.Page)
@@ -105,7 +105,7 @@ func TestGetListRouter(t *testing.T) {
 
 		n := schema.Banner{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
@@ -132,7 +132,7 @@ func TestGetListRouter(t *testing.T) {
 
 		banners := make([]schema.Banner, 0)
 
-		assert.Nil(t, tester.Decode(res.Data, &banners))
+		assert.Nil(t, res.Decode(&banners))
 
 		for _, b := range banners {
 			assert.IsType(t, "string", b.Image)

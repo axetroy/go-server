@@ -28,7 +28,7 @@ func TestGetList(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &data))
+		assert.Nil(t, r.Decode(&data))
 		assert.Equal(t, query.Limit, r.Meta.Limit)
 		assert.Equal(t, schema.DefaultPage, r.Meta.Page)
 	}
@@ -57,7 +57,7 @@ func TestGetList(t *testing.T) {
 
 		n := schema.News{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		defer news.DeleteNewsById(n.Id)
 	}
@@ -77,7 +77,7 @@ func TestGetList(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &data))
+		assert.Nil(t, r.Decode(&data))
 		assert.Equal(t, query.Limit, r.Meta.Limit)
 		assert.Equal(t, schema.DefaultPage, r.Meta.Page)
 
@@ -109,7 +109,7 @@ func TestGetListRouter(t *testing.T) {
 
 		n := schema.News{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		defer news.DeleteNewsById(n.Id)
 	}
@@ -133,7 +133,7 @@ func TestGetListRouter(t *testing.T) {
 
 		list := make([]schema.News, 0)
 
-		assert.Nil(t, tester.Decode(res.Data, &list))
+		assert.Nil(t, res.Decode(&list))
 
 		for _, b := range list {
 			assert.IsType(t, "string", b.Title)

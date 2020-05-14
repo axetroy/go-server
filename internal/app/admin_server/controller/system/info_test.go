@@ -36,5 +36,5 @@ func TestGetSystemInfoRouter(t *testing.T) {
 
 	n := system.Info{}
 
-	assert.Nil(t, tester.Decode(res.Data, &n))
+	assert.Nil(t, res.Decode(&n))
 }

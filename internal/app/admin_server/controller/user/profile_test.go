@@ -76,7 +76,7 @@ func TestGetProfileByAdminRouter(t *testing.T) {
 
 	profile := schema.Profile{}
 
-	assert.Nil(t, tester.Decode(res.Data, &profile))
+	assert.Nil(t, res.Decode(&profile))
 	assert.Equal(t, userInfo.Id, profile.Id)
 	assert.Equal(t, userInfo.Username, profile.Username)
 }
@@ -98,7 +98,7 @@ func TestUpdateProfileByAdmin(t *testing.T) {
 
 	assert.Equal(t, schema.StatusSuccess, res.Status)
 	assert.Equal(t, "", res.Message)
-	assert.Nil(t, tester.Decode(res.Data, &profile))
+	assert.Nil(t, res.Decode(&profile))
 
 	assert.Equal(t, userInfo.Id, profile.Id)
 	assert.Equal(t, userInfo.Username, profile.Username)
@@ -139,7 +139,7 @@ func TestUpdateProfileByAdminRouter(t *testing.T) {
 
 	assert.Equal(t, schema.StatusSuccess, res.Status)
 	assert.Equal(t, "", res.Message)
-	assert.Nil(t, tester.Decode(res.Data, &profile))
+	assert.Nil(t, res.Decode(&profile))
 
 	assert.Equal(t, nickName, *profile.Nickname)
 }

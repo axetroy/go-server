@@ -30,7 +30,7 @@ func TestUpdate(t *testing.T) {
 
 		adminInfo := schema.AdminProfileWithToken{}
 
-		if err := tester.Decode(r.Data, &adminInfo); err != nil {
+		if err := r.Decode(&adminInfo); err != nil {
 			t.Error(err)
 			return
 		}
@@ -68,7 +68,7 @@ func TestUpdate(t *testing.T) {
 
 		testNotification = schema.Notification{}
 
-		assert.Nil(t, tester.Decode(r.Data, &testNotification))
+		assert.Nil(t, r.Decode(&testNotification))
 
 		defer notification.DeleteNotificationById(testNotification.Id)
 
@@ -94,7 +94,7 @@ func TestUpdate(t *testing.T) {
 		assert.Equal(t, "", r.Message)
 
 		n := schema.Notification{}
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 		assert.Equal(t, newTittle, n.Title)
 		assert.Equal(t, newContent, n.Content)
 		assert.Equal(t, newNote, *n.Note)

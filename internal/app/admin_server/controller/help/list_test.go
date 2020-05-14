@@ -44,7 +44,7 @@ func TestGetList(t *testing.T) {
 
 		n := schema.Help{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		defer help.DeleteHelpById(n.Id)
 
@@ -64,7 +64,7 @@ func TestGetList(t *testing.T) {
 
 		helps := make([]schema.Help, 0)
 
-		assert.Nil(t, tester.Decode(r.Data, &helps))
+		assert.Nil(t, r.Decode(&helps))
 
 		assert.Equal(t, schema.DefaultLimit, r.Meta.Limit)
 		assert.Equal(t, schema.DefaultPage, r.Meta.Page)
@@ -115,7 +115,7 @@ func TestGetListRouter(t *testing.T) {
 
 		n := schema.Help{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		defer help.DeleteHelpById(n.Id)
 
@@ -145,7 +145,7 @@ func TestGetListRouter(t *testing.T) {
 
 		helps := make([]schema.Help, 0)
 
-		assert.Nil(t, tester.Decode(res.Data, &helps))
+		assert.Nil(t, res.Decode(&helps))
 
 		assert.Equal(t, schema.DefaultLimit, res.Meta.Limit)
 		assert.Equal(t, schema.DefaultPage, res.Meta.Page)

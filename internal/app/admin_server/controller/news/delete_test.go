@@ -43,7 +43,7 @@ func TestDelete(t *testing.T) {
 
 		n := schema.News{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		newsId = n.Id
 
@@ -67,7 +67,7 @@ func TestDelete(t *testing.T) {
 
 		newsInfo := schema.News{}
 
-		assert.Nil(t, tester.Decode(r.Data, &newsInfo))
+		assert.Nil(t, r.Decode(&newsInfo))
 
 		assert.Equal(t, title, newsInfo.Title)
 		assert.Equal(t, content, newsInfo.Content)
@@ -113,7 +113,7 @@ func TestDeleteRouter(t *testing.T) {
 
 		n := schema.News{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		newsId = n.Id
 
@@ -154,7 +154,7 @@ func TestDeleteRouter(t *testing.T) {
 
 		newsInfo := schema.News{}
 
-		assert.Nil(t, tester.Decode(res.Data, &newsInfo))
+		assert.Nil(t, res.Decode(&newsInfo))
 
 		assert.Equal(t, title, newsInfo.Title)
 		assert.Equal(t, content, newsInfo.Content)

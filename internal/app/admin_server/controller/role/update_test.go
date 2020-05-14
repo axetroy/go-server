@@ -47,7 +47,7 @@ func TestUpdate(t *testing.T) {
 
 		defer role.DeleteRoleByName(name)
 
-		assert.Nil(t, tester.Decode(r.Data, &roleInfo))
+		assert.Nil(t, r.Decode(&roleInfo))
 
 		n := &roleInfo
 
@@ -70,7 +70,7 @@ func TestUpdate(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &roleInfo))
+		assert.Nil(t, r.Decode(&roleInfo))
 
 		assert.Equal(t, newDescription, roleInfo.Description)
 	}
@@ -118,7 +118,7 @@ func TestUpdateRouter(t *testing.T) {
 
 		defer role.DeleteRoleByName(name)
 
-		assert.Nil(t, tester.Decode(r.Data, &roleInfo))
+		assert.Nil(t, r.Decode(&roleInfo))
 
 		n := &roleInfo
 
@@ -149,7 +149,7 @@ func TestUpdateRouter(t *testing.T) {
 		assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res))
 		assert.Equal(t, "", res.Message)
 		assert.Equal(t, schema.StatusSuccess, res.Status)
-		assert.Nil(t, tester.Decode(res.Data, &roleInfo))
+		assert.Nil(t, res.Decode(&roleInfo))
 		assert.Equal(t, newDescription, roleInfo.Description)
 
 	}
@@ -187,7 +187,7 @@ func TestUpdateUserRole(t *testing.T) {
 
 		defer role.DeleteRoleByName(name)
 
-		assert.Nil(t, tester.Decode(r.Data, &roleInfo))
+		assert.Nil(t, r.Decode(&roleInfo))
 
 		n := &roleInfo
 
@@ -208,7 +208,7 @@ func TestUpdateUserRole(t *testing.T) {
 
 		profile := schema.Profile{}
 
-		assert.Nil(t, tester.Decode(r.Data, &profile))
+		assert.Nil(t, r.Decode(&profile))
 
 		assert.Equal(t, []string{name}, profile.Role)
 	}
@@ -257,7 +257,7 @@ func TestUpdateUserRoleRouter(t *testing.T) {
 
 		defer role.DeleteRoleByName(name)
 
-		assert.Nil(t, tester.Decode(r.Data, &roleInfo))
+		assert.Nil(t, r.Decode(&roleInfo))
 
 		n := &roleInfo
 
@@ -279,7 +279,7 @@ func TestUpdateUserRoleRouter(t *testing.T) {
 		assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res))
 		assert.Equal(t, "", res.Message)
 		assert.Equal(t, schema.StatusSuccess, res.Status)
-		assert.Nil(t, tester.Decode(res.Data, &roleInfo))
+		assert.Nil(t, res.Decode(&roleInfo))
 	}
 
 	// 查看用户的角色是否正确

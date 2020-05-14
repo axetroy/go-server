@@ -69,7 +69,7 @@ func TestDeleteAdminById(t *testing.T) {
 
 		detail := schema.AdminProfileWithToken{}
 
-		assert.Nil(t, tester.Decode(r.Data, &detail))
+		assert.Nil(t, r.Decode(&detail))
 
 		uid = detail.Id
 	}
@@ -116,7 +116,7 @@ func TestDeleteAdminByIdRouter(t *testing.T) {
 
 		detail := schema.AdminProfileWithToken{}
 
-		assert.Nil(t, tester.Decode(r.Data, &detail))
+		assert.Nil(t, r.Decode(&detail))
 
 		uid = detail.Id
 	}

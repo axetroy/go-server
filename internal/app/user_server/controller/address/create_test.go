@@ -56,7 +56,7 @@ func TestCreate(t *testing.T) {
 
 		addressInfo := schema.Address{}
 
-		assert.Nil(t, tester.Decode(r.Data, &addressInfo))
+		assert.Nil(t, r.Decode(&addressInfo))
 
 		defer address.DeleteAddressById(addressInfo.Id)
 
@@ -110,7 +110,7 @@ func TestCreateRouter(t *testing.T) {
 
 	addressInfo := schema.Address{}
 
-	assert.Nil(t, tester.Decode(res.Data, &addressInfo))
+	assert.Nil(t, res.Decode(&addressInfo))
 
 	defer address.DeleteAddressById(addressInfo.Id)
 }

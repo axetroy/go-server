@@ -32,7 +32,7 @@ func TestGetMessageListByUser(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &data))
+		assert.Nil(t, r.Decode(&data))
 		assert.Equal(t, query.Limit, r.Meta.Limit)
 		assert.Equal(t, schema.DefaultPage, r.Meta.Page)
 		assert.Equal(t, 0, r.Meta.Num)
@@ -64,7 +64,7 @@ func TestGetMessageListByUser(t *testing.T) {
 
 		n := schema.Message{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		defer message.DeleteMessageById(n.Id)
 	}
@@ -85,7 +85,7 @@ func TestGetMessageListByUser(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &data))
+		assert.Nil(t, r.Decode(&data))
 
 		assert.Equal(t, query.Limit, r.Meta.Limit)
 		assert.Equal(t, schema.DefaultPage, r.Meta.Page)
@@ -114,7 +114,7 @@ func TestGetMessageListByAdmin(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &data))
+		assert.Nil(t, r.Decode(&data))
 		assert.Equal(t, query.Limit, r.Meta.Limit)
 		assert.Equal(t, schema.DefaultPage, r.Meta.Page)
 		assert.Equal(t, 0, r.Meta.Num)
@@ -146,7 +146,7 @@ func TestGetMessageListByAdmin(t *testing.T) {
 
 		n := schema.Message{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		defer message.DeleteMessageById(n.Id)
 	}
@@ -169,7 +169,7 @@ func TestGetMessageListByAdmin(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &data))
+		assert.Nil(t, r.Decode(&data))
 
 		assert.Equal(t, query.Limit, r.Meta.Limit)
 		assert.Equal(t, schema.DefaultPage, r.Meta.Page)
@@ -205,7 +205,7 @@ func TestGetMessageListByUserRouter(t *testing.T) {
 
 		n := schema.Message{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		//defer message.DeleteMessageById(n.Id)
 	}
@@ -235,7 +235,7 @@ func TestGetMessageListByUserRouter(t *testing.T) {
 
 		messages := make([]schema.Message, 0)
 
-		assert.Nil(t, tester.Decode(res.Data, &messages))
+		assert.Nil(t, res.Decode(&messages))
 
 		assert.True(t, len(messages) > 0)
 
@@ -274,7 +274,7 @@ func TestGetMessageListByAdminRouter(t *testing.T) {
 
 		n := schema.Message{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		//defer message.DeleteMessageById(n.Id)
 	}
@@ -304,7 +304,7 @@ func TestGetMessageListByAdminRouter(t *testing.T) {
 
 		messages := make([]schema.Message, 0)
 
-		assert.Nil(t, tester.Decode(res.Data, &messages))
+		assert.Nil(t, res.Decode(&messages))
 
 		assert.True(t, len(messages) > 0)
 

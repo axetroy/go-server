@@ -91,7 +91,7 @@ func TestGet(t *testing.T) {
 
 		inviteInfo := schema.Invite{}
 
-		assert.Nil(t, tester.Decode(r.Data, &inviteInfo))
+		assert.Nil(t, r.Decode(&inviteInfo))
 	}
 
 	// 获取一个跟我不相关的
@@ -195,7 +195,7 @@ func TestGetRouter(t *testing.T) {
 
 		inviteDetail := schema.Invite{}
 
-		assert.Nil(t, tester.Decode(res.Data, &inviteDetail))
+		assert.Nil(t, res.Decode(&inviteDetail))
 
 		assert.Equal(t, "123123", inviteDetail.Inviter)
 		assert.Equal(t, userInfo.Id, inviteDetail.Invitee)

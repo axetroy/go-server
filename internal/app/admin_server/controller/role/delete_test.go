@@ -44,7 +44,7 @@ func TestDelete(t *testing.T) {
 
 		defer role.DeleteRoleByName(name)
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		assert.Equal(t, name, n.Name)
 		assert.Equal(t, description, n.Description)
@@ -64,7 +64,7 @@ func TestDelete(t *testing.T) {
 
 		d := schema.Role{}
 
-		assert.Nil(t, tester.Decode(r.Data, &d))
+		assert.Nil(t, r.Decode(&d))
 
 		if err := database.Db.First(&model.Role{
 			Name: d.Name,
@@ -97,7 +97,7 @@ func TestDelete(t *testing.T) {
 
 		defer role.DeleteRoleByName(name)
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		assert.Equal(t, name, n.Name)
 		assert.Equal(t, description, n.Description)
@@ -149,7 +149,7 @@ func TestDeleteRouter(t *testing.T) {
 
 		defer role.DeleteRoleByName(name)
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		assert.Equal(t, name, n.Name)
 		assert.Equal(t, description, n.Description)
@@ -185,7 +185,7 @@ func TestDeleteRouter(t *testing.T) {
 
 		roleInfo := schema.Role{}
 
-		assert.Nil(t, tester.Decode(res.Data, &roleInfo))
+		assert.Nil(t, res.Decode(&roleInfo))
 
 		assert.Equal(t, description, roleInfo.Description)
 		assert.Equal(t, name, roleInfo.Name)

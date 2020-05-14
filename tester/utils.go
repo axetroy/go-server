@@ -43,7 +43,7 @@ func CreateUser() (profile schema.ProfileWithToken, err error) {
 		return
 	}
 
-	if err = Decode(r.Data, &profile); err != nil {
+	if err = r.Decode(&profile); err != nil {
 		return
 	}
 
@@ -62,7 +62,7 @@ func LoginAdmin() (profile schema.AdminProfileWithToken, err error) {
 		return
 	}
 
-	if err = Decode(r.Data, &profile); err != nil {
+	if err = r.Decode(&profile); err != nil {
 		return
 	}
 

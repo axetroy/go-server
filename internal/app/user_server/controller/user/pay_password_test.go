@@ -36,7 +36,7 @@ func TestSetPayPassword(t *testing.T) {
 
 		testUser = schema.Profile{}
 
-		if err := tester.Decode(r.Data, &testUser); err != nil {
+		if err := r.Decode(&testUser); err != nil {
 			t.Error(err)
 			return
 		}
@@ -109,10 +109,7 @@ func TestUpdatePayPassword(t *testing.T) {
 
 		testUser = schema.Profile{}
 
-		if err := tester.Decode(r.Data, &testUser); err != nil {
-			t.Error(err)
-			return
-		}
+		assert.Nil(t, r.Decode(&testUser))
 
 		defer tester.DeleteUserByUserName(username)
 
@@ -197,7 +194,7 @@ func TestResetPayPassword(t *testing.T) {
 
 		testUser = schema.Profile{}
 
-		if err := tester.Decode(r.Data, &testUser); err != nil {
+		if err := r.Decode(&testUser); err != nil {
 			t.Error(err)
 			return
 		}

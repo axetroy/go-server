@@ -34,7 +34,7 @@ func TestDelete(t *testing.T) {
 
 		n := schema.Menu{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		defer menu.DeleteMenuById(n.Id)
 

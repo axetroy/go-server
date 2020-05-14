@@ -55,7 +55,7 @@ func TestCreateAdmin(t *testing.T) {
 
 		detail := schema.AdminProfile{}
 
-		if err := tester.Decode(r.Data, &detail); err != nil {
+		if err := r.Decode(&detail); err != nil {
 			t.Error(err)
 			return
 		}

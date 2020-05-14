@@ -23,7 +23,7 @@ func TestGetLatestLoginLog(t *testing.T) {
 
 	loginLogInfo := schema.LogLogin{}
 
-	assert.Nil(t, tester.Decode(r.Data, &loginLogInfo))
+	assert.Nil(t, r.Decode(&loginLogInfo))
 
 	assert.Equal(t, user.Id, loginLogInfo.Uid)
 	assert.Equal(t, user.Username, loginLogInfo.User.Username)

@@ -50,7 +50,7 @@ func TestUpdate(t *testing.T) {
 
 		n := model.Message{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		defer message.DeleteMessageById(n.Id)
 
@@ -74,7 +74,7 @@ func TestUpdate(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &messageInfo))
+		assert.Nil(t, r.Decode(&messageInfo))
 
 		assert.Equal(t, newTitle, messageInfo.Title)
 		assert.Equal(t, newContent, messageInfo.Content)
@@ -114,7 +114,7 @@ func TestUpdateRouter(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &messageInfo))
+		assert.Nil(t, r.Decode(&messageInfo))
 
 		defer message.DeleteMessageById(messageInfo.Id)
 
@@ -155,7 +155,7 @@ func TestUpdateRouter(t *testing.T) {
 			return
 		}
 
-		assert.Nil(t, tester.Decode(res.Data, &messageInfo))
+		assert.Nil(t, res.Decode(&messageInfo))
 
 		assert.Equal(t, newTitle, messageInfo.Title)
 		assert.Equal(t, newContent, messageInfo.Content)

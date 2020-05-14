@@ -48,7 +48,7 @@ func TestGet(t *testing.T) {
 
 		defer role.DeleteRoleByName(name)
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		assert.Equal(t, name, n.Name)
 		assert.Equal(t, description, n.Description)
@@ -64,7 +64,7 @@ func TestGet(t *testing.T) {
 
 		roleInfo := schema.Role{}
 
-		assert.Nil(t, tester.Decode(r.Data, &roleInfo))
+		assert.Nil(t, r.Decode(&roleInfo))
 		assert.Equal(t, name, n.Name)
 		assert.Equal(t, description, n.Description)
 		assert.Equal(t, accessions, n.Accession)
@@ -97,7 +97,7 @@ func TestGetRouter(t *testing.T) {
 
 		defer role.DeleteRoleByName(name)
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		assert.Equal(t, name, n.Name)
 		assert.Equal(t, description, n.Description)
@@ -122,7 +122,7 @@ func TestGetRouter(t *testing.T) {
 
 		d := schema.Role{}
 
-		assert.Nil(t, tester.Decode(res.Data, &d))
+		assert.Nil(t, res.Decode(&d))
 
 		assert.Equal(t, n.Name, d.Name)
 		assert.Equal(t, n.Description, d.Description)

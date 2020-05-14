@@ -53,7 +53,7 @@ func TestGetDetail(t *testing.T) {
 
 		assert.Equal(t, "", res2.Message)
 		assert.Equal(t, schema.StatusSuccess, res2.Status)
-		assert.Nil(t, tester.Decode(res2.Data, &log))
+		assert.Nil(t, res2.Decode(&log))
 	}
 
 	{
@@ -66,7 +66,7 @@ func TestGetDetail(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &detail))
+		assert.Nil(t, r.Decode(&detail))
 
 		assert.Equal(t, log.Id, detail.Id)
 		assert.Equal(t, log.From, detail.From)

@@ -36,7 +36,7 @@ func TestCreate(t *testing.T) {
 
 	reportInfo := schema.Report{}
 
-	assert.Nil(t, tester.Decode(r.Data, &reportInfo))
+	assert.Nil(t, r.Decode(&reportInfo))
 
 	defer report.DeleteReportById(reportInfo.Id)
 
@@ -76,7 +76,7 @@ func TestCreateRouter(t *testing.T) {
 
 	reportInfo := schema.Report{}
 
-	assert.Nil(t, tester.Decode(r.Data, &reportInfo))
+	assert.Nil(t, r.Decode(&reportInfo))
 
 	defer report.DeleteReportById(reportInfo.Id)
 

@@ -58,7 +58,7 @@ func TestDelete(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &addressInfo))
+		assert.Nil(t, r.Decode(&addressInfo))
 
 		defer address.DeleteAddressById(addressInfo.Id)
 
@@ -71,7 +71,7 @@ func TestDelete(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &addressInfo))
+		assert.Nil(t, r.Decode(&addressInfo))
 
 		assert.Equal(t, "test", addressInfo.Name)
 		assert.Equal(t, "13888888888", addressInfo.Phone)
@@ -141,7 +141,7 @@ func TestDeleteRouter(t *testing.T) {
 			return
 		}
 
-		assert.Nil(t, tester.Decode(res.Data, &addressInfo))
+		assert.Nil(t, res.Decode(&addressInfo))
 
 		defer address.DeleteAddressById(addressInfo.Id)
 	}
@@ -169,7 +169,7 @@ func TestDeleteRouter(t *testing.T) {
 			return
 		}
 
-		assert.Nil(t, tester.Decode(res.Data, &addressInfo))
+		assert.Nil(t, res.Decode(&addressInfo))
 
 		assert.Equal(t, "张三", addressInfo.Name)
 		assert.Equal(t, "18888888888", addressInfo.Phone)

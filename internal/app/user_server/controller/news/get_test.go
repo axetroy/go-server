@@ -55,7 +55,7 @@ func TestGetNews(t *testing.T) {
 
 			n := schema.News{}
 
-			assert.Nil(t, tester.Decode(r.Data, &n))
+			assert.Nil(t, r.Decode(&n))
 
 			newsId = n.Id
 
@@ -71,7 +71,7 @@ func TestGetNews(t *testing.T) {
 
 			newsInfo := schema.News{}
 
-			assert.Nil(t, tester.Decode(r.Data, &newsInfo))
+			assert.Nil(t, r.Decode(&newsInfo))
 
 			assert.Equal(t, "test", newsInfo.Title)
 			assert.Equal(t, "test", newsInfo.Content)
@@ -109,7 +109,7 @@ func TestGetNewsRouter(t *testing.T) {
 
 		n := schema.News{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		newsId = n.Id
 
@@ -128,6 +128,6 @@ func TestGetNewsRouter(t *testing.T) {
 
 		n := schema.News{}
 
-		assert.Nil(t, tester.Decode(res.Data, &n))
+		assert.Nil(t, res.Decode(&n))
 	}
 }

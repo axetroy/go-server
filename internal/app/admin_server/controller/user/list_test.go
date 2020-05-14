@@ -32,7 +32,7 @@ func TestGetList(t *testing.T) {
 
 		users := make([]schema.Profile, 0)
 
-		assert.Nil(t, tester.Decode(r.Data, &users))
+		assert.Nil(t, r.Decode(&users))
 
 		assert.Equal(t, schema.DefaultLimit, r.Meta.Limit)
 		assert.Equal(t, schema.DefaultPage, r.Meta.Page)
@@ -79,7 +79,7 @@ func TestGetListRouter(t *testing.T) {
 
 		users := make([]schema.Profile, 0)
 
-		assert.Nil(t, tester.Decode(res.Data, &users))
+		assert.Nil(t, res.Decode(&users))
 
 		assert.Equal(t, schema.DefaultLimit, res.Meta.Limit)
 		assert.Equal(t, schema.DefaultPage, res.Meta.Page)

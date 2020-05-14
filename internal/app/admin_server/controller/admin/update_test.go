@@ -36,7 +36,7 @@ func TestUpdate(t *testing.T) {
 
 	testAdminInfo := model.Admin{}
 
-	assert.Nil(t, tester.Decode(r.Data, &testAdminInfo))
+	assert.Nil(t, r.Decode(&testAdminInfo))
 
 	status1 := model.AdminStatusInactivated
 
@@ -67,7 +67,7 @@ func TestUpdateRouter(t *testing.T) {
 
 	testAdminInfo := model.Admin{}
 
-	assert.Nil(t, tester.Decode(r1.Data, &testAdminInfo))
+	assert.Nil(t, r1.Decode(&testAdminInfo))
 
 	header := mocker.Header{
 		"Authorization": token.Prefix + " " + adminInfo.Token,
@@ -88,7 +88,7 @@ func TestUpdateRouter(t *testing.T) {
 	assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res))
 	assert.Equal(t, "", res.Message)
 	assert.Equal(t, schema.StatusSuccess, res.Status)
-	assert.Nil(t, tester.Decode(res.Data, &testProfile))
+	assert.Nil(t, res.Decode(&testProfile))
 	assert.Equal(t, newStatus, testProfile.Status)
 
 }

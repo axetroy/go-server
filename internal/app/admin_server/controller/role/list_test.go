@@ -42,7 +42,7 @@ func TestGetList(t *testing.T) {
 
 		defer role.DeleteRoleByName(name)
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		assert.Equal(t, name, n.Name)
 		assert.Equal(t, description, n.Description)
@@ -59,7 +59,7 @@ func TestGetList(t *testing.T) {
 
 		list := make([]schema.Role, 0)
 
-		assert.Nil(t, tester.Decode(r.Data, &list))
+		assert.Nil(t, r.Decode(&list))
 
 		assert.Equal(t, schema.DefaultLimit, r.Meta.Limit)
 		assert.Equal(t, schema.DefaultPage, r.Meta.Page)
@@ -107,7 +107,7 @@ func TestGetListRouter(t *testing.T) {
 
 		defer role.DeleteRoleByName(name)
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		assert.Equal(t, name, n.Name)
 		assert.Equal(t, description, n.Description)
@@ -126,7 +126,7 @@ func TestGetListRouter(t *testing.T) {
 
 		list := make([]schema.Role, 0)
 
-		assert.Nil(t, tester.Decode(res.Data, &list))
+		assert.Nil(t, res.Decode(&list))
 
 		for _, n := range list {
 			assert.IsType(t, "string", n.Name)

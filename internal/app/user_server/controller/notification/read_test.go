@@ -46,7 +46,7 @@ func TestMarkRead(t *testing.T) {
 
 		testNotification = schema.Notification{}
 
-		assert.Nil(t, tester.Decode(r.Data, &testNotification))
+		assert.Nil(t, r.Decode(&testNotification))
 
 		defer notificationAdmin.DeleteNotificationById(testNotification.Id)
 
@@ -92,7 +92,7 @@ func TestMarkRead(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 		n := schema.Notification{}
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		assert.Equal(t, n.Id, testNotification.Id)
 		assert.Equal(t, n.Title, testNotification.Title)
@@ -131,7 +131,7 @@ func TestReadRouter(t *testing.T) {
 
 		testNotification = schema.Notification{}
 
-		assert.Nil(t, tester.Decode(r.Data, &testNotification))
+		assert.Nil(t, r.Decode(&testNotification))
 
 		notificationId = testNotification.Id
 

@@ -41,7 +41,7 @@ func TestDelete(t *testing.T) {
 
 		n := schema.Banner{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		defer banner2.DeleteBannerById(n.Id)
 
@@ -65,7 +65,7 @@ func TestDelete(t *testing.T) {
 
 		bannerInfo := schema.Banner{}
 
-		assert.Nil(t, tester.Decode(r.Data, &bannerInfo))
+		assert.Nil(t, r.Decode(&bannerInfo))
 
 		assert.Equal(t, image, bannerInfo.Image)
 		assert.Equal(t, href, bannerInfo.Href)
@@ -108,7 +108,7 @@ func TestDeleteRouter(t *testing.T) {
 
 		n := schema.Banner{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		defer banner2.DeleteBannerById(n.Id)
 
@@ -148,7 +148,7 @@ func TestDeleteRouter(t *testing.T) {
 
 		bannerInfo := schema.Banner{}
 
-		assert.Nil(t, tester.Decode(res.Data, &bannerInfo))
+		assert.Nil(t, res.Decode(&bannerInfo))
 
 		assert.Equal(t, image, bannerInfo.Image)
 		assert.Equal(t, href, bannerInfo.Href)

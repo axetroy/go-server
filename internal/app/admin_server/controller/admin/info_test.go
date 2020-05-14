@@ -33,7 +33,7 @@ func TestGetAdminInfo(t *testing.T) {
 
 		detail := schema.AdminProfile{}
 
-		if err := tester.Decode(r.Data, &detail); err != nil {
+		if err := r.Decode(&detail); err != nil {
 			t.Error(err)
 			return
 		}
@@ -57,7 +57,7 @@ func TestGetAdminInfo(t *testing.T) {
 
 		detail := schema.AdminProfile{}
 
-		assert.Nil(t, tester.Decode(r.Data, &detail))
+		assert.Nil(t, r.Decode(&detail))
 
 		assert.Equal(t, adminUid, detail.Id)
 	}
@@ -78,7 +78,7 @@ func TestGetAdminInfoRouter(t *testing.T) {
 
 	n := schema.AdminProfile{}
 
-	assert.Nil(t, tester.Decode(res.Data, &n))
+	assert.Nil(t, res.Decode(&n))
 
 	assert.Equal(t, adminInfo.Name, n.Name)
 	assert.Equal(t, adminInfo.Username, n.Username)
@@ -105,7 +105,7 @@ func TestGetAdminInfoById(t *testing.T) {
 
 		detail := schema.AdminProfile{}
 
-		if err := tester.Decode(r.Data, &detail); err != nil {
+		if err := r.Decode(&detail); err != nil {
 			t.Error(err)
 			return
 		}
@@ -129,7 +129,7 @@ func TestGetAdminInfoById(t *testing.T) {
 
 		detail := schema.AdminProfile{}
 
-		assert.Nil(t, tester.Decode(r.Data, &detail))
+		assert.Nil(t, r.Decode(&detail))
 
 		assert.Equal(t, adminUid, detail.Id)
 		assert.Equal(t, "123123", detail.Username)
@@ -152,7 +152,7 @@ func TestGetAdminInfoByIdRouter(t *testing.T) {
 
 	n := schema.AdminProfile{}
 
-	assert.Nil(t, tester.Decode(res.Data, &n))
+	assert.Nil(t, res.Decode(&n))
 
 	assert.Equal(t, adminInfo.Name, n.Name)
 	assert.Equal(t, adminInfo.Username, n.Username)

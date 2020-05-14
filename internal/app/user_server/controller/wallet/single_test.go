@@ -31,7 +31,7 @@ func TestGetWallet(t *testing.T) {
 
 		walletInfo := schema.Wallet{}
 
-		assert.Nil(t, tester.Decode(r.Data, &walletInfo))
+		assert.Nil(t, r.Decode(&walletInfo))
 
 		assert.Equal(t, userInfo.Id, walletInfo.Id)
 		assert.Equal(t, model.WalletCNY, walletInfo.Currency)
@@ -64,7 +64,7 @@ func TestGetWalletRouter(t *testing.T) {
 
 		n := schema.Wallet{}
 
-		assert.Nil(t, tester.Decode(res.Data, &n))
+		assert.Nil(t, res.Decode(&n))
 
 		assert.Equal(t, userInfo.Id, n.Id)
 		assert.Equal(t, model.WalletCNY, n.Currency)

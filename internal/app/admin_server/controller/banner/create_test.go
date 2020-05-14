@@ -40,7 +40,7 @@ func TestCreate(t *testing.T) {
 
 		n := schema.Banner{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		defer banner2.DeleteBannerById(n.Id)
 
@@ -104,7 +104,7 @@ func TestCreateRouter(t *testing.T) {
 
 		n := schema.Banner{}
 
-		assert.Nil(t, tester.Decode(res.Data, &n))
+		assert.Nil(t, res.Decode(&n))
 
 		defer banner2.DeleteBannerById(n.Id)
 

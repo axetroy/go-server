@@ -35,7 +35,7 @@ func TestCreate(t *testing.T) {
 
 		n := schema.Menu{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		defer menu.DeleteMenuById(n.Id)
 
@@ -113,7 +113,7 @@ func TestCreateRouter(t *testing.T) {
 
 		n := schema.Menu{}
 
-		assert.Nil(t, tester.Decode(res.Data, &n))
+		assert.Nil(t, res.Decode(&n))
 
 		defer menu.DeleteMenuById(n.Id)
 

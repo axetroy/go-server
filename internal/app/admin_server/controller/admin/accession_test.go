@@ -40,7 +40,7 @@ func TestGetAccessionRouter(t *testing.T) {
 
 	var dataList []*accession.Accession
 
-	assert.Nil(t, tester.Decode(res.Data, &dataList))
+	assert.Nil(t, res.Decode(&dataList))
 
 	assert.Equal(t, accession.AdminList, dataList)
 }

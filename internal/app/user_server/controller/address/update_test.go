@@ -36,7 +36,7 @@ func TestUpdate(t *testing.T) {
 
 		profile := schema.Profile{}
 
-		assert.Nil(t, tester.Decode(r.Data, &profile))
+		assert.Nil(t, r.Decode(&profile))
 
 		defer func() {
 			tester.DeleteUserByUserName(username)
@@ -72,7 +72,7 @@ func TestUpdate(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &addressInfo))
+		assert.Nil(t, r.Decode(&addressInfo))
 
 		defer address.DeleteAddressById(addressInfo.Id)
 
@@ -92,7 +92,7 @@ func TestUpdate(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &addressInfo))
+		assert.Nil(t, r.Decode(&addressInfo))
 
 		assert.Equal(t, newName, addressInfo.Name)
 	}
@@ -111,7 +111,7 @@ func TestUpdate(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 
-		assert.Nil(t, tester.Decode(r.Data, &addressInfo))
+		assert.Nil(t, r.Decode(&addressInfo))
 
 		assert.Equal(t, newName, addressInfo.Name)
 		assert.Equal(t, newPhone, addressInfo.Phone)
@@ -136,7 +136,7 @@ func TestUpdateRouter(t *testing.T) {
 			return
 		} else {
 			userInfo := schema.Profile{}
-			if err := tester.Decode(r.Data, &userInfo); err != nil {
+			if err := r.Decode(&userInfo); err != nil {
 				t.Error(err)
 				return
 			}
@@ -156,7 +156,7 @@ func TestUpdateRouter(t *testing.T) {
 				return
 			} else {
 				userInfo := schema.ProfileWithToken{}
-				if err := tester.Decode(r.Data, &userInfo); err != nil {
+				if err := r.Decode(&userInfo); err != nil {
 					t.Error(err)
 					return
 				}
@@ -201,7 +201,7 @@ func TestUpdateRouter(t *testing.T) {
 			return
 		}
 
-		assert.Nil(t, tester.Decode(res.Data, &addressInfo))
+		assert.Nil(t, res.Decode(&addressInfo))
 
 		defer address.DeleteAddressById(addressInfo.Id)
 	}
@@ -239,7 +239,7 @@ func TestUpdateRouter(t *testing.T) {
 			return
 		}
 
-		assert.Nil(t, tester.Decode(res.Data, &addressInfo))
+		assert.Nil(t, res.Decode(&addressInfo))
 
 		assert.Equal(t, newName, addressInfo.Name)
 		assert.Equal(t, newPhone, addressInfo.Phone)

@@ -32,7 +32,7 @@ func TestGetNotificationListByUser(t *testing.T) {
 
 			adminInfo := schema.AdminProfileWithToken{}
 
-			assert.Nil(t, tester.Decode(r.Data, &adminInfo))
+			assert.Nil(t, r.Decode(&adminInfo))
 
 			if c, er := token.Parse(token.Prefix+" "+adminInfo.Token, true); er != nil {
 				t.Error(er)
@@ -60,7 +60,7 @@ func TestGetNotificationListByUser(t *testing.T) {
 
 			n := schema.Notification{}
 
-			assert.Nil(t, tester.Decode(r.Data, &n))
+			assert.Nil(t, r.Decode(&n))
 
 			defer notificationAdmin.DeleteNotificationById(n.Id)
 		}
@@ -80,7 +80,7 @@ func TestGetNotificationListByUser(t *testing.T) {
 			assert.Equal(t, schema.StatusSuccess, r.Status)
 			assert.Equal(t, "", r.Message)
 
-			assert.Nil(t, tester.Decode(r.Data, &data))
+			assert.Nil(t, r.Decode(&data))
 			assert.Equal(t, query.Limit, r.Meta.Limit)
 			assert.Equal(t, schema.DefaultPage, r.Meta.Page)
 			assert.IsType(t, 1, r.Meta.Num)
@@ -120,7 +120,7 @@ func TestGetNotificationListByUserRouter(t *testing.T) {
 
 		testNotification = schema.Notification{}
 
-		assert.Nil(t, tester.Decode(r.Data, &testNotification))
+		assert.Nil(t, r.Decode(&testNotification))
 
 		defer notificationAdmin.DeleteNotificationById(testNotification.Id)
 
@@ -143,7 +143,7 @@ func TestGetNotificationListByUserRouter(t *testing.T) {
 
 		banners := make([]schema.Notification, 0)
 
-		assert.Nil(t, tester.Decode(res.Data, &banners))
+		assert.Nil(t, res.Decode(&banners))
 
 		for _, b := range banners {
 			assert.IsType(t, "string", b.Title)
@@ -168,7 +168,7 @@ func TestGetNotificationListByUserRouter(t *testing.T) {
 
 		list := make([]schema.Notification, 0)
 
-		assert.Nil(t, tester.Decode(res.Data, &list))
+		assert.Nil(t, res.Decode(&list))
 
 		for _, b := range list {
 			assert.IsType(t, "string", b.Title)

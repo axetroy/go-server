@@ -7,7 +7,6 @@ import (
 	"github.com/axetroy/go-server/internal/library/helper"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/token"
-	"github.com/axetroy/go-server/tester"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -30,7 +29,7 @@ func TestCreate(t *testing.T) {
 
 		adminInfo := schema.AdminProfileWithToken{}
 
-		if err := tester.Decode(r.Data, &adminInfo); err != nil {
+		if err := r.Decode(&adminInfo); err != nil {
 			t.Error(err)
 			return
 		}
@@ -64,7 +63,7 @@ func TestCreate(t *testing.T) {
 
 		n := schema.Notification{}
 
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		defer notification.DeleteNotificationById(n.Id)
 

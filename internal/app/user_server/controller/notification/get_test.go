@@ -41,7 +41,7 @@ func TestGet(t *testing.T) {
 
 		testNotification = schema.Notification{}
 
-		assert.Nil(t, tester.Decode(r.Data, &testNotification))
+		assert.Nil(t, r.Decode(&testNotification))
 
 		defer notificationAdmin.DeleteNotificationById(testNotification.Id)
 
@@ -56,7 +56,7 @@ func TestGet(t *testing.T) {
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)
 		n := schema.Notification{}
-		assert.Nil(t, tester.Decode(r.Data, &n))
+		assert.Nil(t, r.Decode(&n))
 
 		assert.Equal(t, n.Id, testNotification.Id)
 		assert.Equal(t, n.Title, testNotification.Title)
@@ -95,7 +95,7 @@ func TestGetRouter(t *testing.T) {
 
 		testNotification = schema.Notification{}
 
-		assert.Nil(t, tester.Decode(r.Data, &testNotification))
+		assert.Nil(t, r.Decode(&testNotification))
 
 		notificationId = testNotification.Id
 
@@ -122,7 +122,7 @@ func TestGetRouter(t *testing.T) {
 
 		n := schema.Notification{}
 
-		assert.Nil(t, tester.Decode(res.Data, &n))
+		assert.Nil(t, res.Decode(&n))
 
 		assert.Equal(t, "test", n.Title)
 		assert.Equal(t, "test", n.Content)
@@ -147,7 +147,7 @@ func TestGetRouter(t *testing.T) {
 
 		n := schema.Notification{}
 
-		assert.Nil(t, tester.Decode(res.Data, &n))
+		assert.Nil(t, res.Decode(&n))
 
 		assert.Equal(t, "test", n.Title)
 		assert.Equal(t, "test", n.Content)
