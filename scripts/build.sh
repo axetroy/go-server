@@ -43,6 +43,8 @@ do
             rm -rf ./${filename}
 
             cd ../
+        else
+          exe $?
         fi
     done
 
