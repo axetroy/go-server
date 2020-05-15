@@ -168,6 +168,7 @@ func init() {
 			menuRouter := v1.Group("menu")
 			menuRouter.GET("", menu.GetListRouter)              // 获取菜单列表
 			menuRouter.POST("", menu.CreateRouter)              // 创建菜单
+			menuRouter.POST("/tree", menu.CreateFromTreeRouter) // 创建菜单
 			menuRouter.PUT("/m/:menu_id", menu.UpdateRouter)    // 更新菜单
 			menuRouter.GET("/m/:menu_id", menu.GetMenuRouter)   // 获取菜单详情
 			menuRouter.DELETE("/m/:menu_id", menu.DeleteRouter) // 删除菜单

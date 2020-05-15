@@ -121,3 +121,91 @@ func TestCreateRouter(t *testing.T) {
 		assert.Equal(t, 0, n.Sort)
 	}
 }
+
+func TestCreateFromTree(t *testing.T) {
+	adminInfo, _ := tester.LoginAdmin()
+
+	// 创建一个 menu
+	{
+		r := menu.CreateFromTree(helper.Context{
+			Uid: adminInfo.Id,
+		}, []menu.TreeParams{
+			{
+				CreateMenuParams: menu.CreateMenuParams{
+					Name: "menu1",
+				},
+				Children: []menu.TreeParams{
+					{
+						CreateMenuParams: menu.CreateMenuParams{
+							Name: "menu3",
+						},
+					},
+				},
+			},
+			{
+				CreateMenuParams: menu.CreateMenuParams{
+					Name: "menu2",
+				},
+				Children: []menu.TreeParams{
+					{
+						CreateMenuParams: menu.CreateMenuParams{
+							Name: "menu4",
+						},
+					},
+				},
+			},
+		})
+
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
+
+		tree := make([]schema.MenuTreeItem, 0)
+
+		assert.Nil(t, r.Decode(&tree))
+
+		defer func() {
+			for _, n := range tree {
+				menu.DeleteMenuById(n.Id)
+			}
+		}()
+
+		parent1 := tree[0]
+		parent2 := tree[1]
+
+		assert.Len(t, tree, 2)
+		assert.Len(t, parent1.Children, 1)
+		assert.Len(t, parent1.Children, 1)
+
+		assert.NotNil(t, parent1.Id)
+		assert.Equal(t, "menu1", parent1.Name)
+		assert.Equal(t, 0, parent1.Sort)
+		assert.Equal(t, "", parent1.ParentId)
+		assert.Equal(t, "", parent1.Url)
+		assert.Equal(t, "", parent1.Icon)
+		assert.Equal(t, []string{}, parent1.Accession)
+
+		assert.NotNil(t, parent2.Id)
+		assert.Equal(t, "menu2", parent2.Name)
+		assert.Equal(t, 0, parent2.Sort)
+		assert.Equal(t, "", parent2.ParentId)
+		assert.Equal(t, "", parent2.Url)
+		assert.Equal(t, "", parent2.Icon)
+		assert.Equal(t, []string{}, parent2.Accession)
+
+		assert.NotNil(t, parent1.Children)
+
+		parent1C := parent1.Children
+		parent2C := parent2.Children
+
+		children1 := parent1C[0]
+		children2 := parent2C[0]
+
+		assert.NotNil(t, children1.Id)
+		assert.Equal(t, parent1.Id, children1.ParentId)
+		assert.Equal(t, "menu3", children1.Name)
+
+		assert.NotNil(t, children2.Id)
+		assert.Equal(t, parent2.Id, children2.ParentId)
+		assert.Equal(t, "menu4", children2.Name)
+	}
+}

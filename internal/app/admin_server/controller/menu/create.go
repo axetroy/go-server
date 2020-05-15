@@ -25,6 +25,11 @@ type CreateMenuParams struct {
 	ParentId  *string   `json:"parent_id"`                    // 该菜单的父级 ID
 }
 
+type TreeParams struct {
+	CreateMenuParams
+	Children []TreeParams `json:"children"`
+}
+
 func Create(c helper.Context, input CreateMenuParams) (res schema.Response) {
 	var (
 		err  error
@@ -144,4 +149,195 @@ func CreateRouter(c *gin.Context) {
 	}
 
 	res = Create(helper.NewContext(c), input)
+}
+
+func createChildren(tx *gorm.DB, children []TreeParams, parentId string) ([]*schema.MenuTreeItem, error) {
+	var (
+		data []*schema.MenuTreeItem
+	)
+
+	for _, m := range children {
+		menuInfo := model.Menu{
+			Name:     m.Name,
+			ParentId: parentId,
+		}
+
+		if m.Url != nil {
+			menuInfo.Url = *m.Url
+		}
+
+		if m.Icon != nil {
+			menuInfo.Icon = *m.Icon
+		}
+
+		if m.Sort != nil {
+			menuInfo.Sort = *m.Sort
+		}
+
+		if m.Accession != nil {
+			menuInfo.Accession = *m.Accession
+		} else {
+			menuInfo.Accession = []string{}
+		}
+
+		if err := tx.Create(&menuInfo).Error; err != nil {
+			return nil, err
+		}
+
+		info := schema.MenuTreeItem{}
+
+		if err := mapstructure.Decode(menuInfo, &info.MenuPure); err != nil {
+			return nil, err
+		}
+
+		info.CreatedAt = menuInfo.CreatedAt.Format(time.RFC3339Nano)
+		info.UpdatedAt = menuInfo.UpdatedAt.Format(time.RFC3339Nano)
+
+		if len(m.Children) > 0 {
+			if c, err := createChildren(tx, m.Children, menuInfo.Id); err != nil {
+				return nil, err
+			} else {
+				info.Children = c
+			}
+		}
+
+		data = append(data, &info)
+	}
+
+	return data, nil
+}
+
+func CreateFromTree(c helper.Context, input []TreeParams) (res schema.Response) {
+	var (
+		err  error
+		data []schema.MenuTreeItem
+		tx   *gorm.DB
+	)
+
+	defer func() {
+		if r := recover(); r != nil {
+			switch t := r.(type) {
+			case string:
+				err = errors.New(t)
+			case error:
+				err = t
+			default:
+				err = exception.Unknown
+			}
+		}
+
+		if tx != nil {
+			if err != nil {
+				_ = tx.Rollback().Error
+			} else {
+				err = tx.Commit().Error
+			}
+		}
+
+		helper.Response(&res, data, nil, err)
+	}()
+
+	for _, k := range input {
+		// 参数校验
+		if err = validator.ValidateStruct(k); err != nil {
+			return
+		}
+	}
+
+	tx = database.Db.Begin()
+
+	adminInfo := model.Admin{
+		Id: c.Uid,
+	}
+
+	if err = tx.First(&adminInfo).Error; err != nil {
+		// 没有找到管理员
+		if err == gorm.ErrRecordNotFound {
+			err = exception.AdminNotExist
+		}
+		return
+	}
+
+	for _, m := range input {
+		menuInfo := model.Menu{
+			Name: m.Name,
+		}
+
+		if m.ParentId != nil {
+			menuInfo.ParentId = *m.ParentId
+		}
+
+		if m.Url != nil {
+			menuInfo.Url = *m.Url
+		}
+
+		if m.Icon != nil {
+			menuInfo.Icon = *m.Icon
+		}
+
+		if m.Sort != nil {
+			menuInfo.Sort = *m.Sort
+		}
+
+		if m.Accession != nil {
+			menuInfo.Accession = *m.Accession
+		} else {
+			menuInfo.Accession = []string{}
+		}
+
+		if err = tx.Create(&menuInfo).Error; err != nil {
+			return
+		}
+
+		info := schema.MenuTreeItem{}
+
+		if er := mapstructure.Decode(menuInfo, &info.MenuPure); er != nil {
+			err = er
+			return
+		}
+
+		info.CreatedAt = menuInfo.CreatedAt.Format(time.RFC3339Nano)
+		info.UpdatedAt = menuInfo.UpdatedAt.Format(time.RFC3339Nano)
+
+		if len(m.Children) > 0 {
+			if c, err := createChildren(tx, m.Children, menuInfo.Id); err != nil {
+				return
+			} else {
+				var children []*schema.MenuTreeItem
+
+				for _, x := range c {
+					children = append(children, x)
+				}
+
+				info.Children = children
+			}
+		}
+
+		data = append(data, info)
+	}
+
+	return
+}
+
+func CreateFromTreeRouter(c *gin.Context) {
+	var (
+		input []TreeParams
+		err   error
+		res   = schema.Response{}
+	)
+
+	defer func() {
+		if err != nil {
+			res.Data = nil
+			res.Message = err.Error()
+		}
+		c.JSON(http.StatusOK, res)
+	}()
+
+	if err = c.ShouldBindJSON(&input); err != nil {
+		err = exception.InvalidParams
+		return
+	}
+
+	res = CreateFromTree(helper.NewContext(c), input)
 }
