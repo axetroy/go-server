@@ -223,9 +223,6 @@ func init() {
 			v1.POST("/email/send/register", auth.SignUpWithEmailActionRouter)         // 发送注册邮件
 			v1.POST("/email/send/password/reset", email.SendResetPasswordEmailRouter) // 发送密码重置邮件
 
-			// 公共资源目录
-			v1.GET("/avatar/:filename", user.GetAvatarRouter) // 获取用户头像
-
 			v1.GET("/area/:area_code", address.FindAddressRouter) // 获取地区码对应的信息
 			v1.GET("/area", address.AreaListRouter)               // 获取地址选择列表
 
