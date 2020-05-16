@@ -59,44 +59,44 @@ func Start(action Action, shouldRunInDaemon bool) error {
 }
 
 func Stop() error {
-	pidFilePath, err := getPidFilePath()
+	pidFilePath, err1 := getPidFilePath()
 
-	if err != nil {
-		return err
+	if err1 != nil {
+		return err1
 	}
 
 	if !fs.PathExists(pidFilePath) {
 		return nil
 	}
 
-	b, err := fs.ReadFile(pidFilePath)
+	b, err2 := fs.ReadFile(pidFilePath)
 
-	if err != nil {
+	if err2 != nil {
 		return nil
 	}
 
 	pidStr := string(b)
 
-	pid, err := strconv.Atoi(pidStr)
+	pid, err3 := strconv.Atoi(pidStr)
 
-	if err != nil {
-		return err
+	if err3 != nil {
+		return err3
 	}
 
-	ps, err := os.FindProcess(pid)
+	ps, err4 := os.FindProcess(pid)
 
-	if err != nil {
-		return err
+	if err4 != nil {
+		return err4
 	}
 
-	if err := ps.Signal(syscall.SIGTERM); err != nil {
-		return err
+	if err5 := ps.Signal(syscall.SIGKILL); err5 != nil {
+		return err5
 	}
 
-	psState, err := ps.Wait()
+	psState, err6 := ps.Wait()
 
-	if err != nil {
-		return err
+	if err6 != nil {
+		return err6
 	}
 
 	haveBeenKill := psState.Exited()
