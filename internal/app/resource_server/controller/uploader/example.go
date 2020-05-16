@@ -1,12 +1,12 @@
 // Copyright 2019-2020 Axetroy. All rights reserved. MIT license.
 package uploader
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/kataras/iris/v12"
+)
 
-func Example(c *gin.Context) {
-	header := c.Writer.Header()
-	header.Set("Content-Type", "text/html; charset=utf-8")
-	c.String(200, `
+func Example(c iris.Context) {
+	_, _ = c.HTML(`
 <!DOCTYPE html>
 <html lang="en">
 <head>

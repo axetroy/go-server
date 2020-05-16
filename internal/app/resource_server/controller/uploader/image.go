@@ -7,8 +7,8 @@ import (
 	"errors"
 	config2 "github.com/axetroy/go-server/internal/app/resource_server/config"
 	"github.com/axetroy/go-server/internal/library/exception"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/schema"
-	"github.com/gin-gonic/gin"
 	"github.com/nfnt/resize"
 	"image"
 	"image/gif"
@@ -16,7 +16,6 @@ import (
 	"image/png"
 	"io"
 	"mime/multipart"
-	"net/http"
 	"os"
 	"path"
 	"strings"
@@ -31,7 +30,7 @@ type ImageResponse struct {
 // 支持的图片后缀名
 var supportImageExtNames = []string{".jpg", ".jpeg", ".png", ".ico", ".svg", ".bmp", ".gif"}
 
-func Image(c *gin.Context) {
+var Image = router.Handler(func(c router.Context) {
 	var (
 		maxUploadSize = config2.Upload.Image.MaxSize // 最大上传大小
 		err           error
@@ -40,45 +39,21 @@ func Image(c *gin.Context) {
 	)
 
 	defer func() {
-		if r := recover(); r != nil {
-			switch t := r.(type) {
-			case string:
-				err = errors.New(t)
-			case error:
-				err = t
-			default:
-				err = exception.Unknown
-			}
-		}
-
-		if err != nil {
-			c.JSON(http.StatusOK, schema.Response{
-				Status:  schema.StatusFail,
-				Message: err.Error(),
-				Data:    nil,
-			})
-		} else {
-			c.JSON(http.StatusOK, schema.Response{
-				Status:  schema.StatusSuccess,
-				Message: "",
-				Data:    data,
-			})
-		}
+		c.JSON(err, data, nil)
 	}()
 
-	form, er := c.MultipartForm()
+	// Get the max post value size passed via iris.WithPostMaxMemory.
+	maxSize := c.Application().ConfigurationReadOnly().GetPostMaxMemory()
 
-	if er != nil {
-		err = er
+	err = c.Request().ParseMultipartForm(maxSize)
+
+	if err != nil {
 		return
 	}
 
-	files := form.File["file"]
+	form := c.Request().MultipartForm
 
-	// 不管成功与否，都移除已下载到本地的缓存图片
-	defer func() {
-		_ = form.RemoveAll()
-	}()
+	files := form.File["file"]
 
 	for _, file := range files {
 		var (
@@ -153,14 +128,14 @@ func Image(c *gin.Context) {
 
 		// 压缩缩略图
 		// 不管成功与否，都会进行下一步的返回
-		if _, err := GenerateThumbnail(distPath); err == nil {
+		if _, er := GenerateThumbnail(distPath); er == nil {
 			res.Thumbnail = true
 			res.ThumbnailPath = "/v1/resource/thumbnail/" + fileName
 		}
 
 		data = append(data, res)
 	}
-}
+})
 
 /**
 check a file is a image or not

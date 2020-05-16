@@ -4,18 +4,18 @@ package resource
 import (
 	"github.com/axetroy/go-fs"
 	config2 "github.com/axetroy/go-server/internal/app/resource_server/config"
-	"github.com/gin-gonic/gin"
+	"github.com/axetroy/go-server/internal/library/router"
 	"net/http"
 	"path"
 )
 
-func File(c *gin.Context) {
+var File = router.Handler(func(c router.Context) {
 	filename := c.Param("filename")
 	filePath := path.Join(config2.Upload.Path, config2.Upload.File.Path, filename)
 	if isExistFile := fs.PathExists(filePath); isExistFile == false {
 		// if the path not found
-		http.NotFound(c.Writer, c.Request)
+		http.NotFound(c.Writer(), c.Request())
 		return
 	}
-	http.ServeFile(c.Writer, c.Request, filePath)
-}
+	http.ServeFile(c.Writer(), c.Request(), filePath)
+})

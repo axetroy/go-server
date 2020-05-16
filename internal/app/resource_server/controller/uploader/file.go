@@ -4,19 +4,17 @@ package uploader
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"errors"
 	config2 "github.com/axetroy/go-server/internal/app/resource_server/config"
 	"github.com/axetroy/go-server/internal/library/exception"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/schema"
-	"github.com/gin-gonic/gin"
 	"io"
 	"mime/multipart"
-	"net/http"
 	"os"
 	"path"
 )
 
-func File(c *gin.Context) {
+var File = router.Handler(func(c router.Context) {
 	var (
 		isSupportFile bool
 		maxUploadSize = config2.Upload.File.MaxSize   // 最大上传大小
@@ -26,46 +24,21 @@ func File(c *gin.Context) {
 	)
 
 	defer func() {
-		if r := recover(); r != nil {
-			switch t := r.(type) {
-			case string:
-				err = errors.New(t)
-			case error:
-				err = t
-			default:
-				err = exception.Unknown
-			}
-		}
-
-		if err != nil {
-			c.JSON(http.StatusOK, schema.Response{
-				Status:  schema.StatusFail,
-				Message: err.Error(),
-				Data:    nil,
-			})
-		} else {
-			c.JSON(http.StatusOK, schema.Response{
-				Status:  schema.StatusSuccess,
-				Message: "",
-				Data:    data,
-			})
-		}
-
+		c.JSON(err, data, nil)
 	}()
 
-	form, er := c.MultipartForm()
+	// Get the max post value size passed via iris.WithPostMaxMemory.
+	maxSize := c.Application().ConfigurationReadOnly().GetPostMaxMemory()
 
-	if er != nil {
-		err = er
+	err = c.Request().ParseMultipartForm(maxSize)
+
+	if err != nil {
 		return
 	}
 
-	files := form.File["file"]
+	form := c.Request().MultipartForm
 
-	// 不管成功与否，都移除已下载到本地的缓存图片
-	defer func() {
-		_ = form.RemoveAll()
-	}()
+	files := form.File["file"]
 
 	for _, file := range files {
 		var (
@@ -147,4 +120,4 @@ func File(c *gin.Context) {
 
 	}
 
-}
+})

@@ -9,6 +9,7 @@ import (
 	config2 "github.com/axetroy/go-server/internal/app/resource_server/config"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/middleware"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
@@ -188,13 +189,13 @@ func UploadAvatarRouter(c *gin.Context) {
 	res = UploadAvatar(c.GetString(middleware.ContextUidField), input, file)
 }
 
-func GetAvatarRouter(c *gin.Context) {
+var GetAvatarRouter = router.Handler(func(c router.Context) {
 	filename := c.Param("filename")
 	originImagePath := path.Join(config2.Upload.Path, config2.Upload.Image.Avatar.Path, filename)
 	if fs.PathExists(originImagePath) == false {
 		// if the path not found
-		http.NotFound(c.Writer, c.Request)
+		http.NotFound(c.Writer(), c.Request())
 		return
 	}
-	http.ServeFile(c.Writer, c.Request, originImagePath)
-}
+	http.ServeFile(c.Writer(), c.Request(), originImagePath)
+})

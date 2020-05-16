@@ -18,6 +18,7 @@ require (
 	github.com/jinzhu/gorm v1.9.12
 	github.com/joho/godotenv v1.3.0
 	github.com/jordan-wright/email v0.0.0-20200322182553-8eef2508c362
+	github.com/kataras/iris/v12 v12.1.8
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/lib/pq v1.5.2
 	github.com/markbates/goth v1.64.0

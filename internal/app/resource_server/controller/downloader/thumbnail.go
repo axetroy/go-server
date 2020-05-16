@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"github.com/axetroy/go-fs"
 	config2 "github.com/axetroy/go-server/internal/app/resource_server/config"
-	"github.com/gin-gonic/gin"
+	"github.com/axetroy/go-server/internal/library/router"
 	"net/http"
 	"path"
 )
 
-func Thumbnail(c *gin.Context) {
+var Thumbnail = router.Handler(func(c router.Context) {
 	filename := c.Param("filename")
 	Config := config2.Upload
 	originImagePath := path.Join(Config.Path, Config.Image.Path, filename)
@@ -18,13 +18,13 @@ func Thumbnail(c *gin.Context) {
 	if fs.PathExists(thumbnailImagePath) == false {
 		// if thumbnail image not exist, try to get origin image
 		if fs.PathExists(originImagePath) == true {
-			http.ServeFile(c.Writer, c.Request, originImagePath)
+			http.ServeFile(c.Writer(), c.Request(), originImagePath)
 			return
 		}
 		// if the path not found
-		http.NotFound(c.Writer, c.Request)
+		http.NotFound(c.Writer(), c.Request())
 		return
 	}
 	c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%v", filename))
-	http.ServeFile(c.Writer, c.Request, thumbnailImagePath)
-}
+	http.ServeFile(c.Writer(), c.Request(), thumbnailImagePath)
+})
