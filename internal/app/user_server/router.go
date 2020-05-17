@@ -2,6 +2,7 @@
 package user_server
 
 import (
+	"errors"
 	"fmt"
 	"github.com/axetroy/go-server/internal/app/user_server/controller/address"
 	"github.com/axetroy/go-server/internal/app/user_server/controller/auth"
@@ -19,218 +20,203 @@ import (
 	"github.com/axetroy/go-server/internal/app/user_server/controller/transfer"
 	"github.com/axetroy/go-server/internal/app/user_server/controller/user"
 	"github.com/axetroy/go-server/internal/app/user_server/controller/wallet"
-	"github.com/axetroy/go-server/internal/library/config"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/middleware"
-	"github.com/axetroy/go-server/internal/rbac"
 	"github.com/axetroy/go-server/internal/rbac/accession"
-	"github.com/axetroy/go-server/internal/schema"
-	"github.com/axetroy/go-server/internal/service/dotenv"
-	"github.com/gin-gonic/gin"
+	"github.com/kataras/iris/v12"
 	"net/http"
-	"path"
 )
 
-var UserRouter *gin.Engine
+var UserRouter *iris.Application
 
 func init() {
-	if config.Common.Mode == config.ModeProduction {
-		gin.SetMode(gin.ReleaseMode)
-	}
-	router := gin.Default()
+	app := iris.New()
 
-	router.Use(middleware.GracefulExit())
+	app.OnAnyErrorCode(router.Handler(func(c router.Context) {
+		code := c.GetStatusCode()
 
-	router.Use(middleware.CORS())
+		c.StatusCode(code)
 
-	router.Static("/public", path.Join(dotenv.RootDir, "public"))
+		c.JSON(errors.New(fmt.Sprintf("%d %s", code, http.StatusText(code))), nil, nil)
+	}))
 
-	if config.Common.Mode != config.ModeProduction {
-		router.Use(gin.Logger())
-	}
-
-	router.Use(gin.Recovery())
-
-	router.NoRoute(func(c *gin.Context) {
-		c.JSON(http.StatusNotFound, schema.Response{
-			Status:  schema.StatusFail,
-			Message: fmt.Sprintf("%v ", http.StatusNotFound) + http.StatusText(http.StatusNotFound),
-			Data:    nil,
-		})
-	})
+	v1 := app.Party("v1")
 
 	{
-		v1 := router.Group("/v1")
-		v1.Use(middleware.Common)
+		v1.Use(middleware.CommonNew)
 
-		v1.GET("", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{"ping": "pong"})
-		})
+		{
+			v1.Get("", router.Handler(func(c router.Context) {
+				c.JSON(nil, map[string]string{"ping": "tong"}, nil)
+			}))
+		}
 
-		userAuthMiddleware := middleware.Authenticate(false) // 用户Token的中间件
+		userAuthMiddleware := middleware.AuthenticateNew(false) // 用户Token的中间件
 
 		// 认证类
 		{
-			authRouter := v1.Group("/auth")
-			authRouter.POST("/signup/email", auth.SignUpWithEmailRouter)   // 注册账号，通过邮箱+验证码
-			authRouter.POST("/signup/phone", auth.SignUpWithPhoneRouter)   // 注册账号，通过手机+验证码
-			authRouter.POST("/signup", auth.SignUpWithUsernameRouter)      // 注册账号, 通过用户名+密码
-			authRouter.POST("/signin/email", auth.SignInWithEmailRouter)   // 邮箱+验证码 登陆
-			authRouter.POST("/signin/phone", auth.SignInWithPhoneRouter)   // 手机+验证码 登陆
-			authRouter.POST("/signin/wechat", auth.SignInWithWechatRouter) // 微信帐号登陆
-			authRouter.POST("/signin/oauth2", auth.SignInWithOAuthRouter)  // oAuth 码登陆
-			authRouter.POST("/signin", auth.SignInRouter)                  // 登陆账号
-			authRouter.PUT("/password/reset", auth.ResetPasswordRouter)    // 密码重置
-			authRouter.POST("/code/email", auth.SendEmailAuthCodeRouter)   // 发送邮箱验证码，验证邮箱是否为用户所有 TODO: 缺少测试用例
-			authRouter.POST("/code/phone", auth.SendPhoneAuthCodeRouter)   // 发送手机验证码，验证手机是否为用户所有 TODO: 缺少测试用例
+			authRouter := v1.Party("/auth")
+			authRouter.Post("/signup/email", auth.SignUpWithEmailRouter)   // 注册账号，通过邮箱+验证码
+			authRouter.Post("/signup/phone", auth.SignUpWithPhoneRouter)   // 注册账号，通过手机+验证码
+			authRouter.Post("/signup", auth.SignUpWithUsernameRouter)      // 注册账号, 通过用户名+密码
+			authRouter.Post("/signin/email", auth.SignInWithEmailRouter)   // 邮箱+验证码 登陆
+			authRouter.Post("/signin/phone", auth.SignInWithPhoneRouter)   // 手机+验证码 登陆
+			authRouter.Post("/signin/wechat", auth.SignInWithWechatRouter) // 微信帐号登陆
+			authRouter.Post("/signin/oauth2", auth.SignInWithOAuthRouter)  // oAuth 码登陆
+			authRouter.Post("/signin", auth.SignInRouter)                  // 登陆账号
+			authRouter.Post("/password/reset", auth.ResetPasswordRouter)   // 密码重置
+			authRouter.Post("/code/email", auth.SendEmailAuthCodeRouter)   // 发送邮箱验证码，验证邮箱是否为用户所有 TODO: 缺少测试用例
+			authRouter.Post("/code/phone", auth.SendPhoneAuthCodeRouter)   // 发送手机验证码，验证手机是否为用户所有 TODO: 缺少测试用例
 		}
 
 		// oAuth2 认证
 		{
-			oAuthRouter := v1.Group("/oauth2")
-			oAuthRouter.GET("/:provider", oauth2.AuthRouter)                  // 前去进行 oAuth 认证
-			oAuthRouter.GET("/:provider/callback", oauth2.AuthCallbackRouter) // 认证成功后，跳转回来的回调地址
+			oAuthRouter := v1.Party("/oauth2")
+			oAuthRouter.Get("/{provider}", oauth2.AuthRouter)                  // 前去进行 oAuth 认证
+			oAuthRouter.Get("/{provider}/callback", oauth2.AuthCallbackRouter) // 认证成功后，跳转回来的回调地址
 		}
 
 		// 用户类
 		{
-			userRouter := v1.Group("/user")
+			userRouter := v1.Party("/user")
 			userRouter.Use(userAuthMiddleware)
-			userRouter.GET("/signout", user.SignOut)                                                                      // 用户登出
-			userRouter.GET("/profile", user.GetProfileRouter)                                                             // 获取用户详细信息
-			userRouter.PUT("/profile", rbac.Require(*accession.ProfileUpdate), user.UpdateProfileRouter)                  // 更新用户资料
-			userRouter.PUT("/password", rbac.Require(*accession.PasswordUpdate), user.UpdatePasswordRouter)               // 更新登陆密码
-			userRouter.POST("/password2", rbac.Require(*accession.Password2Set), user.SetPayPasswordRouter)               // 设置交易密码
-			userRouter.PUT("/password2", rbac.Require(*accession.Password2Update), user.UpdatePayPasswordRouter)          // 更新交易密码
-			userRouter.PUT("/password2/reset", rbac.Require(*accession.Password2Reset), user.ResetPayPasswordRouter)      // 重置交易密码
-			userRouter.POST("/password2/reset", rbac.Require(*accession.Password2Reset), user.SendResetPayPasswordRouter) // 发送重置交易密码的邮件/短信
-			userRouter.POST("/avatar", user.UploadAvatarRouter)                                                           // 上传用户头像
+			userRouter.Get("/signout", user.SignOut)                                                                              // 用户登出
+			userRouter.Get("/profile", user.GetProfileRouter)                                                                     // 获取用户详细信息
+			userRouter.Get("/profile", middleware.Permission(*accession.ProfileUpdate), user.UpdateProfileRouter)                 // 更新用户资料
+			userRouter.Get("/password", middleware.Permission(*accession.PasswordUpdate), user.UpdatePasswordRouter)              // 更新登陆密码
+			userRouter.Get("/password2", middleware.Permission(*accession.Password2Set), user.SetPayPasswordRouter)               // 设置交易密码
+			userRouter.Get("/password2", middleware.Permission(*accession.Password2Update), user.UpdatePayPasswordRouter)         // 更新交易密码
+			userRouter.Get("/password2/reset", middleware.Permission(*accession.Password2Reset), user.ResetPayPasswordRouter)     // 重置交易密码
+			userRouter.Get("/password2/reset", middleware.Permission(*accession.Password2Reset), user.SendResetPayPasswordRouter) // 发送重置交易密码的邮件/短信 			// 上传用户头像
 
 			// 验证码类
 			{
-				authRouter := userRouter.Group("/auth")
+				authRouter := userRouter.Party("/auth")
 
-				authRouter.POST("/email", user.SendAuthEmailRouter) // 发送邮箱验证码到用户绑定的邮箱 TODO: 缺少测试用例
-				authRouter.POST("/phone", user.SendAuthPhoneRouter) // 发送手机验证码 TODO: 缺少测试用例
+				authRouter.Post("/email", user.SendAuthEmailRouter) // 发送邮箱验证码到用户绑定的邮箱 TODO: 缺少测试用例
+				authRouter.Post("/phone", user.SendAuthPhoneRouter) // 发送手机验证码 TODO: 缺少测试用例
 			}
 
 			// 绑定类
 			{
-				bindRouter := userRouter.Group("/bind")
-				bindRouter.POST("/email", auth.BindingEmailRouter)   // 绑定邮箱 TODO: 缺少测试用例
-				bindRouter.POST("/phone", auth.BindingPhoneRouter)   // 绑定手机号 TODO: 缺少测试用例
-				bindRouter.POST("/wechat", auth.BindingWechatRouter) // 绑定微信小程序 TODO: 缺少测试用例
+				bindRouter := userRouter.Party("/bind")
+				bindRouter.Post("/email", auth.BindingEmailRouter)   // 绑定邮箱 TODO: 缺少测试用例
+				bindRouter.Post("/phone", auth.BindingPhoneRouter)   // 绑定手机号 TODO: 缺少测试用例
+				bindRouter.Post("/wechat", auth.BindingWechatRouter) // 绑定微信小程序 TODO: 缺少测试用例
 
-				unbindRouter := userRouter.Group("/unbind")
-				unbindRouter.DELETE("/email", auth.UnbindingEmailRouter)   // 解除邮箱绑定 TODO: 缺少测试用例
-				unbindRouter.DELETE("/phone", auth.UnbindingPhoneRouter)   // 解除手机号绑定 TODO: 缺少测试用例
-				unbindRouter.DELETE("/wechat", auth.UnbindingWechatRouter) // 解除微信小程序绑定 TODO: 缺少测试用例
+				unbindRouter := userRouter.Party("/unbind")
+				unbindRouter.Delete("/email", auth.UnbindingEmailRouter)   // 解除邮箱绑定 TODO: 缺少测试用例
+				unbindRouter.Delete("/phone", auth.UnbindingPhoneRouter)   // 解除手机号绑定 TODO: 缺少测试用例
+				unbindRouter.Delete("/wechat", auth.UnbindingWechatRouter) // 解除微信小程序绑定 TODO: 缺少测试用例
 			}
 
 			// 邀请人列表
 			{
-				inviteRouter := userRouter.Group("/invite")
-				inviteRouter.GET("", invite.GetInviteListByUserRouter) // 获取我已邀请的列表
-				inviteRouter.GET("/i/:invite_id", invite.GetRouter)    // 获取单条邀请记录详情
+				inviteRouter := userRouter.Party("/invite")
+				inviteRouter.Get("", invite.GetInviteListByUserRouter) // 获取我已邀请的列表
+				inviteRouter.Get("/i/{invite_id}", invite.GetRouter)   // 获取单条邀请记录详情
 			}
 			// 收货地址
 			{
-				addressRouter := userRouter.Group("/address")
-				addressRouter.GET("", address.GetAddressListByUserRouter)    // 获取地址列表
-				addressRouter.POST("", address.CreateRouter)                 // 添加收货地址
-				addressRouter.PUT("/a/:address_id", address.UpdateRouter)    // 更新收货地址
-				addressRouter.DELETE("/a/:address_id", address.DeleteRouter) // 删除收货地址
-				addressRouter.GET("/a/:address_id", address.GetDetailRouter) // 获取地址详情
-				addressRouter.GET("/default", address.GetDefaultRouter)      // 获取默认地址
+				addressRouter := userRouter.Party("/address")
+				addressRouter.Get("", address.GetAddressListByUserRouter)     // 获取地址列表
+				addressRouter.Post("", address.CreateRouter)                  // 添加收货地址
+				addressRouter.Put("/a/{address_id}", address.UpdateRouter)    // 更新收货地址
+				addressRouter.Delete("/a/{address_id}", address.DeleteRouter) // 删除收货地址
+				addressRouter.Get("/a/{address_id}", address.GetDetailRouter) // 获取地址详情
+				addressRouter.Get("/default", address.GetDefaultRouter)       // 获取默认地址
 			}
 		}
 
 		// 钱包类
 		{
-			walletRouter := v1.Group("/wallet")
+			walletRouter := v1.Party("/wallet")
 			walletRouter.Use(userAuthMiddleware)
-			walletRouter.GET("", wallet.GetWalletsRouter)            // 获取所有钱包列表
-			walletRouter.GET("/w/:currency", wallet.GetWalletRouter) // 获取单个钱包的详细信息
+			walletRouter.Get("", wallet.GetWalletsRouter)             // 获取所有钱包列表
+			walletRouter.Get("/w/{currency}", wallet.GetWalletRouter) // 获取单个钱包的详细信息
 		}
 
+		// 转账类
 		{
-			transferRouter := v1.Group("/transfer")
+			transferRouter := v1.Party("/transfer")
 			transferRouter.Use(userAuthMiddleware)
-			transferRouter.GET("", transfer.GetHistoryRouter)                                                           // 获取我的转账记录
-			transferRouter.POST("", rbac.Require(*accession.DoTransfer), middleware.AuthPayPassword, transfer.ToRouter) // 转账给某人
-			transferRouter.GET("/t/:transfer_id", transfer.GetDetailRouter)                                             // 获取单条转账详情
+			transferRouter.Get("", transfer.GetHistoryRouter)                                                                       // 获取我的转账记录
+			transferRouter.Post("", middleware.Permission(*accession.DoTransfer), middleware.AuthPayPasswordNew, transfer.ToRouter) // 转账给某人
+			transferRouter.Get("/t/{transfer_id}", transfer.GetDetailRouter)                                                        // 获取单条转账详情
 		}
 
 		// 财务日志
 		{
-			financeRouter := v1.Group("/finance")
+			financeRouter := v1.Party("/finance")
 			financeRouter.Use(userAuthMiddleware)
-			financeRouter.GET("/history", finance.GetHistory) // TODO: 获取我的财务日志
+			financeRouter.Get("/history", finance.GetHistory) // TODO: 获取我的财务日志
 		}
 
 		// 新闻咨询类
 		{
-			newsRouter := v1.Group("/news")
-			newsRouter.GET("", news.GetNewsListRouter)   // 获取新闻公告列表
-			newsRouter.GET("/n/:id", news.GetNewsRouter) // 获取单个新闻公告详情
+			newsRouter := v1.Party("/news")
+			newsRouter.Get("", news.GetNewsListRouter)    // 获取新闻公告列表
+			newsRouter.Get("/n/{id}", news.GetNewsRouter) // 获取单个新闻公告详情
 		}
 
 		// 系统通知
 		{
-			notificationRouter := v1.Group("/notification")
+			notificationRouter := v1.Party("/notification")
 			notificationRouter.Use(userAuthMiddleware)
-			notificationRouter.GET("", notification.GetNotificationListByUserRouter) // 获取系统通知列表
-			notificationRouter.GET("/n/:id", notification.GetRouter)                 // 获取某一条系统通知详情
-			notificationRouter.PUT("/n/:id/read", notification.ReadRouter)           // 标记通知为已读
+			notificationRouter.Get("", notification.GetNotificationListByUserRouter) // 获取系统通知列表
+			notificationRouter.Get("/n/{id}", notification.GetRouter)                // 获取某一条系统通知详情
+			notificationRouter.Get("/n/{id}/read", notification.ReadRouter)          // 标记通知为已读
 		}
 
 		// 用户的个人消息, 个人消息是可以删除的
 		{
-			messageRouter := v1.Group("/message")
+			messageRouter := v1.Party("/message")
 			messageRouter.Use(userAuthMiddleware)
-			messageRouter.GET("", message.GetMessageListByUserRouter)          // 获取我的消息列表
-			messageRouter.GET("/m/:message_id", message.GetRouter)             // 获取单个消息详情
-			messageRouter.PUT("/m/:message_id/read", message.ReadRouter)       // 标记消息为已读
-			messageRouter.DELETE("/m/:message_id", message.DeleteByUserRouter) // 删除消息
+			messageRouter.Get("", message.GetMessageListByUserRouter)           // 获取我的消息列表
+			messageRouter.Get("/m/{message_id}", message.GetRouter)             // 获取单个消息详情
+			messageRouter.Put("/m/{message_id}/read", message.ReadRouter)       // 标记消息为已读
+			messageRouter.Delete("/m/{message_id}", message.DeleteByUserRouter) // 删除消息
 		}
 
 		// 用户反馈
 		{
-			reportRouter := v1.Group("/report")
+			reportRouter := v1.Party("/report")
 			reportRouter.Use(userAuthMiddleware)
-			reportRouter.GET("", report.GetListRouter)                // 获取我的反馈列表
-			reportRouter.POST("", report.CreateRouter)                // 添加一条反馈
-			reportRouter.GET("/r/:report_id", report.GetReportRouter) // 获取反馈详情
-			reportRouter.PUT("/r/:report_id", report.UpdateRouter)    // 更新这条反馈信息
+			reportRouter.Get("", report.GetListRouter)                 // 获取我的反馈列表
+			reportRouter.Post("", report.CreateRouter)                 // 添加一条反馈
+			reportRouter.Get("/r/{report_id}", report.GetReportRouter) // 获取反馈详情
+			reportRouter.Put("/r/{report_id}", report.UpdateRouter)    // 更新这条反馈信息
 		}
 
 		// 帮助中心
 		{
-			helpRouter := v1.Group("help")
-			helpRouter.GET("", help.GetHelpListRouter)        // 创建帮助列表
-			helpRouter.GET("/h/:help_id", help.GetHelpRouter) // 获取帮助详情
+			helpRouter := v1.Party("help")
+			helpRouter.Get("", help.GetHelpListRouter)        // 创建帮助列表
+			helpRouter.Get("/h/:help_id", help.GetHelpRouter) // 获取帮助详情
 		}
 
 		// Banner
 		{
-			bannerRouter := v1.Group("banner")
-			bannerRouter.GET("", banner.GetBannerListRouter)          // 获取 banner 列表
-			bannerRouter.GET("/b/:banner_id", banner.GetBannerRouter) // 获取 banner 详情
+			bannerRouter := v1.Party("banner")
+			bannerRouter.Get("", banner.GetBannerListRouter)          // 获取 banner 列表
+			bannerRouter.Get("/b/:banner_id", banner.GetBannerRouter) // 获取 banner 详情
 		}
 
 		// 通用类
 		{
 			// 邮件服务
-			v1.POST("/email/send/register", auth.SignUpWithEmailActionRouter)         // 发送注册邮件
-			v1.POST("/email/send/password/reset", email.SendResetPasswordEmailRouter) // 发送密码重置邮件
+			v1.Post("/email/send/register", auth.SignUpWithEmailActionRouter)         // 发送注册邮件
+			v1.Post("/email/send/password/reset", email.SendResetPasswordEmailRouter) // 发送密码重置邮件
 
-			v1.GET("/area/:area_code", address.FindAddressRouter) // 获取地区码对应的信息
-			v1.GET("/area", address.AreaListRouter)               // 获取地址选择列表
+			v1.Get("/area/:area_code", address.FindAddressRouter) // 获取地区码对应的信息
+			v1.Get("/area", address.AreaListRouter)               // 获取地址选择列表
 
 			// 数据签名
-			v1.POST("/signature", signature.EncryptionRouter)
+			v1.Post("/signature", signature.EncryptionRouter)
 		}
-
 	}
 
-	UserRouter = router
+	_ = app.Build()
+
+	UserRouter = app
 }

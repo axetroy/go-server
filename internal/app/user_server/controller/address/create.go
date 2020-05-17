@@ -5,14 +5,13 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/library/validator"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
-	"net/http"
 	"time"
 )
 
@@ -155,25 +154,12 @@ func Create(c helper.Context, input CreateAddressParams) (res schema.Response) {
 	return
 }
 
-func CreateRouter(c *gin.Context) {
+var CreateRouter = router.Handler(func(c router.Context) {
 	var (
 		input CreateAddressParams
-		err   error
-		res   = schema.Response{}
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = Create(helper.NewContext(c), input)
-}
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return Create(helper.NewContext(&c), input)
+	})
+})

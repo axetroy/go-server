@@ -22,12 +22,24 @@ func (c *Context) Header(key string, value string) {
 	c.context.Header(key, value)
 }
 
+func (c *Context) GetHeader(key string) string {
+	return c.context.GetHeader(key)
+}
+
+func (c *Context) ClientIP() string {
+	return c.context.RemoteAddr()
+}
+
 func (c *Context) StatusCode(code int) {
 	c.context.StatusCode(code)
 }
 
 func (c *Context) Request() *http.Request {
 	return c.context.Request()
+}
+
+func (c *Context) ResetRequest(r *http.Request) {
+	c.context.ResetRequest(r)
 }
 
 func (c *Context) Writer() http.ResponseWriter {
@@ -42,8 +54,27 @@ func (c *Context) GetStatusCode() int {
 	return c.context.GetStatusCode()
 }
 
+func (c *Context) GetBody() ([]byte, error) {
+	return c.context.GetBody()
+}
+
+func (c *Context) ShouldBindJSON(pr interface{}) error {
+	if err := c.context.ReadJSON(pr); err != nil {
+		err = exception.InvalidParams
+	}
+	return nil
+}
+
+func (c *Context) ShouldBindQuery(pr interface{}) error {
+	if err := c.context.ReadQuery(pr); err != nil {
+		err = exception.InvalidParams
+	}
+	return nil
+}
+
 func (c *Context) JSON(err error, data interface{}, meta *schema.Meta) {
 	res := schema.Response{}
+
 	if err != nil {
 		res.Message = err.Error()
 
@@ -60,7 +91,47 @@ func (c *Context) JSON(err error, data interface{}, meta *schema.Meta) {
 		res.Meta = meta
 	}
 
+	c.Response(nil, res)
+}
+
+func (c *Context) ResponseFunc(err error, fn func() schema.Response) {
+	if err != nil {
+		res := schema.Response{}
+
+		res.Message = err.Error()
+
+		if t, ok := err.(exception.Error); ok {
+			res.Status = t.Code()
+		} else {
+			res.Status = exception.Unknown.Code()
+		}
+		res.Data = nil
+		res.Meta = nil
+
+		_, _ = c.context.JSON(res)
+	} else {
+		_, _ = c.context.JSON(fn())
+	}
+}
+
+func (c *Context) Response(err error, res schema.Response) {
+	if err != nil {
+		res.Message = err.Error()
+
+		if t, ok := err.(exception.Error); ok {
+			res.Status = t.Code()
+		} else {
+			res.Status = exception.Unknown.Code()
+		}
+		res.Data = nil
+		res.Meta = nil
+	}
+
 	_, _ = c.context.JSON(res)
+}
+
+func (c *Context) Redirect(status int, url string) {
+	c.context.Redirect(url, status)
 }
 
 func (c *Context) SetContext(key string, value interface{}) {
@@ -69,6 +140,10 @@ func (c *Context) SetContext(key string, value interface{}) {
 
 func (c *Context) GetContext(key string) interface{} {
 	return c.context.Values().Get(key)
+}
+
+func (c *Context) Uid() string {
+	return c.context.Values().GetString("uid")
 }
 
 func Handler(handler func(c Context)) iris.Handler {

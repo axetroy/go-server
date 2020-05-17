@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/middleware"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
@@ -167,23 +168,10 @@ func DeleteByUser(c helper.Context, messageId string) (res schema.Response) {
 	return
 }
 
-func DeleteByUserRouter(c *gin.Context) {
-	var (
-		err error
-		res = schema.Response{}
-	)
-
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
+var DeleteByUserRouter = router.Handler(func(c router.Context) {
 	id := c.Param(ParamsIdName)
 
-	res = DeleteByUser(helper.Context{
-		Uid: c.GetString(middleware.ContextUidField),
-	}, id)
-}
+	c.ResponseFunc(nil, func() schema.Response {
+		return DeleteByUser(helper.NewContext(&c), id)
+	})
+})

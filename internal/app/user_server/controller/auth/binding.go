@@ -4,15 +4,14 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/library/validator"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
 	"github.com/axetroy/go-server/internal/service/redis"
 	"github.com/axetroy/go-server/internal/service/wechat"
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"net/http"
 )
 
 type BindingEmailParams struct {
@@ -306,71 +305,32 @@ func BindingWechat(c helper.Context, input BindingWechatMiniAppParams) (res sche
 	return
 }
 
-func BindingEmailRouter(c *gin.Context) {
+var BindingEmailRouter = router.Handler(func(c router.Context) {
 	var (
 		input BindingEmailParams
-		err   error
-		res   = schema.Response{}
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return BindingEmail(helper.NewContext(&c), input)
+	})
+})
 
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = BindingEmail(helper.NewContext(c), input)
-}
-
-func BindingPhoneRouter(c *gin.Context) {
+var BindingPhoneRouter = router.Handler(func(c router.Context) {
 	var (
 		input BindingPhoneParams
-		err   error
-		res   = schema.Response{}
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return BindingPhone(helper.NewContext(&c), input)
+	})
+})
 
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = BindingPhone(helper.NewContext(c), input)
-}
-
-func BindingWechatRouter(c *gin.Context) {
+var BindingWechatRouter = router.Handler(func(c router.Context) {
 	var (
 		input BindingWechatMiniAppParams
-		err   error
-		res   = schema.Response{}
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = BindingWechat(helper.NewContext(c), input)
-}
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return BindingWechat(helper.NewContext(&c), input)
+	})
+})

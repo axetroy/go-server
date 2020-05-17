@@ -2,15 +2,12 @@
 package user
 
 import (
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/schema"
-	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
-func SignOut(c *gin.Context) {
-	c.JSON(http.StatusOK, schema.Response{
-		Status:  schema.StatusSuccess,
-		Message: "您已登出",
-		Data:    true,
+var SignOut = router.Handler(func(c router.Context) {
+	c.ResponseFunc(nil, func() schema.Response {
+		return schema.Response{}
 	})
-}
+})

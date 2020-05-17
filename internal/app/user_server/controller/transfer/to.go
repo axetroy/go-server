@@ -9,16 +9,15 @@ import (
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
 	"github.com/axetroy/go-server/internal/library/logger"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/axetroy/go-server/internal/library/validator"
 	"github.com/axetroy/go-server/internal/middleware"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
-	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -238,27 +237,16 @@ func To(c helper.Context, input ToParams, signature string) (res schema.Response
 	return
 }
 
-func ToRouter(c *gin.Context) {
+var ToRouter = router.Handler(func(c router.Context) {
 	var (
-		err   error
 		input ToParams
-		res   = schema.Response{}
 	)
-
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	if err = c.ShouldBindJSON(&input); err != nil {
-		return
-	}
 
 	// 获取数据签名
 	signature := c.GetHeader(middleware.SignatureHeader)
 
-	res = To(helper.NewContext(c), input, signature)
-}
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return To(helper.NewContext(&c), input, signature)
+	})
+
+})

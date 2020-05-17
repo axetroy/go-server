@@ -4,14 +4,13 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/axetroy/go-server/internal/library/validator"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/email"
 	"github.com/axetroy/go-server/internal/service/redis"
 	"github.com/axetroy/go-server/internal/service/telephone"
-	"github.com/gin-gonic/gin"
-	"net/http"
 	"time"
 )
 
@@ -116,48 +115,22 @@ func SendPhoneAuthCode(c helper.Context, input SendPhoneAuthCodeParams) (res sch
 	return
 }
 
-func SendEmailAuthCodeRouter(c *gin.Context) {
+var SendEmailAuthCodeRouter = router.Handler(func(c router.Context) {
 	var (
 		input SendEmailAuthCodeParams
-		err   error
-		res   = schema.Response{}
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return SendEmailAuthCode(helper.NewContext(&c), input)
+	})
+})
 
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = SendEmailAuthCode(helper.NewContext(c), input)
-}
-
-func SendPhoneAuthCodeRouter(c *gin.Context) {
+var SendPhoneAuthCodeRouter = router.Handler(func(c router.Context) {
 	var (
 		input SendPhoneAuthCodeParams
-		err   error
-		res   = schema.Response{}
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = SendPhoneAuthCode(helper.NewContext(c), input)
-}
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return SendPhoneAuthCode(helper.NewContext(&c), input)
+	})
+})

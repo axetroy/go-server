@@ -6,6 +6,7 @@ import (
 	"github.com/axetroy/go-server/internal/app/user_server/controller/wallet"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/axetroy/go-server/internal/library/validator"
 	"github.com/axetroy/go-server/internal/model"
@@ -14,11 +15,9 @@ import (
 	"github.com/axetroy/go-server/internal/service/redis"
 	"github.com/axetroy/go-server/internal/service/token"
 	"github.com/axetroy/go-server/internal/service/wechat"
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
 	"github.com/mitchellh/mapstructure"
-	"net/http"
 	"time"
 )
 
@@ -582,117 +581,52 @@ func SignInWithOAuth(c helper.Context, input SignInWithOAuthParams) (res schema.
 	return
 }
 
-func SignInRouter(c *gin.Context) {
+var SignInRouter = router.Handler(func(c router.Context) {
 	var (
 		input SignInParams
-		err   error
-		res   = schema.Response{}
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return SignIn(helper.NewContext(&c), input)
+	})
+})
 
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = SignIn(helper.NewContext(c), input)
-}
-
-func SignInWithEmailRouter(c *gin.Context) {
+var SignInWithEmailRouter = router.Handler(func(c router.Context) {
 	var (
 		input SignInWithEmailParams
-		err   error
-		res   = schema.Response{}
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return SignInWithEmail(helper.NewContext(&c), input)
+	})
+})
 
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = SignInWithEmail(helper.NewContext(c), input)
-}
-
-func SignInWithPhoneRouter(c *gin.Context) {
+var SignInWithPhoneRouter = router.Handler(func(c router.Context) {
 	var (
 		input SignInWithPhoneParams
-		err   error
-		res   = schema.Response{}
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return SignInWithPhone(helper.NewContext(&c), input)
+	})
+})
 
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = SignInWithPhone(helper.NewContext(c), input)
-}
-
-func SignInWithWechatRouter(c *gin.Context) {
+var SignInWithWechatRouter = router.Handler(func(c router.Context) {
 	var (
 		input SignInWithWechatParams
-		err   error
-		res   = schema.Response{}
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return SignInWithWechat(helper.NewContext(&c), input)
+	})
+})
 
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = SignInWithWechat(helper.NewContext(c), input)
-}
-
-func SignInWithOAuthRouter(c *gin.Context) {
+var SignInWithOAuthRouter = router.Handler(func(c router.Context) {
 	var (
 		input SignInWithOAuthParams
-		err   error
-		res   = schema.Response{}
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = SignInWithOAuth(helper.NewContext(c), input)
-}
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return SignInWithOAuth(helper.NewContext(&c), input)
+	})
+})

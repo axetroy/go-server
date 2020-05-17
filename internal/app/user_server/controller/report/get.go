@@ -5,13 +5,12 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
-	"net/http"
 	"time"
 )
 
@@ -58,24 +57,13 @@ func GetReportByUser(c helper.Context, id string) (res schema.Response) {
 	return
 }
 
-func GetReportRouter(c *gin.Context) {
-	var (
-		err error
-		res = schema.Response{}
-	)
-
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
+var GetReportRouter = router.Handler(func(c router.Context) {
 	id := c.Param("report_id")
 
-	res = GetReportByUser(helper.NewContext(c), id)
-}
+	c.ResponseFunc(nil, func() schema.Response {
+		return GetReportByUser(helper.NewContext(&c), id)
+	})
+})
 
 func GetReportByAdmin(c helper.Context, id string) (res schema.Response) {
 	var (
@@ -117,23 +105,4 @@ func GetReportByAdmin(c helper.Context, id string) (res schema.Response) {
 	data.UpdatedAt = reportInfo.UpdatedAt.Format(time.RFC3339Nano)
 
 	return
-}
-
-func GetReportByAdminRouter(c *gin.Context) {
-	var (
-		err error
-		res = schema.Response{}
-	)
-
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	id := c.Param("report_id")
-
-	res = GetReportByAdmin(helper.NewContext(c), id)
 }

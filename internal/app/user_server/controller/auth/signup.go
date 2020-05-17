@@ -6,6 +6,7 @@ import (
 	"github.com/axetroy/go-server/internal/app/user_server/controller/wallet"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/axetroy/go-server/internal/library/validator"
 	"github.com/axetroy/go-server/internal/model"
@@ -13,11 +14,9 @@ import (
 	"github.com/axetroy/go-server/internal/service/database"
 	"github.com/axetroy/go-server/internal/service/email"
 	"github.com/axetroy/go-server/internal/service/redis"
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
 	"github.com/mitchellh/mapstructure"
-	"net/http"
 	"time"
 )
 
@@ -445,94 +444,42 @@ func SignUpWithPhone(input SignUpWithPhoneParams) (res schema.Response) {
 	return
 }
 
-func SignUpWithUsernameRouter(c *gin.Context) {
+var SignUpWithUsernameRouter = router.Handler(func(c router.Context) {
 	var (
 		input SignUpWithUsernameParams
-		err   error
-		res   = schema.Response{}
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return SignUpWithUsername(input)
+	})
+})
 
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = SignUpWithUsername(input)
-}
-
-func SignUpWithEmailRouter(c *gin.Context) {
+var SignUpWithEmailRouter = router.Handler(func(c router.Context) {
 	var (
 		input SignUpWithEmailParams
-		err   error
-		res   = schema.Response{}
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return SignUpWithEmail(input)
+	})
+})
 
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = SignUpWithEmail(input)
-}
-
-func SignUpWithPhoneRouter(c *gin.Context) {
+var SignUpWithPhoneRouter = router.Handler(func(c router.Context) {
 	var (
 		input SignUpWithPhoneParams
-		err   error
-		res   = schema.Response{}
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return SignUpWithPhone(input)
+	})
+})
 
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = SignUpWithPhone(input)
-}
-
-func SignUpWithEmailActionRouter(c *gin.Context) {
+var SignUpWithEmailActionRouter = router.Handler(func(c router.Context) {
 	var (
 		input SignUpWithEmailActionParams
-		err   error
-		res   = schema.Response{}
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = SignUpWithEmailAction(input)
-}
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return SignUpWithEmailAction(input)
+	})
+})

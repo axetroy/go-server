@@ -7,7 +7,6 @@ import (
 	"github.com/axetroy/go-server/internal/app/resource_server/controller/downloader"
 	"github.com/axetroy/go-server/internal/app/resource_server/controller/resource"
 	"github.com/axetroy/go-server/internal/app/resource_server/controller/uploader"
-	"github.com/axetroy/go-server/internal/app/user_server/controller/user"
 	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/middleware"
 	"github.com/kataras/iris/v12"
@@ -52,8 +51,6 @@ func init() {
 			v1.Get("/download/file/:filename", downloader.File)           // 下载文件
 			v1.Get("/download/image/:filename", downloader.Image)         // 下载图片
 			v1.Get("/download/thumbnail/:filename", downloader.Thumbnail) // 下载缩略图
-			//// 公共资源目录
-			v1.Get("/avatar/:filename", user.GetAvatarRouter) // 获取用户头像
 		}
 
 	}

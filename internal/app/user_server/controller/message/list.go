@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/middleware"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
@@ -168,30 +169,15 @@ func GetMessageListByAdmin(c helper.Context, input QueryAdmin) (res schema.Respo
 	return
 }
 
-func GetMessageListByUserRouter(c *gin.Context) {
+var GetMessageListByUserRouter = router.Handler(func(c router.Context) {
 	var (
-		err   error
-		res   = schema.Response{}
 		input Query
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	if err = c.ShouldBindQuery(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = GetMessageListByUser(helper.Context{
-		Uid: c.GetString(middleware.ContextUidField),
-	}, input)
-}
+	c.ResponseFunc(c.ShouldBindQuery(&input), func() schema.Response {
+		return GetMessageListByUser(helper.NewContext(&c), input)
+	})
+})
 
 func GetMessageListByAdminRouter(c *gin.Context) {
 	var (

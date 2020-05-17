@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/axetroy/go-server/internal/library/validator"
 	"github.com/axetroy/go-server/internal/model"
@@ -13,9 +14,7 @@ import (
 	"github.com/axetroy/go-server/internal/service/email"
 	"github.com/axetroy/go-server/internal/service/redis"
 	"github.com/axetroy/go-server/internal/service/telephone"
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"net/http"
 	"time"
 )
 
@@ -104,28 +103,15 @@ func SetPayPassword(c helper.Context, input SetPayPasswordParams) (res schema.Re
 	return
 }
 
-func SetPayPasswordRouter(c *gin.Context) {
+var SetPayPasswordRouter = router.Handler(func(c router.Context) {
 	var (
-		err   error
-		res   = schema.Response{}
 		input SetPayPasswordParams
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = SetPayPassword(helper.NewContext(c), input)
-}
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return SetPayPassword(helper.NewContext(&c), input)
+	})
+})
 
 func UpdatePayPassword(c helper.Context, input UpdatePayPasswordParams) (res schema.Response) {
 	var (
@@ -201,28 +187,15 @@ func UpdatePayPassword(c helper.Context, input UpdatePayPasswordParams) (res sch
 	return
 }
 
-func UpdatePayPasswordRouter(c *gin.Context) {
+var UpdatePayPasswordRouter = router.Handler(func(c router.Context) {
 	var (
-		err   error
-		res   = schema.Response{}
 		input UpdatePayPasswordParams
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = UpdatePayPassword(helper.NewContext(c), input)
-}
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return UpdatePayPassword(helper.NewContext(&c), input)
+	})
+})
 
 func SendResetPayPassword(c helper.Context) (res schema.Response) {
 	var (
@@ -294,22 +267,11 @@ func SendResetPayPassword(c helper.Context) (res schema.Response) {
 	return
 }
 
-func SendResetPayPasswordRouter(c *gin.Context) {
-	var (
-		err error
-		res = schema.Response{}
-	)
-
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	res = SendResetPayPassword(helper.NewContext(c))
-}
+var SendResetPayPasswordRouter = router.Handler(func(c router.Context) {
+	c.ResponseFunc(nil, func() schema.Response {
+		return SendResetPayPassword(helper.NewContext(&c))
+	})
+})
 
 func ResetPayPassword(c helper.Context, input ResetPayPasswordParams) (res schema.Response) {
 	var (
@@ -387,25 +349,12 @@ func ResetPayPassword(c helper.Context, input ResetPayPasswordParams) (res schem
 	return
 }
 
-func ResetPayPasswordRouter(c *gin.Context) {
+var ResetPayPasswordRouter = router.Handler(func(c router.Context) {
 	var (
-		err   error
-		res   = schema.Response{}
 		input ResetPayPasswordParams
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = ResetPayPassword(helper.NewContext(c), input)
-}
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return ResetPayPassword(helper.NewContext(&c), input)
+	})
+})

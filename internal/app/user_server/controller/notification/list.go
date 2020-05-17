@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/middleware"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
@@ -186,30 +187,13 @@ func GetNotificationListByAdmin(c helper.Context, input Query) (res schema.Respo
 }
 
 // GetListRouter get list router
-func GetNotificationListByUserRouter(c *gin.Context) {
-	var (
-		err   error
-		res   = schema.Response{}
-		input Query
-	)
+var GetNotificationListByUserRouter = router.Handler(func(c router.Context) {
+	var input Query
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	if err = c.ShouldBindQuery(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = GetNotificationListByUser(helper.Context{
-		Uid: c.GetString(middleware.ContextUidField),
-	}, input)
-}
+	c.ResponseFunc(c.ShouldBindQuery(&input), func() schema.Response {
+		return GetNotificationListByUser(helper.NewContext(&c), input)
+	})
+})
 
 // GetListRouter get list router
 func GetNotificationListByAdminRouter(c *gin.Context) {

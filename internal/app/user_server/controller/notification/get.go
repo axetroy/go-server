@@ -6,14 +6,12 @@ import (
 	"fmt"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
-	"github.com/axetroy/go-server/internal/middleware"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
-	"net/http"
 	"time"
 )
 
@@ -86,23 +84,10 @@ func Get(c helper.Context, id string) (res schema.Response) {
 }
 
 // GetRouter get notification detail router
-func GetRouter(c *gin.Context) {
-	var (
-		err error
-		res = schema.Response{}
-	)
-
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
+var GetRouter = router.Handler(func(c router.Context) {
 	id := c.Param("id")
 
-	res = Get(helper.Context{
-		Uid: c.GetString(middleware.ContextUidField),
-	}, id)
-}
+	c.ResponseFunc(nil, func() schema.Response {
+		return Get(helper.NewContext(&c), id)
+	})
+})

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/captcha"
@@ -11,9 +12,7 @@ import (
 	"github.com/axetroy/go-server/internal/service/email"
 	"github.com/axetroy/go-server/internal/service/redis"
 	"github.com/axetroy/go-server/internal/service/telephone"
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"net/http"
 	"time"
 )
 
@@ -142,36 +141,14 @@ func SendAuthPhone(c helper.Context) (res schema.Response) {
 	return
 }
 
-func SendAuthEmailRouter(c *gin.Context) {
-	var (
-		err error
-		res = schema.Response{}
-	)
+var SendAuthEmailRouter = router.Handler(func(c router.Context) {
+	c.ResponseFunc(nil, func() schema.Response {
+		return SendAuthEmail(helper.NewContext(&c))
+	})
+})
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	res = SendAuthEmail(helper.NewContext(c))
-}
-
-func SendAuthPhoneRouter(c *gin.Context) {
-	var (
-		err error
-		res = schema.Response{}
-	)
-
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	res = SendAuthPhone(helper.NewContext(c))
-}
+var SendAuthPhoneRouter = router.Handler(func(c router.Context) {
+	c.ResponseFunc(nil, func() schema.Response {
+		return SendAuthPhone(helper.NewContext(&c))
+	})
+})

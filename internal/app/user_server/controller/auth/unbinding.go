@@ -4,15 +4,14 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/library/validator"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
 	"github.com/axetroy/go-server/internal/service/redis"
 	"github.com/axetroy/go-server/internal/service/wechat"
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"net/http"
 )
 
 type UnbindingEmailParams struct {
@@ -280,71 +279,32 @@ func UnbindingWechat(c helper.Context, input UnbindingWechatParams) (res schema.
 	return
 }
 
-func UnbindingEmailRouter(c *gin.Context) {
+var UnbindingEmailRouter = router.Handler(func(c router.Context) {
 	var (
 		input UnbindingEmailParams
-		err   error
-		res   = schema.Response{}
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return UnbindingEmail(helper.NewContext(&c), input)
+	})
+})
 
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = UnbindingEmail(helper.NewContext(c), input)
-}
-
-func UnbindingPhoneRouter(c *gin.Context) {
+var UnbindingPhoneRouter = router.Handler(func(c router.Context) {
 	var (
 		input UnbindingPhoneParams
-		err   error
-		res   = schema.Response{}
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return UnbindingPhone(helper.NewContext(&c), input)
+	})
+})
 
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = UnbindingPhone(helper.NewContext(c), input)
-}
-
-func UnbindingWechatRouter(c *gin.Context) {
+var UnbindingWechatRouter = router.Handler(func(c router.Context) {
 	var (
 		input UnbindingWechatParams
-		err   error
-		res   = schema.Response{}
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = UnbindingWechat(helper.NewContext(c), input)
-}
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return UnbindingWechat(helper.NewContext(&c), input)
+	})
+})

@@ -4,6 +4,8 @@ package oauth2
 import (
 	"errors"
 	"github.com/axetroy/go-server/internal/app/user_server/controller/auth"
+	"github.com/axetroy/go-server/internal/library/router"
+	"github.com/axetroy/go-server/internal/schema"
 	"net/http"
 	"net/url"
 	"time"
@@ -14,14 +16,13 @@ import (
 	"github.com/axetroy/go-server/internal/service/database"
 	"github.com/axetroy/go-server/internal/service/dotenv"
 	"github.com/axetroy/go-server/internal/service/redis"
-	"github.com/gin-gonic/gin"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
 )
 
-func redirectToClient(c *gin.Context, user *goth.User) {
+func redirectToClient(c *router.Context, user *goth.User) {
 	var (
 		err      error
 		tx       *gorm.DB
@@ -51,7 +52,8 @@ func redirectToClient(c *gin.Context, user *goth.User) {
 		}
 
 		if err != nil {
-			c.String(http.StatusBadRequest, err.Error())
+			c.StatusCode(http.StatusBadRequest)
+			c.Response(nil, schema.Response{Message: err.Error()})
 		} else {
 			c.Redirect(http.StatusTemporaryRedirect, finalURL)
 		}
@@ -60,7 +62,8 @@ func redirectToClient(c *gin.Context, user *goth.User) {
 	uri, err := url.Parse(frontendURL)
 
 	if err != nil {
-		c.String(http.StatusBadRequest, "Invalid callback url")
+		c.StatusCode(http.StatusBadRequest)
+		c.Response(nil, schema.Response{Message: "Invalid callback url"})
 		return
 	}
 
@@ -167,7 +170,11 @@ func redirectToClient(c *gin.Context, user *goth.User) {
 	hash := util.MD5(user.UserID)
 
 	if err := redis.ClientOAuthCode.Set(hash, userInfo.Id, time.Minute*5).Err(); err != nil {
-		c.String(http.StatusBadRequest, "Invalid callback url")
+		c.StatusCode(http.StatusBadRequest)
+		c.Response(nil, schema.Response{
+			Message: "Invalid callback url",
+		})
+		return
 	}
 
 	uri.Query().Set("access_token", hash)
@@ -175,27 +182,27 @@ func redirectToClient(c *gin.Context, user *goth.User) {
 	finalURL = uri.String()
 }
 
-func AuthRouter(c *gin.Context) {
+var AuthRouter = router.Handler(func(c router.Context) {
 	provider := c.Param("provider")
 
-	c.Request = mux.SetURLVars(c.Request, map[string]string{"provider": provider})
+	c.ResetRequest(mux.SetURLVars(c.Request(), map[string]string{"provider": provider}))
 	// try to get the user without re-authenticating
-	if gothUser, err := gothic.CompleteUserAuth(c.Writer, c.Request); err == nil {
+	if gothUser, err := gothic.CompleteUserAuth(c.Writer(), c.Request()); err == nil {
 		// 认证成功
-		redirectToClient(c, &gothUser)
+		redirectToClient(&c, &gothUser)
 	} else {
-		gothic.BeginAuthHandler(c.Writer, c.Request)
+		gothic.BeginAuthHandler(c.Writer(), c.Request())
 	}
-}
+})
 
-func AuthCallbackRouter(c *gin.Context) {
+var AuthCallbackRouter = router.Handler(func(c router.Context) {
 	provider := c.Param("provider")
-	c.Request = mux.SetURLVars(c.Request, map[string]string{"provider": provider})
-	gothUser, err := gothic.CompleteUserAuth(c.Writer, c.Request)
+	c.ResetRequest(mux.SetURLVars(c.Request(), map[string]string{"provider": provider}))
+	gothUser, err := gothic.CompleteUserAuth(c.Writer(), c.Request())
 
 	if err != nil {
 		return
 	}
 
-	redirectToClient(c, &gothUser)
-}
+	redirectToClient(&c, &gothUser)
+})

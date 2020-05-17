@@ -5,14 +5,13 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/axetroy/go-server/internal/library/validator"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"net/http"
 )
 
 type UpdatePasswordParams struct {
@@ -159,50 +158,12 @@ func UpdatePasswordByAdmin(c helper.Context, userId string, input UpdatePassword
 	return
 }
 
-func UpdatePasswordRouter(c *gin.Context) {
+var UpdatePasswordRouter = router.Handler(func(c router.Context) {
 	var (
-		err   error
-		res   = schema.Response{}
 		input UpdatePasswordParams
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = UpdatePassword(helper.NewContext(c), input)
-}
-
-func UpdatePasswordByAdminRouter(c *gin.Context) {
-	var (
-		err   error
-		res   = schema.Response{}
-		input UpdatePasswordByAdminParams
-	)
-
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	userId := c.Param("user_id")
-
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = UpdatePasswordByAdmin(helper.NewContext(c), userId, input)
-}
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return UpdatePassword(helper.NewContext(&c), input)
+	})
+})

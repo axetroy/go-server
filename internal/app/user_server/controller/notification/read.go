@@ -5,13 +5,11 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
-	"github.com/axetroy/go-server/internal/middleware"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"net/http"
 )
 
 // MarkRead mark notification as read
@@ -97,23 +95,10 @@ func MarkRead(c helper.Context, notificationID string) (res schema.Response) {
 }
 
 // ReadRouter read this notification router
-func ReadRouter(c *gin.Context) {
-	var (
-		err error
-		res = schema.Response{}
-	)
-
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
+var ReadRouter = router.Handler(func(c router.Context) {
 	notificationID := c.Param("id")
 
-	res = MarkRead(helper.Context{
-		Uid: c.GetString(middleware.ContextUidField),
-	}, notificationID)
-}
+	c.ResponseFunc(nil, func() schema.Response {
+		return MarkRead(helper.NewContext(&c), notificationID)
+	})
+})

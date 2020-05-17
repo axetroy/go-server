@@ -6,10 +6,9 @@ import (
 	"fmt"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/schema"
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"net/http"
 	"regexp"
 )
 
@@ -52,22 +51,11 @@ func AreaList() (res schema.Response) {
 	return
 }
 
-func AreaListRouter(c *gin.Context) {
-	var (
-		err error
-		res = schema.Response{}
-	)
-
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	res = AreaList()
-}
+var AreaListRouter = router.Handler(func(c router.Context) {
+	c.ResponseFunc(nil, func() schema.Response {
+		return AreaList()
+	})
+})
 
 type AreaStruct struct {
 	Code string `json:"code"`
@@ -121,24 +109,20 @@ func FindAddress(areaCode string) (*Area, error) {
 	return &area, nil
 }
 
-func FindAddressRouter(c *gin.Context) {
+var FindAddressRouter = router.Handler(func(c router.Context) {
 	var (
 		err  error
 		res  = schema.Response{}
 		area *Area
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
 	code := c.Param("area_code")
 
 	area, err = FindAddress(code)
 
 	res.Data = area
-}
+
+	c.ResponseFunc(err, func() schema.Response {
+		return res
+	})
+})

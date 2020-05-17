@@ -2,7 +2,7 @@
 package helper
 
 import (
-	"github.com/axetroy/go-server/internal/middleware"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,9 +14,9 @@ type Context struct {
 	Ip        string `json:"ip"`         // IP地址
 }
 
-func NewContext(c *gin.Context) Context {
+func NewContext(c *router.Context) Context {
 	return Context{
-		Uid:       c.GetString(middleware.ContextUidField),
+		Uid:       c.Uid(),
 		UserAgent: c.GetHeader("user-agent"),
 		Ip:        c.ClientIP(),
 	}

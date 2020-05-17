@@ -5,12 +5,11 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"net/http"
 	"strings"
 )
 
@@ -85,21 +84,10 @@ func GetWallet(c helper.Context, currencyName string) (res schema.Response) {
 	return
 }
 
-func GetWalletRouter(c *gin.Context) {
-	var (
-		err error
-		res = schema.Response{}
-	)
-
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
+var GetWalletRouter = router.Handler(func(c router.Context) {
 	currency := c.Param("currency")
 
-	res = GetWallet(helper.NewContext(c), currency)
-}
+	c.ResponseFunc(nil, func() schema.Response {
+		return GetWallet(helper.NewContext(&c), currency)
+	})
+})

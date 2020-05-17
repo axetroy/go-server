@@ -5,13 +5,12 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
-	"net/http"
 	"time"
 )
 
@@ -119,21 +118,10 @@ func GetByStruct(m *model.InviteHistory) (res schema.Response) {
 	return
 }
 
-func GetRouter(c *gin.Context) {
-	var (
-		err error
-		res = schema.Response{}
-	)
-
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
+var GetRouter = router.Handler(func(c router.Context) {
 	inviteId := c.Param("invite_id")
 
-	res = Get(helper.NewContext(c), inviteId)
-}
+	c.ResponseFunc(nil, func() schema.Response {
+		return Get(helper.NewContext(&c), inviteId)
+	})
+})

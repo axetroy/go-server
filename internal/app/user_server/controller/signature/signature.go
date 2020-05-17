@@ -5,11 +5,9 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/library/util"
-	"github.com/axetroy/go-server/internal/middleware"
 	"github.com/axetroy/go-server/internal/schema"
-	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 func Encryption(c helper.Context, input string) (res schema.Response) {
@@ -45,7 +43,7 @@ func Encryption(c helper.Context, input string) (res schema.Response) {
 	return
 }
 
-func EncryptionRouter(c *gin.Context) {
+var EncryptionRouter = router.Handler(func(c router.Context) {
 	var (
 		err   error
 		input []byte
@@ -56,17 +54,15 @@ func EncryptionRouter(c *gin.Context) {
 		if err != nil {
 			res.Data = nil
 			res.Message = err.Error()
+			c.ResponseFunc(err, func() schema.Response {
+				return res
+			})
+		} else {
+			c.ResponseFunc(err, func() schema.Response {
+				return Encryption(helper.NewContext(&c), string(input))
+			})
 		}
-		c.JSON(http.StatusOK, res)
 	}()
 
-	input, err = c.GetRawData()
-
-	if err != nil {
-		return
-	}
-
-	res = Encryption(helper.Context{
-		Uid: c.GetString(middleware.ContextUidField),
-	}, string(input))
-}
+	input, err = c.GetBody()
+})

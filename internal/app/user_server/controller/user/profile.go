@@ -5,15 +5,13 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/library/validator"
-	"github.com/axetroy/go-server/internal/middleware"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
-	"net/http"
 	"time"
 )
 
@@ -90,69 +88,6 @@ func GetProfile(c helper.Context) (res schema.Response) {
 	data.PayPassword = userInfo.PayPassword != nil && len(*userInfo.PayPassword) != 0
 	data.CreatedAt = userInfo.CreatedAt.Format(time.RFC3339Nano)
 	data.UpdatedAt = userInfo.UpdatedAt.Format(time.RFC3339Nano)
-
-	return
-}
-
-func GetProfileByAdmin(c helper.Context, userId string) (res schema.Response) {
-	var (
-		err  error
-		data schema.Profile
-		tx   *gorm.DB
-	)
-
-	defer func() {
-		if r := recover(); r != nil {
-			switch t := r.(type) {
-			case string:
-				err = errors.New(t)
-			case error:
-				err = t
-			default:
-				err = exception.Unknown
-			}
-		}
-
-		if tx != nil {
-			if err != nil {
-				_ = tx.Rollback().Error
-			} else {
-				err = tx.Commit().Error
-			}
-		}
-
-		helper.Response(&res, data, nil, err)
-	}()
-
-	tx = database.Db.Begin()
-
-	adminInfo := model.Admin{
-		Id: c.Uid,
-	}
-
-	if err = tx.Last(&adminInfo).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			err = exception.AdminNotExist
-		}
-		return
-	}
-
-	user := model.User{Id: userId}
-
-	if err = tx.Last(&user).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			err = exception.UserNotExist
-		}
-		return
-	}
-
-	if err = mapstructure.Decode(user, &data.ProfilePure); err != nil {
-		return
-	}
-
-	data.PayPassword = user.PayPassword != nil && len(*user.PayPassword) != 0
-	data.CreatedAt = user.CreatedAt.Format(time.RFC3339Nano)
-	data.UpdatedAt = user.UpdatedAt.Format(time.RFC3339Nano)
 
 	return
 }
@@ -337,189 +272,18 @@ func UpdateProfile(c helper.Context, input UpdateProfileParams) (res schema.Resp
 	return
 }
 
-func UpdateProfileByAdmin(c helper.Context, userId string, input UpdateProfileParams) (res schema.Response) {
-	var (
-		err          error
-		data         schema.Profile
-		tx           *gorm.DB
-		shouldUpdate bool
-	)
-
-	defer func() {
-		if r := recover(); r != nil {
-			switch t := r.(type) {
-			case string:
-				err = errors.New(t)
-			case error:
-				err = t
-			default:
-				err = exception.Unknown
-			}
-		}
-
-		if tx != nil {
-			if err != nil {
-				_ = tx.Rollback().Error
-			} else {
-				err = tx.Commit().Error
-			}
-		}
-
-		helper.Response(&res, data, nil, err)
-	}()
-
-	// 参数校验
-	if err = validator.ValidateStruct(input); err != nil {
-		return
-	}
-
-	tx = database.Db.Begin()
-
-	// 检查是不是管理员
-	adminInfo := model.Admin{
-		Id: c.Uid,
-	}
-
-	if err = tx.First(&adminInfo).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			err = exception.AdminNotExist
-		}
-		return
-	}
-
-	updated := model.User{}
-
-	if input.Nickname != nil {
-		updated.Nickname = input.Nickname
-		shouldUpdate = true
-	}
-
-	if input.Avatar != nil {
-		updated.Avatar = *input.Avatar
-		shouldUpdate = true
-	}
-
-	if input.Gender != nil {
-		updated.Gender = *input.Gender
-		shouldUpdate = true
-	}
-
-	if shouldUpdate {
-		if err = tx.Table(updated.TableName()).Where(model.User{Id: userId}).Updates(updated).Error; err != nil {
-			return
-		}
-	}
-
-	userInfo := model.User{
-		Id: userId,
-	}
-
-	if err = tx.First(&userInfo).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			err = exception.UserNotExist
-		}
-		return
-	}
-
-	if err = mapstructure.Decode(userInfo, &data.ProfilePure); err != nil {
-		return
-	}
-
-	data.PayPassword = userInfo.PayPassword != nil && len(*userInfo.PayPassword) != 0
-	data.CreatedAt = userInfo.CreatedAt.Format(time.RFC3339Nano)
-	data.UpdatedAt = userInfo.UpdatedAt.Format(time.RFC3339Nano)
-
-	return
-}
-
-func GetProfileRouter(c *gin.Context) {
-	var (
-		err error
-		res = schema.Response{}
-	)
-
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	res = GetProfile(helper.Context{
-		Uid: c.GetString(middleware.ContextUidField),
+var GetProfileRouter = router.Handler(func(c router.Context) {
+	c.ResponseFunc(nil, func() schema.Response {
+		return GetProfile(helper.NewContext(&c))
 	})
-}
+})
 
-func GetProfileByAdminRouter(c *gin.Context) {
+var UpdateProfileRouter = router.Handler(func(c router.Context) {
 	var (
-		err error
-		res = schema.Response{}
-	)
-
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	userId := c.Param("user_id")
-
-	res = GetProfileByAdmin(helper.Context{
-		Uid: c.GetString(middleware.ContextUidField),
-	}, userId)
-}
-
-func UpdateProfileRouter(c *gin.Context) {
-	var (
-		err   error
-		res   = schema.Response{}
 		input UpdateProfileParams
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = UpdateProfile(helper.Context{
-		Uid: c.GetString(middleware.ContextUidField),
-	}, input)
-}
-
-func UpdateProfileByAdminRouter(c *gin.Context) {
-	var (
-		err   error
-		res   = schema.Response{}
-		input UpdateProfileParams
-	)
-
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	userId := c.Param("user_id")
-
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = UpdateProfileByAdmin(helper.Context{
-		Uid: c.GetString(middleware.ContextUidField),
-	}, userId, input)
-}
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return UpdateProfile(helper.NewContext(&c), input)
+	})
+})
