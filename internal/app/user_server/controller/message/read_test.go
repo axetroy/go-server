@@ -3,6 +3,7 @@ package message_test
 
 import (
 	"encoding/json"
+	messageAdmin "github.com/axetroy/go-server/internal/app/admin_server/controller/message"
 	"github.com/axetroy/go-server/internal/app/user_server/controller/message"
 	"github.com/axetroy/go-server/internal/library/helper"
 	"github.com/axetroy/go-server/internal/schema"
@@ -35,7 +36,7 @@ func TestMarkRead(t *testing.T) {
 			content = "TestUpdate"
 		)
 
-		r := message.Create(context, message.CreateMessageParams{
+		r := messageAdmin.Create(context, messageAdmin.CreateMessageParams{
 			Uid:     userInfo.Id,
 			Title:   title,
 			Content: content,
@@ -104,7 +105,7 @@ func TestReadRouter(t *testing.T) {
 			content = "TestUpdate"
 		)
 
-		r := message.Create(context, message.CreateMessageParams{
+		r := messageAdmin.Create(context, messageAdmin.CreateMessageParams{
 			Uid:     userInfo.Id,
 			Title:   title,
 			Content: content,

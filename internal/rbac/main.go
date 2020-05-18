@@ -6,11 +6,8 @@ import (
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/rbac/accession"
 	"github.com/axetroy/go-server/internal/rbac/role"
-	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"net/http"
 )
 
 type Controller struct {
@@ -73,37 +70,4 @@ func (c *Controller) Has(a accession.Accession) bool {
 		}
 	}
 	return false
-}
-
-// 根据 RBAC 鉴权的中间件
-func Require(accessions ...accession.Accession) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		var (
-			err error
-			uid = c.GetString("uid") // 这个中间件必须安排在JWT的中间件后面, 所以这里是拿的到 UID 的
-			cc  *Controller
-		)
-
-		defer func() {
-			if err != nil {
-				c.JSON(http.StatusOK, schema.Response{
-					Message: err.Error(),
-					Data:    nil,
-				})
-				c.Abort()
-			}
-		}()
-
-		if uid == "" {
-			err = exception.NoPermission
-		}
-
-		if cc, err = New(uid); err != nil {
-			return
-		}
-
-		if cc.Require(accessions) == false {
-			err = exception.NoPermission
-		}
-	}
 }

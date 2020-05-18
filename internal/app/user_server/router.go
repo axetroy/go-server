@@ -47,7 +47,8 @@ func init() {
 	{
 		v1.Use(recover.New())
 		v1.Use(logger.New())
-		v1.Use(middleware.CommonNew)
+		v1.Use(middleware.Common())
+		v1.Use(middleware.CORS())
 
 		{
 			v1.Get("", router.Handler(func(c router.Context) {

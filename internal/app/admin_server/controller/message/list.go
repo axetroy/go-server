@@ -6,13 +6,10 @@ import (
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
 	"github.com/axetroy/go-server/internal/library/router"
-	"github.com/axetroy/go-server/internal/middleware"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
-	"github.com/gin-gonic/gin"
 	"github.com/mitchellh/mapstructure"
-	"net/http"
 	"time"
 )
 
@@ -167,31 +164,6 @@ func GetMessageListByAdmin(c helper.Context, input QueryAdmin) (res schema.Respo
 	meta.Sort = query.Sort
 
 	return
-}
-
-func GetMessageListByUserRouter(c *gin.Context) {
-	var (
-		err   error
-		res   = schema.Response{}
-		input Query
-	)
-
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	if err = c.ShouldBindQuery(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = GetMessageListByUser(helper.Context{
-		Uid: c.GetString(middleware.ContextUidField),
-	}, input)
 }
 
 var GetMessageListByAdminRouter = router.Handler(func(c router.Context) {

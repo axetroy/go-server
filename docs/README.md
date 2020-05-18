@@ -16,7 +16,7 @@
 
 ### 技术栈
 
-- [x] Web 框架 [Gin](https://github.com/gin-gonic/gin)
+- [x] Web 框架 [iris](https://github.com/kataras/iris)
 - [x] 数据库 Postgres
 - [x] 缓存 Redis
 - [x] 身份认证机制 [JWT](http://jwt.io)/[oAuth2](https://oauth.net/2/)

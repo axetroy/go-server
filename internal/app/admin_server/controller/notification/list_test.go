@@ -14,7 +14,7 @@ import (
 	"testing"
 )
 
-func TestGetNotificationListByUser(t *testing.T) {
+func TestGetNotificationListByAdmin(t *testing.T) {
 	{
 		var (
 			adminUid string
@@ -72,7 +72,7 @@ func TestGetNotificationListByUser(t *testing.T) {
 			query := schema.Query{
 				Limit: 20,
 			}
-			r := notification.GetNotificationListByUser(helper.Context{}, notification.Query{
+			r := notification.GetNotificationListByAdmin(helper.Context{}, notification.Query{
 				Query: query,
 			})
 
@@ -90,7 +90,7 @@ func TestGetNotificationListByUser(t *testing.T) {
 	}
 }
 
-func TestGetNotificationListByUserRouter(t *testing.T) {
+func TestGetNotificationListByAdminRouter(t *testing.T) {
 	adminInfo, _ := tester.LoginAdmin()
 	userInfo, _ := tester.CreateUser()
 
@@ -145,31 +145,6 @@ func TestGetNotificationListByUserRouter(t *testing.T) {
 		assert.Nil(t, res.Decode(&banners))
 
 		for _, b := range banners {
-			assert.IsType(t, "string", b.Title)
-			assert.IsType(t, "string", b.Content)
-			assert.IsType(t, "string", b.CreatedAt)
-			assert.IsType(t, "string", b.UpdatedAt)
-		}
-	}
-
-	// 普通用户获取通知
-	{
-		header := mocker.Header{
-			"Authorization": token.Prefix + " " + userInfo.Token,
-		}
-
-		r := tester.HttpUser.Get("/v1/notification", nil, &header)
-		res := schema.Response{}
-
-		assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res))
-		assert.Equal(t, "", res.Message)
-		assert.Equal(t, schema.StatusSuccess, res.Status)
-
-		list := make([]schema.Notification, 0)
-
-		assert.Nil(t, res.Decode(&list))
-
-		for _, b := range list {
 			assert.IsType(t, "string", b.Title)
 			assert.IsType(t, "string", b.Content)
 			assert.IsType(t, "string", b.CreatedAt)

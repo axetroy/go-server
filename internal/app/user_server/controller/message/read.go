@@ -79,7 +79,7 @@ func MarkRead(c helper.Context, id string) (res schema.Response) {
 }
 
 var ReadRouter = router.Handler(func(c router.Context) {
-	id := c.Param(ParamsIdName)
+	id := c.Param("message_id")
 
 	c.ResponseFunc(nil, func() schema.Response {
 		return MarkRead(helper.NewContext(&c), id)

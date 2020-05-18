@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/kataras/iris/v12"
 	"net/http"
 	"strings"
 )
@@ -31,19 +31,20 @@ var (
 	}, ",")
 )
 
-func CORS() gin.HandlerFunc {
-	return func(c *gin.Context) {
+func CORS() iris.Handler {
+	return func(c iris.Context) {
 		origin := c.GetHeader("Origin")
-		c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
-		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", allowHeaders)
-		c.Writer.Header().Set("Access-Control-Allow-Methods", allowMethods)
+		c.Header("Access-Control-Allow-Origin", origin)
+		c.Header("Access-Control-Allow-Credentials", "true")
+		c.Header("Access-Control-Allow-Headers", allowHeaders)
+		c.Header("Access-Control-Allow-Methods", allowMethods)
 
-		if c.Request.Method == http.MethodOptions {
-			c.AbortWithStatus(204)
+		if c.Request().Method == http.MethodOptions {
+			c.StatusCode(http.StatusNoContent)
+			c.EndRequest()
 			return
+		} else {
+			c.Next()
 		}
-
-		c.Next()
 	}
 }

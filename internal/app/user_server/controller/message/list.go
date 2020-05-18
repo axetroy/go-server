@@ -6,13 +6,10 @@ import (
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
 	"github.com/axetroy/go-server/internal/library/router"
-	"github.com/axetroy/go-server/internal/middleware"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
-	"github.com/gin-gonic/gin"
 	"github.com/mitchellh/mapstructure"
-	"net/http"
 	"time"
 )
 
@@ -97,78 +94,6 @@ func GetMessageListByUser(c helper.Context, input Query) (res schema.Response) {
 	return
 }
 
-// 用户获取自己的消息列表
-func GetMessageListByAdmin(c helper.Context, input QueryAdmin) (res schema.Response) {
-	var (
-		err  error
-		data = make([]schema.MessageAdmin, 0) // 接口输出的数据
-		list = make([]model.Message, 0)       // 数据库查询出的原始数据
-		meta = &schema.Meta{}
-	)
-
-	defer func() {
-		if r := recover(); r != nil {
-			switch t := r.(type) {
-			case string:
-				err = errors.New(t)
-			case error:
-				err = t
-			default:
-				err = exception.Unknown
-			}
-		}
-
-		helper.Response(&res, data, meta, err)
-	}()
-
-	query := input.Query
-
-	query.Normalize()
-
-	filter := model.Message{}
-
-	if input.Uid != nil {
-		filter.Uid = *input.Uid
-	}
-
-	if input.Read != nil {
-		filter.Read = *input.Read
-	}
-
-	if input.Status != nil {
-		filter.Status = *input.Status
-	}
-
-	var total int64
-
-	if err = query.Order(database.Db.Limit(query.Limit).Offset(query.Limit * query.Page)).Where(&filter).Find(&list).Error; err != nil {
-		return
-	}
-
-	if err = database.Db.Model(&filter).Where(&filter).Count(&total).Error; err != nil {
-		return
-	}
-
-	for _, v := range list {
-		d := schema.MessageAdmin{}
-		if er := mapstructure.Decode(v, &d.MessagePureAdmin); er != nil {
-			err = er
-			return
-		}
-		d.CreatedAt = v.CreatedAt.Format(time.RFC3339Nano)
-		d.UpdatedAt = v.UpdatedAt.Format(time.RFC3339Nano)
-		data = append(data, d)
-	}
-
-	meta.Total = total
-	meta.Num = len(data)
-	meta.Page = query.Page
-	meta.Limit = query.Limit
-	meta.Sort = query.Sort
-
-	return
-}
-
 var GetMessageListByUserRouter = router.Handler(func(c router.Context) {
 	var (
 		input Query
@@ -178,28 +103,3 @@ var GetMessageListByUserRouter = router.Handler(func(c router.Context) {
 		return GetMessageListByUser(helper.NewContext(&c), input)
 	})
 })
-
-func GetMessageListByAdminRouter(c *gin.Context) {
-	var (
-		err   error
-		res   = schema.Response{}
-		input QueryAdmin
-	)
-
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	if err = c.ShouldBindQuery(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = GetMessageListByAdmin(helper.Context{
-		Uid: c.GetString(middleware.ContextUidField),
-	}, input)
-}

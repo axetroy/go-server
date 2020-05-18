@@ -6,14 +6,11 @@ import (
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
 	"github.com/axetroy/go-server/internal/library/router"
-	"github.com/axetroy/go-server/internal/middleware"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
-	"net/http"
 	"time"
 )
 
@@ -78,105 +75,11 @@ func Get(c helper.Context, id string) (res schema.Response) {
 	return
 }
 
-// Get Message detail
-func GetByAdmin(c helper.Context, id string) (res schema.Response) {
-	var (
-		err  error
-		data schema.MessageAdmin
-		tx   *gorm.DB
-	)
-
-	defer func() {
-		if r := recover(); r != nil {
-			switch t := r.(type) {
-			case string:
-				err = errors.New(t)
-			case error:
-				err = t
-			default:
-				err = exception.Unknown
-			}
-		}
-
-		if tx != nil {
-			if err != nil {
-				_ = tx.Rollback().Error
-			} else {
-				err = tx.Commit().Error
-			}
-		}
-
-		helper.Response(&res, data, nil, err)
-	}()
-
-	tx = database.Db.Begin()
-
-	adminInfo := model.Admin{
-		Id: c.Uid,
-	}
-
-	if err = tx.First(&adminInfo).Error; err != nil {
-		// 没有找到管理员
-		if err == gorm.ErrRecordNotFound {
-			err = exception.AdminNotExist
-		}
-		return
-	}
-
-	MessageInfo := model.Message{
-		Id: id,
-	}
-
-	if err = tx.Last(&MessageInfo).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			err = exception.NoData
-		}
-		return
-	}
-
-	if err = mapstructure.Decode(MessageInfo, &data.MessagePureAdmin); err != nil {
-		return
-	}
-
-	if MessageInfo.ReadAt != nil {
-		readAt := MessageInfo.ReadAt.Format(time.RFC3339Nano)
-		data.Read = true
-		data.ReadAt = &readAt
-	}
-
-	data.CreatedAt = MessageInfo.CreatedAt.Format(time.RFC3339Nano)
-	data.UpdatedAt = MessageInfo.UpdatedAt.Format(time.RFC3339Nano)
-
-	return
-}
-
 // GetRouter get Message detail router
 var GetRouter = router.Handler(func(c router.Context) {
-	id := c.Param(ParamsIdName)
+	id := c.Param("message_id")
 
 	c.ResponseFunc(nil, func() schema.Response {
 		return Get(helper.NewContext(&c), id)
 	})
 })
-
-// 管理员获取个人消息详情
-func GetAdminRouter(c *gin.Context) {
-	var (
-		err error
-		res = schema.Response{}
-	)
-
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	id := c.Param(ParamsIdName)
-
-	res = GetByAdmin(helper.Context{
-		Uid: c.GetString(middleware.ContextUidField),
-	}, id)
-}
