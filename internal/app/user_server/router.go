@@ -187,10 +187,10 @@ func init() {
 		{
 			reportRouter := v1.Party("/report")
 			reportRouter.Use(userAuthMiddleware)
-			reportRouter.Get("", report.GetListRouter)                 // 获取我的反馈列表
-			reportRouter.Post("", report.CreateRouter)                 // 添加一条反馈
-			reportRouter.Get("/r/{report_id}", report.GetReportRouter) // 获取反馈详情
-			reportRouter.Put("/r/{report_id}", report.UpdateRouter)    // 更新这条反馈信息
+			reportRouter.Get("", report.GetListRouter)               // 获取我的反馈列表
+			reportRouter.Post("", report.CreateRouter)               // 添加一条反馈
+			reportRouter.Get("/{report_id}", report.GetReportRouter) // 获取反馈详情
+			reportRouter.Put("/{report_id}", report.UpdateRouter)    // 更新这条反馈信息
 		}
 
 		// 帮助中心

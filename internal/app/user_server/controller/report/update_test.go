@@ -110,7 +110,7 @@ func TestUpdateRouter(t *testing.T) {
 			Status: &model.ReportStatusResolve,
 		})
 
-		res := tester.HttpUser.Put("/v1/report/r/"+reportInfo.Id, body, &header)
+		res := tester.HttpUser.Put("/v1/report/"+reportInfo.Id, body, &header)
 		r := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, res.Code)

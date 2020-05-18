@@ -122,7 +122,7 @@ func TestUpdateByAdminRouter(t *testing.T) {
 			Locked: &locked,
 		})
 
-		res := tester.HttpAdmin.Put("/v1/report/r/"+reportInfo.Id, body, &header)
+		res := tester.HttpAdmin.Put("/v1/report/"+reportInfo.Id, body, &header)
 		r := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, res.Code)

@@ -24,13 +24,13 @@
 
 ### 获取反馈详情
 
-[GET] /v1/report/r/:report_id
+[GET] /v1/report/:report_id
 
 获取一条反馈的详情
 
 ### 更新反馈信息
 
-[PUT] /v1/report/r/:report_id
+[PUT] /v1/report/:report_id
 
 更新反馈信息, 主要标记是否已解决, 如果该反馈已被锁定，则无法更新
 

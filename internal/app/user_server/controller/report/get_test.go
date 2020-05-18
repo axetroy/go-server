@@ -105,7 +105,7 @@ func TestGetReportRouter(t *testing.T) {
 			Type:    reportType,
 		})
 
-		res := tester.HttpUser.Get("/v1/report/r/"+reportInfo.Id, body, &header)
+		res := tester.HttpUser.Get("/v1/report/"+reportInfo.Id, body, &header)
 		r := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, res.Code)
@@ -216,7 +216,7 @@ func TestGetReportByAdminRouter(t *testing.T) {
 			Type:    reportType,
 		})
 
-		res := tester.HttpAdmin.Get("/v1/report/r/"+reportInfo.Id, body, &header)
+		res := tester.HttpAdmin.Get("/v1/report/"+reportInfo.Id, body, &header)
 		r := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, res.Code)

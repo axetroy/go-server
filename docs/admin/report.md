@@ -10,11 +10,11 @@
 
 ### 获取反馈详情
 
-[GET] /v1/report/r/:report_id
+[GET] /v1/report/:report_id
 
 ### 更新反馈信息
 
-[PUT] /v1/report/r/:report_id
+[PUT] /v1/report/:report_id
 
 | 参数   | 类型   | 说明                                   | 必选 |
 | ------ | ------ | -------------------------------------- | ---- |
