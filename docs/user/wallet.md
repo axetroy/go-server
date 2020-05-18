@@ -35,6 +35,6 @@
 
 ### 获取转账记录详情
 
-[GET] /v1/transfer/t/:transfer_id
+[GET] /v1/transfer/:transfer_id
 
 获取某一条转账记录的详情

@@ -147,7 +147,7 @@ func init() {
 			transferRouter.Use(userAuthMiddleware)
 			transferRouter.Get("", transfer.GetHistoryRouter)                                                                       // 获取我的转账记录
 			transferRouter.Post("", middleware.Permission(*accession.DoTransfer), middleware.AuthPayPasswordNew, transfer.ToRouter) // 转账给某人
-			transferRouter.Get("/t/{transfer_id}", transfer.GetDetailRouter)                                                        // 获取单条转账详情
+			transferRouter.Get("/{transfer_id}", transfer.GetDetailRouter)                                                          // 获取单条转账详情
 		}
 
 		// 财务日志
