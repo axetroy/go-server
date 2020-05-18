@@ -3,16 +3,7 @@ package helper
 import (
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/schema"
-	"regexp"
 )
-
-var (
-	codeReg = regexp.MustCompile("\\s*\\[\\d+\\]$")
-)
-
-func TrimCode(message string) string {
-	return codeReg.ReplaceAllString(message, "")
-}
 
 func Response(res *schema.Response, data interface{}, meta *schema.Meta, err error) {
 	if err != nil {

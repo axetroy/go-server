@@ -79,7 +79,7 @@ func BindingEmail(c helper.Context, input BindingEmailParams) (res schema.Respon
 
 	// 如果能找到帐号，说明已经绑定了
 	if userInfo.Id != "" {
-		err = exception.DuplicateBinding
+		err = exception.Duplicate
 		return
 	}
 
@@ -95,7 +95,7 @@ func BindingEmail(c helper.Context, input BindingEmailParams) (res schema.Respon
 
 	// 如果该用户已经绑定过邮箱了
 	if userInfo.Email != nil {
-		err = exception.DuplicateBinding
+		err = exception.Duplicate
 		return
 	}
 
@@ -170,7 +170,7 @@ func BindingPhone(c helper.Context, input BindingPhoneParams) (res schema.Respon
 
 	// 如果能找到帐号，说明已经绑定了
 	if userInfo.Id != "" {
-		err = exception.DuplicateBinding
+		err = exception.Duplicate
 		return
 	}
 
@@ -186,7 +186,7 @@ func BindingPhone(c helper.Context, input BindingPhoneParams) (res schema.Respon
 
 	// 如果该用户已经绑定过邮箱了
 	if userInfo.Email != nil {
-		err = exception.DuplicateBinding
+		err = exception.Duplicate
 		return
 	}
 
@@ -265,7 +265,7 @@ func BindingWechat(c helper.Context, input BindingWechatMiniAppParams) (res sche
 	}
 
 	if userInfo.WechatOpenID != nil {
-		err = exception.DuplicateBinding
+		err = exception.Duplicate
 		return
 	}
 
@@ -288,7 +288,7 @@ func BindingWechat(c helper.Context, input BindingWechatMiniAppParams) (res sche
 
 	// 如果 Uid 不为空，则说明这个微信绑定过帐号了
 	if wechatInfo.Uid != "" {
-		err = exception.DuplicateBinding
+		err = exception.Duplicate
 		return
 	}
 

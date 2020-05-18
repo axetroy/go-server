@@ -2,7 +2,6 @@
 package exception
 
 var (
-	SystemMaintenance = New("系统维护中", -1)
 	Unknown           = New("未知错误", 0)
 	InvalidParams     = New("参数不正确", 100000)
 	NoData            = New("找不到数据", 100001)
@@ -10,6 +9,7 @@ var (
 	InvalidSignature  = New("数据签名不正确", 100003)
 	InvalidFormat     = New("格式不正确", 100004)
 	InvalidInviteCode = New("无效的邀请码", 100005)
+	Duplicate         = New("重复操作", 100006)
 	SendMsgFail       = New("发送短信失败", 101000)
 	SendEmailFail     = New("发送邮件失败", 101001)
 	UserNotLogin      = New("请先登陆", 999999)
@@ -21,7 +21,6 @@ var (
 	// 用户类
 	UserNotExist             = New("用户不存在", 200000)
 	UserExist                = New("用户已存在", 200001)
-	UserHaveActive           = New("用户已激活", 200002)
 	UserIsInActive           = New("帐号未激活", 200003)
 	UserHaveBeenBan          = New("帐号已被禁用", 200004)
 	PasswordDuplicate        = New("新密码和旧密码不能相同", 200005)
@@ -34,7 +33,6 @@ var (
 	InvalidPassword          = New("密码错误", 200012)
 	RequirePassword          = New("请输入密码", 200013)
 	RequirePayPassword       = New("请输入交易密码", 200014)
-	DuplicateBinding         = New("帐号重复绑定", 200015)
 	RenameUserNameFail       = New("无法重命名用户名", 200016)
 
 	// 钱包
@@ -42,7 +40,6 @@ var (
 	InvalidWallet    = New("无效的钱包", 0)
 
 	// 上传
-	RequireFile    = New("请上传文件", 0)
 	NotSupportType = New("不支持该文件类型", 0)
 	OutOfSize      = New("超出文件大小限制", 0)
 
