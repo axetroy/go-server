@@ -53,7 +53,7 @@ func TestGetWalletRouter(t *testing.T) {
 			"Authorization": token.Prefix + " " + userInfo.Token,
 		}
 
-		r := tester.HttpUser.Get("/v1/wallet/w/cny", nil, &header)
+		r := tester.HttpUser.Get("/v1/wallet/cny", nil, &header)
 		res := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, r.Code)

@@ -6,7 +6,7 @@
 
 ### 获取钱包详情
 
-/v1/wallet/w/:currency
+/v1/wallet/:currency
 
 获取指定一个钱包的详细信息.
 

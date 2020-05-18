@@ -137,8 +137,8 @@ func init() {
 		{
 			walletRouter := v1.Party("/wallet")
 			walletRouter.Use(userAuthMiddleware)
-			walletRouter.Get("", wallet.GetWalletsRouter)             // 获取所有钱包列表
-			walletRouter.Get("/w/{currency}", wallet.GetWalletRouter) // 获取单个钱包的详细信息
+			walletRouter.Get("", wallet.GetWalletsRouter)           // 获取所有钱包列表
+			walletRouter.Get("/{currency}", wallet.GetWalletRouter) // 获取单个钱包的详细信息
 		}
 
 		// 转账类
