@@ -144,7 +144,7 @@ func TestGetAdminInfoByIdRouter(t *testing.T) {
 		"Authorization": token.Prefix + " " + adminInfo.Token,
 	}
 
-	r := tester.HttpAdmin.Get("/v1/admin/a/"+adminInfo.Id, nil, &header)
+	r := tester.HttpAdmin.Get("/v1/admin/"+adminInfo.Id, nil, &header)
 	res := schema.Response{}
 
 	assert.Equal(t, http.StatusOK, r.Code)

@@ -64,12 +64,12 @@ func init() {
 		// 管理员类
 		{
 			adminRouter := v1.Party("/admin")
-			adminRouter.Post("", admin.CreateAdminRouter)                    // 创建管理员
-			adminRouter.Get("", admin.GetListRouter)                         // 获取管理员列表
-			adminRouter.Get("/a/{admin_id}", admin.GetAdminInfoByIdRouter)   // 获取某个管理员的信息
-			adminRouter.Put("/a/{admin_id}", admin.UpdateRouter)             // 修改某个管理员的信息
-			adminRouter.Delete("/a/{admin_id}", admin.DeleteAdminByIdRouter) // 修改某个管理员的信息
-			adminRouter.Get("/accession", admin.GetAccessionRouter)          // 获取管理员的所有权限列表
+			adminRouter.Post("", admin.CreateAdminRouter)                  // 创建管理员
+			adminRouter.Get("", admin.GetListRouter)                       // 获取管理员列表
+			adminRouter.Get("/accession", admin.GetAccessionRouter)        // 获取管理员的所有权限列表
+			adminRouter.Get("/{admin_id}", admin.GetAdminInfoByIdRouter)   // 获取某个管理员的信息
+			adminRouter.Put("/{admin_id}", admin.UpdateRouter)             // 修改某个管理员的信息
+			adminRouter.Delete("/{admin_id}", admin.DeleteAdminByIdRouter) // 修改某个管理员的信息
 		}
 
 		// 用户类

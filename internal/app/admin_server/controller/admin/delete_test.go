@@ -126,7 +126,7 @@ func TestDeleteAdminByIdRouter(t *testing.T) {
 			"Authorization": token.Prefix + " " + adminInfo.Token,
 		}
 
-		r := tester.HttpAdmin.Delete("/v1/admin/a/"+uid, nil, &header)
+		r := tester.HttpAdmin.Delete("/v1/admin/"+uid, nil, &header)
 
 		assert.Equal(t, http.StatusOK, r.Code)
 

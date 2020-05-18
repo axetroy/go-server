@@ -12,7 +12,7 @@
 
 ### 修改管理员信息
 
-[PUT] /v1/admin/a/:admin_id
+[PUT] /v1/admin/:admin_id
 
 仅限于超级管理员
 
@@ -48,13 +48,13 @@
 
 ### 获取指定管理员信息
 
-[GET] /v1/admin/a/:admin_id
+[GET] /v1/admin/:admin_id
 
 获取指定管理员信息
 
 ### 删除管理员
 
-[DELETE] /v1/admin/a/:admin_id
+[DELETE] /v1/admin/:admin_id
 
 删除删除管理员
 

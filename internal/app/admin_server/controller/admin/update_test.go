@@ -79,7 +79,7 @@ func TestUpdateRouter(t *testing.T) {
 		Status: &newStatus,
 	})
 
-	r := tester.HttpAdmin.Put("/v1/admin/a/"+testAdminInfo.Id, body, &header)
+	r := tester.HttpAdmin.Put("/v1/admin/"+testAdminInfo.Id, body, &header)
 
 	res := schema.Response{}
 	testProfile := schema.AdminProfile{}
