@@ -112,9 +112,9 @@ func init() {
 			notificationRouter := v1.Party("/notification")
 			notificationRouter.Post("", notification.CreateRouter)                    // 创建系统通知
 			notificationRouter.Get("", notification.GetNotificationListByAdminRouter) // 获取系统通知列表
-			notificationRouter.Put("/n/{id}", notification.UpdateRouter)              // 更新系统通知
-			notificationRouter.Delete("/n/{id}", notification.DeleteRouter)           // 删除系统通知
-			notificationRouter.Get("/n/{id}", notification.GetRouter)                 // 获取单条系统通知
+			notificationRouter.Put("/{id}", notification.UpdateRouter)                // 更新系统通知
+			notificationRouter.Delete("/{id}", notification.DeleteRouter)             // 删除系统通知
+			notificationRouter.Get("/{id}", notification.GetRouter)                   // 获取单条系统通知
 		}
 
 		// 个人消息

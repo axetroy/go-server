@@ -6,12 +6,12 @@
 
 ### 系统通知详情
 
-[GET] /v1/notification/n/:notification_id
+[GET] /v1/notification/:notification_id
 
 获取某个系统通知详情
 
 ### 标记系统通知已读
 
-[PUT] /v1/notification/n/:notification_id/read
+[PUT] /v1/notification/:notification_id/read
 
 标记系统通知为已读

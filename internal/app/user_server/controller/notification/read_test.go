@@ -147,7 +147,7 @@ func TestReadRouter(t *testing.T) {
 			"Authorization": token.Prefix + " " + userInfo.Token,
 		}
 
-		r := tester.HttpUser.Put("/v1/notification/n/"+notificationId+"/read", nil, &header)
+		r := tester.HttpUser.Put("/v1/notification/"+notificationId+"/read", nil, &header)
 		res := schema.Response{}
 
 		if !assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res)) {

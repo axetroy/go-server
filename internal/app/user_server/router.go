@@ -169,8 +169,8 @@ func init() {
 			notificationRouter := v1.Party("/notification")
 			notificationRouter.Use(userAuthMiddleware)
 			notificationRouter.Get("", notification.GetNotificationListByUserRouter) // 获取系统通知列表
-			notificationRouter.Get("/n/{id}", notification.GetRouter)                // 获取某一条系统通知详情
-			notificationRouter.Put("/n/{id}/read", notification.ReadRouter)          // 标记通知为已读
+			notificationRouter.Put("/{id}/read", notification.ReadRouter)            // 标记通知为已读
+			notificationRouter.Get("/{id}", notification.GetRouter)                  // 获取某一条系统通知详情
 		}
 
 		// 用户的个人消息, 个人消息是可以删除的

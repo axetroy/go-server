@@ -10,7 +10,7 @@
 
 ### 修改系统通知
 
-[PUT] /v1/notification/n/:notification_id
+[PUT] /v1/notification/:notification_id
 
 | 参数    | 类型     | 说明     | 必填 |
 | ------- | -------- | -------- | ---- |
@@ -20,7 +20,7 @@
 
 ### 删除系统通知
 
-[DELETE] /v1/notification/n/:notification_id
+[DELETE] /v1/notification/:notification_id
 
 ### 获取系统通知列表
 
@@ -28,4 +28,4 @@
 
 ### 获取系统通知详情
 
-[GET] /v1/notification/n/:notification_id
+[GET] /v1/notification/:notification_id

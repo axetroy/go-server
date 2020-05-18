@@ -179,7 +179,7 @@ func TestDeleteRouter(t *testing.T) {
 
 	// 删除这条通知
 	{
-		r := tester.HttpAdmin.Delete("/v1/notification/n/"+notificationInfo.Id, nil, &header)
+		r := tester.HttpAdmin.Delete("/v1/notification/"+notificationInfo.Id, nil, &header)
 
 		res := schema.Response{}
 

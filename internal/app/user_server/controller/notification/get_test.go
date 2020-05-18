@@ -111,7 +111,7 @@ func TestGetRouter(t *testing.T) {
 			"Authorization": token.Prefix + " " + adminInfo.Token,
 		}
 
-		r := tester.HttpAdmin.Get("/v1/notification/n/"+notificationId, nil, &header)
+		r := tester.HttpAdmin.Get("/v1/notification/"+notificationId, nil, &header)
 		res := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, r.Code)
@@ -136,7 +136,7 @@ func TestGetRouter(t *testing.T) {
 			"Authorization": token.Prefix + " " + userInfo.Token,
 		}
 
-		r := tester.HttpUser.Get("/v1/notification/n/"+notificationId, nil, &header)
+		r := tester.HttpUser.Get("/v1/notification/"+notificationId, nil, &header)
 		res := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, r.Code)
