@@ -24,7 +24,6 @@ import (
 	"github.com/axetroy/go-server/internal/middleware"
 	"github.com/axetroy/go-server/internal/rbac/accession"
 	"github.com/kataras/iris/v12"
-	"github.com/kataras/iris/v12/middleware/logger"
 	"github.com/kataras/iris/v12/middleware/recover"
 	"net/http"
 )
@@ -46,7 +45,6 @@ func init() {
 
 	{
 		v1.Use(recover.New())
-		v1.Use(logger.New())
 		v1.Use(middleware.Common())
 		v1.Use(middleware.CORS())
 
