@@ -5,15 +5,13 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/library/validator"
-	"github.com/axetroy/go-server/internal/middleware"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
-	"net/http"
 	"time"
 )
 
@@ -111,27 +109,12 @@ func Update(c helper.Context, notificationId string, input UpdateParams) (res sc
 	return
 }
 
-func UpdateRouter(c *gin.Context) {
+var UpdateRouter = router.Handler(func(c router.Context) {
 	var (
 		input UpdateParams
-		err   error
-		res   = schema.Response{}
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = Update(helper.Context{
-		Uid: c.GetString(middleware.ContextUidField),
-	}, c.Param("id"), input)
-}
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return Update(helper.NewContext(&c), c.Param("id"), input)
+	})
+})

@@ -26,7 +26,7 @@ func TestSignInWithEmptyBody(t *testing.T) {
 
 	assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res))
 
-	assert.Equal(t, schema.StatusFail, res.Status)
+	assert.Equal(t, exception.InvalidParams.Code(), res.Status)
 	assert.Equal(t, exception.InvalidParams.Error(), res.Message)
 	assert.Nil(t, res.Data)
 }

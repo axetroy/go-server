@@ -5,13 +5,12 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
-	"net/http"
 	"time"
 )
 
@@ -63,21 +62,10 @@ func GetMenu(ctx helper.Context, id string) (res schema.Response) {
 	return
 }
 
-func GetMenuRouter(c *gin.Context) {
-	var (
-		err error
-		res = schema.Response{}
-	)
-
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
+var GetMenuRouter = router.Handler(func(c router.Context) {
 	id := c.Param("menu_id")
 
-	res = GetMenu(helper.NewContext(c), id)
-}
+	c.ResponseFunc(nil, func() schema.Response {
+		return GetMenu(helper.NewContext(&c), id)
+	})
+})

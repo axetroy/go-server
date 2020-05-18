@@ -24,6 +24,8 @@ import (
 	"github.com/axetroy/go-server/internal/middleware"
 	"github.com/axetroy/go-server/internal/rbac/accession"
 	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/middleware/logger"
+	"github.com/kataras/iris/v12/middleware/recover"
 	"net/http"
 )
 
@@ -40,9 +42,11 @@ func init() {
 		c.JSON(errors.New(fmt.Sprintf("%d %s", code, http.StatusText(code))), nil, nil)
 	}))
 
-	v1 := app.Party("v1")
+	v1 := app.Party("/v1")
 
 	{
+		v1.Use(recover.New())
+		v1.Use(logger.New())
 		v1.Use(middleware.CommonNew)
 
 		{
@@ -64,7 +68,7 @@ func init() {
 			authRouter.Post("/signin/wechat", auth.SignInWithWechatRouter) // 微信帐号登陆
 			authRouter.Post("/signin/oauth2", auth.SignInWithOAuthRouter)  // oAuth 码登陆
 			authRouter.Post("/signin", auth.SignInRouter)                  // 登陆账号
-			authRouter.Post("/password/reset", auth.ResetPasswordRouter)   // 密码重置
+			authRouter.Put("/password/reset", auth.ResetPasswordRouter)    // 密码重置
 			authRouter.Post("/code/email", auth.SendEmailAuthCodeRouter)   // 发送邮箱验证码，验证邮箱是否为用户所有 TODO: 缺少测试用例
 			authRouter.Post("/code/phone", auth.SendPhoneAuthCodeRouter)   // 发送手机验证码，验证手机是否为用户所有 TODO: 缺少测试用例
 		}
@@ -82,11 +86,11 @@ func init() {
 			userRouter.Use(userAuthMiddleware)
 			userRouter.Get("/signout", user.SignOut)                                                                              // 用户登出
 			userRouter.Get("/profile", user.GetProfileRouter)                                                                     // 获取用户详细信息
-			userRouter.Get("/profile", middleware.Permission(*accession.ProfileUpdate), user.UpdateProfileRouter)                 // 更新用户资料
-			userRouter.Get("/password", middleware.Permission(*accession.PasswordUpdate), user.UpdatePasswordRouter)              // 更新登陆密码
-			userRouter.Get("/password2", middleware.Permission(*accession.Password2Set), user.SetPayPasswordRouter)               // 设置交易密码
-			userRouter.Get("/password2", middleware.Permission(*accession.Password2Update), user.UpdatePayPasswordRouter)         // 更新交易密码
-			userRouter.Get("/password2/reset", middleware.Permission(*accession.Password2Reset), user.ResetPayPasswordRouter)     // 重置交易密码
+			userRouter.Put("/profile", middleware.Permission(*accession.ProfileUpdate), user.UpdateProfileRouter)                 // 更新用户资料
+			userRouter.Put("/password", middleware.Permission(*accession.PasswordUpdate), user.UpdatePasswordRouter)              // 更新登陆密码
+			userRouter.Post("/password2", middleware.Permission(*accession.Password2Set), user.SetPayPasswordRouter)              // 设置交易密码
+			userRouter.Put("/password2", middleware.Permission(*accession.Password2Update), user.UpdatePayPasswordRouter)         // 更新交易密码
+			userRouter.Put("/password2/reset", middleware.Permission(*accession.Password2Reset), user.ResetPayPasswordRouter)     // 重置交易密码
 			userRouter.Get("/password2/reset", middleware.Permission(*accession.Password2Reset), user.SendResetPayPasswordRouter) // 发送重置交易密码的邮件/短信 			// 上传用户头像
 
 			// 验证码类
@@ -165,7 +169,7 @@ func init() {
 			notificationRouter.Use(userAuthMiddleware)
 			notificationRouter.Get("", notification.GetNotificationListByUserRouter) // 获取系统通知列表
 			notificationRouter.Get("/n/{id}", notification.GetRouter)                // 获取某一条系统通知详情
-			notificationRouter.Get("/n/{id}/read", notification.ReadRouter)          // 标记通知为已读
+			notificationRouter.Put("/n/{id}/read", notification.ReadRouter)          // 标记通知为已读
 		}
 
 		// 用户的个人消息, 个人消息是可以删除的
@@ -190,14 +194,14 @@ func init() {
 
 		// 帮助中心
 		{
-			helpRouter := v1.Party("help")
+			helpRouter := v1.Party("/help")
 			helpRouter.Get("", help.GetHelpListRouter)        // 创建帮助列表
 			helpRouter.Get("/h/:help_id", help.GetHelpRouter) // 获取帮助详情
 		}
 
 		// Banner
 		{
-			bannerRouter := v1.Party("banner")
+			bannerRouter := v1.Party("/banner")
 			bannerRouter.Get("", banner.GetBannerListRouter)          // 获取 banner 列表
 			bannerRouter.Get("/b/:banner_id", banner.GetBannerRouter) // 获取 banner 详情
 		}

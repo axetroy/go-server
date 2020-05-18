@@ -53,5 +53,5 @@ func TestGetAccessionRouter(t *testing.T) {
 	accessions := make([]*accession.Accession, 0)
 
 	assert.Nil(t, res.Decode(&accessions))
-	assert.Equal(t, accessions, accession.List)
+	assert.Equal(t, accession.List, accessions)
 }

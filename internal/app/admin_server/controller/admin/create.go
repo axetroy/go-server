@@ -5,17 +5,15 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/axetroy/go-server/internal/library/validator"
-	"github.com/axetroy/go-server/internal/middleware"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
 	"github.com/axetroy/go-server/internal/service/token"
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
-	"net/http"
 	"time"
 )
 
@@ -98,30 +96,24 @@ func CreateAdmin(input CreateAdminParams, isSuper bool) (res schema.Response) {
 	return
 }
 
-func CreateAdminRouter(c *gin.Context) {
+var CreateAdminRouter = router.Handler(func(c router.Context) {
 	var (
 		input CreateAdminParams
 		err   error
-		res   = schema.Response{}
 	)
 
 	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
+		c.ResponseFunc(err, func() schema.Response {
+			return CreateAdmin(input, false)
+		})
 	}()
 
 	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
 		return
 	}
 
-	uid := c.GetString(middleware.ContextUidField)
-
 	adminInfo := model.Admin{
-		Id: uid,
+		Id: c.Uid(),
 	}
 
 	if err = database.Db.Where(&adminInfo).First(&adminInfo).Error; err != nil {
@@ -137,5 +129,4 @@ func CreateAdminRouter(c *gin.Context) {
 		return
 	}
 
-	res = CreateAdmin(input, false)
-}
+})

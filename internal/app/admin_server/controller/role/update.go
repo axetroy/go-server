@@ -5,15 +5,14 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/library/validator"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/rbac/accession"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
-	"net/http"
 	"time"
 )
 
@@ -139,30 +138,17 @@ func Update(c helper.Context, roleName string, input UpdateParams) (res schema.R
 	return
 }
 
-func UpdateRouter(c *gin.Context) {
+var UpdateRouter = router.Handler(func(c router.Context) {
 	var (
-		err   error
-		res   = schema.Response{}
 		input UpdateParams
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
 	roleName := c.Param("name")
 
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = Update(helper.NewContext(c), roleName, input)
-}
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return Update(helper.NewContext(&c), roleName, input)
+	})
+})
 
 func UpdateUserRole(c helper.Context, userId string, input UpdateUserRoleParams) (res schema.Response) {
 	var (
@@ -257,27 +243,14 @@ func UpdateUserRole(c helper.Context, userId string, input UpdateUserRoleParams)
 	return
 }
 
-func UpdateUserRoleRouter(c *gin.Context) {
+var UpdateUserRoleRouter = router.Handler(func(c router.Context) {
 	var (
-		err   error
-		res   = schema.Response{}
 		input UpdateUserRoleParams
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
 	userId := c.Param("user_id")
 
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = UpdateUserRole(helper.NewContext(c), userId, input)
-}
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return UpdateUserRole(helper.NewContext(&c), userId, input)
+	})
+})

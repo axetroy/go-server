@@ -5,12 +5,11 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
-	"github.com/gin-gonic/gin"
 	"github.com/mitchellh/mapstructure"
-	"net/http"
 	"time"
 )
 
@@ -88,24 +87,12 @@ func GetHelpList(c helper.Context, q Query) (res schema.Response) {
 	return
 }
 
-func GetHelpListRouter(c *gin.Context) {
+var GetHelpListRouter = router.Handler(func(c router.Context) {
 	var (
-		err   error
-		res   = schema.Response{}
 		query Query
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	if err = c.ShouldBindQuery(&query); err != nil {
-		return
-	}
-
-	res = GetHelpList(helper.NewContext(c), query)
-}
+	c.ResponseFunc(c.ShouldBindQuery(&query), func() schema.Response {
+		return GetHelpList(helper.NewContext(&c), query)
+	})
+})

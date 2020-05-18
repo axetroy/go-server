@@ -16,7 +16,7 @@ const (
 	NewsTypeAnnouncement NewsType = "announcement" // 官方公告
 
 	NewsStatusInActive NewsStatus = -1 // 未启用的状态
-	NewsStatusActive                   // 启用的状态
+	NewsStatusActive   NewsStatus = 0  // 启用的状态
 )
 
 var (

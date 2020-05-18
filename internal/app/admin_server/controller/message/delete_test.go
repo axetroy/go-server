@@ -203,7 +203,7 @@ func TestDeleteByUser(t *testing.T) {
 
 	// 删除消息
 	{
-		r := message.DeleteByUser(context, testMessage.Id)
+		r := message.DeleteByAdmin(context, testMessage.Id)
 
 		assert.Equal(t, "", r.Message)
 		assert.Equal(t, schema.StatusSuccess, r.Status)

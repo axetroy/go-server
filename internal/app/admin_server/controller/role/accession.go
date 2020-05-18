@@ -5,10 +5,9 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/rbac/accession"
 	"github.com/axetroy/go-server/internal/schema"
-	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 func GetAccession() (res schema.Response) {
@@ -37,19 +36,8 @@ func GetAccession() (res schema.Response) {
 	return
 }
 
-func GetAccessionRouter(c *gin.Context) {
-	var (
-		err error
-		res = schema.Response{}
-	)
-
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	res = GetAccession()
-}
+var GetAccessionRouter = router.Handler(func(c router.Context) {
+	c.ResponseFunc(nil, func() schema.Response {
+		return GetAccession()
+	})
+})

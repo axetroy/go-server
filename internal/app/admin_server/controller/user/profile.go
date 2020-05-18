@@ -5,15 +5,13 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/library/validator"
-	"github.com/axetroy/go-server/internal/middleware"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
-	"net/http"
 	"time"
 )
 
@@ -194,50 +192,22 @@ func UpdateProfileByAdmin(c helper.Context, userId string, input UpdateProfilePa
 	return
 }
 
-func GetProfileByAdminRouter(c *gin.Context) {
-	var (
-		err error
-		res = schema.Response{}
-	)
-
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
+var GetProfileByAdminRouter = router.Handler(func(c router.Context) {
 	userId := c.Param("user_id")
 
-	res = GetProfileByAdmin(helper.Context{
-		Uid: c.GetString(middleware.ContextUidField),
-	}, userId)
-}
+	c.ResponseFunc(nil, func() schema.Response {
+		return GetProfileByAdmin(helper.NewContext(&c), userId)
+	})
+})
 
-func UpdateProfileByAdminRouter(c *gin.Context) {
+var UpdateProfileByAdminRouter = router.Handler(func(c router.Context) {
 	var (
-		err   error
-		res   = schema.Response{}
 		input UpdateProfileParams
 	)
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
 	userId := c.Param("user_id")
 
-	if err = c.ShouldBindJSON(&input); err != nil {
-		err = exception.InvalidParams
-		return
-	}
-
-	res = UpdateProfileByAdmin(helper.Context{
-		Uid: c.GetString(middleware.ContextUidField),
-	}, userId, input)
-}
+	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
+		return UpdateProfileByAdmin(helper.NewContext(&c), userId, input)
+	})
+})

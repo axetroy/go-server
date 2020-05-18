@@ -5,15 +5,13 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
-	"github.com/axetroy/go-server/internal/middleware"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/rbac/accession"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
-	"net/http"
 	"time"
 )
 
@@ -150,38 +148,16 @@ func GetAdminInfoById(c helper.Context, adminId string) (res schema.Response) {
 	return
 }
 
-func GetAdminInfoRouter(c *gin.Context) {
-	var (
-		err error
-		res = schema.Response{}
-	)
+var GetAdminInfoRouter = router.Handler(func(c router.Context) {
+	c.ResponseFunc(nil, func() schema.Response {
+		return GetAdminInfo(helper.NewContext(&c))
+	})
+})
 
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	res = GetAdminInfo(helper.Context{Uid: c.GetString(middleware.ContextUidField)})
-}
-
-func GetAdminInfoByIdRouter(c *gin.Context) {
-	var (
-		err error
-		res = schema.Response{}
-	)
-
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
+var GetAdminInfoByIdRouter = router.Handler(func(c router.Context) {
 	adminId := c.Param("admin_id")
 
-	res = GetAdminInfoById(helper.Context{Uid: c.GetString(middleware.ContextUidField)}, adminId)
-}
+	c.ResponseFunc(nil, func() schema.Response {
+		return GetAdminInfoById(helper.NewContext(&c), adminId)
+	})
+})

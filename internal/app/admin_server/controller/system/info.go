@@ -6,14 +6,13 @@ import (
 	config2 "github.com/axetroy/go-server/internal/app/resource_server/config"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/schema"
-	"github.com/gin-gonic/gin"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/load"
 	"github.com/shirou/gopsutil/mem"
-	"net/http"
 	"os/user"
 	"runtime"
 	"time"
@@ -105,19 +104,8 @@ func GetSystemInfo() (res schema.Response) {
 	return
 }
 
-func GetSystemInfoRouter(c *gin.Context) {
-	var (
-		err error
-		res = schema.Response{}
-	)
-
-	defer func() {
-		if err != nil {
-			res.Data = nil
-			res.Message = err.Error()
-		}
-		c.JSON(http.StatusOK, res)
-	}()
-
-	res = GetSystemInfo()
-}
+var GetSystemInfoRouter = router.Handler(func(c router.Context) {
+	c.ResponseFunc(nil, func() schema.Response {
+		return GetSystemInfo()
+	})
+})
