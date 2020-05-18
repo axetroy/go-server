@@ -2,7 +2,6 @@
 package main
 
 import (
-	App "github.com/axetroy/go-server"
 	"github.com/axetroy/go-server/internal/app/admin_server"
 	"github.com/axetroy/go-server/internal/library/daemon"
 	"github.com/urfave/cli/v2"
@@ -13,14 +12,6 @@ import (
 func main() {
 	app := cli.NewApp()
 	app.Usage = "admin server"
-	app.Authors = []*cli.Author{
-		{
-			Name:  App.Author,
-			Email: App.Email,
-		},
-	}
-	app.Version = App.Version
-	cli.AppHelpTemplate = App.CliTemplate
 
 	app.Commands = []*cli.Command{
 		{
