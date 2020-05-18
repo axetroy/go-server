@@ -6,13 +6,13 @@
 
 ### 会员详情
 
-[GET] /v1/user/u/:user_id
+[GET] /v1/user/:user_id
 
 获取指定会员详情
 
 ### 修改会员资料
 
-[PUT] /v1/user/u/:user_id
+[PUT] /v1/user/:user_id
 
 | 参数     | 类型     | 说明         | 必填 |
 | -------- | -------- | ------------ | ---- |
@@ -22,7 +22,7 @@
 
 ### 修改会员登陆密码
 
-[PUT] /v1/user/u/:user_id/password
+[PUT] /v1/user/:user_id/password
 
 | 参数         | 类型     | 说明   | 必填 |
 | ------------ | -------- | ------ | ---- |

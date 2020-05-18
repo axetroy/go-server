@@ -62,7 +62,7 @@ func TestGetProfileByAdminRouter(t *testing.T) {
 		"Authorization": token.Prefix + " " + adminInfo.Token,
 	}
 
-	r := tester.HttpAdmin.Get("/v1/user/u/"+userInfo.Id, nil, &header)
+	r := tester.HttpAdmin.Get("/v1/user/"+userInfo.Id, nil, &header)
 
 	if !assert.Equal(t, http.StatusOK, r.Code) {
 		return
@@ -123,7 +123,7 @@ func TestUpdateProfileByAdminRouter(t *testing.T) {
 		Nickname: &nickName,
 	})
 
-	r := tester.HttpAdmin.Put("/v1/user/u/"+userInfo.Id, body, &header)
+	r := tester.HttpAdmin.Put("/v1/user/"+userInfo.Id, body, &header)
 
 	if !assert.Equal(t, http.StatusOK, r.Code) {
 		return

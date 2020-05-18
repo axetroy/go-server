@@ -65,7 +65,7 @@ func TestUpdatePasswordByAdminRouter(t *testing.T) {
 			NewPassword: "321321",
 		})
 
-		r := tester.HttpAdmin.Put("/v1/user/u/"+userInfo.Id+"/password", body, &header)
+		r := tester.HttpAdmin.Put("/v1/user/"+userInfo.Id+"/password", body, &header)
 
 		if !assert.Equal(t, http.StatusOK, r.Code) {
 			return
