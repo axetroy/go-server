@@ -4,7 +4,6 @@
 
 test:
 	GO_TESTING=1 go test -mod=vendor --cover -covermode=count -coverprofile=coverage.out ./...
-	bash ./scripts/clean.sh
 
 build:
 	bash ./scripts/build.sh
