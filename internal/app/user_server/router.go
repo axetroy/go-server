@@ -196,8 +196,8 @@ func init() {
 		// 帮助中心
 		{
 			helpRouter := v1.Party("/help")
-			helpRouter.Get("", help.GetHelpListRouter)        // 创建帮助列表
-			helpRouter.Get("/h/:help_id", help.GetHelpRouter) // 获取帮助详情
+			helpRouter.Get("", help.GetHelpListRouter)      // 创建帮助列表
+			helpRouter.Get("/:help_id", help.GetHelpRouter) // 获取帮助详情
 		}
 
 		// Banner

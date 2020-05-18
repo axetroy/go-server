@@ -139,11 +139,11 @@ func init() {
 		// 帮助中心
 		{
 			helpRouter := v1.Party("/help")
-			helpRouter.Get("", help.GetHelpListRouter)           // 创建帮助列表
-			helpRouter.Post("", help.CreateRouter)               // 创建帮助
-			helpRouter.Put("/h/{help_id}", help.UpdateRouter)    // 更新帮助
-			helpRouter.Get("/h/{help_id}", help.GetHelpRouter)   // 获取帮助详情
-			helpRouter.Delete("/h/{help_id}", help.DeleteRouter) // 删除帮助
+			helpRouter.Get("", help.GetHelpListRouter)         // 创建帮助列表
+			helpRouter.Post("", help.CreateRouter)             // 创建帮助
+			helpRouter.Put("/{help_id}", help.UpdateRouter)    // 更新帮助
+			helpRouter.Get("/{help_id}", help.GetHelpRouter)   // 获取帮助详情
+			helpRouter.Delete("/{help_id}", help.DeleteRouter) // 删除帮助
 		}
 
 		// Banner

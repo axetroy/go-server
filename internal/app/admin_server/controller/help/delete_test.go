@@ -135,7 +135,7 @@ func TestDeleteRouter(t *testing.T) {
 
 	// 删除这条地址
 	{
-		r := tester.HttpAdmin.Delete("/v1/help/h/"+helpId, nil, &header)
+		r := tester.HttpAdmin.Delete("/v1/help/"+helpId, nil, &header)
 
 		if !assert.Equal(t, http.StatusOK, r.Code) {
 			return

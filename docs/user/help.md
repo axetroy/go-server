@@ -9,4 +9,4 @@
 
 ### 获取帮助详情
 
-[GET] /v1/help/h/:help_id
+[GET] /v1/help/:help_id

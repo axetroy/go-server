@@ -160,7 +160,7 @@ func TestUpdateRouter(t *testing.T) {
 			Content: &newContent,
 		})
 
-		r := tester.HttpAdmin.Put("/v1/help/h/"+helpId, body, &header)
+		r := tester.HttpAdmin.Put("/v1/help/"+helpId, body, &header)
 
 		assert.Equal(t, http.StatusOK, r.Code)
 

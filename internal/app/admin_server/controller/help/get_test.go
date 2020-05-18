@@ -122,7 +122,7 @@ func TestGetHelpRouter(t *testing.T) {
 	// 获取详情
 	{
 
-		r := tester.HttpAdmin.Get("/v1/help/h/"+helpId, nil, &header)
+		r := tester.HttpAdmin.Get("/v1/help/"+helpId, nil, &header)
 		res := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, r.Code)
