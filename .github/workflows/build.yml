@@ -26,7 +26,7 @@ jobs:
 
       redis:
         # Docker Hub image
-        image: redis:5.0.9-alpine
+        image: redis:6.0.2-alpine
         # Set health checks to wait until redis has started
         options: >-
           --health-cmd "redis-cli ping"
