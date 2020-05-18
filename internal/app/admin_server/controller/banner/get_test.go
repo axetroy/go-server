@@ -114,7 +114,7 @@ func TestGetBannerRouter(t *testing.T) {
 			"Authorization": token.Prefix + " " + adminInfo.Token,
 		}
 
-		r := tester.HttpAdmin.Get("/v1/banner/b/"+bannerId, nil, &header)
+		r := tester.HttpAdmin.Get("/v1/banner/"+bannerId, nil, &header)
 		res := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, r.Code)

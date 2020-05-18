@@ -10,6 +10,6 @@
 
 ### 获取 banner 详情
 
-[GET] /v1/banner/b/:banner_id
+[GET] /v1/banner/:banner_id
 
 获取一条 banner 的详情

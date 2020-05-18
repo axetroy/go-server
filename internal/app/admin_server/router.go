@@ -149,11 +149,11 @@ func init() {
 		// Banner
 		{
 			bannerRouter := v1.Party("/banner")
-			bannerRouter.Get("", banner.GetBannerListRouter)           // 获取 banner 列表
-			bannerRouter.Post("", banner.CreateRouter)                 // 创建 banner
-			bannerRouter.Put("/b/{banner_id}", banner.UpdateRouter)    // 更新 banner
-			bannerRouter.Get("/b/{banner_id}", banner.GetBannerRouter) // 获取 banner 详情
-			bannerRouter.Delete("/b/{banner_id}", banner.DeleteRouter) // 删除 banner
+			bannerRouter.Get("", banner.GetBannerListRouter)         // 获取 banner 列表
+			bannerRouter.Post("", banner.CreateRouter)               // 创建 banner
+			bannerRouter.Put("/{banner_id}", banner.UpdateRouter)    // 更新 banner
+			bannerRouter.Get("/{banner_id}", banner.GetBannerRouter) // 获取 banner 详情
+			bannerRouter.Delete("/{banner_id}", banner.DeleteRouter) // 删除 banner
 		}
 
 		// 后台管理员菜单

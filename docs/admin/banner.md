@@ -14,7 +14,7 @@
 
 ### 修改 banner
 
-[PUT] /v1/banner/b/:banner_id
+[PUT] /v1/banner/:banner_id
 
 | 参数         | 类型     | 说明                                                   | 必填 |
 | ------------ | -------- | ------------------------------------------------------ | ---- |
@@ -28,7 +28,7 @@
 
 ### 删除 banner
 
-[DELETE] /v1/banner/b/:banner_id
+[DELETE] /v1/banner/:banner_id
 
 ### 获取 banner 列表
 
@@ -41,4 +41,4 @@
 
 ### 获取 banner 详情
 
-[GET] /v1/banner/b/:banner_id
+[GET] /v1/banner/:banner_id

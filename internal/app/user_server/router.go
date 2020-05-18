@@ -203,8 +203,8 @@ func init() {
 		// Banner
 		{
 			bannerRouter := v1.Party("/banner")
-			bannerRouter.Get("", banner.GetBannerListRouter)          // 获取 banner 列表
-			bannerRouter.Get("/b/:banner_id", banner.GetBannerRouter) // 获取 banner 详情
+			bannerRouter.Get("", banner.GetBannerListRouter)        // 获取 banner 列表
+			bannerRouter.Get("/:banner_id", banner.GetBannerRouter) // 获取 banner 详情
 		}
 
 		// 通用类

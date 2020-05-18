@@ -150,7 +150,7 @@ func TestUpdateRouter(t *testing.T) {
 			Description: &newDescription,
 		})
 
-		r := tester.HttpAdmin.Put("/v1/banner/b/"+bannerInfo.Id, body, &header)
+		r := tester.HttpAdmin.Put("/v1/banner/"+bannerInfo.Id, body, &header)
 
 		if !assert.Equal(t, http.StatusOK, r.Code) {
 			return
