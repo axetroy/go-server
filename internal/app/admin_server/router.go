@@ -170,8 +170,8 @@ func init() {
 		// 日志
 		{
 			logRouter := v1.Party("/log")
-			logRouter.Get("/login", loginLog.GetLoginLogsRouter)           // 获取用户的登陆日志列表
-			logRouter.Get("/login/l/{log_id}", loginLog.GetLoginLogRouter) // 用户单条登陆记录
+			logRouter.Get("/login", loginLog.GetLoginLogsRouter)         // 获取用户的登陆日志列表
+			logRouter.Get("/login/{log_id}", loginLog.GetLoginLogRouter) // 用户单条登陆记录
 		}
 
 		// 通用类

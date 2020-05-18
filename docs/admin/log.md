@@ -13,4 +13,4 @@
 
 ### 获取用户的登陆日志详情
 
-[GET] /v1/log/login/l/:log_id
+[GET] /v1/log/login/:log_id
