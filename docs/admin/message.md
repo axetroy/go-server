@@ -10,11 +10,11 @@
 
 ### 删除个人消息
 
-[DELETE] /v1/message/m/:message_id
+[DELETE] /v1/message/:message_id
 
 ### 更改个人消息
 
-[PUT] /v1/message/m/:message_id
+[PUT] /v1/message/:message_id
 
 | 参数    | 类型     | 说明     | 必填 |
 | ------- | -------- | -------- | ---- |
@@ -27,4 +27,4 @@
 
 ### 消息详情
 
-[GET] /v1/message/m/:message_id
+[GET] /v1/message/:message_id

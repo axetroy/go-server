@@ -120,11 +120,11 @@ func init() {
 		// 个人消息
 		{
 			messageRouter := v1.Party("/message")
-			messageRouter.Post("", message.CreateRouter)                         // 创建个人消息
-			messageRouter.Get("", message.GetMessageListByAdminRouter)           // 获取消息列表
-			messageRouter.Get("/m/{message_id}", message.GetAdminRouter)         // 获取个人消息
-			messageRouter.Put("/m/{message_id}", message.UpdateRouter)           // 更新个人消息
-			messageRouter.Delete("/m/{message_id}", message.DeleteByAdminRouter) // 删除个人消息
+			messageRouter.Post("", message.CreateRouter)                       // 创建个人消息
+			messageRouter.Get("", message.GetMessageListByAdminRouter)         // 获取消息列表
+			messageRouter.Get("/{message_id}", message.GetAdminRouter)         // 获取个人消息
+			messageRouter.Put("/{message_id}", message.UpdateRouter)           // 更新个人消息
+			messageRouter.Delete("/{message_id}", message.DeleteByAdminRouter) // 删除个人消息
 		}
 
 		// 用户反馈

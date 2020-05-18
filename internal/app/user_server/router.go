@@ -177,10 +177,10 @@ func init() {
 		{
 			messageRouter := v1.Party("/message")
 			messageRouter.Use(userAuthMiddleware)
-			messageRouter.Get("", message.GetMessageListByUserRouter)           // 获取我的消息列表
-			messageRouter.Get("/m/{message_id}", message.GetRouter)             // 获取单个消息详情
-			messageRouter.Put("/m/{message_id}/read", message.ReadRouter)       // 标记消息为已读
-			messageRouter.Delete("/m/{message_id}", message.DeleteByUserRouter) // 删除消息
+			messageRouter.Get("", message.GetMessageListByUserRouter)         // 获取我的消息列表
+			messageRouter.Put("/{message_id}/read", message.ReadRouter)       // 标记消息为已读
+			messageRouter.Get("/{message_id}", message.GetRouter)             // 获取单个消息详情
+			messageRouter.Delete("/{message_id}", message.DeleteByUserRouter) // 删除消息
 		}
 
 		// 用户反馈

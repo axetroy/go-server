@@ -131,7 +131,7 @@ func TestReadRouter(t *testing.T) {
 			"Authorization": token.Prefix + " " + userInfo.Token,
 		}
 
-		r := tester.HttpUser.Put("/v1/message/m/"+testMessage.Id+"/read", nil, &header)
+		r := tester.HttpUser.Put("/v1/message/"+testMessage.Id+"/read", nil, &header)
 		res := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, r.Code)

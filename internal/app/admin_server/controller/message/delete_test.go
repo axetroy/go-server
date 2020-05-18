@@ -135,7 +135,7 @@ func TestDeleteByAdminRouter(t *testing.T) {
 
 	// 删除这条通知
 	{
-		r := tester.HttpAdmin.Delete("/v1/message/m/"+messageId, nil, &header)
+		r := tester.HttpAdmin.Delete("/v1/message/"+messageId, nil, &header)
 
 		res := schema.Response{}
 
@@ -268,7 +268,7 @@ func TestDeleteByUserRouter(t *testing.T) {
 
 	// 删除这条通知
 	{
-		r := tester.HttpUser.Delete("/v1/message/m/"+messageInfo.Id, nil, &userHeader)
+		r := tester.HttpUser.Delete("/v1/message/"+messageInfo.Id, nil, &userHeader)
 
 		res := schema.Response{}
 

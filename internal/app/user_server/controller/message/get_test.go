@@ -114,7 +114,7 @@ func TestGetRouter(t *testing.T) {
 			"Authorization": token.Prefix + " " + userInfo.Token,
 		}
 
-		r := tester.HttpUser.Get("/v1/message/m/"+messageId, nil, &header)
+		r := tester.HttpUser.Get("/v1/message/"+messageId, nil, &header)
 		res := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, r.Code)
