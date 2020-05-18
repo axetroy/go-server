@@ -163,7 +163,7 @@ func TestDeleteRouter(t *testing.T) {
 
 	{
 
-		r := tester.HttpAdmin.Delete("/v1/role/r/"+n.Name, nil, &header)
+		r := tester.HttpAdmin.Delete("/v1/role/"+n.Name, nil, &header)
 
 		if !assert.Equal(t, http.StatusOK, r.Code) {
 			return

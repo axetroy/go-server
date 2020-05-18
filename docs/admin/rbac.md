@@ -6,7 +6,7 @@
 
 ### 获取用户角色详情
 
-[GET] /v1/role/r/:name
+[GET] /v1/role/:name
 
 获取用户角色详情
 
@@ -25,7 +25,7 @@
 
 ### 更新用户角色
 
-[PUT] /v1/role/r/:name
+[PUT] /v1/role/:name
 
 更新一个用户角色, `内置角色` 无法更新
 
@@ -37,7 +37,7 @@
 
 ### 删除用户角色
 
-[DELETE] /v1/role/r/:name
+[DELETE] /v1/role/:name
 
 删除用户角色, `内置角色` 无法删除
 
@@ -45,7 +45,7 @@
 
 ### 更改用户角色
 
-[PUT] /v1/role/u/:user_id
+[PUT] /v1/role/:user_id
 
 更改用户的角色, 一个用户可以赋予多种角色
 

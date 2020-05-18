@@ -3,9 +3,8 @@ package redis
 
 import (
 	"github.com/axetroy/go-server/internal/library/config"
+	"github.com/axetroy/go-server/internal/service/dotenv"
 	"github.com/go-redis/redis"
-	"os"
-	"strings"
 )
 
 var (
@@ -19,7 +18,7 @@ var (
 )
 
 func init() {
-	if os.Getenv("GO_TESTING") != "" || strings.Index(os.Getenv("XPC_SERVICE_NAME"), "com.jetbrains.goland") >= 0 {
+	if dotenv.Test {
 		Connect()
 	}
 }

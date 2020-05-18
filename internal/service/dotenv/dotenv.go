@@ -26,6 +26,12 @@ func init() {
 	if err := Load(); err != nil {
 		panic(err)
 	}
+
+	if !Test {
+		if os.Getenv("GO_TESTING") != "" || strings.Index(os.Getenv("XPC_SERVICE_NAME"), "com.jetbrains.goland") >= 0 {
+			Test = true
+		}
+	}
 }
 
 func Load() (err error) {

@@ -85,14 +85,14 @@ func init() {
 		// 用户角色
 		{
 			roleRouter := v1.Party("/role")
-			roleRouter.Get("", role.GetListRouter)                    // 获取角色列表
-			roleRouter.Post("", role.CreateRouter)                    // 创建角色
-			roleRouter.Put("/r/{name}", role.UpdateRouter)            // 修改角色
-			roleRouter.Delete("/r/{name}", role.DeleteRouter)         // 删除角色
-			roleRouter.Get("/r/{name}", role.GetRouter)               // 获取角色详情
-			roleRouter.Get("/accession", role.GetAccessionRouter)     // 获取用户的所有的权限列表
-			roleRouter.Get("/u/{user_id}", role.UpdateUserRoleRouter) // TODO: 获取用户的角色信息
-			roleRouter.Put("/u/{user_id}", role.UpdateUserRoleRouter) // 管理员修改用户的角色
+			roleRouter.Get("", role.GetListRouter)                       // 获取角色列表
+			roleRouter.Post("", role.CreateRouter)                       // 创建角色
+			roleRouter.Put("/{name}", role.UpdateRouter)                 // 修改角色
+			roleRouter.Delete("/{name}", role.DeleteRouter)              // 删除角色
+			roleRouter.Get("/{name}", role.GetRouter)                    // 获取角色详情
+			roleRouter.Get("/accession", role.GetAccessionRouter)        // 获取用户的所有的权限列表
+			roleRouter.Get("/user/{user_id}", role.UpdateUserRoleRouter) // TODO: 获取用户的角色信息
+			roleRouter.Put("/user/{user_id}", role.UpdateUserRoleRouter) // 管理员修改用户的角色
 		}
 
 		// 新闻咨询类

@@ -3,16 +3,13 @@ package database
 
 import (
 	"fmt"
-	"log"
-	"os"
-	"strings"
-
 	"github.com/axetroy/go-server/internal/library/config"
 	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/service/dotenv"
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
+	"log"
 )
 
 var (
@@ -27,7 +24,7 @@ func Dispose() {
 }
 
 func init() {
-	if os.Getenv("GO_TESTING") != "" || strings.Index(os.Getenv("XPC_SERVICE_NAME"), "com.jetbrains.goland") >= 0 {
+	if dotenv.Test {
 		Connect()
 	}
 }

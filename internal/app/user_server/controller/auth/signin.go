@@ -12,6 +12,7 @@ import (
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
+	"github.com/axetroy/go-server/internal/service/dotenv"
 	"github.com/axetroy/go-server/internal/service/redis"
 	"github.com/axetroy/go-server/internal/service/token"
 	"github.com/axetroy/go-server/internal/service/wechat"
@@ -388,6 +389,17 @@ func SignInWithWechat(c helper.Context, input SignInWithWechatParams) (res schem
 	if wechatErr != nil {
 		err = wechatErr
 		return
+	}
+
+	if len(wechatInfo.OpenID) == 0 {
+		// 为了测试方便，那么我们就在测试环境下赋值一个假 ID， 否则会报错
+		if dotenv.Test {
+			wechatInfo.OpenID = "test open id"
+		} else {
+			err = exception.NoData
+			return
+		}
+
 	}
 
 	tx = database.Db.Begin()

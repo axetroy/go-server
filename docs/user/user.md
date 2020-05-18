@@ -73,7 +73,7 @@
 
 ### 邀请详情
 
-[GET] /v1/user/invite/i/:invite_id
+[GET] /v1/user/invite/:invite_id
 
 | 参数      | 类型     | 说明          | 必选 |
 | --------- | -------- | ------------- | ---- |

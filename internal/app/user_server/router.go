@@ -117,7 +117,7 @@ func init() {
 			{
 				inviteRouter := userRouter.Party("/invite")
 				inviteRouter.Get("", invite.GetInviteListByUserRouter) // 获取我已邀请的列表
-				inviteRouter.Get("/i/{invite_id}", invite.GetRouter)   // 获取单条邀请记录详情
+				inviteRouter.Get("/{invite_id}", invite.GetRouter)     // 获取单条邀请记录详情
 			}
 			// 收货地址
 			{
@@ -194,15 +194,15 @@ func init() {
 		// 帮助中心
 		{
 			helpRouter := v1.Party("/help")
-			helpRouter.Get("", help.GetHelpListRouter)      // 创建帮助列表
-			helpRouter.Get("/:help_id", help.GetHelpRouter) // 获取帮助详情
+			helpRouter.Get("", help.GetHelpListRouter)       // 创建帮助列表
+			helpRouter.Get("/{help_id}", help.GetHelpRouter) // 获取帮助详情
 		}
 
 		// Banner
 		{
 			bannerRouter := v1.Party("/banner")
-			bannerRouter.Get("", banner.GetBannerListRouter)        // 获取 banner 列表
-			bannerRouter.Get("/:banner_id", banner.GetBannerRouter) // 获取 banner 详情
+			bannerRouter.Get("", banner.GetBannerListRouter)         // 获取 banner 列表
+			bannerRouter.Get("/{banner_id}", banner.GetBannerRouter) // 获取 banner 详情
 		}
 
 		// 通用类
@@ -211,8 +211,8 @@ func init() {
 			v1.Post("/email/send/register", auth.SignUpWithEmailActionRouter)         // 发送注册邮件
 			v1.Post("/email/send/password/reset", email.SendResetPasswordEmailRouter) // 发送密码重置邮件
 
-			v1.Get("/area/:area_code", address.FindAddressRouter) // 获取地区码对应的信息
-			v1.Get("/area", address.AreaListRouter)               // 获取地址选择列表
+			v1.Get("/area/{area_code}", address.FindAddressRouter) // 获取地区码对应的信息
+			v1.Get("/area", address.AreaListRouter)                // 获取地址选择列表
 
 			// 数据签名
 			v1.Post("/signature", signature.EncryptionRouter)

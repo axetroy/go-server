@@ -111,7 +111,7 @@ func TestGetRouter(t *testing.T) {
 			"Authorization": token.Prefix + " " + adminInfo.Token,
 		}
 
-		r := tester.HttpAdmin.Get("/v1/role/r/"+n.Name, nil, &header)
+		r := tester.HttpAdmin.Get("/v1/role/"+n.Name, nil, &header)
 		res := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, r.Code)

@@ -138,7 +138,7 @@ func TestUpdateRouter(t *testing.T) {
 			Description: &newDescription,
 		})
 
-		r := tester.HttpAdmin.Put("/v1/role/r/"+roleInfo.Name, body, &header)
+		r := tester.HttpAdmin.Put("/v1/role/"+roleInfo.Name, body, &header)
 
 		if !assert.Equal(t, http.StatusOK, r.Code) {
 			return
@@ -272,7 +272,7 @@ func TestUpdateUserRoleRouter(t *testing.T) {
 			Roles: []string{roleInfo.Name},
 		})
 
-		r := tester.HttpAdmin.Put("/v1/role/u/"+userInfo.Id, body, &header)
+		r := tester.HttpAdmin.Put("/v1/role/user/"+userInfo.Id, body, &header)
 
 		assert.Equal(t, http.StatusOK, r.Code)
 		res := schema.Response{}

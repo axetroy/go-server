@@ -173,7 +173,7 @@ func TestGetRouter(t *testing.T) {
 
 	// 获取邀请方的记录
 	{
-		r := tester.HttpUser.Get("/v1/user/invite/i/"+inviteId, nil, &header)
+		r := tester.HttpUser.Get("/v1/user/invite/"+inviteId, nil, &header)
 
 		if !assert.Equal(t, http.StatusOK, r.Code) {
 			return
