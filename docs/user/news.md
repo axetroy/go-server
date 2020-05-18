@@ -6,6 +6,6 @@
 
 ### 资讯详情
 
-[GET] /v1/news/n/:news_id
+[GET] /v1/news/:news_id
 
 获取某个资讯详情

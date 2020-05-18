@@ -183,7 +183,7 @@ func TestUpdateRouter(t *testing.T) {
 			Content: &newContent,
 		})
 
-		r := tester.HttpAdmin.Put("/v1/news/n/"+newsId, body, &header)
+		r := tester.HttpAdmin.Put("/v1/news/"+newsId, body, &header)
 		res := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, r.Code)

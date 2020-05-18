@@ -160,8 +160,8 @@ func init() {
 		// 新闻咨询类
 		{
 			newsRouter := v1.Party("/news")
-			newsRouter.Get("", news.GetNewsListRouter)    // 获取新闻公告列表
-			newsRouter.Get("/n/{id}", news.GetNewsRouter) // 获取单个新闻公告详情
+			newsRouter.Get("", news.GetNewsListRouter)  // 获取新闻公告列表
+			newsRouter.Get("/{id}", news.GetNewsRouter) // 获取单个新闻公告详情
 		}
 
 		// 系统通知

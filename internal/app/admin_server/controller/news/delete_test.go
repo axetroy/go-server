@@ -132,7 +132,7 @@ func TestDeleteRouter(t *testing.T) {
 	// 删除这条地址
 	{
 
-		r := tester.HttpAdmin.Delete("/v1/news/n/"+newsId, nil, &header)
+		r := tester.HttpAdmin.Delete("/v1/news/"+newsId, nil, &header)
 
 		if !assert.Equal(t, http.StatusOK, r.Code) {
 			return

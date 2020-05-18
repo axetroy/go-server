@@ -100,11 +100,11 @@ func init() {
 		// 新闻咨询类
 		{
 			newsRouter := v1.Party("/news")
-			newsRouter.Post("", news.CreateRouter)               // 新建新闻公告
-			newsRouter.Get("", news.GetNewsListRouter)           // 获取新闻列表
-			newsRouter.Get("/n/{news_id}", news.GetNewsRouter)   // 获取新闻详情
-			newsRouter.Put("/n/{news_id}", news.UpdateRouter)    // 更新新闻公告
-			newsRouter.Delete("/n/{news_id}", news.DeleteRouter) // 删除新闻
+			newsRouter.Post("", news.CreateRouter)             // 新建新闻公告
+			newsRouter.Get("", news.GetNewsListRouter)         // 获取新闻列表
+			newsRouter.Get("/{news_id}", news.GetNewsRouter)   // 获取新闻详情
+			newsRouter.Put("/{news_id}", news.UpdateRouter)    // 更新新闻公告
+			newsRouter.Delete("/{news_id}", news.DeleteRouter) // 删除新闻
 		}
 
 		// 系统通知

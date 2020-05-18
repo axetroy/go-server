@@ -120,7 +120,7 @@ func TestGetNewsRouter(t *testing.T) {
 	{
 		header := mocker.Header{}
 
-		r := tester.HttpUser.Get("/v1/news/n/"+newsId, nil, &header)
+		r := tester.HttpUser.Get("/v1/news/"+newsId, nil, &header)
 		res := schema.Response{}
 
 		assert.Equal(t, http.StatusOK, r.Code)
