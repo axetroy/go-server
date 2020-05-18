@@ -14,7 +14,7 @@
 
 ### 更新收货地址
 
-[PUT] /v1/user/address/a/:address_id
+[PUT] /v1/user/address/:address_id
 
 | 参数          | 类型     | 说明                       | 必选 |
 | ------------- | -------- | -------------------------- | ---- |
@@ -28,7 +28,7 @@
 
 ### 删除收货地址
 
-[DELETE] /v1/user/address/a/:address_id
+[DELETE] /v1/user/address/:address_id
 
 删除收货地址
 
@@ -46,7 +46,7 @@
 
 ### 获取地址详情
 
-[GET] /v1/user/address/a/:address_id
+[GET] /v1/user/address/:address_id
 
 获取某一个地址的详细信息
 

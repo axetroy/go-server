@@ -124,12 +124,12 @@ func init() {
 			// 收货地址
 			{
 				addressRouter := userRouter.Party("/address")
-				addressRouter.Get("", address.GetAddressListByUserRouter)     // 获取地址列表
-				addressRouter.Post("", address.CreateRouter)                  // 添加收货地址
-				addressRouter.Put("/a/{address_id}", address.UpdateRouter)    // 更新收货地址
-				addressRouter.Delete("/a/{address_id}", address.DeleteRouter) // 删除收货地址
-				addressRouter.Get("/a/{address_id}", address.GetDetailRouter) // 获取地址详情
-				addressRouter.Get("/default", address.GetDefaultRouter)       // 获取默认地址
+				addressRouter.Get("", address.GetAddressListByUserRouter)   // 获取地址列表
+				addressRouter.Post("", address.CreateRouter)                // 添加收货地址
+				addressRouter.Get("/default", address.GetDefaultRouter)     // 获取默认地址
+				addressRouter.Put("/{address_id}", address.UpdateRouter)    // 更新收货地址
+				addressRouter.Delete("/{address_id}", address.DeleteRouter) // 删除收货地址
+				addressRouter.Get("/{address_id}", address.GetDetailRouter) // 获取地址详情
 			}
 		}
 

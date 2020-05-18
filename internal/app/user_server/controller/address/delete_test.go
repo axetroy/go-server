@@ -149,7 +149,7 @@ func TestDeleteRouter(t *testing.T) {
 	// 删除这条地址
 	{
 
-		r := tester.HttpUser.Delete("/v1/user/address/a/"+addressInfo.Id, nil, &header)
+		r := tester.HttpUser.Delete("/v1/user/address/"+addressInfo.Id, nil, &header)
 
 		if !assert.Equal(t, http.StatusOK, r.Code) {
 			return

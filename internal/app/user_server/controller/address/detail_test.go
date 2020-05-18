@@ -143,7 +143,7 @@ func TestGetDetailRouter(t *testing.T) {
 
 	// 获取详情
 	{
-		r := tester.HttpUser.Get("/v1/user/address/a/"+addressInfo.Id, nil, &header)
+		r := tester.HttpUser.Get("/v1/user/address/"+addressInfo.Id, nil, &header)
 
 		if !assert.Equal(t, http.StatusOK, r.Code) {
 			return

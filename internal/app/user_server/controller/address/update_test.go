@@ -219,7 +219,7 @@ func TestUpdateRouter(t *testing.T) {
 			Phone: &newPhone,
 		})
 
-		r := tester.HttpUser.Put("/v1/user/address/a/"+addressInfo.Id, body, &header)
+		r := tester.HttpUser.Put("/v1/user/address/"+addressInfo.Id, body, &header)
 
 		if !assert.Equal(t, http.StatusOK, r.Code) {
 			return
