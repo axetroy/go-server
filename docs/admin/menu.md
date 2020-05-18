@@ -33,11 +33,11 @@
 
 ### 获取菜单详情
 
-[GET] /v1/menu/m/:menu_id
+[GET] /v1/menu/:menu_id
 
 ### 更新页面菜单
 
-[PUT] /v1/menu/m/:menu_id
+[PUT] /v1/menu/:menu_id
 
 | 参数      | 类型       | 说明                         | 必选 |
 | --------- | ---------- | ---------------------------- | ---- |
@@ -50,6 +50,6 @@
 
 ### 删除页面菜单
 
-[DELETE] /v1/menu/m/:menu_id
+[DELETE] /v1/menu/:menu_id
 
 删除菜单那么它的子菜单也会被删除

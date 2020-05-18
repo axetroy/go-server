@@ -94,7 +94,7 @@ func TestDeleteRouter(t *testing.T) {
 		"Authorization": token.Prefix + " " + adminInfo.Token,
 	}
 
-	r := tester.HttpAdmin.Delete("/v1/menu/m/"+id, nil, &header)
+	r := tester.HttpAdmin.Delete("/v1/menu/"+id, nil, &header)
 	res := schema.Response{}
 
 	assert.Equal(t, http.StatusOK, r.Code)

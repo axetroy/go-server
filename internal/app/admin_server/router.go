@@ -159,12 +159,12 @@ func init() {
 		// 后台管理员菜单
 		{
 			menuRouter := v1.Party("/menu")
-			menuRouter.Get("", menu.GetListRouter)               // 获取菜单列表
-			menuRouter.Post("", menu.CreateRouter)               // 创建菜单
-			menuRouter.Get("/tree", menu.CreateFromTreeRouter)   // 创建菜单
-			menuRouter.Put("/m/{menu_id}", menu.UpdateRouter)    // 更新菜单
-			menuRouter.Get("/m/{menu_id}", menu.GetMenuRouter)   // 获取菜单详情
-			menuRouter.Delete("/m/{menu_id}", menu.DeleteRouter) // 删除菜单
+			menuRouter.Get("", menu.GetListRouter)             // 获取菜单列表
+			menuRouter.Post("", menu.CreateRouter)             // 创建菜单
+			menuRouter.Get("/tree", menu.CreateFromTreeRouter) // 创建菜单
+			menuRouter.Put("/{menu_id}", menu.UpdateRouter)    // 更新菜单
+			menuRouter.Get("/{menu_id}", menu.GetMenuRouter)   // 获取菜单详情
+			menuRouter.Delete("/{menu_id}", menu.DeleteRouter) // 删除菜单
 		}
 
 		// 日志
