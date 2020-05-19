@@ -34,6 +34,16 @@ func getPidFilePath() (string, error) {
 
 func Start(action Action, shouldRunInDaemon bool) error {
 	if shouldRunInDaemon && os.Getppid() != 1 {
+		pidFilePath, err := getPidFilePath()
+
+		if err != nil {
+			return err
+		}
+
+		if fs.PathExists(pidFilePath) {
+			log.Fatalf("已经存在进程，如果进程没有启动，请删除文件 `%s`\n", pidFilePath)
+		}
+
 		// 将命令行参数中执行文件路径转换成可用路径
 		filePath, _ := filepath.Abs(os.Args[0])
 		cmd := exec.Command(filePath, os.Args[1:]...)
@@ -41,8 +51,14 @@ func Start(action Action, shouldRunInDaemon bool) error {
 		// cmd.Stdin = os.Stdin // 给新进程设置文件描述符，可以重定向到文件中
 		//cmd.Stdout = ioutil.Discard
 		//cmd.Stderr = ioutil.Discard
-		err := cmd.Start() // 开始执行新进程，不等待新进程退出
-		return err
+		// 开始执行新进程，不等待新进程退出
+		if err := cmd.Start(); err != nil {
+			return err
+		} else {
+			fmt.Printf("启动守护进程 %d. 文件 `%s`\n", cmd.Process.Pid, pidFilePath)
+			os.Exit(0)
+			return nil
+		}
 	} else {
 		pidFilePath, err := getPidFilePath()
 
@@ -50,7 +66,9 @@ func Start(action Action, shouldRunInDaemon bool) error {
 			return err
 		}
 
-		if err := fs.WriteFile(pidFilePath, []byte(fmt.Sprintf("%d", os.Getpid()))); err != nil {
+		pid := os.Getpid()
+
+		if err := fs.WriteFile(pidFilePath, []byte(fmt.Sprintf("%d", pid))); err != nil {
 			return err
 		}
 
@@ -66,7 +84,7 @@ func Stop() error {
 	}
 
 	if !fs.PathExists(pidFilePath) {
-		return nil
+		log.Fatalf("找不到 pid 文件 `%s`\n", pidFilePath)
 	}
 
 	b, err2 := fs.ReadFile(pidFilePath)
@@ -83,6 +101,8 @@ func Stop() error {
 		return err3
 	}
 
+	log.Printf("正在结束进程 %d", pid)
+
 	ps, err4 := os.FindProcess(pid)
 
 	if err4 != nil {
@@ -93,21 +113,9 @@ func Stop() error {
 		return err5
 	}
 
-	psState, err6 := ps.Wait()
+	log.Printf("进程 %s 已结束.\n", pidStr)
 
-	if err6 != nil {
-		return err6
-	}
-
-	haveBeenKill := psState.Exited()
-
-	if haveBeenKill {
-		log.Printf("进程 %d 已结束.\n", psState.Pid())
-
-		_ = fs.Remove(pidFilePath)
-	} else {
-		log.Printf("进程 %d 结束失败.\n", psState.Pid())
-	}
+	_ = fs.Remove(pidFilePath)
 
 	return nil
 }
