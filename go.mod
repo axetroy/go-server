@@ -14,7 +14,7 @@ require (
 	github.com/fatih/color v1.9.0
 	github.com/gin-gonic/gin v1.6.3 // indirect
 	github.com/go-ole/go-ole v1.2.4 // indirect
-	github.com/go-redis/redis v6.15.7+incompatible
+	github.com/go-redis/redis v6.15.8+incompatible
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/gorilla/mux v1.7.4
 	github.com/holdno/snowFlakeByGo v0.0.0-20180510033652-d23f8a8cadd7
