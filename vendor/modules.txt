@@ -63,7 +63,7 @@ github.com/fatih/structs
 ## explicit
 github.com/go-ole/go-ole
 github.com/go-ole/go-ole/oleutil
-# github.com/go-redis/redis v6.15.7+incompatible
+# github.com/go-redis/redis v6.15.8+incompatible
 ## explicit
 github.com/go-redis/redis
 github.com/go-redis/redis/internal
