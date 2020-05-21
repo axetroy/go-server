@@ -5,10 +5,6 @@ import (
 	"github.com/axetroy/go-server/internal/service/dotenv"
 )
 
-var (
-	ModeProduction = "production"
-)
-
 type common struct {
 	MachineId string `json:"machine_id"` // 机器 ID
 	Mode      string `json:"mode"`       // 运行模式, 开发模式还是生产模式
@@ -20,7 +16,7 @@ var Common *common
 
 func init() {
 	Common = &common{}
-	Common.Mode = dotenv.GetByDefault("GO_MOD", ModeProduction)
+	Common.Mode = dotenv.GetByDefault("GO_MOD", "production")
 	Common.MachineId = dotenv.GetByDefault("MACHINE_ID", "0")
 	Common.Signature = dotenv.GetByDefault("SIGNATURE_KEY", "signature key")
 }

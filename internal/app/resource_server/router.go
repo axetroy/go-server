@@ -7,9 +7,11 @@ import (
 	"github.com/axetroy/go-server/internal/app/resource_server/controller/downloader"
 	"github.com/axetroy/go-server/internal/app/resource_server/controller/resource"
 	"github.com/axetroy/go-server/internal/app/resource_server/controller/uploader"
+	"github.com/axetroy/go-server/internal/library/config"
 	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/middleware"
 	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/middleware/logger"
 	"github.com/kataras/iris/v12/middleware/recover"
 	"net/http"
 )
@@ -33,6 +35,10 @@ func init() {
 		v1.Use(recover.New())
 		v1.Use(middleware.Common())
 		v1.Use(middleware.CORS())
+
+		if config.Common.Mode != "production" {
+			v1.Use(logger.New())
+		}
 
 		{
 			v1.Get("", router.Handler(func(c router.Context) {
