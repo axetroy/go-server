@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/axetroy/mocker.svg?token=QMG6TLRNwECnaTsy6ssj&branch=master)](https://travis-ci.com/axetroy/mocker)
+[![Build Status](https://github.com/axetroy/mocker/workflows/ci/badge.svg)](https://github.com/axetroy/mocker/actions)
 [![Coverage Status](https://coveralls.io/repos/github/axetroy/mocker/badge.svg?branch=master)](https://coveralls.io/github/axetroy/mocker?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/axetroy/mocker)](https://goreportcard.com/report/github.com/axetroy/mocker)
 ![License](https://img.shields.io/github/license/axetroy/mocker.svg)

@@ -32,7 +32,7 @@ github.com/asaskevich/govalidator
 # github.com/axetroy/go-fs v1.0.0
 ## explicit
 github.com/axetroy/go-fs
-# github.com/axetroy/mocker v1.1.0
+# github.com/axetroy/mocker v1.2.0
 ## explicit
 github.com/axetroy/mocker
 # github.com/aymerick/raymond v2.0.3-0.20180322193309-b565731e1464+incompatible
