@@ -7,14 +7,14 @@ import (
 )
 
 type Mocker struct {
-	router http.Handler
+	Router http.Handler
 }
 
 type Header map[string]string
 
 func New(router http.Handler) *Mocker {
 	return &Mocker{
-		router: router,
+		Router: router,
 	}
 }
 
@@ -29,7 +29,7 @@ func (c *Mocker) Request(method string, path string, body []byte, header *Header
 	}
 
 	w := httptest.NewRecorder()
-	c.router.ServeHTTP(w, req)
+	c.Router.ServeHTTP(w, req)
 	return w
 }
 
