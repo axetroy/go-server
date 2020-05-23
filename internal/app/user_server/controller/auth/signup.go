@@ -338,7 +338,11 @@ func SignUpWithEmailAction(input SignUpWithEmailActionParams) (res schema.Respon
 		return
 	}
 
-	e := email.NewMailer()
+	e, err := email.NewMailer()
+
+	if err != nil {
+		return
+	}
 
 	// 发送邮件
 	if err = e.SendAuthEmail(input.Email, code); err != nil {

@@ -55,7 +55,11 @@ func RunMessageQueueConsumer() (*nsq.Consumer, error) {
 			return err
 		}
 
-		mailer := email.NewMailer()
+		mailer, err := email.NewMailer()
+
+		if err != nil {
+			return err
+		}
 
 		// 发送邮件
 		if err := mailer.SendActivationEmail(body.Email, body.Code); err != nil {

@@ -3,10 +3,13 @@ package email
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/axetroy/go-server/internal/library/config"
 	"github.com/axetroy/go-server/internal/library/exception"
+	"github.com/axetroy/go-server/internal/library/validator"
+	"github.com/axetroy/go-server/internal/model"
+	"github.com/axetroy/go-server/internal/service/database"
 	"github.com/jordan-wright/email"
 	"net"
 	"net/smtp"
@@ -23,10 +26,9 @@ const (
 	TemplateRegistry            = `<a href="%s" href="target">点击注册您的帐号</a>`
 )
 
-var Config = config.SMTP
-
 type Mailer struct {
-	Auth *smtp.Auth
+	Auth   *smtp.Auth
+	Config model.ConfigFieldSMTP
 }
 
 type Message struct {
@@ -43,17 +45,49 @@ type Message struct {
 	ReadReceipt []string
 }
 
-func NewMailer() *Mailer {
+// 从数据库中获取邮箱设置
+func GetMailerConfig() (*model.ConfigFieldSMTP, error) {
+	c := model.Config{}
+	if err := database.Db.Model(&model.Config{}).Where(&c).First(&c).Error; err != nil {
+		return nil, exception.NoConfig
+	}
+
+	if err := c.IsValidConfigField(); err != nil {
+		return nil, err
+	}
+
+	result := model.ConfigFieldSMTP{}
+
+	if err := json.Unmarshal([]byte(c.Fields), &result); err != nil {
+		return nil, exception.InvalidParams.New(err.Error())
+	}
+
+	if err := validator.ValidateStruct(c); err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+}
+
+func NewMailer() (*Mailer, error) {
 	// Set up authentication information.
+	c, err := GetMailerConfig()
+
+	if err != nil {
+		return nil, err
+	}
+
 	auth := smtp.PlainAuth(
 		"",
-		Config.Username,
-		Config.Password,
-		Config.Host,
+		c.Username,
+		c.Password,
+		c.Server,
 	)
+
 	return &Mailer{
-		Auth: &auth,
-	}
+		Auth:   &auth,
+		Config: *c,
+	}, nil
 }
 
 // 发送邮件
@@ -63,7 +97,7 @@ func (e *Mailer) Send(message *Message) (err error) {
 		return
 	}
 	msg := &email.Email{
-		From:    fmt.Sprintf("%v <%v>", Config.Sender.Name, Config.Sender.Email),
+		From:    fmt.Sprintf("%v <%v>", e.Config.FromName, e.Config.FromEmail),
 		To:      message.To,
 		Subject: message.Subject,
 		Text:    message.Text,
@@ -71,12 +105,12 @@ func (e *Mailer) Send(message *Message) (err error) {
 		Headers: textproto.MIMEHeader{},
 	}
 
-	var addr = net.JoinHostPort(Config.Host, Config.Port)
+	var addr = net.JoinHostPort(e.Config.Server, fmt.Sprintf("%d", e.Config.Port))
 
 	if err = msg.SendWithTLS(
 		addr,
 		*e.Auth, &tls.Config{
-			ServerName:         Config.Host,
+			ServerName:         e.Config.Server,
 			InsecureSkipVerify: true,
 		}); err != nil {
 		err = exception.SendEmailFail

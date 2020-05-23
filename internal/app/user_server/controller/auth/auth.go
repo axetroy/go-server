@@ -60,7 +60,11 @@ func SendEmailAuthCode(c helper.Context, input SendEmailAuthCodeParams) (res sch
 		return
 	}
 
-	e := email.NewMailer()
+	e, err := email.NewMailer()
+
+	if err != nil {
+		return
+	}
 
 	// send email
 	if err = e.SendAuthEmail(input.Email, activationCode); err != nil {

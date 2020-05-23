@@ -10,6 +10,7 @@ var (
 	InvalidFormat     = New("格式不正确", 100004)
 	InvalidInviteCode = New("无效的邀请码", 100005)
 	Duplicate         = New("重复操作", 100006)
+	NoConfig          = New("缺少配置", 100007)
 	SendMsgFail       = New("发送短信失败", 101000)
 	SendEmailFail     = New("发送邮件失败", 101001)
 	UserNotLogin      = New("请先登陆", 999999)

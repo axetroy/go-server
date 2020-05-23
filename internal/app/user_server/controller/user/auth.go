@@ -68,7 +68,11 @@ func SendAuthEmail(c helper.Context) (res schema.Response) {
 		return
 	}
 
-	e := email.NewMailer()
+	e, err := email.NewMailer()
+
+	if err != nil {
+		return
+	}
 
 	// send email
 	if err = e.SendAuthEmail(*userInfo.Email, activationCode); err != nil {

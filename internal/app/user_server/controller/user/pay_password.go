@@ -248,8 +248,9 @@ func SendResetPayPassword(c helper.Context) (res schema.Response) {
 	if userInfo.Email != nil {
 		// 发送邮件
 		go func() {
-			e := email.NewMailer()
-			_ = e.SendForgotTradePasswordEmail(*userInfo.Email, resetCode)
+			if e, err := email.NewMailer(); err == nil {
+				_ = e.SendForgotTradePasswordEmail(*userInfo.Email, resetCode)
+			}
 		}()
 	} else if userInfo.Phone != nil {
 		go func() {

@@ -26,13 +26,6 @@
 | REDIS_SERVER                                   | `string` | `redis` 服务器地址                                           | `localhost`  |
 | REDIS_PORT                                     | `string` | `redis` 服务器端口                                           | `6379`       |
 | REDIS_PASSWORD                                 | `string` | `redis` 服务器密码                                           | `""`         |
-| SMTP 服务器配置                                | -        | -                                                            | -            |
-| SMTP_SERVER                                    | `string` | SMTP 服务器                                                  | `""`         |
-| SMTP_SERVER_PORT                               | `int`    | SMTP 服务器的端口                                            | `""`         |
-| SMTP_USERNAME                                  | `string` | SMTP 服务器的用户名                                          | `""`         |
-| SMTP_PASSWORD                                  | `string` | SMTP 服务器的密码                                            | `""`         |
-| SMTP_FROM_NAME                                 | `string` | SMTP 服务器发送邮件的发送者                                  | `""`         |
-| SMTP_FROM_EMAIL                                | `string` | SMTP 服务器发送邮件的发送者的邮箱地址                        | `""`         |
 | 短信服务设置                                   | -        | -                                                            | -            |
 | TELEPHONE_PROVIDER                             | `string` | 短信服务提供商，可选 `aliyun`/`tencent`                      | `aliyun`     |
 | TELEPHONE_ALIYUN_ACCESS_KEY                    | `string` | *阿里云*的 access key                                        | `""`         |
