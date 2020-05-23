@@ -13,7 +13,7 @@ var (
 
 func ValidateStruct(any interface{}) error {
 	if isValid, err := govalidator.ValidateStruct(any); err != nil {
-		return exception.New(err.Error(), exception.InvalidParams.Code())
+		return exception.InvalidParams.New(err.Error())
 	} else if !isValid {
 		return exception.InvalidParams
 	}

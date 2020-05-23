@@ -7,6 +7,7 @@ import (
 	"github.com/axetroy/go-server/internal/app/admin_server/controller/address"
 	"github.com/axetroy/go-server/internal/app/admin_server/controller/admin"
 	"github.com/axetroy/go-server/internal/app/admin_server/controller/banner"
+	Configuration "github.com/axetroy/go-server/internal/app/admin_server/controller/config"
 	"github.com/axetroy/go-server/internal/app/admin_server/controller/help"
 	loginLog "github.com/axetroy/go-server/internal/app/admin_server/controller/logger/login"
 	"github.com/axetroy/go-server/internal/app/admin_server/controller/menu"
@@ -176,6 +177,16 @@ func init() {
 			logRouter := v1.Party("/log")
 			logRouter.Get("/login", loginLog.GetLoginLogsRouter)         // 获取用户的登陆日志列表
 			logRouter.Get("/login/{log_id}", loginLog.GetLoginLogRouter) // 用户单条登陆记录
+		}
+
+		// 配置项
+		{
+			logRouter := v1.Party("/config")
+			logRouter.Get("/", Configuration.GetListRouter)             // 获取配置列表
+			logRouter.Get("/name", Configuration.GetNameRouter)         // 获取配置名称列表 (查看有哪些配置)
+			logRouter.Get("/:config_name", Configuration.GetRouter)     // 获取指定的配置
+			logRouter.Post("/:config_name", Configuration.CreateRouter) // 创建指定的配置
+			logRouter.Put("/:config_name", Configuration.UpdateRouter)  // 更新指定的配置
 		}
 
 		// 通用类

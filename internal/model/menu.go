@@ -23,13 +23,13 @@ type Menu struct {
 	DeletedAt *time.Time `sql:"index"`
 }
 
-func (news *Menu) TableName() string {
+func (menu *Menu) TableName() string {
 	return "menu"
 }
 
-func (news *Menu) BeforeCreate(scope *gorm.Scope) error {
+func (menu *Menu) BeforeCreate(scope *gorm.Scope) error {
 	// 检验传入的权限是否正确
-	if !accession.ValidAdmin(news.Accession) {
+	if !accession.ValidAdmin(menu.Accession) {
 		return exception.InvalidParams
 	}
 

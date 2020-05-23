@@ -21,7 +21,7 @@ func TestGetBanner(t *testing.T) {
 	{
 		r := banner.GetBanner("123123")
 
-		assert.Equal(t, schema.StatusFail, r.Status)
+		assert.Equal(t, exception.BannerNotExist.Code(), r.Status)
 		assert.Equal(t, exception.BannerNotExist.Error(), r.Message)
 	}
 

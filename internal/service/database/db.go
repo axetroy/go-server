@@ -47,6 +47,7 @@ func Connect() {
 
 		// Migrate the schema
 		db.AutoMigrate(
+			new(model.Config),           // 配置表
 			new(model.Admin),            // 管理员表
 			new(model.News),             // 新闻公告
 			new(model.User),             // 用户表

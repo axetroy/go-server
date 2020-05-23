@@ -53,14 +53,14 @@ var (
 	// 管理员
 	AdminExist    = New("管理员已存在", 0)
 	AdminNotExist = New("管理员不存在", 0)
-	AdminNotSuper = New("只有超级管理员才能操作", 0)
+	AdminNotSuper = NoPermission.New("只有超级管理员才能操作")
 
 	// banner
-	BannerInvalidPlatform = New("无效的平台", 0)
-	BannerNotExist        = New("不存在横幅", 0)
+	BannerInvalidPlatform = InvalidParams.New("无效的平台")
+	BannerNotExist        = NoData.New("不存在横幅")
 
 	// 帮助中心
-	HelpParentNotExist = New("父级不存在", 0)
+	HelpParentNotExist = NoData.New("父级不存在")
 
 	// 邀请
 	InviteNotExist = New("邀请记录不存在", 0)
