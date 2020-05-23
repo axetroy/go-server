@@ -25,7 +25,7 @@ require (
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/kataras/iris/v12 v12.1.8
 	github.com/lib/pq v1.5.2
-	github.com/markbates/goth v1.64.0
+	github.com/markbates/goth v1.64.1
 	github.com/mitchellh/mapstructure v1.3.1
 	github.com/moul/http2curl v1.0.0 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646

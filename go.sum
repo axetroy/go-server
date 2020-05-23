@@ -185,6 +185,8 @@ github.com/markbates/going v1.0.0 h1:DQw0ZP7NbNlFGcKbcE/IVSOAFzScxRtLpd0rLMzLhq0
 github.com/markbates/going v1.0.0/go.mod h1:I6mnB4BPnEeqo85ynXIx1ZFLLbtiLHNXVgWeFO9OGOA=
 github.com/markbates/goth v1.64.0 h1:TXmIGRrY3Rf/a5qbx8MIGnz1rD9SkIn0UzRoDqHyJLs=
 github.com/markbates/goth v1.64.0/go.mod h1:qh2QfwZoWRucQ+DR5KVKC6dUGkNCToWh4vS45GIzFsY=
+github.com/markbates/goth v1.64.1 h1:hHtHjx/QJKblyqUtqL1z3eWSyYmZO4YXGKRdUwk1yvQ=
+github.com/markbates/goth v1.64.1/go.mod h1:qh2QfwZoWRucQ+DR5KVKC6dUGkNCToWh4vS45GIzFsY=
 github.com/mattn/go-colorable v0.1.4 h1:snbPLB8fVfU9iwbbo30TPtbLRzwWu6aJS6Xh4eaaviA=
 github.com/mattn/go-colorable v0.1.4/go.mod h1:U0ppj6V5qS13XJ6of8GYAs25YV2eR4EVcfRqFIhoBtE=
 github.com/mattn/go-isatty v0.0.8 h1:HLtExJ+uU2HOZ+wI0Tt5DtUDrx8yhUqDcp7fYERX4CE=
