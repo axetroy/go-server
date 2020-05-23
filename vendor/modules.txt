@@ -57,8 +57,6 @@ github.com/eknkc/amber/parser
 github.com/fatih/color
 # github.com/fatih/structs v1.1.0
 github.com/fatih/structs
-# github.com/gin-gonic/gin v1.6.3
-## explicit
 # github.com/go-ole/go-ole v1.2.4
 ## explicit
 github.com/go-ole/go-ole
@@ -73,6 +71,7 @@ github.com/go-redis/redis/internal/pool
 github.com/go-redis/redis/internal/proto
 github.com/go-redis/redis/internal/util
 # github.com/golang/protobuf v1.3.3
+## explicit
 github.com/golang/protobuf/proto
 # github.com/golang/snappy v0.0.1
 github.com/golang/snappy
@@ -173,6 +172,7 @@ github.com/markbates/goth/providers/twitter
 # github.com/mattn/go-colorable v0.1.4
 github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.12
+## explicit
 github.com/mattn/go-isatty
 # github.com/microcosm-cc/bluemonday v1.0.2
 github.com/microcosm-cc/bluemonday
@@ -311,6 +311,7 @@ google.golang.org/appengine/urlfetch
 # gopkg.in/ini.v1 v1.51.1
 gopkg.in/ini.v1
 # gopkg.in/yaml.v2 v2.2.8
+## explicit
 gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.0-20191120175047-4206685974f2
 gopkg.in/yaml.v3

@@ -12,9 +12,9 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fasthttp-contrib/websocket v0.0.0-20160511215533-1f3b11f56072 // indirect
 	github.com/fatih/color v1.9.0
-	github.com/gin-gonic/gin v1.6.3 // indirect
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/go-redis/redis v6.15.8+incompatible
+	github.com/golang/protobuf v1.3.3 // indirect
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/gorilla/mux v1.7.4
 	github.com/holdno/snowFlakeByGo v0.0.0-20180510033652-d23f8a8cadd7
@@ -26,6 +26,7 @@ require (
 	github.com/kataras/iris/v12 v12.1.8
 	github.com/lib/pq v1.5.2
 	github.com/markbates/goth v1.64.1
+	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/mitchellh/mapstructure v1.3.1
 	github.com/moul/http2curl v1.0.0 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
@@ -50,4 +51,5 @@ require (
 	github.com/yudai/pp v2.0.1+incompatible // indirect
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45 // indirect
 	google.golang.org/appengine v1.6.5 // indirect
+	gopkg.in/yaml.v2 v2.2.8 // indirect
 )
