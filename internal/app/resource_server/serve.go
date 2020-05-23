@@ -3,6 +3,7 @@ package resource_server
 
 import (
 	"context"
+	resourceConfig "github.com/axetroy/go-server/internal/app/resource_server/config"
 	"github.com/axetroy/go-server/internal/library/config"
 	"log"
 	"net/http"
@@ -14,6 +15,8 @@ import (
 
 func Serve() error {
 	port := config.Resource.Port
+
+	resourceConfig.Init()
 
 	s := &http.Server{
 		Addr:           ":" + port,
@@ -53,10 +56,10 @@ func Serve() error {
 	}
 
 	// catching ctx.Done(). timeout of 5 seconds.
-	//select {
-	//case <-ctx.Done():
-	//	log.Println("Timeout of 5 seconds.")
-	//}
+	select {
+	case <-ctx.Done():
+		log.Println("Timeout of 5 seconds.")
+	}
 
 	log.Println("Server exiting")
 

@@ -57,7 +57,7 @@ var Upload = TConfig{
 }
 
 // 确保上传的文件目录存在
-func init() {
+func Init() {
 	var (
 		err error
 	)

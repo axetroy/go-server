@@ -3,13 +3,11 @@ package system
 
 import (
 	"errors"
-	config2 "github.com/axetroy/go-server/internal/app/resource_server/config"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
 	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/shirou/gopsutil/cpu"
-	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/load"
 	"github.com/shirou/gopsutil/mem"
@@ -29,19 +27,17 @@ type Info struct {
 	RAMFree          uint64         `json:"ram_free"`            // 目前可用内存
 	RAMUsedBy        uint64         `json:"ram_used_by"`         // 程序占用的内存
 	RAMUsedByPercent float64        `json:"ram_used_by_percent"` // 程序占用的内存百分比
-	UploadUsageStat  disk.UsageStat `json:"upload_usage_stat"`   // 上传目录的使用量统计
 	Time             string         `json:"time"`                // 系统当前时间
 	Timezone         string         `json:"timezone"`            // 当前服务器所在的时区
 }
 
 func GetSystemInfo() (res schema.Response) {
 	var (
-		err             error
-		data            Info
-		hostInfo        *host.InfoStat
-		CPUInfo         []cpu.InfoStat
-		avgStat         *load.AvgStat
-		uploadUsageStat *disk.UsageStat
+		err      error
+		data     Info
+		hostInfo *host.InfoStat
+		CPUInfo  []cpu.InfoStat
+		avgStat  *load.AvgStat
 	)
 
 	defer func() {
@@ -73,10 +69,6 @@ func GetSystemInfo() (res schema.Response) {
 		return
 	}
 
-	if uploadUsageStat, err = disk.Usage(config2.Upload.Path); err != nil {
-		return
-	}
-
 	var u *user.User
 
 	if u, err = user.Current(); err != nil {
@@ -96,7 +88,6 @@ func GetSystemInfo() (res schema.Response) {
 		RAMFree:          v.Free,
 		RAMUsedBy:        v.Used,
 		RAMUsedByPercent: v.UsedPercent,
-		UploadUsageStat:  *uploadUsageStat,
 		Time:             t.Format(time.RFC3339Nano),
 		Timezone:         t.Location().String(),
 	}
