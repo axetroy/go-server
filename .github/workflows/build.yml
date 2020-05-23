@@ -8,9 +8,10 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        go: ['1.14.2']
+        kind: ['build', 'test']
+        go: ['^1.14.2']
         os: [ubuntu-latest]
-    name: Go ${{ matrix.go }} test in ${{ matrix.os }}
+    name: Go ${{ matrix.go }} ${{ matrix.kind }} in ${{ matrix.os }}
 
     services:
       postgres:
@@ -42,7 +43,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-go@v1
+      - uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.go }}
 
@@ -52,6 +53,7 @@ jobs:
           go env
 
       - name: Test
+        if: matrix.kine == 'test'
         env:
           DB_DRIVER: postgres
           DB_NAME: gotest
@@ -62,10 +64,11 @@ jobs:
         run: make test
 
       - name: Build
+        if: matrix.kine == 'build'
         run: make build
 
-      - name: Send Coverage
-        if: github.repository == 'axetroy/go-server'
+      - name: Coverage
+        if: matrix.kine == 'test' && github.repository == 'axetroy/go-server'
         env:
           COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
         run: |
@@ -75,13 +78,12 @@ jobs:
 
       - uses: softprops/action-gh-release@v1
         name: Release to Github
-        if: startsWith(github.ref, 'refs/tags/') && github.repository == 'axetroy/go-server'
+        if: matrix.kine == 'build' && startsWith(github.ref, 'refs/tags/') && github.repository == 'axetroy/go-server'
         env:
           # require Github Personal Access Token
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
           files: |
-            ./bin/vscode-deno.vsix
             ./bin/user_server_darwin_amd64.tar.gz
             ./bin/user_server_linux_amd64.tar.gz
             ./bin/user_server_windows_amd64.tar.gz
