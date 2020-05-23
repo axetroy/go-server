@@ -50,8 +50,8 @@ func Connect() {
 			new(model.Config),           // 配置表
 			new(model.Admin),            // 管理员表
 			new(model.News),             // 新闻公告
-			new(model.User),             // 用户表
 			new(model.Role),             // 角色表 - RBAC
+			new(model.User),             // 用户表
 			new(model.WalletCny),        // 钱包 - CNY
 			new(model.WalletUsd),        // 钱包 - USD
 			new(model.WalletCoin),       // 钱包 - COIN
