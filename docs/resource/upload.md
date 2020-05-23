@@ -1,3 +1,7 @@
+### 上传文件的示例
+
+[POST] /v1/upload/example
+
 ### 上传文件
 
 [POST] /v1/upload/file
