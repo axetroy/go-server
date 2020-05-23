@@ -1,4 +1,4 @@
-![build](https://github.com/axetroy/go-server/workflows/build/badge.svg)
+![ci](https://github.com/axetroy/go-server/workflows/ci/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/axetroy/go-server/badge.svg?branch=master)](https://coveralls.io/github/axetroy/go-server?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/axetroy/go-server)](https://goreportcard.com/report/github.com/axetroy/go-server)
 ![License](https://img.shields.io/github/license/axetroy/go-server.svg)
