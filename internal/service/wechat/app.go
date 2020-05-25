@@ -3,8 +3,11 @@ package wechat
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/axetroy/go-server/internal/library/config"
+	"github.com/axetroy/go-server/internal/library/exception"
+	"github.com/axetroy/go-server/internal/model"
+	"github.com/axetroy/go-server/internal/service/database"
 	"github.com/axetroy/go-server/internal/service/dotenv"
+	"github.com/jinzhu/gorm"
 	"io/ioutil"
 	"net/http"
 )
@@ -24,7 +27,23 @@ func FetchOpenID(code string) (*Response, error) {
 			OpenID: "oPl3r0AZdJxd7fO0HhMb99Te1311",
 		}, nil
 	}
-	wechatUrl := fmt.Sprintf("https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code", config.Wechat.AppID, config.Wechat.Secret, code)
+
+	c := model.Config{Name: model.ConfigFieldNameWechatApp.Field}
+
+	if err := database.Db.Model(&c).Where(&c).First(&c).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = exception.NoConfig
+		}
+		return nil, err
+	}
+
+	wechatConfig := model.ConfigFieldWechatApp{}
+
+	if err := json.Unmarshal([]byte(c.Fields), &wechatConfig); err != nil {
+		return nil, err
+	}
+
+	wechatUrl := fmt.Sprintf("https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code", wechatConfig.AppID, wechatConfig, code)
 
 	r, reqErr := http.Get(wechatUrl)
 
@@ -42,6 +61,10 @@ func FetchOpenID(code string) (*Response, error) {
 
 	if jsonErr := json.Unmarshal(resBytes, &reqRes); jsonErr != nil {
 		return nil, jsonErr
+	}
+
+	if reqRes.ErrMsg != "" {
+		return nil, exception.Unknown.New(reqRes.ErrMsg)
 	}
 
 	return &reqRes, nil

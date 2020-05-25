@@ -16,13 +16,19 @@ type ConfigField struct {
 }
 
 var (
-	ConfigFieldNamePhone = ConfigField{Field: "phone", Description: "手机相关的配置"}     // 手机配置相关
-	ConfigFieldNameSMTP  = ConfigField{Field: "smtp", Description: "SMTP 邮件服务的配置"} // SMTP 邮件服务的配置
-	ConfigFields         = []ConfigField{ConfigFieldNamePhone, ConfigFieldNameSMTP}
+	ConfigFieldNamePhone     = ConfigField{Field: "phone", Description: "手机相关的配置"}
+	ConfigFieldNameSMTP      = ConfigField{Field: "smtp", Description: "SMTP 邮件服务的配置"}
+	ConfigFieldNameWechatApp = ConfigField{Field: "wechat_app", Description: "微信小程序的相关配置"}
+	ConfigFields             = []ConfigField{ConfigFieldNamePhone, ConfigFieldNameSMTP, ConfigFieldNameWechatApp}
 )
 
 type ConfigFieldPhone struct {
 	Provider string `json:"provider"` // 短信服务提供商, 可选 aliyun/tencent
+}
+
+type ConfigFieldWechatApp struct {
+	AppID  string `json:"app_id" valid:"required~请输入微信小程序的 APP ID"` // 微信小程序的 APP ID
+	Secret string `json:"secret" valid:"required~请输入微信小程序的 Secret"` // 微信小程序的密钥
 }
 
 type ConfigFieldSMTP struct {
@@ -72,6 +78,15 @@ func (config *Config) IsValidConfigField() error {
 		break
 	case ConfigFieldNameSMTP.Field:
 		c := ConfigFieldSMTP{}
+		if err := json.Unmarshal([]byte(config.Fields), &c); err != nil {
+			return exception.InvalidParams.New(err.Error())
+		}
+		if err := validator.ValidateStruct(c); err != nil {
+			return err
+		}
+		break
+	case ConfigFieldNameWechatApp.Field:
+		c := ConfigFieldWechatApp{}
 		if err := json.Unmarshal([]byte(config.Fields), &c); err != nil {
 			return exception.InvalidParams.New(err.Error())
 		}

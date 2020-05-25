@@ -46,9 +46,6 @@
 | Google 认证登陆配置                            | -        | -                                                            | -            |
 | GOOGLE_AUTH2_CLIENT_ID                         | `string` | Google 登陆的 client ID                                      | `""`         |
 | GOOGLE_AUTH2_CLIENT_SECRET                     | `string` | Google 登陆的 secret                                         | `""`         |
-| 微信小程序认证登陆配置                         | -        | -                                                            | -            |
-| WECHAT_APP_ID                                  | `string` | 微信小程序的 `appid`                                         | `""`         |
-| WECHAT_SECRET                                  | `string` | 微信小程序的 `secret`                                        | `""`         |
 | oAuth 认证设置                                 | -        | -                                                            | -            |
 | OAUTH_REDIRECT_URL                             | `string` | oAuth 认证成功后跳转到的前端 URL                             | `""`         |
 | GITHUB_KEY                                     | `string` | oAuth 认证的 `Github Key`                                    | `""`         |
