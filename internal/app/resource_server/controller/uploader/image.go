@@ -55,6 +55,12 @@ var Image = router.Handler(func(c router.Context) {
 
 	files := form.File["file"]
 
+	// 如果找不到图片
+	if len(files) == 0 {
+		err = exception.InvalidParams
+		return
+	}
+
 	for _, file := range files {
 		var (
 			src  multipart.File // 要读取的文件
