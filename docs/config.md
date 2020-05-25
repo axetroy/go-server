@@ -94,18 +94,18 @@
 
 > 提供静态资源接口服务
 
-| 环境变量                      | 类型     | 说明                                           | 默认值       |
-| ----------------------------- | -------- | ---------------------------------------------- | ------------ |
-| 通用配置                      | -        | -                                              | -            |
-| GO_MOD                        | `string` | 处于开发模式(development)/生产模式(production) | `production` |
-| RESOURCE_HTTP_PORT            | `int`    | 资源接口服务监听的端口                         | `9003`       |
-| RESOURCE_HTTP_DOMAIN          | `string` | 资源接口服务的域名                             | `localhost`  |
-| UPLOAD_DIR                    | `string` | 图片上传储存的目录                             | `upload`     |
-| UPLOAD_FILE_MAX_SIZE          | `int`    | 文件上传的最大大小                             | `10485760`   |
-| UPLOAD_FILE_EXTENSION         | `string` | 允许上传的文件类型, 以为 `,` 作为分隔符        | `.txt,.md`   |
-| UPLOAD_IMAGE_MAX_SIZE         | `int`    | 图片上传的最大大小                             | `10485760`   |
-| UPLOAD_IMAGE_THUMBNAIL_WIDTH  | `int`    | 图片缩略图宽度, 单位 `px`                      | `100`        |
-| UPLOAD_IMAGE_THUMBNAIL_HEIGHT | `int`    | 图片缩略图高度, 单位 `px`                      | `100`        |
+| 环境变量                      | 类型     | 说明                                           | 默认值               |
+| ----------------------------- | -------- | ---------------------------------------------- | -------------------- |
+| 通用配置                      | -        | -                                              | -                    |
+| GO_MOD                        | `string` | 处于开发模式(development)/生产模式(production) | `production`         |
+| RESOURCE_HTTP_PORT            | `int`    | 资源接口服务监听的端口                         | `9003`               |
+| RESOURCE_HTTP_DOMAIN          | `string` | 资源接口服务的域名                             | `localhost`          |
+| UPLOAD_DIR                    | `string` | 图片上传储存的目录                             | `upload`             |
+| UPLOAD_FILE_MAX_SIZE          | `int`    | 文件上传的最大大小                             | `1024*1024*10` = 10M |
+| UPLOAD_FILE_EXTENSION         | `string` | 允许上传的文件类型, 以为 `,` 作为分隔符        | `.txt,.md`           |
+| UPLOAD_IMAGE_MAX_SIZE         | `int`    | 图片上传的最大大小                             | `1024*1024*10` = 10M |
+| UPLOAD_IMAGE_THUMBNAIL_WIDTH  | `int`    | 图片缩略图宽度, 单位 `px`                      | `100`                |
+| UPLOAD_IMAGE_THUMBNAIL_HEIGHT | `int`    | 图片缩略图高度, 单位 `px`                      | `100`                |
 
 ### 消息队列服务器
 
