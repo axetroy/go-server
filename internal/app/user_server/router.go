@@ -53,6 +53,7 @@ func init() {
 
 		if config.Common.Mode != "production" {
 			v1.Use(logger.New())
+			v1.Use(middleware.Ip())
 		}
 
 		{

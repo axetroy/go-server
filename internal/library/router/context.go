@@ -6,6 +6,7 @@ import (
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
+	"net"
 	"net/http"
 )
 
@@ -27,7 +28,32 @@ func (c *Context) GetHeader(key string) string {
 }
 
 func (c *Context) ClientIP() string {
-	return c.context.RemoteAddr()
+	header := c.Request().Header
+
+	// TODO: 客户端有可能设置这个头部用以欺骗服务端
+	// 解决办法：添加白名单到 remoteAddr 中
+	// 只认可白名单中的服务器发来的 `X-Real-Ip` 和 `X-Forwarded-For` 头部
+	var clientIp = header.Get("X-Real-Ip")
+
+	if clientIp == "" {
+		clientIp = header.Get("X-Forwarded-For")
+	}
+
+	if clientIp == "" {
+		addr := c.Request().RemoteAddr
+
+		if ipStr, _, err := net.SplitHostPort(addr); err == nil {
+			ip := net.ParseIP(ipStr)
+
+			clientIp = string(ip)
+		}
+	}
+
+	if clientIp == "" {
+		clientIp = c.context.RemoteAddr()
+	}
+
+	return clientIp
 }
 
 func (c *Context) StatusCode(code int) {
@@ -144,6 +170,10 @@ func (c *Context) GetContext(key string) interface{} {
 
 func (c *Context) Uid() string {
 	return c.context.Values().GetString("uid")
+}
+
+func (c *Context) Next() {
+	c.context.Next()
 }
 
 func Handler(handler func(c Context)) iris.Handler {
