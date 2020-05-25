@@ -140,6 +140,18 @@ func GetIntByDefault(key string, defaultValue int) int {
 	return result
 }
 
+func GetInt64ByDefault(key string, defaultValue int64) int64 {
+	val := GetByDefault(key, fmt.Sprintf("%d", defaultValue))
+
+	result, err := strconv.Atoi(val)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return int64(result)
+}
+
 func GetStrArrayByDefault(key string, defaultValue []string) []string {
 	val := GetByDefault(key, fmt.Sprintf("%s", strings.Join(defaultValue, ",")))
 

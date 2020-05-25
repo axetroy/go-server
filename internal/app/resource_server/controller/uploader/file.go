@@ -28,9 +28,9 @@ var File = router.Handler(func(c router.Context) {
 	}()
 
 	// Get the max post value size passed via iris.WithPostMaxMemory.
-	maxSize := c.Application().ConfigurationReadOnly().GetPostMaxMemory()
+	//maxSize := c.Application().ConfigurationReadOnly().GetPostMaxMemory()
 
-	err = c.Request().ParseMultipartForm(maxSize)
+	err = c.Request().ParseMultipartForm(maxUploadSize)
 
 	if err != nil {
 		return
