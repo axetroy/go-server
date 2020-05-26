@@ -109,9 +109,19 @@
 
 > 消费队列里面的消息
 
-| 环境变量         | 类型     | 说明                                           | 默认值       |
-| ---------------- | -------- | ---------------------------------------------- | ------------ |
-| 通用配置         | -        | -                                              | -            |
-| GO_MOD           | `string` | 处于开发模式(development)/生产模式(production) | `production` |
-| MSG_QUEUE_SERVER | `string` | 消息队列服务器地址                             | `localhost`  |
-| MSG_QUEUE_PORT   | `int`    | 消息队列服务器端口                             | `4150`       |
+| 环境变量                | 类型     | 说明                                           | 默认值       |
+| ----------------------- | -------- | ---------------------------------------------- | ------------ |
+| 通用配置                | -        | -                                              | -            |
+| GO_MOD                  | `string` | 处于开发模式(development)/生产模式(production) | `production` |
+| MSG_QUEUE_SERVER        | `string` | 消息队列服务器地址                             | `localhost`  |
+| MSG_QUEUE_PORT          | `int`    | 消息队列服务器端口                             | `4150`       |
+| 数据库配置              | -        | -                                              | -            |
+| DB_HOST                 | `string` | 连接的数据库地址                               | `localhost`  |
+| DB_PORT                 | `int`    | 连接的数据库端口                               | `65432`      |
+| DB_DRIVER               | `string` | 数据库驱动器, 即数据库类型                     | `postgres`   |
+| DB_NAME                 | `string` | 数据库名称                                     | `gotest`     |
+| DB_USERNAME             | `string` | 连接数据库的用户名                             | `gotest`     |
+| DB_PASSWORD             | `string` | 连接数据库的密码                               | `gotest`     |
+| 推送服务器              | -        | -                                              | -            |
+| ONE_SIGNAL_APP_ID       | `string` | 推送服务器 one signal 的 APP ID                | ``           |
+| ONE_SIGNAL_REST_API_KEY | `string` | 推送服务器 one signal 的 REST API KEY          | ``           |

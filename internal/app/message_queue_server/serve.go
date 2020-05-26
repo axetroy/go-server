@@ -17,7 +17,7 @@ import (
 
 func Serve() error {
 	var (
-		c *nsq.Consumer
+		consumers []*nsq.Consumer
 	)
 
 	redis.Connect()
@@ -27,7 +27,7 @@ func Serve() error {
 		if ctx, err := message_queue.RunMessageQueueConsumer(); err != nil {
 			log.Fatal(err)
 		} else {
-			c = ctx
+			consumers = ctx
 		}
 	}()
 
@@ -50,10 +50,11 @@ func Serve() error {
 
 	defer cancel()
 
-	if c != nil {
-		c.Stop()
-
-		_ = c.DisconnectFromNSQD(message_queue.Address)
+	if consumers != nil && len(consumers) > 0 {
+		for _, c := range consumers {
+			c.Stop()
+			_ = c.DisconnectFromNSQD(message_queue.Address)
+		}
 	}
 
 	// catching ctx.Done(). timeout of 5 seconds.
