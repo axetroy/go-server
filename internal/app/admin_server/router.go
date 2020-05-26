@@ -182,12 +182,12 @@ func init() {
 
 		// 配置项
 		{
-			logRouter := v1.Party("/config")
-			logRouter.Get("/", Configuration.GetListRouter)             // 获取配置列表
-			logRouter.Get("/name", Configuration.GetNameRouter)         // 获取配置名称列表 (查看有哪些配置)
-			logRouter.Get("/:config_name", Configuration.GetRouter)     // 获取指定的配置
-			logRouter.Post("/:config_name", Configuration.CreateRouter) // 创建指定的配置
-			logRouter.Put("/:config_name", Configuration.UpdateRouter)  // 更新指定的配置
+			configRouter := v1.Party("/config")
+			configRouter.Get("/", Configuration.GetListRouter)             // 获取配置列表
+			configRouter.Get("/name", Configuration.GetNameRouter)         // 获取配置名称列表 (查看有哪些配置)
+			configRouter.Get("/:config_name", Configuration.GetRouter)     // 获取指定的配置
+			configRouter.Post("/:config_name", Configuration.CreateRouter) // 创建指定的配置
+			configRouter.Put("/:config_name", Configuration.UpdateRouter)  // 更新指定的配置
 		}
 
 		// 通用类
