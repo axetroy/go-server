@@ -4,6 +4,7 @@ package main
 import (
 	"github.com/axetroy/go-server/internal/app/admin_server"
 	"github.com/axetroy/go-server/internal/library/daemon"
+	"github.com/axetroy/go-server/internal/service/database"
 	"github.com/urfave/cli/v2"
 	"log"
 	"os"
@@ -11,16 +12,16 @@ import (
 
 func main() {
 	app := cli.NewApp()
-	app.Usage = "admin server"
+	app.Usage = "管理员接口服务器"
 
 	app.Commands = []*cli.Command{
 		{
 			Name:  "start",
-			Usage: "start admin",
+			Usage: "启动服务",
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
 					Name:  "daemon, d",
-					Usage: "running in daemon mode",
+					Usage: "是否以守护进程运行",
 				},
 			},
 			Action: func(c *cli.Context) error {
@@ -30,9 +31,16 @@ func main() {
 		},
 		{
 			Name:  "stop",
-			Usage: "stop admin",
+			Usage: "停止服务",
 			Action: func(c *cli.Context) error {
 				return daemon.Stop()
+			},
+		},
+		{
+			Name:  "migrate",
+			Usage: "同步数据库",
+			Action: func(context *cli.Context) error {
+				return database.Migrate(nil)
 			},
 		},
 	}

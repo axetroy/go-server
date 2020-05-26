@@ -12,7 +12,6 @@ type database struct {
 	DatabaseName string `json:"database_name"`
 	Username     string `json:"username"`
 	Password     string `json:"password"`
-	Sync         string `json:"sync"`
 }
 
 var Database database
@@ -24,5 +23,4 @@ func init() {
 	Database.DatabaseName = dotenv.GetByDefault("DB_NAME", "gotest")
 	Database.Username = dotenv.GetByDefault("DB_USERNAME", "gotest")
 	Database.Password = dotenv.GetByDefault("DB_PASSWORD", "gotest")
-	Database.Sync = dotenv.GetByDefault("DB_SYNC", "off")
 }

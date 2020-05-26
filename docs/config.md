@@ -21,7 +21,6 @@
 | DB_NAME                                        | `string` | 数据库名称                                                   | `gotest`     |
 | DB_USERNAME                                    | `string` | 连接数据库的用户名                                           | `gotest`     |
 | DB_PASSWORD                                    | `string` | 连接数据库的密码                                             | `gotest`     |
-| DB_SYNC                                        | `string` | 在应用启动时，是否同步数据库表, 可选 `on`/`off`              | `on`         |
 | Redis 配置                                     | -        | -                                                            | -            |
 | REDIS_SERVER                                   | `string` | `redis` 服务器地址                                           | `localhost`  |
 | REDIS_PORT                                     | `string` | `redis` 服务器端口                                           | `6379`       |
@@ -81,7 +80,6 @@
 | DB_NAME                | `string` | 数据库名称                                                   | `gotest`     |
 | DB_USERNAME            | `string` | 连接数据库的用户名                                           | `gotest`     |
 | DB_PASSWORD            | `string` | 连接数据库的密码                                             | `gotest`     |
-| DB_SYNC                | `string` | 在应用启动时，是否同步数据库表, 可选 `on`/`off`              | `on`         |
 | Redis 配置             | -        | -                                                            | -            |
 | REDIS_SERVER           | `string` | `redis` 服务器地址                                           | `localhost`  |
 | REDIS_PORT             | `string` | `redis` 服务器端口                                           | `6379`       |

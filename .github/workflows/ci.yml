@@ -60,8 +60,10 @@ jobs:
           DB_USERNAME: gotest
           DB_PASSWORD: gotest
           DB_PORT: 54321
-          DB_SYNC: on
-        run: make test
+        run: |
+          # 同步数据库
+          go run cmd/admin/main.go migrate
+          make test
 
       - name: Build
         if: matrix.kind == 'build'

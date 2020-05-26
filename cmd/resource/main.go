@@ -11,16 +11,16 @@ import (
 
 func main() {
 	app := cli.NewApp()
-	app.Usage = "resource server"
+	app.Usage = "资源管理服务器"
 
 	app.Commands = []*cli.Command{
 		{
 			Name:  "start",
-			Usage: "start server",
+			Usage: "启动服务",
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
 					Name:  "daemon, d",
-					Usage: "running in daemon mode",
+					Usage: "是否以守护进程运行",
 				},
 			},
 			Action: func(c *cli.Context) error {
@@ -30,7 +30,7 @@ func main() {
 		},
 		{
 			Name:  "stop",
-			Usage: "stop server",
+			Usage: "停止服务",
 			Action: func(c *cli.Context) error {
 				return daemon.Stop()
 			},

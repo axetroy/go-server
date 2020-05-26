@@ -10,10 +10,10 @@ os_archs=(
 
 releases=()
 targets=(
-    user
-    admin
-    resource
-    message_queue
+    user # 用户接口
+    admin # 管理员接口
+    resource # 资源服务器接口
+    message_queue # 消息队列
 )
 
 for target in "${targets[@]}"
