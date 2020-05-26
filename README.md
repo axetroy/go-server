@@ -100,6 +100,7 @@ $ ./start.sh
 
 # 启动接口服务
 $ cd $GOPATH/github/axetroy/go-server # 切换到项目目录
+$ go run ./cmd/admin/main.go migrate # 同步数据库表
 $ go run ./cmd/message_queue/main.go # 启动消息队列
 $ go run ./cmd/user/main.go # 运行用户端的接口服务
 $ go run ./cmd/admin/main.go # 运行管理员端的接口服务
