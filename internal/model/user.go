@@ -12,7 +12,7 @@ import (
 
 type UserStatus int32
 
-type Gender uint
+type Gender int
 
 const (
 	// 用户状态
@@ -21,13 +21,9 @@ const (
 	UserStatusInit        UserStatus = 1    // 初始化状态
 
 	// 用户性别
-	GenderUnknown int = 0 // 未知性别
-	GenderMale            // 男
-	GenderFemale          // 女
-)
-
-var (
-	Genders = []int{GenderUnknown, GenderMale, GenderFemale}
+	GenderUnknown Gender = 0 // 未知性别
+	GenderMale               // 男
+	GenderFemmale            // 女
 )
 
 type User struct {
