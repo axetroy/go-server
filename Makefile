@@ -6,7 +6,10 @@ test:
 	GO_TESTING=1 go test -mod=vendor --cover -covermode=count -coverprofile=coverage.out ./...
 
 build:
-	bash ./scripts/build.sh
+	bash ./scripts/build.sh admin
+	bash ./scripts/build.sh user
+	bash ./scripts/build.sh resource
+	bash ./scripts/build.sh message_queue
 	echo "Build Success!"
 
 clean:

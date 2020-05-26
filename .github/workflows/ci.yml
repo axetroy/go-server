@@ -8,10 +8,42 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        kind: ['build', 'test']
+        target: ['admin', 'user', 'resource', 'message_queue']
+        kind: ['build']
+        go: ['^1.14.2']
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+    name: Go ${{ matrix.go }} ${{ matrix.kind }} ${{ matrix.target }} in ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go }}
+
+      - name: Environment
+        run: |
+          go version
+          go env
+
+      - name: Build ${{ matrix.target }}
+        if: matrix.kind == 'build'
+        run: bash ./scripts/build.sh ${{ matrix.target }}
+
+      - uses: actions/upload-artifact@v2
+        if: runner.os == 'linux'
+        with:
+          name: ${{ matrix.target }}
+          path: ./bin/*.tar.gz
+
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
         go: ['^1.14.2']
         os: [ubuntu-latest]
-    name: Go ${{ matrix.go }} ${{ matrix.kind }} in ${{ matrix.os }}
+
+    name: Go ${{ matrix.go }} test in ${{ matrix.os }}
 
     services:
       postgres:
@@ -53,7 +85,6 @@ jobs:
           go env
 
       - name: Test
-        if: matrix.kind == 'test'
         env:
           DB_DRIVER: postgres
           DB_NAME: gotest
@@ -65,12 +96,8 @@ jobs:
           go run cmd/admin/main.go migrate
           make test
 
-      - name: Build
-        if: matrix.kind == 'build'
-        run: make build
-
       - name: Coverage
-        if: matrix.kind == 'test' && github.repository == 'axetroy/go-server'
+        if: github.repository == 'axetroy/go-server'
         env:
           COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
         run: |
@@ -78,9 +105,31 @@ jobs:
           GO111MODULE=off go get github.com/mattn/goveralls
           $(go env GOPATH)/bin/goveralls -coverprofile=coverage.out -service="GitHub Action" -jobid="${{ github.run_id }}" -jobnumber="${{ github.run_number }}" -reponame="${{ github.repository }}"
 
+  release:
+    name: Release to Github
+    if: startsWith(github.ref, 'refs/tags/') && github.repository == 'axetroy/go-server'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: user
+          path: ./bin
+      - uses: actions/download-artifact@v2
+        with:
+          name: admin
+          path: ./bin
+      - uses: actions/download-artifact@v2
+        with:
+          name: resource
+          path: ./bin
+      - uses: actions/download-artifact@v2
+        with:
+          name: message_queue
+          path: ./bin
+
       - uses: softprops/action-gh-release@v1
         name: Release to Github
-        if: matrix.kind == 'build' && startsWith(github.ref, 'refs/tags/') && github.repository == 'axetroy/go-server'
         env:
           # require Github Personal Access Token
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
