@@ -7,7 +7,6 @@ package notify
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/axetroy/go-server/internal/library/config"
 	"github.com/axetroy/go-server/internal/library/exception"
@@ -83,7 +82,7 @@ func (n *NotifierOneSignal) SendNotifyToAllUser(headings string, content string)
 			msg = []byte(http.StatusText(res.StatusCode))
 		}
 
-		return errors.New(string(msg))
+		return exception.ThirdParty.New(string(msg))
 	}
 
 	resFromRemote := oneSignalResponse{}
@@ -95,9 +94,9 @@ func (n *NotifierOneSignal) SendNotifyToAllUser(headings string, content string)
 	if resFromRemote.Errors != nil {
 		switch t := resFromRemote.Errors.(type) {
 		case []string:
-			return errors.New(t[0])
+			return exception.ThirdParty.New(t[0])
 		case map[string]string:
-			return exception.Unknown
+			return exception.ThirdParty
 		}
 	}
 
@@ -151,7 +150,7 @@ func (n *NotifierOneSignal) SendNotifyToCustomUser(userId []string, headings str
 			msg = []byte(http.StatusText(res.StatusCode))
 		}
 
-		return errors.New(string(msg))
+		return exception.ThirdParty.New(string(msg))
 	}
 
 	resFromRemote := oneSignalResponse{}
@@ -163,9 +162,9 @@ func (n *NotifierOneSignal) SendNotifyToCustomUser(userId []string, headings str
 	if resFromRemote.Errors != nil {
 		switch t := resFromRemote.Errors.(type) {
 		case []string:
-			return errors.New(t[0])
+			return exception.ThirdParty.New(t[0])
 		case map[string]string:
-			return exception.Unknown
+			return exception.ThirdParty
 		}
 	}
 
@@ -231,7 +230,7 @@ func (n *NotifierOneSignal) SendNotifyToLoginAbnormalUser(userInfo schema.Profil
 			msg = []byte(http.StatusText(res.StatusCode))
 		}
 
-		return errors.New(string(msg))
+		return exception.ThirdParty.New(string(msg))
 	}
 
 	resFromRemote := oneSignalResponse{}
@@ -243,9 +242,9 @@ func (n *NotifierOneSignal) SendNotifyToLoginAbnormalUser(userInfo schema.Profil
 	if resFromRemote.Errors != nil {
 		switch t := resFromRemote.Errors.(type) {
 		case []string:
-			return errors.New(t[0])
+			return exception.ThirdParty.New(t[0])
 		case map[string]string:
-			return exception.Unknown
+			return exception.ThirdParty
 		}
 	}
 
