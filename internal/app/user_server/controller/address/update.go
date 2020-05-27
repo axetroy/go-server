@@ -88,16 +88,21 @@ func Update(c helper.Context, addressId string, input UpdateParams) (res schema.
 		return
 	}
 
-	updateModel := model.Address{}
+	updateModel := map[string]interface{}{}
 
 	if input.Name != nil {
 		shouldUpdate = true
-		updateModel.Name = *input.Name
+		updateModel["name"] = *input.Name
 	}
 
 	if input.Phone != nil {
 		shouldUpdate = true
-		updateModel.Phone = *input.Phone
+		updateModel["phone"] = *input.Phone
+	}
+
+	if input.Address != nil {
+		shouldUpdate = true
+		updateModel["address"] = *input.Address
 	}
 
 	if input.ProvinceCode != nil {
@@ -108,7 +113,7 @@ func Update(c helper.Context, addressId string, input UpdateParams) (res schema.
 		}
 
 		shouldUpdate = true
-		updateModel.ProvinceCode = *input.ProvinceCode
+		updateModel["province_code"] = *input.ProvinceCode
 
 	}
 
@@ -120,9 +125,10 @@ func Update(c helper.Context, addressId string, input UpdateParams) (res schema.
 		}
 
 		shouldUpdate = true
-		updateModel.CityCode = *input.CityCode
+		updateModel["city_code"] = *input.CityCode
 	}
 
+	// TODO: 校验几个地区码要一致
 	if input.AreaCode != nil {
 		// 校验 区域代码
 		if _, ok := CountryCode[*input.AreaCode]; !ok {
@@ -131,12 +137,12 @@ func Update(c helper.Context, addressId string, input UpdateParams) (res schema.
 		}
 
 		shouldUpdate = true
-		updateModel.AreaCode = *input.AreaCode
+		updateModel["area_code"] = *input.AreaCode
 	}
 
 	if input.IsDefault != nil {
 		shouldUpdate = true
-		updateModel.IsDefault = *input.IsDefault
+		updateModel["is_default"] = *input.IsDefault
 	}
 
 	if shouldUpdate {

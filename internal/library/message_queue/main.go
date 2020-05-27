@@ -20,10 +20,10 @@ type Topic string
 type Chanel string
 
 var (
-	TopicSendEmail   Topic       = "send_email"
-	ChanelSendEmail  Chanel      = "send_email"
-	TopicPushNotify  Topic       = "push_notify"
-	ChanelPushNotify Chanel      = "push_notify"
+	TopicSendEmail   Topic       = "topic_send_email"
+	ChanelSendEmail  Chanel      = "chanel_send_email"
+	TopicPushNotify  Topic       = "topic_push_notify"
+	ChanelPushNotify Chanel      = "chanel_push_notify"
 	Address          string      // 消息队列地址
 	Config           *nsq.Config // 消息队列的配置
 )
@@ -36,6 +36,17 @@ type SendActivationEmailBody struct {
 type SendNotifyBody struct {
 	Event   notify.SendNotifyEvent `json:"event" valid:"required~请输入事件"`    // 事件名称
 	Payload interface{}            `json:"payload" valid:"required~请输入数据体"` // 数据体
+}
+
+type NotifyPayloadToAllUsers struct {
+	Title   string `json:"title" valid:"required"`   // 推送的标题
+	Content string `json:"content" valid:"required"` // 推送的内容
+}
+
+type NotifyPayloadToSpecificUsers struct {
+	UserID  []string `json:"user_id" valid:"required"` // 要指定的推送用户 ID
+	Title   string   `json:"title" valid:"required"`   // 推送的标题
+	Content string   `json:"content" valid:"required"` // 推送的内容
 }
 
 func (c *SendNotifyBody) ToByte() ([]byte, error) {
@@ -100,7 +111,6 @@ func RunMessageQueueConsumer() ([]*nsq.Consumer, error) {
 	}
 
 	notifyConsumer, err := CreateConsumer(TopicPushNotify, ChanelPushNotify, nsq.HandlerFunc(func(message *nsq.Message) error {
-
 		body := SendNotifyBody{}
 
 		if err := json.Unmarshal(message.Body, &body); err != nil {
@@ -112,17 +122,13 @@ func RunMessageQueueConsumer() ([]*nsq.Consumer, error) {
 		switch body.Event {
 		// 发送给所有用户
 		case notify.SendNotifyEventSendNotifyToAllUser:
-			type SendNotifyPayload struct {
-				Title   string `json:"title" valid:"required"`   // 推送的标题
-				Content string `json:"content" valid:"required"` // 推送的内容
-			}
 			b, err := json.Marshal(body.Payload)
 
 			if err != nil {
 				return err
 			}
 
-			var payload SendNotifyPayload
+			var payload NotifyPayloadToAllUsers
 
 			if err := json.Unmarshal(b, &payload); err != nil {
 				return err
@@ -138,18 +144,13 @@ func RunMessageQueueConsumer() ([]*nsq.Consumer, error) {
 			break
 		// 发送给指定用户
 		case notify.SendNotifyEventSendNotifyToCustomUser:
-			type SendNotifyPayload struct {
-				UserID  []string `json:"user_id" valid:"required"` // 要指定的推送用户 ID
-				Title   string   `json:"title" valid:"required"`   // 推送的标题
-				Content string   `json:"content" valid:"required"` // 推送的内容
-			}
 			b, err := json.Marshal(body.Payload)
 
 			if err != nil {
 				return err
 			}
 
-			var payload SendNotifyPayload
+			var payload NotifyPayloadToSpecificUsers
 
 			if err := json.Unmarshal(b, &payload); err != nil {
 				return err
