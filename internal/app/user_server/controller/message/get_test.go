@@ -26,7 +26,7 @@ func TestGetMessage(t *testing.T) {
 
 	defer tester.DeleteUserByUserName(userInfo.Username)
 
-	// 2. 先创建一篇消息作为测试
+	// 2. 创建
 	{
 		var (
 			title   = "test"
@@ -53,7 +53,7 @@ func TestGetMessage(t *testing.T) {
 		defer message.DeleteMessageById(n.Id)
 	}
 
-	// 3. 获取文章公告
+	// 3. 获取
 	{
 		r := message.Get(helper.Context{
 			Uid: userInfo.Id,
@@ -131,6 +131,8 @@ func TestGetRouter(t *testing.T) {
 		assert.Equal(t, "test", n.Content)
 		assert.IsType(t, "string", n.CreatedAt)
 		assert.IsType(t, "string", n.UpdatedAt)
+		assert.False(t, n.Read)
+		assert.Nil(t, n.ReadAt)
 	}
 
 }

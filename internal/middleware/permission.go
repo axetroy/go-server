@@ -12,10 +12,9 @@ import (
 func Permission(accessions ...accession.Accession) iris.Handler {
 	return func(c iris.Context) {
 		var (
-			err   error
-			query authQuery
-			uid   = c.Values().GetString("uid") // 这个中间件必须安排在JWT的中间件后面, 所以这里是拿的到 UID 的
-			cc    *rbac.Controller
+			err error
+			uid = c.Values().GetString("uid") // 这个中间件必须安排在JWT的中间件后面, 所以这里是拿的到 UID 的
+			cc  *rbac.Controller
 		)
 
 		defer func() {
@@ -29,10 +28,6 @@ func Permission(accessions ...accession.Accession) iris.Handler {
 
 			c.Next()
 		}()
-
-		if err = c.ReadQuery(&query); err != nil {
-			return
-		}
 
 		if uid == "" {
 			err = exception.NoPermission

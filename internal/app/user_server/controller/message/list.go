@@ -19,11 +19,6 @@ type Query struct {
 	Read   *bool                `json:"read" form:"read"`
 }
 
-type QueryAdmin struct {
-	Query
-	Uid *string `json:"uid" form:"uid"` // 指定某个用户ID
-}
-
 // 用户获取自己的消息列表
 func GetMessageListByUser(c helper.Context, input Query) (res schema.Response) {
 	var (

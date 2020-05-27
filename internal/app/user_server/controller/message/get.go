@@ -67,6 +67,9 @@ func Get(c helper.Context, id string) (res schema.Response) {
 		readAt := MessageInfo.ReadAt.Format(time.RFC3339Nano)
 		data.Read = true
 		data.ReadAt = &readAt
+	} else {
+		data.Read = false
+		data.ReadAt = nil
 	}
 
 	data.CreatedAt = MessageInfo.CreatedAt.Format(time.RFC3339Nano)

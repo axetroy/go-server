@@ -12,19 +12,12 @@ var (
 	ContextUidField = "uid"
 )
 
-type authQuery struct {
-	Authorization string `json:"Authorization" form:"Authorization"`
-}
-
 func getToken(c iris.Context) (*string, error) {
-	var query authQuery
 
-	if err := c.ReadQuery(&query); err != nil {
-		return nil, err
-	}
+	authorization := c.Request().URL.Query().Get("Authorization")
 
-	if len(query.Authorization) > 0 {
-		return &query.Authorization, nil
+	if len(authorization) > 0 {
+		return &authorization, nil
 	} else if len(c.GetHeader(token.AuthField)) > 0 {
 		t := c.GetHeader(token.AuthField)
 		return &t, nil

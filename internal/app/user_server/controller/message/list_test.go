@@ -139,17 +139,11 @@ func TestGetMessageListByUserRouter(t *testing.T) {
 
 		assert.Equal(t, http.StatusOK, r.Code)
 
-		if !assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res)) {
-			return
-		}
+		assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res))
 
-		if !assert.Equal(t, schema.StatusSuccess, res.Status) {
-			return
-		}
+		assert.Equal(t, schema.StatusSuccess, res.Status)
 
-		if !assert.Equal(t, "", res.Message) {
-			return
-		}
+		assert.Equal(t, "", res.Message)
 
 		messages := make([]schema.Message, 0)
 
