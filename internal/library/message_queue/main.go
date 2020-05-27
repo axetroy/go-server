@@ -38,6 +38,16 @@ type SendNotifyBody struct {
 	Payload interface{}            `json:"payload" valid:"required~请输入数据体"` // 数据体
 }
 
+func (c *SendNotifyBody) ToByte() ([]byte, error) {
+	b, err := json.Marshal(c)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return b, nil
+}
+
 func init() {
 	host := config.MessageQueue.Host
 	port := config.MessageQueue.Port

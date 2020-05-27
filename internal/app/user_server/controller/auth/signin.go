@@ -6,6 +6,7 @@ import (
 	"github.com/axetroy/go-server/internal/app/user_server/controller/wallet"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/message_queue"
 	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/axetroy/go-server/internal/library/validator"
@@ -13,6 +14,7 @@ import (
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
 	"github.com/axetroy/go-server/internal/service/dotenv"
+	"github.com/axetroy/go-server/internal/service/notify"
 	"github.com/axetroy/go-server/internal/service/redis"
 	"github.com/axetroy/go-server/internal/service/token"
 	"github.com/axetroy/go-server/internal/service/wechat"
@@ -134,6 +136,34 @@ func SignIn(c helper.Context, input SignInParams) (res schema.Response) {
 		return
 	} else {
 		data.Token = t
+	}
+
+	{
+		lastLoginLog := model.LoginLog{}
+
+		if err := tx.Model(&lastLoginLog).Where("id = ?", userInfo.Id).First(&lastLoginLog).Error; err != nil {
+			// 如果没有之前的登录记录
+			// 那么跳过
+			if err == gorm.ErrRecordNotFound {
+
+			} else {
+				err = exception.Database
+				return
+			}
+		} else {
+			// 登录的 IP 不同时，发出警告
+			if lastLoginLog.LastIp != c.Ip {
+				defer func() {
+					body := message_queue.SendNotifyBody{
+						Event: notify.SendNotifyEventSendNotifyToCustomUser,
+					}
+
+					if b, err := body.ToByte(); err == nil {
+						_ = message_queue.Publish(message_queue.TopicPushNotify, b)
+					}
+				}()
+			}
+		}
 	}
 
 	// 写入登陆记录
