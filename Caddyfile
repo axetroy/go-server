@@ -1,0 +1,27 @@
+api.example.com {
+  encode zstd gzip
+  # resource server
+  handle /v1/download/* {
+    reverse_proxy 0.0.0.0:9004
+  }
+  handle /v1/upload/* {
+    reverse_proxy 0.0.0.0:9004
+  }
+  handle /v1/resource/* {
+    reverse_proxy 0.0.0.0:9004
+  }
+  # user server
+  reverse_proxy 0.0.0.0:9000
+}
+
+# admin server
+api-mag.example.com {
+  reverse_proxy 0.0.0.0:9091
+  encode zstd gzip
+}
+
+# resource server
+resource.example.com {
+  reverse_proxy 0.0.0.0:9004
+  encode zstd gzip
+}
