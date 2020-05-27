@@ -79,6 +79,12 @@
 
 然后复制 [.env](.env) 到可执行文件目录下，运行可执行文件即可。例如 `./user_server start`
 
+快速下载可执行文件
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/axetroy/go-server/master/install.sh | bash -s v0.4.1
+```
+
 ## 如何进行本地开发?
 
 首选确保你安装有:
