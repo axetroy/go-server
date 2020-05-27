@@ -1,3 +1,4 @@
+// Copyright 2019-2020 Axetroy. All rights reserved. MIT license.
 package user
 
 import (
@@ -6,12 +7,12 @@ import (
 	"github.com/axetroy/go-server/internal/app/admin_server/controller/wallet"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
-	"github.com/axetroy/go-server/internal/library/message_queue"
 	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
+	"github.com/axetroy/go-server/internal/service/message_queue"
 	"github.com/axetroy/go-server/internal/service/redis"
 	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
@@ -184,7 +185,7 @@ func CreateUser(input CreateUserParams) (res schema.Response) {
 		// 把 "发送激活码" 加入消息队列
 		var body []byte
 
-		if body, err = json.Marshal(message_queue.SendActivationEmailBody{
+		if body, err = json.Marshal(message_queue.BodySendActivationEmail{
 			Email: *input.Email,
 			Code:  activationCode,
 		}); err != nil {

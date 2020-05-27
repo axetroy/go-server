@@ -4,8 +4,8 @@ package message_queue_server
 import (
 	"context"
 	"github.com/axetroy/go-server/internal/library/config"
-	"github.com/axetroy/go-server/internal/library/message_queue"
 	"github.com/axetroy/go-server/internal/service/database"
+	"github.com/axetroy/go-server/internal/service/message_queue"
 	"github.com/axetroy/go-server/internal/service/redis"
 	"github.com/nsqio/go-nsq"
 	"log"
@@ -24,7 +24,7 @@ func Serve() error {
 	database.Connect()
 
 	go func() {
-		if ctx, err := message_queue.RunMessageQueueConsumer(); err != nil {
+		if ctx, err := RunMessageQueueConsumer(); err != nil {
 			log.Fatal(err)
 		} else {
 			consumers = ctx

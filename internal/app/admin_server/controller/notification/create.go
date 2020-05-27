@@ -10,8 +10,10 @@ import (
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
+	"github.com/axetroy/go-server/internal/service/message_queue"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
+	"log"
 	"time"
 )
 
@@ -47,6 +49,14 @@ func Create(c helper.Context, input CreateParams) (res schema.Response) {
 				err = tx.Commit().Error
 			}
 		}
+
+		go func() {
+			if err != nil {
+				if er := message_queue.PublishSystemNotify(data.Id); er != nil {
+					log.Println("加入推送队列失败:", err.Error())
+				}
+			}
+		}()
 
 		helper.Response(&res, data, nil, err)
 	}()

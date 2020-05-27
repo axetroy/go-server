@@ -5,28 +5,25 @@ package notify
 // 使用: onesignal 为推送中心
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"github.com/axetroy/go-server/internal/library/config"
 	"github.com/axetroy/go-server/internal/library/exception"
-	"github.com/axetroy/go-server/internal/schema"
-	"io/ioutil"
-	"net/http"
+	"github.com/axetroy/go-server/internal/model"
+	"github.com/axetroy/go-server/internal/service/database"
+	"github.com/axetroy/go-server/sdk/onesignal"
+	"github.com/jinzhu/gorm"
 )
 
-var (
-	appId      = config.Notify.OneSignalAppID
-	restApiKey = config.Notify.OneSignalRestApiKey
-)
+var sdk = onesignal.NewOneSignalClient(config.Notify.OneSignalAppID, config.Notify.OneSignalRestApiKey)
 
-type oneSignalResponse struct {
-	// see: https://documentation.onesignal.com/reference/create-notification
-	ID         string      `json:"id"`
-	Recipients int         `json:"recipients"` // 接收到的数量
-	ExternalID *string     `json:"external_id"`
-	Errors     interface{} `json:"errors"`
-}
+type Segment string
+
+const (
+	SegmentSubscribedUsers Segment = "Subscribed Users" // 所有已订阅的用户
+	SegmentActiveUsers     Segment = "Active Users"     // 最近一周活跃的用户
+	SegmentEngagedUsers    Segment = "Engaged Users"    // 最近一周重度依赖的用户
+	SegmentInactiveUsers   Segment = "Inactive Users"   // 超过一周没有活跃的用户
+)
 
 func NewNotifierOneSignal() *NotifierOneSignal {
 	n := NotifierOneSignal{}
@@ -37,149 +34,80 @@ func NewNotifierOneSignal() *NotifierOneSignal {
 type NotifierOneSignal struct {
 }
 
-func (n *NotifierOneSignal) SendNotifyToAllUser(headings string, content string) error {
-	type Body struct {
-		AppID    string   `json:"app_id"`
-		Contents Content  `json:"contents"`
-		Headings Headings `json:"headings"`
-	}
-
-	var body = Body{
-		AppID:    appId,
-		Contents: Content{EN: content},
-		Headings: Headings{EN: headings},
-	}
-
-	bodyByte, err := json.Marshal(body)
+func (n *NotifierOneSignal) SendNotifyToAllUser(headings string, content string, data map[string]interface{}) error {
+	err := sdk.CreateNotification(onesignal.CreateNotificationParams{
+		IncludedSegments: []string{string(SegmentSubscribedUsers)},
+		Headings:         map[string]string{"en": headings},
+		Contents:         map[string]string{"en": content},
+		Data:             data,
+	})
 
 	if err != nil {
+		err = exception.ThirdParty.New(err.Error())
 		return err
-	}
-
-	client := &http.Client{}
-
-	req, _ := http.NewRequest("POST", "https://onesignal.com/api/v1/notifications", bytes.NewReader(bodyByte))
-
-	req.Header.Set("Content-Type", "application/json; charset=utf-8")
-	req.Header.Add("Authorization", fmt.Sprintf("Basic %s", restApiKey))
-
-	res, err := client.Do(req)
-
-	if err != nil {
-		return err
-	}
-
-	resByte, err := ioutil.ReadAll(res.Body)
-
-	if err != nil {
-		return err
-	}
-
-	if res.StatusCode >= http.StatusBadRequest {
-		msg := resByte
-
-		if len(msg) == 0 {
-			msg = []byte(http.StatusText(res.StatusCode))
-		}
-
-		return exception.ThirdParty.New(string(msg))
-	}
-
-	resFromRemote := oneSignalResponse{}
-
-	if err := json.Unmarshal(resByte, &resFromRemote); err != nil {
-		return err
-	}
-
-	if resFromRemote.Errors != nil {
-		switch t := resFromRemote.Errors.(type) {
-		case []string:
-			return exception.ThirdParty.New(t[0])
-		case map[string]string:
-			return exception.ThirdParty
-		}
 	}
 
 	return nil
 }
 
-func (n *NotifierOneSignal) SendNotifyToCustomUser(userId []string, headings string, content string) error {
-	type Body struct {
-		IncludeExternalUserIds []string `json:"include_external_user_ids"`
-		AppID                  string   `json:"app_id"`
-		Contents               Content  `json:"contents"`
-		Headings               Headings `json:"headings"`
-	}
-
-	var body = Body{
+func (n *NotifierOneSignal) SendNotifyToCustomUser(userId []string, headings string, content string, data map[string]interface{}) error {
+	err := sdk.CreateNotification(onesignal.CreateNotificationParams{
 		IncludeExternalUserIds: userId,
-		AppID:                  appId,
-		Contents:               Content{EN: content},
-		Headings:               Headings{EN: headings},
-	}
-
-	bodyByte, err := json.Marshal(body)
+		Headings:               map[string]string{"en": headings},
+		Contents:               map[string]string{"en": content},
+		Data:                   data,
+	})
 
 	if err != nil {
+		err = exception.ThirdParty.New(err.Error())
 		return err
-	}
-
-	client := &http.Client{}
-
-	req, _ := http.NewRequest("POST", "https://onesignal.com/api/v1/notifications", bytes.NewReader(bodyByte))
-
-	req.Header.Set("Content-Type", "application/json; charset=utf-8")
-	req.Header.Add("Authorization", fmt.Sprintf("Basic %s", restApiKey))
-
-	res, err := client.Do(req)
-
-	if err != nil {
-		return err
-	}
-
-	resByte, err := ioutil.ReadAll(res.Body)
-
-	if err != nil {
-		return err
-	}
-
-	if res.StatusCode >= http.StatusBadRequest {
-		msg := resByte
-
-		if len(msg) == 0 {
-			msg = []byte(http.StatusText(res.StatusCode))
-		}
-
-		return exception.ThirdParty.New(string(msg))
-	}
-
-	resFromRemote := oneSignalResponse{}
-
-	if err := json.Unmarshal(resByte, &resFromRemote); err != nil {
-		return err
-	}
-
-	if resFromRemote.Errors != nil {
-		switch t := resFromRemote.Errors.(type) {
-		case []string:
-			return exception.ThirdParty.New(t[0])
-		case map[string]string:
-			return exception.ThirdParty
-		}
 	}
 
 	return nil
 }
 
-func (n *NotifierOneSignal) SendNotifyToLoginAbnormalUser(userInfo schema.ProfilePublic) error {
-	type Body struct {
-		IncludeExternalUserIds []string `json:"include_external_user_ids"`
-		AppID                  string   `json:"app_id"`
-		Contents               Content  `json:"contents"`
-		Headings               Headings `json:"headings"`
+func (n *NotifierOneSignal) SendNotifySystemNotificationToUser(notificationId string) error {
+	notificationInfo := model.Notification{}
+
+	if err := database.Db.Model(notificationInfo).Where("id = ?", notificationId).First(&notificationInfo).Error; err != nil {
+		// 如果没有这条系统通知，则跳过
+		if err == gorm.ErrRecordNotFound {
+			return nil
+		}
+		return err
 	}
 
+	err := sdk.CreateNotification(onesignal.CreateNotificationParams{
+		IncludedSegments: []string{string(SegmentSubscribedUsers)},
+		Headings:         map[string]string{"en": notificationInfo.Title},
+		Contents:         map[string]string{"en": notificationInfo.Content},
+		Data: map[string]interface{}{
+			"id":      notificationInfo.Id,
+			"title":   notificationInfo.Title,
+			"content": notificationInfo.Content,
+		},
+	})
+
+	if err != nil {
+		err = exception.ThirdParty.New(err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func (n *NotifierOneSignal) SendNotifyToUserForLoginStatus(userID string) error {
 	var name string
+
+	var userInfo = model.User{}
+
+	if err := database.Db.Model(userInfo).Where("id = ?", userID).First(&userInfo).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			// 如果找不到用户，我们就跳过本次任务
+			return nil
+		}
+		return err
+	}
 
 	if userInfo.Nickname == nil {
 		name = userInfo.Username
@@ -187,65 +115,39 @@ func (n *NotifierOneSignal) SendNotifyToLoginAbnormalUser(userInfo schema.Profil
 		name = *userInfo.Nickname
 	}
 
-	var body = Body{
+	loginLogs := make([]model.LoginLog, 0)
+
+	// 查找用户过往的登录记录, 只查找最近的两条
+	if err := database.Db.Model(model.LoginLog{}).Where("uid = ?", userInfo.Id).Limit(2).Order("created_at DESC").First(&loginLogs).Error; err != nil {
+		// 如果没有之前的登录记录
+		// 那么跳过
+		if err == gorm.ErrRecordNotFound {
+			return nil
+		}
+
+		return err
+	}
+
+	// 如果没有两条记录，那么不用作比较
+	if len(loginLogs) < 2 {
+		return nil
+	}
+
+	// 检查两次登录 IP 是否不一样
+	// 如果两次 IP 一致，那么没有异常，跳过本次检查
+	if loginLogs[0].Id == loginLogs[1].Id {
+		return nil
+	}
+
+	err := sdk.CreateNotification(onesignal.CreateNotificationParams{
 		IncludeExternalUserIds: []string{userInfo.Id},
-		AppID:                  appId,
-		Contents: Content{
-			EN: fmt.Sprintf("发现您的帐号 [%s] 最近的登录异常，请注意帐号安全️", name),
-		},
-		Headings: Headings{
-			EN: "异地登录异常⚠",
-		},
-	}
-
-	bodyByte, err := json.Marshal(body)
+		Headings:               map[string]string{"en": "异地登录异常"},
+		Contents:               map[string]string{"en": fmt.Sprintf("发现您的帐号 [%s] 最近的登录异常，请注意帐号安全️", name)},
+	})
 
 	if err != nil {
+		err = exception.ThirdParty.New(err.Error())
 		return err
-	}
-
-	client := &http.Client{}
-
-	req, _ := http.NewRequest("POST", "https://onesignal.com/api/v1/notifications", bytes.NewReader(bodyByte))
-
-	req.Header.Set("Content-Type", "application/json; charset=utf-8")
-	req.Header.Add("Authorization", fmt.Sprintf("Basic %s", restApiKey))
-
-	res, err := client.Do(req)
-
-	if err != nil {
-		return err
-	}
-
-	resByte, err := ioutil.ReadAll(res.Body)
-
-	if err != nil {
-		return err
-	}
-
-	if res.StatusCode >= http.StatusBadRequest {
-		msg := resByte
-
-		if len(msg) == 0 {
-			msg = []byte(http.StatusText(res.StatusCode))
-		}
-
-		return exception.ThirdParty.New(string(msg))
-	}
-
-	resFromRemote := oneSignalResponse{}
-
-	if err := json.Unmarshal(resByte, &resFromRemote); err != nil {
-		return err
-	}
-
-	if resFromRemote.Errors != nil {
-		switch t := resFromRemote.Errors.(type) {
-		case []string:
-			return exception.ThirdParty.New(t[0])
-		case map[string]string:
-			return exception.ThirdParty
-		}
 	}
 
 	return nil

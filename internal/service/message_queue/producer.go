@@ -4,7 +4,6 @@ package message_queue
 import (
 	"encoding/json"
 	"errors"
-	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/notify"
 	"github.com/nsqio/go-nsq"
 	"time"
@@ -91,11 +90,34 @@ func Publish(topic Topic, message []byte) (err error) {
 	return
 }
 
-// 发送到消息队列 - 用户登录异常
-func PublishNotifyWhenLoginAbnormal(userInfo schema.ProfilePublic, delay time.Duration) error {
-	body := SendNotifyBody{
-		Event:   notify.SendNotifyEventSendNotifyToLoginAbnormalUser,
-		Payload: userInfo,
+type PayloadPublishSystemNotification struct {
+	NotificationID string `json:"notification_id" valid:"required"`
+}
+
+type PayloadPublishCheckUserLoginStatus struct {
+	UserID string `json:"user_id" valid:"required"`
+}
+
+type PayloadToAllUsers struct {
+	Title   string                 `json:"title" valid:"required"`   // 推送的标题
+	Content string                 `json:"content" valid:"required"` // 推送的内容
+	Data    map[string]interface{} `json:"data"`                     // 附带给 APP 的数据
+}
+
+type PayloadToSpecificUsers struct {
+	UserID  []string               `json:"user_id" valid:"required"` // 要指定的推送用户 ID
+	Title   string                 `json:"title" valid:"required"`   // 推送的标题
+	Content string                 `json:"content" valid:"required"` // 推送的内容
+	Data    map[string]interface{} `json:"data"`                     // 附带给 APP 的数据
+}
+
+// 推送 - 系统通知
+func PublishSystemNotify(notificationID string) error {
+	body := BodySendNotify{
+		Event: notify.EventSendNotifyToUserNewNotification,
+		Payload: PayloadPublishSystemNotification{
+			NotificationID: notificationID,
+		},
 	}
 
 	b, err := json.Marshal(body)
@@ -104,16 +126,35 @@ func PublishNotifyWhenLoginAbnormal(userInfo schema.ProfilePublic, delay time.Du
 		return err
 	}
 
-	return DeferredPublish(TopicPushNotify, delay, b)
+	return DeferredPublish(TopicPushNotify, 0, b)
+}
+
+// 推送 - 检查用户的登录状态
+func PublishCheckUserLogin(userID string) error {
+	body := BodySendNotify{
+		Event: notify.EventSendNotifyCheckUserLoginStatus,
+		Payload: PayloadPublishCheckUserLoginStatus{
+			UserID: userID,
+		},
+	}
+
+	b, err := json.Marshal(body)
+
+	if err != nil {
+		return err
+	}
+
+	return DeferredPublish(TopicPushNotify, time.Second*60, b)
 }
 
 // 发送到消息队列 - 发送推送给所有用户
-func PublishNotifyToAllUser(title string, content string, delay time.Duration) error {
-	body := SendNotifyBody{
-		Event: notify.SendNotifyEventSendNotifyToAllUser,
-		Payload: NotifyPayloadToAllUsers{
+func PublishNotifyToAllUser(title string, content string, delay time.Duration, data map[string]interface{}) error {
+	body := BodySendNotify{
+		Event: notify.EventSendNotifyToAllUser,
+		Payload: PayloadToAllUsers{
 			Title:   title,
 			Content: content,
+			Data:    data,
 		},
 	}
 
@@ -127,13 +168,14 @@ func PublishNotifyToAllUser(title string, content string, delay time.Duration) e
 }
 
 // 发送到消息队列 - 发送推送给特定用户
-func PublishNotifyToSpecificUser(userId []string, title string, content string, delay time.Duration) error {
-	body := SendNotifyBody{
-		Event: notify.SendNotifyEventSendNotifyToAllUser,
-		Payload: NotifyPayloadToSpecificUsers{
+func PublishNotifyToSpecificUser(userId []string, title string, content string, delay time.Duration, data map[string]interface{}) error {
+	body := BodySendNotify{
+		Event: notify.EventSendNotifyToCustomUser,
+		Payload: PayloadToSpecificUsers{
 			UserID:  userId,
 			Title:   title,
 			Content: content,
+			Data:    data,
 		},
 	}
 
