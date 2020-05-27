@@ -146,7 +146,7 @@ func Update(c helper.Context, addressId string, input UpdateParams) (res schema.
 	}
 
 	if shouldUpdate {
-		if err = tx.Model(&addressInfo).Updates(&updateModel).Error; err != nil {
+		if err = tx.Model(&addressInfo).Updates(updateModel).Error; err != nil {
 			if err == gorm.ErrRecordNotFound {
 				err = exception.AddressNotExist
 				return
