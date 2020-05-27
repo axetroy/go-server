@@ -28,6 +28,6 @@ type Notifier interface {
 
 var Notify = getInstance(NewNotifierOneSignal())
 
-func getInstance(n Notifier) *Notifier {
-	return &n
+func getInstance(n Notifier) Notifier {
+	return n
 }

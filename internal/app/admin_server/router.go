@@ -14,6 +14,7 @@ import (
 	"github.com/axetroy/go-server/internal/app/admin_server/controller/message"
 	"github.com/axetroy/go-server/internal/app/admin_server/controller/news"
 	"github.com/axetroy/go-server/internal/app/admin_server/controller/notification"
+	"github.com/axetroy/go-server/internal/app/admin_server/controller/push"
 	"github.com/axetroy/go-server/internal/app/admin_server/controller/report"
 	"github.com/axetroy/go-server/internal/app/admin_server/controller/role"
 	"github.com/axetroy/go-server/internal/app/admin_server/controller/system"
@@ -188,6 +189,13 @@ func init() {
 			configRouter.Get("/:config_name", Configuration.GetRouter)     // 获取指定的配置
 			configRouter.Post("/:config_name", Configuration.CreateRouter) // 创建指定的配置
 			configRouter.Put("/:config_name", Configuration.UpdateRouter)  // 更新指定的配置
+		}
+
+		// 推送
+		{
+			configRouter := v1.Party("/push")
+			configRouter.Get("/notification", push.CreateNotificationRouter)  // TODO: 获取推送列表
+			configRouter.Post("/notification", push.CreateNotificationRouter) // 生成一个推送到指定用户
 		}
 
 		// 通用类

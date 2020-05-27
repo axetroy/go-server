@@ -32,7 +32,6 @@ func (h *NotifyHandler) GetChannel() message_queue.Chanel {
 
 // 发送给所有用户
 func (h *NotifyHandler) handlerSendToAllUser(payload interface{}) error {
-	Notifier := *notify.Notify
 	b, err := json.Marshal(payload)
 
 	if err != nil {
@@ -49,7 +48,7 @@ func (h *NotifyHandler) handlerSendToAllUser(payload interface{}) error {
 		return err
 	}
 
-	if err := Notifier.SendNotifyToAllUser(data.Title, data.Content, data.Data); err != nil {
+	if err := notify.Notify.SendNotifyToAllUser(data.Title, data.Content, data.Data); err != nil {
 		return err
 	}
 
@@ -58,7 +57,6 @@ func (h *NotifyHandler) handlerSendToAllUser(payload interface{}) error {
 
 // 发送给指定用户
 func (h *NotifyHandler) handlerSendToCustomUser(payload interface{}) error {
-	Notifier := *notify.Notify
 	b, err := json.Marshal(payload)
 
 	if err != nil {
@@ -75,7 +73,7 @@ func (h *NotifyHandler) handlerSendToCustomUser(payload interface{}) error {
 		return err
 	}
 
-	if err := Notifier.SendNotifyToCustomUser(data.UserID, data.Title, data.Content, data.Data); err != nil {
+	if err := notify.Notify.SendNotifyToCustomUser(data.UserID, data.Title, data.Content, data.Data); err != nil {
 		return err
 	}
 
@@ -84,7 +82,6 @@ func (h *NotifyHandler) handlerSendToCustomUser(payload interface{}) error {
 
 // 发送给指定用户
 func (h *NotifyHandler) handlerCheckUserLoginStatus(payload interface{}) error {
-	Notifier := *notify.Notify
 	b, err := json.Marshal(payload)
 
 	if err != nil {
@@ -102,7 +99,7 @@ func (h *NotifyHandler) handlerCheckUserLoginStatus(payload interface{}) error {
 	}
 
 	// 发送推送给用户
-	if err := Notifier.SendNotifyToUserForLoginStatus(data.UserID); err != nil {
+	if err := notify.Notify.SendNotifyToUserForLoginStatus(data.UserID); err != nil {
 		return err
 	}
 	return nil
@@ -110,7 +107,6 @@ func (h *NotifyHandler) handlerCheckUserLoginStatus(payload interface{}) error {
 
 // 推送通知 - 用户有新的系统通知
 func (h *NotifyHandler) handlerSendNewSystemNotification(payload interface{}) error {
-	Notifier := *notify.Notify
 	b, err := json.Marshal(payload)
 
 	if err != nil {
@@ -128,7 +124,7 @@ func (h *NotifyHandler) handlerSendNewSystemNotification(payload interface{}) er
 	}
 
 	// 发送推送给用户
-	if err := Notifier.SendNotifySystemNotificationToUser(data.NotificationID); err != nil {
+	if err := notify.Notify.SendNotifySystemNotificationToUser(data.NotificationID); err != nil {
 		return err
 	}
 	return nil
