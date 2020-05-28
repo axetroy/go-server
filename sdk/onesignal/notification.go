@@ -68,15 +68,15 @@ type CreateNotificationParams struct {
 	EmailFromAddress string `json:"email_from_address,omitempty"`
 
 	// Attachments
-	Data             map[string]interface{} `json:"data,omitempty"`
-	Url              string                 `json:"url,omitempty"`
-	WebUrl           string                 `json:"web_url,omitempty"`
-	AppUrl           string                 `json:"app_url,omitempty"`
-	IOSAttachments   string                 `json:"ios_attachments,omitempty"`
-	BigPicture       string                 `json:"big_picture,omitempty"`
-	ChromeWebImage   string                 `json:"chrome_web_image,omitempty"`
-	AdmBigPicture    string                 `json:"adm_big_picture,omitempty"`
-	ChromeBigPicture string                 `json:"chrome_big_picture,omitempty"`
+	Data             interface{} `json:"data,omitempty"`
+	Url              string      `json:"url,omitempty"`
+	WebUrl           string      `json:"web_url,omitempty"`
+	AppUrl           string      `json:"app_url,omitempty"`
+	IOSAttachments   string      `json:"ios_attachments,omitempty"`
+	BigPicture       string      `json:"big_picture,omitempty"`
+	ChromeWebImage   string      `json:"chrome_web_image,omitempty"`
+	AdmBigPicture    string      `json:"adm_big_picture,omitempty"`
+	ChromeBigPicture string      `json:"chrome_big_picture,omitempty"`
 
 	// Action Buttons
 	Buttons     []Button `json:"buttons,omitempty"`

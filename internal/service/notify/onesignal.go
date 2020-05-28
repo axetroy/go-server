@@ -16,14 +16,27 @@ import (
 
 var sdk = onesignal.NewOneSignalClient(config.Notify.OneSignalAppID, config.Notify.OneSignalRestApiKey)
 
-type Segment string
+type Segment string                // 用户细分群体
+type NotificationClickEvent string // 推送的点击事件
 
 const (
 	SegmentSubscribedUsers Segment = "Subscribed Users" // 所有已订阅的用户
 	SegmentActiveUsers     Segment = "Active Users"     // 最近一周活跃的用户
 	SegmentEngagedUsers    Segment = "Engaged Users"    // 最近一周重度依赖的用户
 	SegmentInactiveUsers   Segment = "Inactive Users"   // 超过一周没有活跃的用户
+
+	NotificationClickEventNone                  NotificationClickEvent = "none"                    // 空事件，点击通知什么都不会发送
+	NotificationClickEventLoginAbnormal         NotificationClickEvent = "login_abnormal"          // 新的系统通知事件
+	NotificationClickEventNewSystemNotification NotificationClickEvent = "new_system_notification" // 新的系统通知事件
 )
+
+// 发送推送附带的数据体结构
+// event 给 APP 识别
+// payload 是附带的数据
+type NotificationBody struct {
+	Event   NotificationClickEvent `json:"event"`   // 事件名
+	Payload interface{}            `json:"payload"` // 数据体
+}
 
 func NewNotifierOneSignal() *NotifierOneSignal {
 	n := NotifierOneSignal{}
@@ -39,7 +52,10 @@ func (n *NotifierOneSignal) SendNotifyToAllUser(headings string, content string,
 		IncludedSegments: []string{string(SegmentSubscribedUsers)},
 		Headings:         map[string]string{"en": headings},
 		Contents:         map[string]string{"en": content},
-		Data:             data,
+		Data: NotificationBody{
+			Event:   NotificationClickEventNone,
+			Payload: data,
+		},
 	})
 
 	if err != nil {
@@ -55,7 +71,10 @@ func (n *NotifierOneSignal) SendNotifyToCustomUser(userId []string, headings str
 		IncludeExternalUserIds: userId,
 		Headings:               map[string]string{"en": headings},
 		Contents:               map[string]string{"en": content},
-		Data:                   data,
+		Data: NotificationBody{
+			Event:   NotificationClickEventNone,
+			Payload: data,
+		},
 	})
 
 	if err != nil {
@@ -81,10 +100,13 @@ func (n *NotifierOneSignal) SendNotifySystemNotificationToUser(notificationId st
 		IncludedSegments: []string{string(SegmentSubscribedUsers)},
 		Headings:         map[string]string{"en": notificationInfo.Title},
 		Contents:         map[string]string{"en": notificationInfo.Content},
-		Data: map[string]interface{}{
-			"id":      notificationInfo.Id,
-			"title":   notificationInfo.Title,
-			"content": notificationInfo.Content,
+		Data: NotificationBody{
+			Event: NotificationClickEventNewSystemNotification,
+			Payload: map[string]interface{}{
+				"id":      notificationInfo.Id,
+				"title":   notificationInfo.Title,
+				"content": notificationInfo.Content,
+			},
 		},
 	})
 
@@ -145,6 +167,10 @@ func (n *NotifierOneSignal) SendNotifyToUserForLoginStatus(userID string) error 
 		IncludeExternalUserIds: []string{userInfo.Id},
 		Headings:               map[string]string{"en": "异地登录异常"},
 		Contents:               map[string]string{"en": fmt.Sprintf("发现您的帐号 [%s] 最近的登录异常，请注意帐号安全️", name)},
+		Data: NotificationBody{
+			Event:   NotificationClickEventLoginAbnormal,
+			Payload: nil,
+		},
 	})
 
 	if err != nil {

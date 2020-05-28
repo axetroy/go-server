@@ -1,3 +1,23 @@
+推送通知都会附带数据 `Data` 结构如下
+
+```go
+type NotificationBody struct {
+	Event   NotificationClickEvent `json:"event"`   // 事件名
+	Payload interface{}            `json:"payload"` // 数据体
+}
+```
+
+例如 `{"event": "none", "payload": "任何可能的数据"}`
+
+其中包含以下事件
+
+| Event          | 说明                              |
+| -------------- | --------------------------------- |
+| none           | 无意义的事件，APP 应该什么都不做  |
+| login_abnormal | 用户登录异常的推送                |
+| content        | 内容                              |
+| payload        | 通知附带的数据，用于 App 点开通知 |
+
 ### 生成一条推送
 
 [POST] /v1/push/notification
