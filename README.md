@@ -86,7 +86,7 @@
 快速下载可执行文件
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/axetroy/go-server/master/install.sh | bash -s v0.4.1
+curl -fsSL https://raw.githubusercontent.com/axetroy/go-server/master/install.sh | bash -s v0.5.0
 ```
 
 ## 如何进行本地开发?
