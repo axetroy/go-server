@@ -1,5 +1,0 @@
-{
-  "scripts": {
-    "docs": "npx docsify-cli serve ./docs"
-  }
-}
