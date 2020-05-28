@@ -66,10 +66,7 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-        # env:
-        # "redis-cli ping"
         ports:
-          # Maps port 6379 on service container to the host
           - 6379:6379
 
       # 消息队列
