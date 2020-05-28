@@ -137,6 +137,10 @@ jobs:
         with:
           name: message_queue
           path: ./bin
+      - uses: actions/download-artifact@v2
+        with:
+          name: scheduled
+          path: ./bin
 
       - uses: softprops/action-gh-release@v1
         name: Release to Github
