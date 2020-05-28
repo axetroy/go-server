@@ -2,11 +2,12 @@
 
 [POST] /v1/push/notification
 
-| 参数     | 类型       | 说明             | 必填 |
-| -------- | ---------- | ---------------- | ---- |
-| user_ids | `[]string` | 要推送的指定用户 | \*   |
-| title    | `string`   | 标题             | \*   |
-| content  | `string`   | 内容             | \*   |
+| 参数     | 类型       | 说明                              | 必填 |
+| -------- | ---------- | --------------------------------- | ---- |
+| user_ids | `[]string` | 要推送的指定用户                  | \*   |
+| title    | `string`   | 标题                              | \*   |
+| content  | `string`   | 内容                              | \*   |
+| payload  | `object`   | 通知附带的数据，用于 App 点开通知 |      |
 
 ```bash
 curl -H "Authorization: Bearer 你的身份令牌" \

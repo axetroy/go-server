@@ -50,13 +50,11 @@ func Create(c helper.Context, input CreateParams) (res schema.Response) {
 			}
 		}
 
-		go func() {
-			if err != nil {
-				if er := message_queue.PublishSystemNotify(data.Id); er != nil {
-					log.Println("加入推送队列失败:", err.Error())
-				}
-			}
-		}()
+		if er := message_queue.PublishSystemNotify(data.Id); er != nil {
+			log.Println("加入推送队列失败:", err.Error())
+		} else {
+			log.Println("假如队列成功...")
+		}
 
 		helper.Response(&res, data, nil, err)
 	}()

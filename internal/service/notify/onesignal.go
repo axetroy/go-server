@@ -118,7 +118,7 @@ func (n *NotifierOneSignal) SendNotifyToUserForLoginStatus(userID string) error 
 	loginLogs := make([]model.LoginLog, 0)
 
 	// 查找用户过往的登录记录, 只查找最近的两条
-	if err := database.Db.Model(model.LoginLog{}).Where("uid = ?", userInfo.Id).Limit(2).Order("created_at DESC").First(&loginLogs).Error; err != nil {
+	if err := database.Db.Model(model.LoginLog{}).Where("uid = ?", userInfo.Id).Limit(2).Order("created_at DESC").Find(&loginLogs).Error; err != nil {
 		// 如果没有之前的登录记录
 		// 那么跳过
 		if err == gorm.ErrRecordNotFound {
@@ -127,6 +127,8 @@ func (n *NotifierOneSignal) SendNotifyToUserForLoginStatus(userID string) error 
 
 		return err
 	}
+
+	fmt.Printf("%+v\n", loginLogs)
 
 	// 如果没有两条记录，那么不用作比较
 	if len(loginLogs) < 2 {
@@ -149,6 +151,8 @@ func (n *NotifierOneSignal) SendNotifyToUserForLoginStatus(userID string) error 
 		err = exception.ThirdParty.New(err.Error())
 		return err
 	}
+
+	fmt.Println("推送成功")
 
 	return nil
 }

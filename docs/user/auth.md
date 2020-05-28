@@ -40,6 +40,38 @@
 | account  | `string` | 用户账号, username/email/phone 中的一个 | \*   |
 | password | `string` | 账号密码                                | \*   |
 
+```bash
+curl -X POST \
+     -d '{"account": "test1", "password": "test1"}' \
+     https://api.bendaye.vip/v1/auth/signin
+```
+
+```json
+{
+  "message": "",
+  "data": {
+    "id": "266972131143712768",
+    "username": "test1",
+    "nickname": "this",
+    "email": null,
+    "phone": null,
+    "status": 1,
+    "gender": 0,
+    "avatar": "http://example.com/v1/resource/image/26ce518102f9907c2ba9b94927bcfa3e.jpg",
+    "role": ["user"],
+    "level": 0,
+    "invite_code": "935cd3fb",
+    "username_rename_remaining": 0,
+    "pay_password": false,
+    "wechat": null,
+    "created_at": "2020-05-13T07:57:29.167257Z",
+    "updated_at": "2020-05-27T06:03:56.339296Z",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJNalkyT1RjeU1UTXhNVFF6TnpFeU56WTQiLCJhdWQiOiIyNjY5NzIxMzExNDM3MTI3NjgiLCJleHAiOjE1OTA2NjA3MzUsImp0aSI6IjI2Njk3MjEzMTE0MzcxMjc2OCIsImlhdCI6MTU5MDYzOTEzNSwiaXNzIjoidXNlciIsIm5iZiI6MTU5MDYzOTEzNX0.cV8Q6gARJEJnVyMlzKUhPN6HqeNYq2e9_cTxO3rDZq8"
+  },
+  "status": 1
+}
+```
+
 ### 手机号登陆
 
 [POST] /v1/auth/signin/phone

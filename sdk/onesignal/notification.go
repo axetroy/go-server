@@ -147,12 +147,32 @@ type NotificationResponse struct {
 	Errors     interface{} `json:"errors"`
 }
 
-func (o *OneSignal) CreateNotification(params CreateNotificationParams) error {
-	bodyByte, err := json.Marshal(params)
+func (o OneSignal) CreateNotification(params CreateNotificationParams) error {
+	if o.appId == "" {
+		return errors.New("required APP ID")
+	}
+
+	if o.restApiKey == "" {
+		return errors.New("required REST API KEY")
+	}
+
+	type Body struct {
+		CreateNotificationParams
+		AppID string `json:"app_id"`
+	}
+
+	body := Body{
+		CreateNotificationParams: params,
+		AppID:                    o.appId,
+	}
+
+	bodyByte, err := json.Marshal(body)
 
 	if err != nil {
 		return err
 	}
+
+	fmt.Println(string(bodyByte))
 
 	client := &http.Client{}
 

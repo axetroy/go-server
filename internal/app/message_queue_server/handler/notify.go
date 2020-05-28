@@ -94,7 +94,7 @@ func (h *NotifyHandler) handlerCheckUserLoginStatus(payload interface{}) error {
 		return err
 	}
 
-	if err := validator.ValidateStruct(payload); err != nil {
+	if err := validator.ValidateStruct(data); err != nil {
 		return err
 	}
 
@@ -119,7 +119,7 @@ func (h *NotifyHandler) handlerSendNewSystemNotification(payload interface{}) er
 		return err
 	}
 
-	if err := validator.ValidateStruct(payload); err != nil {
+	if err := validator.ValidateStruct(data); err != nil {
 		return err
 	}
 

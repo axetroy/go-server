@@ -40,10 +40,6 @@ func Start(action Action, shouldRunInDaemon bool) error {
 			return err
 		}
 
-		if fs.PathExists(pidFilePath) {
-			log.Fatalf("已经存在进程，如果进程没有启动，请删除文件 `%s`\n", pidFilePath)
-		}
-
 		// 将命令行参数中执行文件路径转换成可用路径
 		filePath, _ := filepath.Abs(os.Args[0])
 		cmd := exec.Command(filePath, os.Args[1:]...)
@@ -84,7 +80,7 @@ func Stop() error {
 	}
 
 	if !fs.PathExists(pidFilePath) {
-		log.Fatalf("找不到 pid 文件 `%s`\n", pidFilePath)
+		return nil
 	}
 
 	b, err2 := fs.ReadFile(pidFilePath)

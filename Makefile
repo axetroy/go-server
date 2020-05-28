@@ -1,7 +1,4 @@
-# use the vendor/ subdir which holds the vendored apache thrift go library, version
-# the vendored thrift is commit fa0796d33208eadafb6f42964c8ef29d7751bfc2 on 1.0.0-dev,
-# last commit there is Fri Oct 16 21:33:39 2015 +0200, from https://github.com/apache/thrift
-
+# Copyright 2019-2020 Axetroy. All rights reserved. MIT license.
 test:
 	GO_TESTING=1 go test -mod=vendor --cover -covermode=count -coverprofile=coverage.out ./...
 
@@ -14,3 +11,7 @@ build:
 
 clean:
 	bash ./scripts/clean.sh
+
+# deploy app via s4 see detail in https://github.com/axetroy/s4
+deploy:
+	s4

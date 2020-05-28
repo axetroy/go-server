@@ -81,13 +81,6 @@ func SignIn(c helper.Context, input SignInParams) (res schema.Response) {
 			}
 		}
 
-		// 检查用户登录状态
-		go func() {
-			if er := message_queue.PublishCheckUserLogin(c.Uid); er != nil {
-				log.Println("检查用户状态失败", c.Uid)
-			}
-		}()
-
 		helper.Response(&res, data, nil, err)
 	}()
 
@@ -118,6 +111,13 @@ func SignIn(c helper.Context, input SignInParams) (res schema.Response) {
 		}
 		return
 	}
+
+	// 检查用户登录状态
+	go func() {
+		if er := message_queue.PublishCheckUserLogin(userInfo.Id); er != nil {
+			log.Println("检查用户状态失败", c.Uid)
+		}
+	}()
 
 	if err = userInfo.CheckStatusValid(); err != nil {
 		return
