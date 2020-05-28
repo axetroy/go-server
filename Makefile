@@ -7,6 +7,7 @@ build:
 	bash ./scripts/build.sh user
 	bash ./scripts/build.sh resource
 	bash ./scripts/build.sh message_queue
+	bash ./scripts/build.sh scheduled
 	echo "Build Success!"
 
 clean:

@@ -9,6 +9,7 @@ targets=(
     user
     resource
     message_queue
+    scheduled
 )
 
 get_arch() {

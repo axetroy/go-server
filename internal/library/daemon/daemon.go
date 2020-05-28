@@ -68,6 +68,8 @@ func Start(action Action, shouldRunInDaemon bool) error {
 			return err
 		}
 
+		// TODO: 监听信号，优雅地推出
+
 		return action()
 	}
 }

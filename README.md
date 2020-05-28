@@ -59,7 +59,7 @@
 
 然后获取[构建好的可执行文件](https://github.com/axetroy/go-server/releases), 找到对应的平台，并且下载。或者自行构建。
 
-你需要使用 4 个文件
+你需要使用 5 个文件
 
 1. message_queue_server
 
@@ -76,6 +76,10 @@
 4. admin_server
 
 > 监听管理员相关的接口服务
+
+5。scheduled
+
+>  定时任务
 
 然后复制 [.env](.env) 到可执行文件目录下，运行可执行文件即可。例如 `./user_server start`
 
@@ -111,6 +115,7 @@ $ go run ./cmd/message_queue/main.go # 启动消息队列
 $ go run ./cmd/user/main.go # 运行用户端的接口服务
 $ go run ./cmd/admin/main.go # 运行管理员端的接口服务
 $ go run ./cmd/resource/main.go # 运行资源类的接口服务
+$ go run ./cmd/scheduled/main.go # 运行定时任务
 ```
 
 可以通过 [.env](.env) 文件进行配置

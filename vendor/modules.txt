@@ -99,6 +99,9 @@ github.com/iris-contrib/jade
 github.com/iris-contrib/pongo2
 # github.com/iris-contrib/schema v0.0.1
 github.com/iris-contrib/schema
+# github.com/jasonlvhit/gocron v0.0.0-20200423141508-ab84337f7963
+## explicit
+github.com/jasonlvhit/gocron
 # github.com/jinzhu/gorm v1.9.12
 ## explicit
 github.com/jinzhu/gorm
@@ -228,7 +231,6 @@ github.com/sec51/twofactor
 # github.com/shirou/gopsutil v2.20.4+incompatible
 ## explicit
 github.com/shirou/gopsutil/cpu
-github.com/shirou/gopsutil/disk
 github.com/shirou/gopsutil/host
 github.com/shirou/gopsutil/internal/common
 github.com/shirou/gopsutil/load
