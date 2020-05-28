@@ -1,31 +1,28 @@
 CONNECT root@192.168.0.1:22
 
-VAR HOME_DIR = /home/zingy
-
-CD {{ HOME_DIR }}/go-server/
+CD /home/zingy/go-server/
 
 UPLOAD ./bin/admin_server_linux_amd64.tar.gz ./admin-api/
 UPLOAD ./bin/user_server_linux_amd64.tar.gz ./user-api/
 UPLOAD ./bin/resource_server_linux_amd64.tar.gz ./resource-api/
 UPLOAD ./bin/message_queue_server_linux_amd64.tar.gz ./message-queue/
 
-CD {{ HOME_DIR }}/go-server/admin-api
-RUN ls -lh
+CD /home/zingy/go-server/admin-api
 RUN tar -xzf admin_server_linux_amd64.tar.gz
 TRY docker-compose down
 TRY docker-compose up -d
 
-CD {{ HOME_DIR }}/go-server/user-api
+CD /home/zingy/go-server/user-api
 RUN tar -xzf user_server_linux_amd64.tar.gz
 TRY docker-compose down
 TRY docker-compose up -d
 
-CD {{ HOME_DIR }}/go-server/resource-api
+CD /home/zingy/go-server/resource-api
 RUN tar -xzf resource_server_linux_amd64.tar.gz
 TRY docker-compose down
 TRY docker-compose up -d
 
-CD {{ HOME_DIR }}/go-server/message-queue
+CD /home/zingy/go-server/message-queue
 RUN tar -xzf message_queue_server_linux_amd64.tar.gz
 TRY docker-compose down
 TRY docker-compose up -d
