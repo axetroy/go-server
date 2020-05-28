@@ -72,6 +72,21 @@ jobs:
           # Maps port 6379 on service container to the host
           - 6379:6379
 
+      # 消息队列
+      nsqlookupd:
+        image: nsqio/nsq
+        options: --entrypoint /nsqlookupd
+        ports:
+          - 4160:4160 # TCP 端口
+          - 4161:4161 # HTTP 端口
+      nsqd:
+        image: nsqio/nsq
+        options: --entrypoint /nsqd --lookupd-tcp-address=nsqlookupd:4160 --data-path=/data
+        ports:
+          - 4150:4150 # TCP 端口
+          - 4151:4151 # HTTP 端口
+        volumes:
+          - "./volumes/nsq:/data"
     steps:
       - uses: actions/checkout@v2
 
