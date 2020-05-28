@@ -25,3 +25,4 @@ node_modules
 *.log
 *.pid
 logs
+.s4

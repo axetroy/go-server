@@ -11,12 +11,11 @@ type NotificationBody struct {
 
 其中包含以下事件
 
-| Event          | 说明                              |
-| -------------- | --------------------------------- |
-| none           | 无意义的事件，APP 应该什么都不做  |
-| login_abnormal | 用户登录异常的推送                |
-| content        | 内容                              |
-| payload        | 通知附带的数据，用于 App 点开通知 |
+| Event                   | 说明                             | Payload                                            |
+| ----------------------- | -------------------------------- | -------------------------------------------------- |
+| none                    | 无意义的事件，APP 应该什么都不做 | `none`                                             |
+| login_abnormal          | 用户登录异常的推送               | `none`                                             |
+| new_system_notification | 管理员发送一个新的系统通知的推送 | `{"id": "xxxx", "title": "xxx", "content": "xxx"}` |
 
 ### 生成一条推送
 
