@@ -4,10 +4,10 @@ services:
     image: alpine:3.11
     restart: always
     ports:
-      - 9000:9000
+      - 9000:80
     working_dir: /app
     volumes:
-      - "./user_server:/app/user_server"
+      - './user_server:/app/user_server'
     environment:
       - MACHINE_ID=0
       - GO_MOD=development
@@ -31,4 +31,4 @@ services:
       # wechat
       - WECHAT_APP_ID=xxx
       - WECHAT_SECRET=xxx
-    command: [ "./user_server", "start" ]
+    command: ['./user_server', 'start']

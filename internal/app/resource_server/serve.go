@@ -14,12 +14,10 @@ import (
 )
 
 func Serve() error {
-	port := config.Resource.Port
-
 	resourceConfig.Init()
 
 	s := &http.Server{
-		Addr:           ":" + port,
+		Addr:           config.Http.Host + ":" + config.Http.Port,
 		Handler:        ResourceRouter,
 		ReadTimeout:    60 * time.Second,
 		WriteTimeout:   60 * time.Second,

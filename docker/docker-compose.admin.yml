@@ -4,16 +4,15 @@ services:
     image: alpine:3.11
     restart: always
     ports:
-      - 9091:9091
+      - 9091:80
     working_dir: /app
     volumes:
-      - "./admin_server:/app/admin_server"
+      - './admin_server:/app/admin_server'
     environment:
       - MACHINE_ID=0
       - GO_MOD=development
       - ADMIN_HTTP_DOMAIN=https://api-mag.example.com
       - ADMIN_TOKEN_SECRET_KEY=admin
-      - ADMIN_HTTP_PORT=9091
       # database
       - DB_HOST=172.18.71.172
       - DB_PORT=65432
@@ -31,4 +30,4 @@ services:
       # push
       - ONE_SIGNAL_APP_ID=xxx
       - ONE_SIGNAL_REST_API_KEY=xxx
-    command: [ "./admin_server", "start" ]
+    command: ['./admin_server', 'start']

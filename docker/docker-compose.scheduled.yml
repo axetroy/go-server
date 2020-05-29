@@ -5,7 +5,7 @@ services:
     restart: always
     working_dir: /app
     volumes:
-      - "./scheduled_server:/app/scheduled_server"
+      - './scheduled_server:/app/scheduled_server'
     environment:
       - MACHINE_ID=0
       - GO_MOD=development
@@ -20,4 +20,4 @@ services:
       - REDIS_SERVER=172.18.71.172
       - REDIS_PORT=6379
       - REDIS_PASSWORD=password
-    command: [ "./scheduled_server", "start" ]
+    command: ['./scheduled_server', 'start']

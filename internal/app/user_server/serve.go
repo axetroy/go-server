@@ -15,13 +15,11 @@ import (
 )
 
 func Serve() error {
-	port := config.User.Port
-
 	redis.Connect()
 	database.Connect()
 
 	s := &http.Server{
-		Addr:           ":" + port,
+		Addr:           config.Http.Host + ":" + config.Http.Port,
 		Handler:        UserRouter,
 		ReadTimeout:    60 * time.Second,
 		WriteTimeout:   60 * time.Second,

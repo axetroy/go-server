@@ -18,7 +18,7 @@ services:
       - 4150:4150 # TCP 端口
       - 4151:4151 # HTTP 端口
     volumes:
-      - "./volumes/nsq:/data"
+      - './volumes/nsq:/data'
   nsqadmin:
     image: nsqio/nsq
     command: /nsqadmin --lookupd-http-address=nsqlookupd:4161

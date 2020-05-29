@@ -4,12 +4,12 @@ services:
     image: alpine:3.11
     restart: always
     ports:
-      - 9004:9004
+      - 9004:80
     working_dir: /app
     volumes:
-      - "./resource_server:/app/resource_server"
-      - "./upload:/app/upload"
+      - './resource_server:/app/resource_server'
+      - './upload:/app/upload'
     environment:
       - MACHINE_ID=0
       - GO_MOD=development
-    command: [ "./resource_server", "start" ]
+    command: ['./resource_server', 'start']

@@ -5,7 +5,7 @@ services:
     restart: always
     working_dir: /app
     volumes:
-      - "./message_queue_server:/app/message_queue_server"
+      - './message_queue_server:/app/message_queue_server'
     environment:
       - MACHINE_ID=0
       - GO_MOD=development
@@ -26,4 +26,4 @@ services:
       # push
       - ONE_SIGNAL_APP_ID=xxx
       - ONE_SIGNAL_REST_API_KEY=xxx
-    command: [ "./message_queue_server", "start" ]
+    command: ['./message_queue_server', 'start']

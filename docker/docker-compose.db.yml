@@ -5,7 +5,7 @@ services:
     image: postgres:12.3-alpine
     restart: always
     volumes:
-      - "./volumes/pg:/var/lib/postgresql/data"
+      - './volumes/pg:/var/lib/postgresql/data'
     ports:
       - 65432:5432
     environment:
@@ -20,8 +20,8 @@ services:
     ports:
       - 6379:6379
     volumes:
-      - "./volumes/redis:/data"
-#    environment:
-#      - REDIS_PASSWORD=password
-#    command: [ "redis-server", "--requirepass", "password" ]
-    command: [ "redis-server"]
+      - './volumes/redis:/data'
+    #    environment:
+    #      - REDIS_PASSWORD=password
+    #    command: [ "redis-server", "--requirepass", "password" ]
+    command: ['redis-server']
