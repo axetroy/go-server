@@ -24,5 +24,5 @@ func (e Error) Code() int {
 }
 
 func (e Error) New(msg string) Error {
-	return New(fmt.Sprintf("%s: %s", e.message, msg), e.code)
+	return New(fmt.Sprintf("%s", msg), e.code)
 }
