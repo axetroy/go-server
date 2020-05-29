@@ -1,7 +1,7 @@
 version: '3'
 services:
   user-api:
-    image: alpine:3.11
+    image: alpine:3.12
     restart: always
     working_dir: /app
     volumes:
