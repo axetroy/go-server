@@ -196,10 +196,6 @@ github.com/nfnt/resize
 # github.com/nsqio/go-nsq v1.0.8
 ## explicit
 github.com/nsqio/go-nsq
-# github.com/onsi/ginkgo v1.10.1
-## explicit
-# github.com/onsi/gomega v1.7.0
-## explicit
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
 # github.com/russross/blackfriday/v2 v2.0.1
@@ -242,7 +238,7 @@ github.com/shurcooL/sanitized_anchor_name
 # github.com/sirupsen/logrus v1.6.0
 ## explicit
 github.com/sirupsen/logrus
-# github.com/stretchr/testify v1.5.1
+# github.com/stretchr/testify v1.6.0
 ## explicit
 github.com/stretchr/testify/assert
 # github.com/urfave/cli/v2 v2.2.0
@@ -314,6 +310,5 @@ google.golang.org/appengine/urlfetch
 gopkg.in/ini.v1
 # gopkg.in/yaml.v2 v2.2.8
 ## explicit
-gopkg.in/yaml.v2
-# gopkg.in/yaml.v3 v3.0.0-20191120175047-4206685974f2
+# gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 gopkg.in/yaml.v3
