@@ -77,7 +77,7 @@
 
 > 监听管理员相关的接口服务
 
-5。scheduled
+5。scheduled_server
 
 >  定时任务
 
@@ -93,7 +93,7 @@ curl -fsSL https://raw.githubusercontent.com/axetroy/go-server/master/install.sh
 
 首选确保你安装有:
 
-- [Golang](https://golang.org/) >= 1.11.x
+- [Golang](https://golang.org/) >= 1.14.x
 - [Docker](https://www.docker.com/)
 - [Docker Compose](https://docs.docker.com/compose/)
 
