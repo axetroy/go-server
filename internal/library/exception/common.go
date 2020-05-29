@@ -47,11 +47,8 @@ var (
 	OutOfSize      = New("超出文件大小限制", 0)
 
 	// 地址
-	AddressDefaultNotExist     = InvalidParams.New("默认地址不存在")
-	AddressNotExist            = InvalidParams.New("地址记录不存在")
-	AddressInvalidProvinceCode = InvalidParams.New("无效的省份代码")
-	AddressInvalidCityCode     = InvalidParams.New("无效的城市代码")
-	AddressInvalidAreaCode     = InvalidParams.New("无效的地区代码")
+	AddressDefaultNotExist = InvalidParams.New("默认地址不存在")
+	AddressNotExist        = NoData.New("地址记录不存在")
 
 	// 管理员
 	AdminExist    = New("管理员已存在", 0)

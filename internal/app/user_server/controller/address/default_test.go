@@ -38,7 +38,7 @@ func TestGetDefault(t *testing.T) {
 		r := address.GetDefault(context)
 
 		assert.Equal(t, exception.AddressDefaultNotExist.Error(), r.Message)
-		assert.Equal(t, schema.StatusFail, r.Status)
+		assert.Equal(t, exception.AddressDefaultNotExist.Code(), r.Status)
 	}
 
 	// 添加一个合法的地址
