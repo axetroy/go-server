@@ -2,6 +2,7 @@
 package token
 
 import (
+	"github.com/axetroy/go-server/internal/library/config"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/dgrijalva/jwt-go"
@@ -16,9 +17,9 @@ func Parse(tokenString string, isAdmin bool) (claims Claims, err error) {
 	)
 
 	if isAdmin {
-		key = adminSecreteKey
+		key = config.Jwt.Secret
 	} else {
-		key = userSecreteKey
+		key = config.Jwt.Secret
 	}
 
 	if strings.HasPrefix(tokenString, Prefix+" ") == false {

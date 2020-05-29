@@ -7,6 +7,7 @@ import (
 	"github.com/axetroy/go-server/internal/service/database"
 	"github.com/axetroy/go-server/internal/service/redis"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -14,12 +15,12 @@ import (
 	"time"
 )
 
-func Serve() error {
+func Serve(host string, port string) error {
 	redis.Connect()
 	database.Connect()
 
 	s := &http.Server{
-		Addr:           config.Http.Host + ":" + config.Http.Port,
+		Addr:           net.JoinHostPort(host, port),
 		Handler:        UserRouter,
 		ReadTimeout:    60 * time.Second,
 		WriteTimeout:   60 * time.Second,

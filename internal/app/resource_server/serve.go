@@ -6,6 +6,7 @@ import (
 	resourceConfig "github.com/axetroy/go-server/internal/app/resource_server/config"
 	"github.com/axetroy/go-server/internal/library/config"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -13,11 +14,11 @@ import (
 	"time"
 )
 
-func Serve() error {
+func Serve(host string, port string) error {
 	resourceConfig.Init()
 
 	s := &http.Server{
-		Addr:           config.Http.Host + ":" + config.Http.Port,
+		Addr:           net.JoinHostPort(host, port),
 		Handler:        ResourceRouter,
 		ReadTimeout:    60 * time.Second,
 		WriteTimeout:   60 * time.Second,

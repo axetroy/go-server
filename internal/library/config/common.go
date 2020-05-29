@@ -18,5 +18,5 @@ func init() {
 	Common = &common{}
 	Common.Mode = dotenv.GetByDefault("GO_MOD", "production")
 	Common.MachineId = dotenv.GetByDefault("MACHINE_ID", "0")
-	Common.Signature = dotenv.GetByDefault("SIGNATURE_KEY", "signature key")
+	Common.Signature = dotenv.GetByDefault("SIGNATURE_KEY", "dlaj31230fvasdlw*3123La")
 }

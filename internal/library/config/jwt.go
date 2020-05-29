@@ -5,12 +5,12 @@ import (
 	"github.com/axetroy/go-server/internal/service/dotenv"
 )
 
-type user struct {
+type jwt struct {
 	Secret string `json:"secret"` // 用户端密钥，用于加密/解密 token
 }
 
-var User user
+var Jwt jwt
 
 func init() {
-	User.Secret = dotenv.GetByDefault("USER_TOKEN_SECRET_KEY", "user")
+	Jwt.Secret = dotenv.GetByDefault("TOKEN_SECRET_KEY", "44JodlDOWk13f8a0&fKSDI*AP")
 }

@@ -11,8 +11,7 @@ services:
     environment:
       - MACHINE_ID=0
       - GO_MOD=development
-      - ADMIN_HTTP_DOMAIN=https://api-mag.example.com
-      - ADMIN_TOKEN_SECRET_KEY=admin
+      - TOKEN_SECRET_KEY=44JodlDOWk13f8a0&fKSDI*AP
       # database
       - DB_HOST=172.18.71.172
       - DB_PORT=65432

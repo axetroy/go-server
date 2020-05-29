@@ -2,6 +2,7 @@
 package token
 
 import (
+	"github.com/axetroy/go-server/internal/library/config"
 	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/dgrijalva/jwt-go"
 	"time"
@@ -16,10 +17,10 @@ func Generate(userId string, isAdmin bool) (tokenString string, err error) {
 
 	if isAdmin {
 		issuer = "admin"
-		key = adminSecreteKey
+		key = config.Jwt.Secret
 	} else {
 		issuer = "user"
-		key = userSecreteKey
+		key = config.Jwt.Secret
 	}
 
 	// 生成token
