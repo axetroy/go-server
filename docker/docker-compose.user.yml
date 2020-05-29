@@ -12,7 +12,6 @@ services:
       - MACHINE_ID=0
       - GO_MOD=development
       - TOKEN_SECRET_KEY=44JodlDOWk13f8a0&fKSDI*AP
-      - SIGNATURE_KEY="dlaj31230fvasdlw*3123La"
       # database
       - DB_HOST=172.18.71.172
       - DB_PORT=65432

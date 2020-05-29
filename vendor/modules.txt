@@ -44,6 +44,9 @@ github.com/aymerick/raymond/parser
 github.com/cpuguy83/go-md2man/v2/md2man
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
+# github.com/denisbrodbeck/machineid v1.0.1
+## explicit
+github.com/denisbrodbeck/machineid
 # github.com/dgrijalva/jwt-go v3.2.0+incompatible
 ## explicit
 github.com/dgrijalva/jwt-go
@@ -285,6 +288,7 @@ golang.org/x/oauth2/jwt
 golang.org/x/sys/cpu
 golang.org/x/sys/unix
 golang.org/x/sys/windows
+golang.org/x/sys/windows/registry
 # golang.org/x/text v0.3.2
 golang.org/x/text/internal/language
 golang.org/x/text/internal/language/compact

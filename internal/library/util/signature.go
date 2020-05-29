@@ -4,16 +4,18 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"fmt"
-	"github.com/axetroy/go-server/internal/library/config"
+	"github.com/denisbrodbeck/machineid"
 	"io"
 )
 
-var (
-	key = config.Common.Signature
-)
-
 func Signature(input string) (string, error) {
-	h := hmac.New(sha256.New, []byte(key))
+	id, err := machineid.ID()
+
+	if err != nil {
+		return "", err
+	}
+
+	h := hmac.New(sha256.New, []byte(id))
 
 	if _, err := io.WriteString(h, input); err != nil {
 		return "", err

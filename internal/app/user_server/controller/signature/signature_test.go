@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/axetroy/go-server/internal/app/user_server/controller/signature"
 	"github.com/axetroy/go-server/internal/library/helper"
+	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/tester"
 	"github.com/stretchr/testify/assert"
@@ -17,7 +18,11 @@ func TestCreate(t *testing.T) {
 
 	assert.Equal(t, schema.StatusSuccess, r.Status)
 	assert.Equal(t, "", r.Message)
-	assert.Equal(t, "707bcdd6f7e49913fd0be83f3ac3046b5b445492efe331189f4210ff7d114f45", r.Data)
+
+	hash, err := util.Signature("123")
+	assert.Nil(t, err)
+
+	assert.Equal(t, hash, r.Data)
 }
 
 func TestCreateRouter(t *testing.T) {
@@ -30,6 +35,9 @@ func TestCreateRouter(t *testing.T) {
 	assert.Equal(t, schema.StatusSuccess, r.Status)
 	assert.Equal(t, "", r.Message)
 
-	assert.Equal(t, "707bcdd6f7e49913fd0be83f3ac3046b5b445492efe331189f4210ff7d114f45", r.Data)
+	hash, err := util.Signature("123")
+	assert.Nil(t, err)
+
+	assert.Equal(t, hash, r.Data)
 
 }

@@ -9,6 +9,7 @@ require (
 	github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a
 	github.com/axetroy/go-fs v1.0.0
 	github.com/axetroy/mocker v1.2.0
+	github.com/denisbrodbeck/machineid v1.0.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fasthttp-contrib/websocket v0.0.0-20160511215533-1f3b11f56072 // indirect
 	github.com/fatih/color v1.9.0
