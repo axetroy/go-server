@@ -118,7 +118,7 @@ jobs:
   release:
     name: Release to Github
     if: startsWith(github.ref, 'refs/tags/') && github.repository == 'axetroy/go-server'
-    needs: build
+    needs:  [build, test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v2
