@@ -106,38 +106,20 @@ func Update(c helper.Context, addressId string, input UpdateParams) (res schema.
 	}
 
 	if input.ProvinceCode != nil {
-		// 校验 省份代码
-		if _, ok := ProvinceCode[*input.ProvinceCode]; !ok {
-			err = exception.AddressInvalidProvinceCode
+		if input.CityCode == nil || input.AreaCode == nil {
+			err = exception.InvalidParams
 			return
 		}
 
 		shouldUpdate = true
 		updateModel["province_code"] = *input.ProvinceCode
-
-	}
-
-	if input.CityCode != nil {
-		// 校验 城市代码
-		if _, ok := CityCode[*input.CityCode]; !ok {
-			err = exception.AddressInvalidCityCode
-			return
-		}
-
-		shouldUpdate = true
 		updateModel["city_code"] = *input.CityCode
-	}
+		updateModel["area_code"] = *input.AreaCode
 
-	// TODO: 校验几个地区码要一致
-	if input.AreaCode != nil {
-		// 校验 区域代码
-		if _, ok := CountryCode[*input.AreaCode]; !ok {
-			err = exception.AddressInvalidAreaCode
+		if IsValidCode(*input.ProvinceCode, *input.CityCode, *input.AreaCode) == false {
+			err = exception.InvalidParams
 			return
 		}
-
-		shouldUpdate = true
-		updateModel["area_code"] = *input.AreaCode
 	}
 
 	if input.IsDefault != nil {
