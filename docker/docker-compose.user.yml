@@ -1,7 +1,7 @@
 version: '3'
 services:
   user-api:
-    image: alpine:3.11
+    image: alpine:3.12
     restart: always
     ports:
       - 9000:80
