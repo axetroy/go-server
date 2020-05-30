@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func MarkRead(c helper.Context, id string) (res schema.Response) {
+func MarkRead(c helper.Context, ids []string) (res schema.Response) {
 	var (
 		err  error
 		data schema.Message
@@ -46,33 +46,39 @@ func MarkRead(c helper.Context, id string) (res schema.Response) {
 
 	tx = database.Db.Begin()
 
-	MessageInfo := model.Message{
-		Id:  id,
-		Uid: c.Uid,
-	}
-
-	if err = tx.Where(&MessageInfo).Last(&MessageInfo).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			err = exception.NoData
+	for _, id := range ids {
+		MessageInfo := model.Message{
+			Id:  id,
+			Uid: c.Uid,
 		}
-		return
-	}
 
-	if er := mapstructure.Decode(MessageInfo, &data.MessagePure); er != nil {
-		err = er
-		return
-	}
+		if err = tx.Where(&MessageInfo).Last(&MessageInfo).Error; err != nil {
+			if err == gorm.ErrRecordNotFound {
+				err = exception.NoData
+			}
+			return
+		}
 
-	data.CreatedAt = MessageInfo.CreatedAt.Format(time.RFC3339Nano)
-	data.UpdatedAt = MessageInfo.UpdatedAt.Format(time.RFC3339Nano)
+		if er := mapstructure.Decode(MessageInfo, &data.MessagePure); er != nil {
+			err = er
+			return
+		}
 
-	now := time.Now()
+		now := time.Now()
 
-	if err = tx.Model(&MessageInfo).UpdateColumn(model.Message{
-		Read:   true,
-		ReadAt: &now,
-	}).Error; err != nil {
-		return
+		if err = tx.Model(&MessageInfo).UpdateColumn(model.Message{
+			Read:   true,
+			ReadAt: &now,
+		}).Error; err != nil {
+			return
+		}
+
+		nowStr := now.Format(time.RFC3339Nano)
+
+		data.Read = true
+		data.ReadAt = &nowStr
+		data.CreatedAt = MessageInfo.CreatedAt.Format(time.RFC3339Nano)
+		data.UpdatedAt = MessageInfo.UpdatedAt.Format(time.RFC3339Nano)
 	}
 
 	return

@@ -11,9 +11,13 @@ type MessagePure struct {
 
 type Message struct {
 	MessagePure
-	ReadAt    *string `json:"read"`       // 用户读取的时间
+	ReadAt    *string `json:"read_at"`    // 用户读取的时间
 	CreatedAt string  `json:"created_at"` // 创建时间
 	UpdatedAt string  `json:"updated_at"` // 更新时间
+}
+
+type MessageStatus struct {
+	Unread int64 `json:"unread"` // 未读数量
 }
 
 type MessagePureAdmin struct {
@@ -27,7 +31,7 @@ type MessagePureAdmin struct {
 
 type MessageAdmin struct {
 	MessagePureAdmin
-	ReadAt    *string `json:"read"`       // 用户读取的时间
+	ReadAt    *string `json:"read_at"`    // 用户读取的时间
 	CreatedAt string  `json:"created_at"` // 创建时间
 	UpdatedAt string  `json:"updated_at"` // 更新时间
 }

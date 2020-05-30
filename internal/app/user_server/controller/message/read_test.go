@@ -140,5 +140,7 @@ func TestReadRouter(t *testing.T) {
 		n := schema.Message{}
 
 		assert.Nil(t, res.Decode(&n))
+		assert.Equal(t, true, n.Read)
+		assert.NotNil(t, n.ReadAt)
 	}
 }
