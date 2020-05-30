@@ -6,9 +6,10 @@
 | ------------- | -------- | -------------------------- | ---- |
 | name          | `string` | 收件人                     | \*   |
 | phone         | `string` | 收件人手机号               | \*   |
-| province_code | `string` | 省份代码，6 位数           | \*   |
-| city_code     | `string` | 城市代码，6 位数           | \*   |
+| province_code | `string` | 省份代码，2 位数           | \*   |
+| city_code     | `string` | 城市代码，4 位数           | \*   |
 | area_code     | `string` | 县城代码，6 位数           | \*   |
+| street_code   | `string` | 街道/乡/镇代码，9 位数     | \*   |
 | address       | `string` | 详细地址，具体的街道门牌号 | \*   |
 | is_default    | `bool`   | 是否设置为默认地址         | \*   |
 
@@ -20,9 +21,10 @@
 | ------------- | -------- | -------------------------- | ---- |
 | name          | `string` | 收件人                     |      |
 | phone         | `string` | 收件人手机号               |      |
-| province_code | `string` | 省份代码，6 位数           |      |
-| city_code     | `string` | 城市代码，6 位数           |      |
+| province_code | `string` | 省份代码，2 位数           |      |
+| city_code     | `string` | 城市代码，4 位数           |      |
 | area_code     | `string` | 县城代码，6 位数           |      |
+| street_code   | `string` | 街道/乡/镇代码，9 位数     | \*   |
 | address       | `string` | 详细地址，具体的街道门牌号 |      |
 | is_default    | `bool`   | 是否设置为默认地址         |      |
 
@@ -49,15 +51,3 @@
 [GET] /v1/user/address/:address_id
 
 获取某一个地址的详细信息
-
-### 获取全国地区码列表
-
-[GET] /v1/area
-
-获取全国地区码列表
-
-### 获取指定地区码的详情
-
-[GET] /v1/area/:area_code
-
-获取指定地区码的详情, `area_code` 是最详细的地区码
