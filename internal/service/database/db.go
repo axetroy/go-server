@@ -79,22 +79,6 @@ func Migrate(db *gorm.DB) error {
 
 	log.Println("数据库同步完成.")
 
-	return nil
-}
-
-func Connect() {
-	DataSourceName := fmt.Sprintf("%s://%s:%s@%s:%s/%s?sslmode=disable", Config.Driver, Config.Username, Config.Password, Config.Host, Config.Port, Config.DatabaseName)
-
-	log.Println("正在连接数据库...")
-
-	db, err := gorm.Open(Config.Driver, DataSourceName)
-
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	db.LogMode(config.Common.Mode != "production")
-
 	superAdminInfo := model.Admin{Username: "admin", IsSuper: true}
 
 	// 确保超级管理员账号存在
@@ -110,10 +94,10 @@ func Connect() {
 			}).Error
 
 			if err != nil {
-				log.Fatalln(err)
+				return err
 			}
 		} else {
-			log.Fatalln(err)
+			return err
 		}
 	}
 
@@ -129,16 +113,32 @@ func Connect() {
 				BuildIn:     true,
 			}).Error
 		} else {
-			log.Fatalln(err)
+			return err
 		}
 	} else {
 		// 如果角色已存在，则同步角色的权限
 		if err := db.Model(&defaultRole).Update(&model.Role{
 			Accession: model.DefaultUser.AccessionArray(),
 		}).Error; err != nil {
-			log.Fatalln(err)
+			return err
 		}
 	}
+
+	return nil
+}
+
+func Connect() {
+	DataSourceName := fmt.Sprintf("%s://%s:%s@%s:%s/%s?sslmode=disable", Config.Driver, Config.Username, Config.Password, Config.Host, Config.Port, Config.DatabaseName)
+
+	log.Println("正在连接数据库...")
+
+	db, err := gorm.Open(Config.Driver, DataSourceName)
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	db.LogMode(config.Common.Mode != "production")
 
 	Db = db
 }
