@@ -75,7 +75,7 @@ curl http://localhost/v1/area
 获取指定地区码的详情, `area_code` 是最详细的地区码
 
 ```bash
-curl http://localhost/v1/area/450000
+curl http://localhost/v1/area/45
 ```
 
 ```json
@@ -93,7 +93,7 @@ curl http://localhost/v1/area/450000
 获取指定地区码的下的子地区, `area_code` 是最详细的地区码
 
 ```bash
-curl http://localhost/v1/area/450000/children
+curl http://localhost/v1/area/45/children
 ```
 
 ```json
