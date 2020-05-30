@@ -16,7 +16,7 @@ github.com/StackExchange/wmi
 # github.com/alexbrainman/sspi v0.0.0-20180613141037-e580b900e9f5
 github.com/alexbrainman/sspi
 github.com/alexbrainman/sspi/negotiate
-# github.com/aliyun/alibaba-cloud-sdk-go v1.61.213
+# github.com/aliyun/alibaba-cloud-sdk-go v1.61.228
 ## explicit
 github.com/aliyun/alibaba-cloud-sdk-go/sdk
 github.com/aliyun/alibaba-cloud-sdk-go/sdk/auth
