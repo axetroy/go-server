@@ -28,9 +28,10 @@ func TestGetList(t *testing.T) {
 		var (
 			Name         = "test"
 			Phone        = "13888888888"
-			ProvinceCode = "110000"
-			CityCode     = "110100"
+			ProvinceCode = "11"
+			CityCode     = "1101"
 			AreaCode     = "110101"
+			StreetCode   = "110101001"
 			Address      = "中关村28号526"
 		)
 
@@ -40,6 +41,7 @@ func TestGetList(t *testing.T) {
 			ProvinceCode: ProvinceCode,
 			CityCode:     CityCode,
 			AreaCode:     AreaCode,
+			StreetCode:   StreetCode,
 			Address:      Address,
 		})
 
@@ -85,9 +87,10 @@ func TestGetList(t *testing.T) {
 
 		assert.Equal(t, "test", firstAddress.Name)
 		assert.Equal(t, "13888888888", firstAddress.Phone)
-		assert.Equal(t, "110000", firstAddress.ProvinceCode)
-		assert.Equal(t, "110100", firstAddress.CityCode)
+		assert.Equal(t, "11", firstAddress.ProvinceCode)
+		assert.Equal(t, "1101", firstAddress.CityCode)
 		assert.Equal(t, "110101", firstAddress.AreaCode)
+		assert.Equal(t, "110101001", firstAddress.StreetCode)
 		assert.Equal(t, "中关村28号526", firstAddress.Address)
 		assert.Equal(t, true, firstAddress.IsDefault)
 	}
@@ -111,9 +114,10 @@ func TestGetListRouter(t *testing.T) {
 		var (
 			Name         = "test"
 			Phone        = "13888888888"
-			ProvinceCode = "110000"
-			CityCode     = "110100"
+			ProvinceCode = "11"
+			CityCode     = "1101"
 			AreaCode     = "110101"
+			StreetCode   = "110101001"
 			Address      = "中关村28号526"
 		)
 
@@ -123,6 +127,7 @@ func TestGetListRouter(t *testing.T) {
 			ProvinceCode: ProvinceCode,
 			CityCode:     CityCode,
 			AreaCode:     AreaCode,
+			StreetCode:   StreetCode,
 			Address:      Address,
 		})
 
@@ -140,6 +145,7 @@ func TestGetListRouter(t *testing.T) {
 		assert.Equal(t, ProvinceCode, addressInfo.ProvinceCode)
 		assert.Equal(t, CityCode, addressInfo.CityCode)
 		assert.Equal(t, AreaCode, addressInfo.AreaCode)
+		assert.Equal(t, StreetCode, addressInfo.StreetCode)
 		// 之前没有添加地址的话，就是默认地址
 		assert.Equal(t, true, addressInfo.IsDefault)
 	}
@@ -169,9 +175,10 @@ func TestGetListRouter(t *testing.T) {
 
 		for _, b := range addresses {
 			assert.IsType(t, "string", b.Phone)
-			assert.IsType(t, "string", b.Phone)
 			assert.IsType(t, "string", b.ProvinceCode)
 			assert.IsType(t, "string", b.CityCode)
+			assert.IsType(t, "string", b.AreaCode)
+			assert.IsType(t, "string", b.StreetCode)
 			assert.IsType(t, "string", b.CreatedAt)
 			assert.IsType(t, "string", b.UpdatedAt)
 		}

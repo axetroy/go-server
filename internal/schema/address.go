@@ -8,6 +8,7 @@ type AddressPure struct {
 	ProvinceCode string `json:"province_code"` // 省份代码
 	CityCode     string `json:"city_code"`     // 城市代码
 	AreaCode     string `json:"area_code"`     // 区域代码
+	StreetCode   string `json:"street_code"`   // 街道/乡镇代码
 	Address      string `json:"address"`       // 详细的地址
 	IsDefault    bool   `json:"is_default"`    // 是否是默认地址
 }

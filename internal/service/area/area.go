@@ -4,6 +4,8 @@ package area
 import (
 	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/schema"
+	"sort"
+	"strings"
 )
 
 var GetArea = router.Handler(func(c router.Context) {
@@ -31,6 +33,27 @@ var GetDetail = router.Handler(func(c router.Context) {
 	})
 })
 
+var GetProvinces = router.Handler(func(c router.Context) {
+	c.ResponseFunc(nil, func() schema.Response {
+		var result = make([]Location, 0)
+
+		for code, name := range ProvinceMap {
+			result = append(result, Location{
+				Name: name,
+				Code: code,
+			})
+		}
+
+		sort.SliceStable(result, func(i, j int) bool { return result[i].Code < result[j].Code })
+
+		return schema.Response{
+			Status:  schema.StatusSuccess,
+			Message: "",
+			Data:    result,
+		}
+	})
+})
+
 var GetChildren = router.Handler(func(c router.Context) {
 	fullAreaCode := c.Param("code")
 
@@ -38,10 +61,37 @@ var GetChildren = router.Handler(func(c router.Context) {
 
 	c.ResponseFunc(err, func() schema.Response {
 		var result = make([]Location, 0)
-		for _, location := range target.Children {
-			location.Children = nil
-			result = append(result, location)
+
+		var resultMap map[string]string
+
+		switch len(target.Code) {
+		case 2:
+			resultMap = CityMap
+			break
+		case 4:
+			resultMap = AreaMap
+			break
+		case 6:
+			resultMap = StreetMap
+			break
+		case 9:
+			resultMap = nil
+			break
 		}
+
+		if resultMap != nil {
+			for code, name := range resultMap {
+				if strings.HasPrefix(code, target.Code) {
+					result = append(result, Location{
+						Code: code,
+						Name: name,
+					})
+				}
+			}
+		}
+
+		sort.SliceStable(result, func(i, j int) bool { return result[i].Code < result[j].Code })
+
 		return schema.Response{
 			Status:  schema.StatusSuccess,
 			Message: "",

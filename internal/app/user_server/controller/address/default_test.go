@@ -46,9 +46,10 @@ func TestGetDefault(t *testing.T) {
 		var (
 			Name         = "test"
 			Phone        = "13888888888"
-			ProvinceCode = "110000"
-			CityCode     = "110100"
+			ProvinceCode = "11"
+			CityCode     = "1101"
 			AreaCode     = "110101"
+			StreetCode   = "110101001"
 			Address      = "中关村28号526"
 		)
 
@@ -58,6 +59,7 @@ func TestGetDefault(t *testing.T) {
 			ProvinceCode: ProvinceCode,
 			CityCode:     CityCode,
 			AreaCode:     AreaCode,
+			StreetCode:   StreetCode,
 			Address:      Address,
 		})
 
@@ -73,6 +75,7 @@ func TestGetDefault(t *testing.T) {
 		assert.Equal(t, ProvinceCode, addressInfo.ProvinceCode)
 		assert.Equal(t, CityCode, addressInfo.CityCode)
 		assert.Equal(t, AreaCode, addressInfo.AreaCode)
+		assert.Equal(t, StreetCode, addressInfo.StreetCode)
 		// 之前没有添加地址的话，就是默认地址
 		assert.Equal(t, true, addressInfo.IsDefault)
 	}
@@ -93,6 +96,7 @@ func TestGetDefault(t *testing.T) {
 		assert.Equal(t, addressInfo.ProvinceCode, add.ProvinceCode)
 		assert.Equal(t, addressInfo.CityCode, add.CityCode)
 		assert.Equal(t, addressInfo.AreaCode, add.AreaCode)
+		assert.Equal(t, addressInfo.StreetCode, add.StreetCode)
 		assert.Equal(t, true, add.IsDefault)
 	}
 }
@@ -119,9 +123,10 @@ func TestGetDefaultRouter(t *testing.T) {
 		body, _ := json.Marshal(&address.CreateAddressParams{
 			Name:         "张三",
 			Phone:        "18888888888",
-			ProvinceCode: "110000",
-			CityCode:     "110100",
+			ProvinceCode: "11",
+			CityCode:     "1101",
 			AreaCode:     "110101",
+			StreetCode:   "110101001",
 			Address:      "中关村28号526",
 		})
 

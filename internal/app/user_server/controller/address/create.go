@@ -17,13 +17,14 @@ import (
 )
 
 type CreateAddressParams struct {
-	Name         string `json:"name" valid:"required~请填写收货人"`         // 收货人
-	Phone        string `json:"phone" valid:"required~请输入收货人电话号码"`    // 收货人手机号
-	ProvinceCode string `json:"province_code" valid:"required~请选择省份"` // 省份代码
-	CityCode     string `json:"city_code" valid:"required~请选择城市"`     // 城市代码
-	AreaCode     string `json:"area_code" valid:"required~请选择区域"`     // 区域代码
-	Address      string `json:"address" valid:"required~请输入详细地址"`     // 详细的地址
-	IsDefault    *bool  `json:"is_default"`                           // 是否是默认地址
+	Name         string `json:"name" valid:"required~请填写收货人"`           // 收货人
+	Phone        string `json:"phone" valid:"required~请输入收货人电话号码"`      // 收货人手机号
+	ProvinceCode string `json:"province_code" valid:"required~请选择省份"`   // 省份代码
+	CityCode     string `json:"city_code" valid:"required~请选择城市"`       // 城市代码
+	AreaCode     string `json:"area_code" valid:"required~请选择区域"`       // 区域代码
+	StreetCode   string `json:"street_code" valid:"required~请选择街道/乡/镇"` // 街道/乡/镇
+	Address      string `json:"address" valid:"required~请输入详细地址"`       // 详细的地址
+	IsDefault    *bool  `json:"is_default"`                             // 是否是默认地址
 }
 
 func Create(c helper.Context, input CreateAddressParams) (res schema.Response) {
@@ -62,7 +63,7 @@ func Create(c helper.Context, input CreateAddressParams) (res schema.Response) {
 		return
 	}
 
-	if area.IsValid(input.ProvinceCode, input.CityCode, input.AreaCode) == false {
+	if area.IsValid(input.ProvinceCode, input.CityCode, input.AreaCode, input.StreetCode) == false {
 		err = exception.InvalidParams
 		return
 	}
@@ -124,6 +125,7 @@ func Create(c helper.Context, input CreateAddressParams) (res schema.Response) {
 		ProvinceCode: input.ProvinceCode,
 		CityCode:     input.CityCode,
 		AreaCode:     input.AreaCode,
+		StreetCode:   input.StreetCode,
 		Address:      input.Address,
 		IsDefault:    isDefault,
 	}

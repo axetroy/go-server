@@ -216,6 +216,7 @@ func init() {
 		// 地区接口
 		{
 			areaRouter := v1.Party("/area")
+			areaRouter.Get("/provinces", area.GetProvinces)      // 获取省份
 			areaRouter.Get("/{code}", area.GetDetail)            // 获取地区码的详情
 			areaRouter.Get("/{code}/children", area.GetChildren) // 获取地区下的子地区
 			areaRouter.Get("", area.GetArea)                     // 获取所有地区

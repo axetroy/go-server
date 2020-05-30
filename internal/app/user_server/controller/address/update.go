@@ -22,6 +22,7 @@ type UpdateParams struct {
 	ProvinceCode *string `json:"province_code"`
 	CityCode     *string `json:"city_code"`
 	AreaCode     *string `json:"area_code"`
+	StreetCode   *string `json:"street_code"`
 	Address      *string `json:"address"`
 	IsDefault    *bool   `json:"is_default"`
 }
@@ -117,7 +118,7 @@ func Update(c helper.Context, addressId string, input UpdateParams) (res schema.
 		updateModel["city_code"] = *input.CityCode
 		updateModel["area_code"] = *input.AreaCode
 
-		if area.IsValid(*input.ProvinceCode, *input.CityCode, *input.AreaCode) == false {
+		if area.IsValid(*input.ProvinceCode, *input.CityCode, *input.AreaCode, *input.StreetCode) == false {
 			err = exception.InvalidParams
 			return
 		}

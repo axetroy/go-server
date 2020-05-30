@@ -3,63 +3,54 @@ package area
 
 import (
 	"github.com/axetroy/go-server/internal/library/exception"
-	"regexp"
 )
 
 func LookUp(fullAreaCode string) (*Location, error) {
 	var target Location
 
-	reg := regexp.MustCompile("(\\d{2})(\\d{2})(\\d{2})")
-
-	matcher := reg.FindStringSubmatch(fullAreaCode)
-
-	if reg.MatchString(fullAreaCode) == false {
-		return nil, exception.InvalidParams
-	}
-
-	provinceCode := matcher[1]
-	cityCode := matcher[2]
-	areaCode := matcher[3]
-
-provinceLookup:
-	for _, province := range Maps {
-		if province.Code != provinceCode {
-			continue provinceLookup
-		}
-
-		if province.FullCode == fullAreaCode {
-			target = province
-			break provinceLookup
-		}
-
-	cityLookup:
-		for _, city := range province.Children {
-			if city.Code != cityCode {
-				continue cityLookup
-			}
-
-			if city.FullCode == fullAreaCode {
-				target = city
-				break
-			}
-
-		areaLookup:
-			for _, area := range city.Children {
-				if area.Code != areaCode {
-					continue areaLookup
-				}
-
-				if area.FullCode == fullAreaCode {
-					target = area
-					break
-				}
-			}
+	// 查找省份
+	if len(fullAreaCode) == 2 {
+		if name, ok := ProvinceMap[fullAreaCode]; ok {
+			target.Code = fullAreaCode
+			target.Name = name
+			return &target, nil
+		} else {
+			return nil, exception.NoData
 		}
 	}
 
-	if target.Name == "" {
-		return nil, exception.NoData
+	// 查找城市
+	if len(fullAreaCode) == 4 {
+		if name, ok := CityMap[fullAreaCode]; ok {
+			target.Code = fullAreaCode
+			target.Name = name
+			return &target, nil
+		} else {
+			return nil, exception.NoData
+		}
 	}
 
-	return &target, nil
+	// 查找地区
+	if len(fullAreaCode) == 6 {
+		if name, ok := AreaMap[fullAreaCode]; ok {
+			target.Code = fullAreaCode
+			target.Name = name
+			return &target, nil
+		} else {
+			return nil, exception.NoData
+		}
+	}
+
+	// 查找地区
+	if len(fullAreaCode) == 9 {
+		if name, ok := StreetMap[fullAreaCode]; ok {
+			target.Code = fullAreaCode
+			target.Name = name
+			return &target, nil
+		} else {
+			return nil, exception.NoData
+		}
+	}
+
+	return nil, exception.NoData
 }

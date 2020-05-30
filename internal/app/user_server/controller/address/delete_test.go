@@ -40,9 +40,10 @@ func TestDelete(t *testing.T) {
 		var (
 			Name         = "test"
 			Phone        = "13888888888"
-			ProvinceCode = "110000"
-			CityCode     = "110100"
+			ProvinceCode = "11"
+			CityCode     = "1101"
 			AreaCode     = "110101"
+			StreetCode   = "110101001"
 			Address      = "中关村28号526"
 		)
 
@@ -52,6 +53,7 @@ func TestDelete(t *testing.T) {
 			ProvinceCode: ProvinceCode,
 			CityCode:     CityCode,
 			AreaCode:     AreaCode,
+			StreetCode:   StreetCode,
 			Address:      Address,
 		})
 
@@ -61,7 +63,6 @@ func TestDelete(t *testing.T) {
 		assert.Nil(t, r.Decode(&addressInfo))
 
 		defer address.DeleteAddressById(addressInfo.Id)
-
 	}
 
 	// 删除这个刚添加的地址
@@ -115,9 +116,10 @@ func TestDeleteRouter(t *testing.T) {
 		body, _ := json.Marshal(&address.CreateAddressParams{
 			Name:         "张三",
 			Phone:        "18888888888",
-			ProvinceCode: "110000",
-			CityCode:     "110100",
+			ProvinceCode: "11",
+			CityCode:     "1101",
 			AreaCode:     "110101",
+			StreetCode:   "110101001",
 			Address:      "中关村28号526",
 		})
 
@@ -129,18 +131,9 @@ func TestDeleteRouter(t *testing.T) {
 
 		res := schema.Response{}
 
-		if !assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res)) {
-			return
-		}
-
-		if !assert.Equal(t, "", res.Message) {
-			return
-		}
-
-		if !assert.Equal(t, schema.StatusSuccess, res.Status) {
-			return
-		}
-
+		assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res))
+		assert.Equal(t, "", res.Message)
+		assert.Equal(t, schema.StatusSuccess, res.Status)
 		assert.Nil(t, res.Decode(&addressInfo))
 
 		defer address.DeleteAddressById(addressInfo.Id)

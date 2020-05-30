@@ -16,3 +16,6 @@ clean:
 # deploy app via s4 see detail in https://github.com/axetroy/s4
 deploy:
 	s4
+
+generate-external:
+	pkger -include /external -o ./pkged
