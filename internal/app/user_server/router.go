@@ -4,8 +4,6 @@ package user_server
 import (
 	"errors"
 	"fmt"
-	"net/http"
-
 	"github.com/axetroy/go-server/internal/app/user_server/controller/address"
 	"github.com/axetroy/go-server/internal/app/user_server/controller/auth"
 	"github.com/axetroy/go-server/internal/app/user_server/controller/banner"
@@ -26,9 +24,11 @@ import (
 	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/middleware"
 	"github.com/axetroy/go-server/internal/rbac/accession"
+	"github.com/axetroy/go-server/internal/service/area"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/middleware/logger"
 	"github.com/kataras/iris/v12/middleware/recover"
+	"net/http"
 )
 
 var UserRouter *iris.Application
@@ -213,14 +213,19 @@ func init() {
 			bannerRouter.Get("/{banner_id}", banner.GetBannerRouter) // 获取 banner 详情
 		}
 
+		// 地区接口
+		{
+			areaRouter := v1.Party("/area")
+			areaRouter.Get("/{code}", area.GetDetail)            // 获取地区码的详情
+			areaRouter.Get("/{code}/children", area.GetChildren) // 获取地区下的子地区
+			areaRouter.Get("", area.GetArea)                     // 获取所有地区
+		}
+
 		// 通用类
 		{
 			// 邮件服务
 			v1.Post("/email/send/register", auth.SignUpWithEmailActionRouter)         // 发送注册邮件
 			v1.Post("/email/send/password/reset", email.SendResetPasswordEmailRouter) // 发送密码重置邮件
-
-			v1.Get("/area/{area_code}", address.FindAddressRouter) // 获取地区码对应的信息
-			v1.Get("/area", address.AreaListRouter)                // 获取地址选择列表
 
 			// 数据签名
 			v1.Post("/signature", signature.EncryptionRouter)

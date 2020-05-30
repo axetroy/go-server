@@ -6,7 +6,8 @@
   - [验证类](user/auth)
   - [oAuth](user/oauth)
   - [用户中心](user/user)
-  - [收获地址](user/address)
+  - [地区接口](user/area)
+  - [收货地址](user/address)
   - [钱包类](user/wallet)
   - [财务类](user/finance)
   - [系统通知](user/notification)
@@ -21,7 +22,7 @@
 - 管理员接口
   - [验证类](admin/auth)
   - [会员类](admin/user)
-  - [收获地址](admin/address)
+  - [地区接口](user/area)
   - [管理员类](admin/admin)
   - [权限管理](admin/rbac)
   - [新闻资讯](admin/news)

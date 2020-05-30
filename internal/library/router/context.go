@@ -134,9 +134,17 @@ func (c *Context) ResponseFunc(err error, fn func() schema.Response) {
 		res.Data = nil
 		res.Meta = nil
 
-		_, _ = c.context.JSON(res)
+		_, err := c.context.JSON(res)
+
+		if err != nil {
+			_, _ = c.context.JSON(schema.Response{Status: schema.StatusFail, Message: err.Error(), Data: nil})
+		}
 	} else {
-		_, _ = c.context.JSON(fn())
+		_, err := c.context.JSON(fn())
+
+		if err != nil {
+			_, _ = c.context.JSON(schema.Response{Status: schema.StatusFail, Message: err.Error(), Data: nil})
+		}
 	}
 }
 

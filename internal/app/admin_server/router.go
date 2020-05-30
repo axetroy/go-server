@@ -4,7 +4,6 @@ package admin_server
 import (
 	"errors"
 	"fmt"
-	"github.com/axetroy/go-server/internal/app/admin_server/controller/address"
 	"github.com/axetroy/go-server/internal/app/admin_server/controller/admin"
 	"github.com/axetroy/go-server/internal/app/admin_server/controller/banner"
 	Configuration "github.com/axetroy/go-server/internal/app/admin_server/controller/config"
@@ -22,6 +21,7 @@ import (
 	"github.com/axetroy/go-server/internal/library/config"
 	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/middleware"
+	"github.com/axetroy/go-server/internal/service/area"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/middleware/logger"
 	"github.com/kataras/iris/v12/middleware/recover"
@@ -198,10 +198,12 @@ func init() {
 			configRouter.Post("/notification", push.CreateNotificationRouter) // 生成一个推送到指定用户
 		}
 
-		// 通用类
+		// 地区接口
 		{
-			v1.Get("/area/{area_code}", address.FindAddressRouter) // 获取地区码对应的信息
-			v1.Get("/area", address.AreaListRouter)                // 获取地址选择列表
+			areaRouter := v1.Party("/area")
+			areaRouter.Get("/{code}", area.GetDetail)            // 获取地区码的详情
+			areaRouter.Get("/{code}/children", area.GetChildren) // 获取地区下的子地区
+			areaRouter.Get("", area.GetArea)                     // 获取所有地区
 		}
 
 		v1.Get("/system", system.GetSystemInfoRouter) // 获取系统相关信息

@@ -9,6 +9,7 @@ import (
 	"github.com/axetroy/go-server/internal/library/validator"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
+	"github.com/axetroy/go-server/internal/service/area"
 	"github.com/axetroy/go-server/internal/service/database"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
@@ -116,7 +117,7 @@ func Update(c helper.Context, addressId string, input UpdateParams) (res schema.
 		updateModel["city_code"] = *input.CityCode
 		updateModel["area_code"] = *input.AreaCode
 
-		if IsValidCode(*input.ProvinceCode, *input.CityCode, *input.AreaCode) == false {
+		if area.IsValid(*input.ProvinceCode, *input.CityCode, *input.AreaCode) == false {
 			err = exception.InvalidParams
 			return
 		}

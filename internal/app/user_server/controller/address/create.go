@@ -9,6 +9,7 @@ import (
 	"github.com/axetroy/go-server/internal/library/validator"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
+	"github.com/axetroy/go-server/internal/service/area"
 	"github.com/axetroy/go-server/internal/service/database"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
@@ -61,7 +62,7 @@ func Create(c helper.Context, input CreateAddressParams) (res schema.Response) {
 		return
 	}
 
-	if IsValidCode(input.ProvinceCode, input.CityCode, input.AreaCode) == false {
+	if area.IsValid(input.ProvinceCode, input.CityCode, input.AreaCode) == false {
 		err = exception.InvalidParams
 		return
 	}

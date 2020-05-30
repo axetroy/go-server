@@ -19,7 +19,7 @@ for (const code in province_list) {
 
         provinces.push({
             code: provinceCode,
-            fullCode: code,
+            full_code: code,
             name: provinceName,
             children: []
         })
@@ -36,7 +36,7 @@ for (const code in city_list) {
         if (province) {
             province.children.push({
                 code: cityCode,
-                fullCode: code,
+                full_code: code,
                 name: cityName,
                 children: []
             })
@@ -56,7 +56,7 @@ for (const code in county_list) {
             if (city) {
                 city.children.push({
                     code: countryCode,
-                    fullCode: code,
+                    full_code: code,
                     name: countryName
                 })
             }
@@ -65,45 +65,38 @@ for (const code in county_list) {
     }
 }
 
-// const r = JSON.stringify(provinces, null, 2)
+function generate() {
+    const jsonStr = JSON.stringify(provinces, null, 2).trim()
 
+    return `// Copyright 2019-2020 Axetroy. All rights reserved. MIT license.
+// Generate by scripts/generate_area.js. DO NOT MODIFY.
+package area
 
-function genearte() {
+import (
+	"encoding/json"
+	"log"
+)
 
-    const provinceList = []
-    const cityList = []
-    const countryList = []
-
-    for (const province of provinces) {
-        provinceList.push(`"${province.fullCode}": "${province.name}"`)
-        for (const city of province.children) {
-            cityList.push(`"${city.fullCode}": "${city.name}"`)
-
-            for (const country of city.children) {
-                countryList.push(`"${country.fullCode}": "${country.name}"`)
-            }
-        }
-    }
-
-    return `// Generate by scripts/generate_area.js. DO NOT MODIFY.
-package address
+type Location struct {
+	Name     string     \`json:"name"\`
+	Code     string     \`json:"code"\`
+	FullCode string     \`json:"full_code"\`
+	Children []Location \`json:"children,omitempty"\`
+}
 
 var (
-	ProvinceCode = map[string]string{${provinceList.join(', ')}}
-	CityCode     = map[string]string{${cityList.join(', ')}}
-	CountryCode  = map[string]string{${countryList.join(', ')}}
+    Maps []Location
+	raw  = \`${jsonStr}\`
 )
+
+func init() {
+	if err := json.Unmarshal([]byte(raw), &Maps); err != nil {
+		log.Fatalln(err)
+	}
+}
 `
 }
 
-const raw = genearte()
+const raw = generate()
 
-const files = [
-    path.join(rootPath, "internal", "app", "user_server", "controller", "address", "code.go"),
-    path.join(rootPath, "internal", "app", "admin_server", "controller", "address", "code.go"),
-]
-
-for (const file of files) {
-    fs.writeFileSync(file, raw)
-}
-
+fs.writeFileSync(path.join(rootPath, "internal", "service", "area", "code.go"), raw)
