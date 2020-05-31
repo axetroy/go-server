@@ -10,15 +10,13 @@ import (
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
 	"github.com/jinzhu/gorm"
-	"github.com/mitchellh/mapstructure"
 	"time"
 )
 
-func MarkRead(c helper.Context, id string) (res schema.Response) {
+func MarkAllRead(c helper.Context) (res schema.Response) {
 	var (
-		err  error
-		data schema.Message
-		tx   *gorm.DB
+		err error
+		tx  *gorm.DB
 	)
 
 	defer func() {
@@ -41,51 +39,26 @@ func MarkRead(c helper.Context, id string) (res schema.Response) {
 			}
 		}
 
-		helper.Response(&res, data, nil, err)
+		helper.Response(&res, true, nil, err)
 	}()
 
 	tx = database.Db.Begin()
 
-	MessageInfo := model.Message{
-		Id:  id,
-		Uid: c.Uid,
-	}
-
-	if err = tx.Where(&MessageInfo).Last(&MessageInfo).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			err = exception.NoData
-		}
-		return
-	}
-
-	if er := mapstructure.Decode(MessageInfo, &data.MessagePure); er != nil {
-		err = er
-		return
-	}
-
 	now := time.Now()
 
-	if err = tx.Model(&MessageInfo).Where("id = ?", id).Where("uid = ?", c.Uid).UpdateColumn(model.Message{
+	if err = tx.Model(model.Message{}).Where("uid = ?", c.Uid).Where("read = ?", false).UpdateColumn(model.Message{
 		Read:   true,
 		ReadAt: &now,
 	}).Error; err != nil {
+		err = exception.Database
 		return
 	}
-
-	nowStr := now.Format(time.RFC3339Nano)
-
-	data.Read = true
-	data.ReadAt = &nowStr
-	data.CreatedAt = MessageInfo.CreatedAt.Format(time.RFC3339Nano)
-	data.UpdatedAt = MessageInfo.UpdatedAt.Format(time.RFC3339Nano)
 
 	return
 }
 
-var ReadRouter = router.Handler(func(c router.Context) {
-	id := c.Param("message_id")
-
+var ReadAllRouter = router.Handler(func(c router.Context) {
 	c.ResponseFunc(nil, func() schema.Response {
-		return MarkRead(helper.NewContext(&c), id)
+		return MarkAllRead(helper.NewContext(&c))
 	})
 })

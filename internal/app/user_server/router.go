@@ -184,6 +184,8 @@ func init() {
 			messageRouter := v1.Party("/message")
 			messageRouter.Use(userAuthMiddleware)
 			messageRouter.Get("/status", message.GetStatusRouter)            // 获取单个消息详情
+			messageRouter.Put("/read/all", message.ReadAllRouter)            // 全部已读
+			messageRouter.Put("/read/batch", message.ReadBatchRouter)        // 多个已读
 			messageRouter.Get("/:message_id", message.GetRouter)             // 获取单个消息详情
 			messageRouter.Put("/:message_id/read", message.ReadRouter)       // 标记消息为已读
 			messageRouter.Delete("/:message_id", message.DeleteByUserRouter) // 删除消息

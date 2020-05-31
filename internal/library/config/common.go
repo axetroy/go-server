@@ -16,5 +16,8 @@ var Common *common
 func init() {
 	Common = &common{}
 	Common.Mode = dotenv.GetByDefault("GO_MOD", "production")
+	if dotenv.Test {
+		Common.Mode = "development"
+	}
 	Common.MachineId = dotenv.GetByDefault("MACHINE_ID", "0")
 }
