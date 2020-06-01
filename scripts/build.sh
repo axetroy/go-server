@@ -37,7 +37,7 @@ do
 
         cd ../
     else
-      exit $?
+        exit $?
     fi
 done
 

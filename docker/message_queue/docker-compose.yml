@@ -27,3 +27,8 @@ services:
       - nsqlookupd
     ports:
       - 4171:4171 # HTTP 端口, 管理员端口应该往外加一层限制访问
+
+networks:
+  default:
+    external:
+      name: database_default

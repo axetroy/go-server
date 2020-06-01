@@ -1,0 +1,156 @@
+version: '3'
+services:
+  # 管理员接口
+  admin-api:
+    image: alpine:3.11
+    restart: always
+    ports:
+      - 9001:80
+    working_dir: /app
+    volumes:
+      - './admin_server:/app/admin_server'
+    environment:
+      - MACHINE_ID=0
+      - GO_MOD=development
+      - TOKEN_SECRET_KEY=admin
+      # database
+      - DB_HOST=pg
+      - DB_PORT=5432
+      - DB_DRIVER=postgres
+      - DB_NAME=gotest
+      - DB_USERNAME=gotest
+      - DB_PASSWORD=gotest
+      # redis
+      - REDIS_SERVER=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=password
+      # message queue
+      - MSG_QUEUE_SERVER=nsqd
+      - MSG_QUEUE_PORT=4150
+      # push
+      - ONE_SIGNAL_APP_ID=xxx
+      - ONE_SIGNAL_REST_API_KEY=xxx
+    command:
+      [
+        './admin_server',
+        'start',
+        '--host',
+        '0.0.0.0',
+        '--domain',
+        'https://api-mag.example.com',
+      ]
+
+  # 用户接口
+  user-api:
+    image: alpine:3.11
+    restart: always
+    ports:
+      - 9002:80
+    working_dir: /app
+    volumes:
+      - './user_server:/app/user_server'
+    environment:
+      - MACHINE_ID=0
+      - GO_MOD=development
+      - TOKEN_SECRET_KEY=user
+      # database
+      - DB_HOST=pg
+      - DB_PORT=5432
+      - DB_DRIVER=postgres
+      - DB_NAME=gotest
+      - DB_USERNAME=gotest
+      - DB_PASSWORD=gotest
+      # redis
+      - REDIS_SERVER=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=password
+      # message queue
+      - MSG_QUEUE_SERVER=nsqd
+      - MSG_QUEUE_PORT=4150
+      # wechat
+      - WECHAT_APP_ID=xxx
+      - WECHAT_SECRET=xxx
+    command:
+      [
+        './user_server',
+        'start',
+        '--host',
+        '0.0.0.0',
+        '--domain',
+        'https://api.example.com',
+      ]
+
+  # 资源接口
+  resource-api:
+    image: alpine:3.11
+    restart: always
+    ports:
+      - 9003:80
+    working_dir: /app
+    volumes:
+      - './resource_server:/app/resource_server'
+      - './upload:/app/upload'
+    environment:
+      - MACHINE_ID=0
+      - GO_MOD=development
+    command: ['./resource_server', 'start', '--host', '0.0.0.0']
+
+  # 消息队列
+  message-queue:
+    image: alpine:3.11
+    restart: always
+    working_dir: /app
+    volumes:
+      - './message_queue_server:/app/message_queue_server'
+    environment:
+      - MACHINE_ID=0
+      - GO_MOD=development
+      # database
+      - DB_HOST=pg
+      - DB_PORT=5432
+      - DB_DRIVER=postgres
+      - DB_NAME=gotest
+      - DB_USERNAME=gotest
+      - DB_PASSWORD=gotest
+      # redis
+      - REDIS_SERVER=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=password
+      # message queue
+      - MSG_QUEUE_SERVER=nsqd
+      - MSG_QUEUE_PORT=4150
+      # push
+      - ONE_SIGNAL_APP_ID=xxx
+      - ONE_SIGNAL_REST_API_KEY=xxx
+    command: ['./message_queue_server', 'start']
+
+  # 定时任务
+  scheduled:
+    image: alpine:3.11
+    restart: always
+    working_dir: /app
+    volumes:
+      - './scheduled_server:/app/scheduled_server'
+    environment:
+      - MACHINE_ID=0
+      - GO_MOD=development
+      # database
+      - DB_HOST=pg
+      - DB_PORT=5432
+      - DB_DRIVER=postgres
+      - DB_NAME=gotest
+      - DB_USERNAME=gotest
+      - DB_PASSWORD=gotest
+      # redis
+      - REDIS_SERVER=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=password
+      # message queue
+      - MSG_QUEUE_SERVER=nsqd
+      - MSG_QUEUE_PORT=4150
+    command: ['./scheduled_server', 'start']
+
+networks:
+  default:
+    external:
+      name: database_default
