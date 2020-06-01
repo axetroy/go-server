@@ -2,34 +2,19 @@ CONNECT root@192.168.0.1:22
 
 CD /home/zingy/go-server/
 
-UPLOAD ./bin/admin_server_linux_amd64.tar.gz ./admin-api/
-UPLOAD ./bin/user_server_linux_amd64.tar.gz ./user-api/
-UPLOAD ./bin/resource_server_linux_amd64.tar.gz ./resource-api/
-UPLOAD ./bin/message_queue_server_linux_amd64.tar.gz ./message-queue/
-UPLOAD ./bin/scheduled_server_linux_amd64.tar.gz ./scheduled/
+UPLOAD ./bin/admin_server_linux_amd64.tar.gz ./api/
+UPLOAD ./bin/user_server_linux_amd64.tar.gz ./api/
+UPLOAD ./bin/resource_server_linux_amd64.tar.gz ./api/
+UPLOAD ./bin/message_queue_server_linux_amd64.tar.gz ./api/
+UPLOAD ./bin/scheduled_server_linux_amd64.tar.gz ./api/
 
-CD /home/zingy/go-server/admin-api
+CD /home/zingy/go-server/api
 RUN tar -xzf admin_server_linux_amd64.tar.gz
-TRY docker-compose down
-TRY docker-compose up -d
-
-CD /home/zingy/go-server/user-api
 RUN tar -xzf user_server_linux_amd64.tar.gz
-TRY docker-compose down
-TRY docker-compose up -d
-
-CD /home/zingy/go-server/resource-api
 RUN tar -xzf resource_server_linux_amd64.tar.gz
-TRY docker-compose down
-TRY docker-compose up -d
-
-CD /home/zingy/go-server/message-queue
 RUN tar -xzf message_queue_server_linux_amd64.tar.gz
-TRY docker-compose down
-TRY docker-compose up -d
-
-CD /home/zingy/go-server/scheduled
 RUN tar -xzf scheduled_server_linux_amd64.tar.gz
+
 TRY docker-compose down
 TRY docker-compose up -d
 
