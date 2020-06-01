@@ -1,0 +1,17 @@
+version: '3'
+services:
+  caddy:
+    image: caddy:2.0.0-alpine
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime # Linux 下, 保持容器和宿主的时间和时区一致
+      - ./Caddyfile:/etc/caddy/Caddyfile # 映射配置文件
+      - ./caddy_data:/data # 数据
+      - ./caddy_config:/config # 配置
+    # environment:
+    # # 设置 HTTP 代理，因为要检测证书是否过期，这接口可能会失败
+    #   - http_proxy=http://0.tcp.ngrok.io:14591
+    #   - https_proxy=https://0.tcp.ngrok.io:14591
+    ports:
+      - 80:80 # 宿主端口:容器端口
+      - 443:443 # ssl
