@@ -10,6 +10,10 @@ import (
 
 type ReportType string
 type ReportStatus int
+type ReportTypeDetail struct {
+	Type        ReportType `json:"type"`
+	Description string     `json:"description"`
+}
 
 var (
 	ReportTypeBug        ReportType = "bug"        // BUG 反馈
@@ -20,13 +24,30 @@ var (
 	ReportStatusPending ReportStatus = 0 // 初始状态
 	ReportStatusResolve ReportStatus = 1 // 已解决
 
-	ReportTypes = []ReportType{ReportTypeBug, ReportTypeFeature, ReportTypeSuggestion, ReportTypeOther}
+	ReportTypes = []ReportTypeDetail{
+		{
+			Type:        ReportTypeBug,
+			Description: "BUG 反馈",
+		},
+		{
+			Type:        ReportTypeFeature,
+			Description: "新功能请求",
+		},
+		{
+			Type:        ReportTypeSuggestion,
+			Description: "建议",
+		},
+		{
+			Type:        ReportTypeOther,
+			Description: "其他",
+		},
+	}
 )
 
 // 检验是否是有效的报错类型
 func IsValidReportType(t ReportType) bool {
 	for _, v := range ReportTypes {
-		if v == t {
+		if v.Type == t {
 			return true
 		}
 	}

@@ -197,6 +197,7 @@ func init() {
 		{
 			reportRouter := v1.Party("/report")
 			reportRouter.Use(userAuthMiddleware)
+			reportRouter.Get("/type", report.GetTypesRouter)         // 获取反馈类型列表
 			reportRouter.Get("", report.GetListRouter)               // 获取我的反馈列表
 			reportRouter.Post("", report.CreateRouter)               // 添加一条反馈
 			reportRouter.Get("/{report_id}", report.GetReportRouter) // 获取反馈详情
