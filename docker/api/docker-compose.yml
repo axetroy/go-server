@@ -2,7 +2,7 @@ version: '3'
 services:
   # 管理员接口
   admin-api:
-    image: alpine:3.11
+    image: alpine:3.12
     restart: always
     ports:
       - 9001:80
@@ -42,7 +42,7 @@ services:
 
   # 用户接口
   user-api:
-    image: alpine:3.11
+    image: alpine:3.12
     restart: always
     ports:
       - 9002:80
@@ -82,7 +82,7 @@ services:
 
   # 资源接口
   resource-api:
-    image: alpine:3.11
+    image: alpine:3.12
     restart: always
     ports:
       - 9003:80
@@ -97,7 +97,7 @@ services:
 
   # 消息队列
   message-queue:
-    image: alpine:3.11
+    image: alpine:3.12
     restart: always
     working_dir: /app
     volumes:
@@ -126,7 +126,7 @@ services:
 
   # 定时任务
   scheduled:
-    image: alpine:3.11
+    image: alpine:3.12
     restart: always
     working_dir: /app
     volumes:
