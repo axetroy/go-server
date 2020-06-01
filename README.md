@@ -57,7 +57,7 @@
 
 首先搭建项目需要的`依赖数据库/服务`, 这里推荐使用 `Docker`。
 
-在 [docker](docker) 目录中提供了 2 个 配置文件，方便一键搭建。
+在 [docker](docker) 目录中提供了 `docker-compose` 配置文件，方便一键搭建。
 
 然后获取[构建好的可执行文件](https://github.com/axetroy/go-server/releases), 找到对应的平台，并且下载。或者自行构建。
 
