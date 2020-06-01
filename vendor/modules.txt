@@ -165,7 +165,7 @@ github.com/jmespath/go-jmespath
 # github.com/joho/godotenv v1.3.0
 ## explicit
 github.com/joho/godotenv
-# github.com/jordan-wright/email v0.0.0-20200521030443-c069f37d901d
+# github.com/jordan-wright/email v0.0.0-20200531192740-8694daca3fa7
 ## explicit
 github.com/jordan-wright/email
 # github.com/json-iterator/go v1.1.9
