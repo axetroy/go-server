@@ -6,7 +6,7 @@ UPLOAD ./bin/admin_server_linux_amd64.tar.gz ./admin-api/
 UPLOAD ./bin/user_server_linux_amd64.tar.gz ./user-api/
 UPLOAD ./bin/resource_server_linux_amd64.tar.gz ./resource-api/
 UPLOAD ./bin/message_queue_server_linux_amd64.tar.gz ./message-queue/
-UPLOAD ./bin/scheduled_server_linux_amd64.tar.gz ./message-queue/
+UPLOAD ./bin/scheduled_server_linux_amd64.tar.gz ./scheduled/
 
 CD /home/zingy/go-server/admin-api
 RUN tar -xzf admin_server_linux_amd64.tar.gz
