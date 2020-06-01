@@ -25,6 +25,7 @@ type UpdateParams struct {
 	StreetCode   *string `json:"street_code"`
 	Address      *string `json:"address"`
 	IsDefault    *bool   `json:"is_default"`
+	Note         *string `json:"note"`
 }
 
 func Update(c helper.Context, addressId string, input UpdateParams) (res schema.Response) {
@@ -129,8 +130,13 @@ func Update(c helper.Context, addressId string, input UpdateParams) (res schema.
 		updateModel["is_default"] = *input.IsDefault
 	}
 
+	if input.Note != nil {
+		shouldUpdate = true
+		updateModel["note"] = *input.Note
+	}
+
 	if shouldUpdate {
-		if err = tx.Model(&addressInfo).Updates(updateModel).Error; err != nil {
+		if err = tx.Model(&addressInfo).Where("id = ?", addressId).Where("uid = ?", c.Uid).Updates(updateModel).Error; err != nil {
 			if err == gorm.ErrRecordNotFound {
 				err = exception.AddressNotExist
 				return

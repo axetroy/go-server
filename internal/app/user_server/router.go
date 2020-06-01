@@ -127,6 +127,7 @@ func init() {
 				inviteRouter.Get("", invite.GetInviteListByUserRouter) // 获取我已邀请的列表
 				inviteRouter.Get("/{invite_id}", invite.GetRouter)     // 获取单条邀请记录详情
 			}
+
 			// 收货地址
 			{
 				addressRouter := userRouter.Party("/address")

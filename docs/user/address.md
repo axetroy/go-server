@@ -2,31 +2,33 @@
 
 [POST] /v1/user/address
 
-| 参数          | 类型     | 说明                       | 必选 |
-| ------------- | -------- | -------------------------- | ---- |
-| name          | `string` | 收件人                     | \*   |
-| phone         | `string` | 收件人手机号               | \*   |
-| province_code | `string` | 省份代码，2 位数           | \*   |
-| city_code     | `string` | 城市代码，4 位数           | \*   |
-| area_code     | `string` | 县城代码，6 位数           | \*   |
-| street_code   | `string` | 街道/乡/镇代码，9 位数     | \*   |
-| address       | `string` | 详细地址，具体的街道门牌号 | \*   |
-| is_default    | `bool`   | 是否设置为默认地址         | \*   |
+| 参数          | 类型     | 说明                                | 必选 |
+| ------------- | -------- | ----------------------------------- | ---- |
+| name          | `string` | 收件人                              | \*   |
+| phone         | `string` | 收件人手机号                        | \*   |
+| province_code | `string` | 省份代码，2 位数                    | \*   |
+| city_code     | `string` | 城市代码，4 位数                    | \*   |
+| area_code     | `string` | 县城代码，6 位数                    | \*   |
+| street_code   | `string` | 街道/乡/镇代码，9 位数              | \*   |
+| address       | `string` | 详细地址，具体的街道门牌号          | \*   |
+| is_default    | `bool`   | 是否设置为默认地址                  | \*   |
+| note          | `string` | 备注，可以备注 `家`/`公司`/`学校等` |      |
 
 ### 更新收货地址
 
 [PUT] /v1/user/address/:address_id
 
-| 参数          | 类型     | 说明                       | 必选 |
-| ------------- | -------- | -------------------------- | ---- |
-| name          | `string` | 收件人                     |      |
-| phone         | `string` | 收件人手机号               |      |
-| province_code | `string` | 省份代码，2 位数           |      |
-| city_code     | `string` | 城市代码，4 位数           |      |
-| area_code     | `string` | 县城代码，6 位数           |      |
-| street_code   | `string` | 街道/乡/镇代码，9 位数     | \*   |
-| address       | `string` | 详细地址，具体的街道门牌号 |      |
-| is_default    | `bool`   | 是否设置为默认地址         |      |
+| 参数          | 类型     | 说明                                | 必选 |
+| ------------- | -------- | ----------------------------------- | ---- |
+| name          | `string` | 收件人                              |      |
+| phone         | `string` | 收件人手机号                        |      |
+| province_code | `string` | 省份代码，2 位数                    |      |
+| city_code     | `string` | 城市代码，4 位数                    |      |
+| area_code     | `string` | 县城代码，6 位数                    |      |
+| street_code   | `string` | 街道/乡/镇代码，9 位数              |      |
+| address       | `string` | 详细地址，具体的街道门牌号          |      |
+| is_default    | `bool`   | 是否设置为默认地址                  |      |
+| note          | `string` | 备注，可以备注 `家`/`公司`/`学校等` |      |
 
 ### 删除收货地址
 
