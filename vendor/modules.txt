@@ -95,7 +95,7 @@ github.com/gorilla/mux
 github.com/gorilla/securecookie
 # github.com/gorilla/sessions v1.2.0
 github.com/gorilla/sessions
-# github.com/gorilla/websocket v1.4.1
+# github.com/gorilla/websocket v1.4.2
 ## explicit
 github.com/gorilla/websocket
 # github.com/hashicorp/go-uuid v1.0.2
