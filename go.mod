@@ -25,7 +25,7 @@ require (
 	github.com/jasonlvhit/gocron v0.0.0-20200423141508-ab84337f7963
 	github.com/jinzhu/gorm v1.9.12
 	github.com/joho/godotenv v1.3.0
-	github.com/jordan-wright/email v0.0.0-20200531192740-8694daca3fa7
+	github.com/jordan-wright/email v0.0.0-20200602115436-fd8a7622303e
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/kataras/iris/v12 v12.1.8
 	github.com/lib/pq v1.6.0
