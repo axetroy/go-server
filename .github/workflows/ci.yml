@@ -26,10 +26,16 @@ jobs:
           go version
           go env
 
+      - name: Generate static bundle
+        if: matrix.kind == 'build'
+        env:
+          GO111MODULE: off
+        run: |
+          go get github.com/markbates/pkger/cmd/pkger
+
       - name: Build ${{ matrix.target }}
         if: matrix.kind == 'build'
         run: |
-          GO111MODULE=off go get github.com/markbates/pkger/cmd/pkger
           make generate-external
           bash ./scripts/build.sh ${{ matrix.target }}
 
