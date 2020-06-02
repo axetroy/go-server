@@ -6,7 +6,7 @@ require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/aliyun/alibaba-cloud-sdk-go v1.61.228
-	github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a
+	github.com/asaskevich/govalidator v0.0.0-20200428143746-21a406dcc535
 	github.com/axetroy/go-fs v1.0.0
 	github.com/axetroy/mocker v1.2.0
 	github.com/denisbrodbeck/machineid v1.0.1

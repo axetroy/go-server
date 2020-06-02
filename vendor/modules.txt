@@ -29,7 +29,7 @@ github.com/aliyun/alibaba-cloud-sdk-go/sdk/requests
 github.com/aliyun/alibaba-cloud-sdk-go/sdk/responses
 github.com/aliyun/alibaba-cloud-sdk-go/sdk/utils
 github.com/aliyun/alibaba-cloud-sdk-go/services/dysmsapi
-# github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a
+# github.com/asaskevich/govalidator v0.0.0-20200428143746-21a406dcc535
 ## explicit
 github.com/asaskevich/govalidator
 # github.com/axetroy/go-fs v1.0.0
