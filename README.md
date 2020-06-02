@@ -52,6 +52,7 @@
 | 帮助中心     | 可嵌套的帮助中心模块                                                                        |
 | 配置中心     | 由后台接口控制的配置中心，配置例如 SMTP/短信/小程序 等信息                                  |
 | 定时任务模块 | 进行一系列的定时任务，例如切割表，迁移冷数据等                                              |
+| 客服系统     | 基于 Websocket 的客服系统，实时消息推送，一对多服务关系                                     |
 
 ## 如何使用?
 
@@ -82,6 +83,10 @@
 5。scheduled_server
 
 > 定时任务
+
+6. customer_service
+
+> 客服系统
 
 然后复制 [.env](.env) 到可执行文件目录下，运行可执行文件即可。例如 `./user_server start`
 
@@ -118,6 +123,7 @@ $ go run ./cmd/user/main.go # 运行用户端的接口服务
 $ go run ./cmd/admin/main.go # 运行管理员端的接口服务
 $ go run ./cmd/resource/main.go # 运行资源类的接口服务
 $ go run ./cmd/scheduled/main.go # 运行定时任务
+$ go run ./cmd/customer_service/main.go # 运行客服系统
 ```
 
 可以通过 [.env](.env) 文件进行配置

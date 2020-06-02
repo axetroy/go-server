@@ -17,7 +17,9 @@ require (
 	github.com/go-redis/redis v6.15.8+incompatible
 	github.com/golang/protobuf v1.3.3 // indirect
 	github.com/google/go-querystring v1.0.0 // indirect
+	github.com/google/uuid v1.1.1
 	github.com/gorilla/mux v1.7.4
+	github.com/gorilla/websocket v1.4.1
 	github.com/holdno/snowFlakeByGo v0.0.0-20180510033652-d23f8a8cadd7
 	github.com/imkira/go-interpol v1.1.0 // indirect
 	github.com/jasonlvhit/gocron v0.0.0-20200423141508-ab84337f7963

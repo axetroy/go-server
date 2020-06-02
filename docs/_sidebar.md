@@ -20,6 +20,7 @@
   - [数据签名](user/signature)
   - [帮助中心](user/help)
 - 管理员接口
+
   - [验证类](admin/auth)
   - [会员类](admin/user)
   - [地区接口](user/area)
@@ -36,7 +37,11 @@
   - [帮助中心](admin/help)
   - [配置中心](admin/config)
   - [推送管理](admin/push)
+
 - 资源管理
+
   - [文件上传](resource/upload)
   - [文件下载](resource/download)
 
+- 客服系统
+  - [约定规范](customer_service/specification)

@@ -85,6 +85,9 @@ github.com/golang/protobuf/proto
 github.com/golang/snappy
 # github.com/google/go-querystring v1.0.0
 ## explicit
+# github.com/google/uuid v1.1.1
+## explicit
+github.com/google/uuid
 # github.com/gorilla/mux v1.7.4
 ## explicit
 github.com/gorilla/mux
@@ -92,6 +95,9 @@ github.com/gorilla/mux
 github.com/gorilla/securecookie
 # github.com/gorilla/sessions v1.2.0
 github.com/gorilla/sessions
+# github.com/gorilla/websocket v1.4.1
+## explicit
+github.com/gorilla/websocket
 # github.com/hashicorp/go-uuid v1.0.2
 github.com/hashicorp/go-uuid
 # github.com/holdno/snowFlakeByGo v0.0.0-20180510033652-d23f8a8cadd7

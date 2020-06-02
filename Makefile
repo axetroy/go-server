@@ -8,6 +8,7 @@ build:
 	bash ./scripts/build.sh resource
 	bash ./scripts/build.sh message_queue
 	bash ./scripts/build.sh scheduled
+	bash ./scripts/build.sh customer_service
 	echo "Build Success!"
 
 clean:

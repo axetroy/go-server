@@ -8,7 +8,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        target: ['admin', 'user', 'resource', 'message_queue', 'scheduled']
+        target: ['admin', 'user', 'resource', 'message_queue', 'scheduled', 'customer_service']
         kind: ['build']
         go: ['^1.14.2']
         os: [ubuntu-latest, macOS-latest, windows-latest]
@@ -141,6 +141,10 @@ jobs:
         with:
           name: scheduled
           path: ./bin
+      - uses: actions/download-artifact@v2
+        with:
+          name: customer_service
+          path: ./bin
 
       - uses: softprops/action-gh-release@v1
         name: Release to Github
@@ -164,4 +168,7 @@ jobs:
             ./bin/scheduled_server_darwin_amd64.tar.gz
             ./bin/scheduled_server_linux_amd64.tar.gz
             ./bin/scheduled_server_windows_amd64.tar.gz
+            ./bin/customer_service_server_darwin_amd64.tar.gz
+            ./bin/customer_service_server_linux_amd64.tar.gz
+            ./bin/customer_service_server_windows_amd64.tar.gz
           draft: false

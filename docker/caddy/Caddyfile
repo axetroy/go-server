@@ -1,27 +1,31 @@
 api.example.com {
   encode zstd gzip
-  # resource server
+  # 资源服务器接口
   handle /v1/download/* {
-    reverse_proxy 0.0.0.0:9004
+    reverse_proxy 0.0.0.0:3
   }
   handle /v1/upload/* {
-    reverse_proxy 0.0.0.0:9004
+    reverse_proxy 0.0.0.0:9003
   }
   handle /v1/resource/* {
+    reverse_proxy 0.0.0.0:9003
+  }
+  # 客服系统
+  handle /v1/ws/* {
     reverse_proxy 0.0.0.0:9004
   }
-  # user server
-  reverse_proxy 0.0.0.0:9000
+  # 用户接口
+  reverse_proxy 0.0.0.0:9002
 }
 
-# admin server
+# 管理员接口
 api-mag.example.com {
-  reverse_proxy 0.0.0.0:9091
+  reverse_proxy 0.0.0.0:9001
   encode zstd gzip
 }
 
-# resource server
+# 资源服务器接口
 resource.example.com {
-  reverse_proxy 0.0.0.0:9004
+  reverse_proxy 0.0.0.0:9003
   encode zstd gzip
 }

@@ -7,6 +7,7 @@ UPLOAD ./bin/user_server_linux_amd64.tar.gz ./api/
 UPLOAD ./bin/resource_server_linux_amd64.tar.gz ./api/
 UPLOAD ./bin/message_queue_server_linux_amd64.tar.gz ./api/
 UPLOAD ./bin/scheduled_server_linux_amd64.tar.gz ./api/
+UPLOAD ./bin/customer_service_server_linux_amd64.tar.gz ./api/
 
 CD /home/zingy/go-server/api
 RUN tar -xzf admin_server_linux_amd64.tar.gz
@@ -14,6 +15,7 @@ RUN tar -xzf user_server_linux_amd64.tar.gz
 RUN tar -xzf resource_server_linux_amd64.tar.gz
 RUN tar -xzf message_queue_server_linux_amd64.tar.gz
 RUN tar -xzf scheduled_server_linux_amd64.tar.gz
+RUN tar -xzf customer_service_server_linux_amd64.tar.gz
 
 TRY docker-compose down
 TRY docker-compose up -d

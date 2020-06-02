@@ -50,7 +50,7 @@ services:
     volumes:
       - './user_server:/app/user_server'
     environment:
-      - MACHINE_ID=0
+      - MACHINE_ID=2
       - GO_MOD=development
       - TOKEN_SECRET_KEY=user
       # database
@@ -91,9 +91,21 @@ services:
       - './resource_server:/app/resource_server'
       - './upload:/app/upload'
     environment:
-      - MACHINE_ID=0
+      - MACHINE_ID=3
       - GO_MOD=development
     command: ['./resource_server', 'start', '--host', '0.0.0.0']
+
+  # 客服接口
+  customer-service-api:
+    image: alpine:3.12
+    restart: always
+    ports:
+      - 9004:80
+    working_dir: /app
+    environment:
+      - MACHINE_ID=4
+      - GO_MOD=development
+    command: ['./customer_service', 'start', '--host', '0.0.0.0']
 
   # 消息队列
   message-queue:
