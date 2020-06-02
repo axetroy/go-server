@@ -15,7 +15,7 @@ func Common() iris.Handler {
 		c.Header("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
 		c.Header("Expires", "max-age=0")
 		// Content Security Policy
-		c.Header("Content-Security-Policy", "default-src 'self'")
+		//c.Header("Content-Security-Policy", "default-src 'self'")
 		// xss protect
 		// it will caught some problems is old IE
 		c.Header("X-XSS-Protection", "1; mode=block")

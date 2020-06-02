@@ -28,7 +28,10 @@ jobs:
 
       - name: Build ${{ matrix.target }}
         if: matrix.kind == 'build'
-        run: bash ./scripts/build.sh ${{ matrix.target }}
+        run: |
+          GO111MODULE=off go get github.com/markbates/pkger/cmd/pkger
+          make generate-external
+          bash ./scripts/build.sh ${{ matrix.target }}
 
       - uses: actions/upload-artifact@v2
         if: runner.os == 'linux'

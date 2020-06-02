@@ -160,8 +160,6 @@ github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af h1:pmfjZENx5i
 github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af/go.mod h1:Nht3zPeWKUH0NzdCt2Blrr5ys8VGpn0CEB0cQHVjt7k=
 github.com/joho/godotenv v1.3.0 h1:Zjp+RcGpHhGlrMbJzXTrZZPrWj+1vfm90La1wgB6Bhc=
 github.com/joho/godotenv v1.3.0/go.mod h1:7hK45KPybAkOC6peb+G5yklZfMxEjkZhHbwpqxOKXbg=
-github.com/jordan-wright/email v0.0.0-20200521030443-c069f37d901d h1:yLsQngbOrQHnKZL1bnkoiDsjQkH8p1w7irA0yl6G4iI=
-github.com/jordan-wright/email v0.0.0-20200521030443-c069f37d901d/go.mod h1:Fy2gCFfZhay8jplf/Csj6cyH/oshQTkLQYZbKkcV+SY=
 github.com/jordan-wright/email v0.0.0-20200531192740-8694daca3fa7 h1:tm0rtMYB8JXr5/VnAFN0pSoVReFvkCzH+JD3co9wW34=
 github.com/jordan-wright/email v0.0.0-20200531192740-8694daca3fa7/go.mod h1:Fy2gCFfZhay8jplf/Csj6cyH/oshQTkLQYZbKkcV+SY=
 github.com/jordan-wright/email v0.0.0-20200602115436-fd8a7622303e h1:OGunVjqY7y4U4laftpEHv+mvZBlr7UGimJXKEGQtg48=
@@ -268,8 +266,6 @@ github.com/sec51/twofactor v1.0.1-0.20180911112802-cd97c894b2cc h1:6LobCnVM1FDKX
 github.com/sec51/twofactor v1.0.1-0.20180911112802-cd97c894b2cc/go.mod h1:CjtKwpvQSs9SYzLUsRH7gML+TgKeIofT8uxoy7RTLQI=
 github.com/sergi/go-diff v1.1.0 h1:we8PVUC3FE2uYfodKH/nBHMSetSfHDR6scGdBi+erh0=
 github.com/sergi/go-diff v1.1.0/go.mod h1:STckp+ISIX8hZLjrqAeVduY0gWCT9IjLuqbuNXdaHfM=
-github.com/shirou/gopsutil v2.20.4+incompatible h1:cMT4rxS55zx9NVUnCkrmXCsEB/RNfG9SwHY9evtX8Ng=
-github.com/shirou/gopsutil v2.20.4+incompatible/go.mod h1:5b4v6he4MtMOwMlS0TUMTu2PcXUg8+E1lC7eC3UO/RA=
 github.com/shirou/gopsutil v2.20.5+incompatible h1:tYH07UPoQt0OCQdgWWMgYHy3/a9bcxNpBIysykNIP7I=
 github.com/shirou/gopsutil v2.20.5+incompatible/go.mod h1:5b4v6he4MtMOwMlS0TUMTu2PcXUg8+E1lC7eC3UO/RA=
 github.com/shurcooL/sanitized_anchor_name v1.0.0 h1:PdmoCO6wvbs+7yrJyMORt4/BmY5IYyJwS/kOiWx8mHo=

@@ -10,11 +10,13 @@ type Pool struct {
 	Broadcast chan Message     // 广播频道
 }
 
-func (c *Pool) AddClient(client *Client) {
+// 添加一个连接
+func (c *Pool) Add(client *Client) {
 	c.clients[client] = true
 }
 
-func (c *Pool) GetClient(UUID string) *Client {
+// 获取连接
+func (c *Pool) Get(UUID string) *Client {
 	for client := range c.clients {
 		if client.UUID == UUID {
 			return client
@@ -23,13 +25,19 @@ func (c *Pool) GetClient(UUID string) *Client {
 	return nil
 }
 
-func (c *Pool) RemoveClient(UUID string) {
+// 删除连接
+func (c *Pool) Remove(UUID string) {
 	for client := range c.clients {
 		if client.UUID == UUID {
 			_ = client.Close()
 			delete(c.clients, client)
 		}
 	}
+}
+
+// 获取连接长度
+func (c *Pool) Length() int {
+	return len(c.clients)
 }
 
 func NewPool() *Pool {

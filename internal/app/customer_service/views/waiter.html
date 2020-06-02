@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>客服端</title>
+    <!-- 引入样式 -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"
+    />
+    <style>
+      li {
+        list-style: none;
+      }
+      .green {
+        color: green;
+      }
+      .red {
+        color: red;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      当前 UUID: {{ uuid }}
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-row>
+            <el-col :span="6">
+              <div v-for="m in connection">
+                {{ m }}
+              </div>
+            </el-col>
+            <el-col :span="18">
+              <div>
+                <p v-for="m in message">
+                  {{ m.text }}
+                </p>
+              </div>
+
+              <el-input
+                type="textarea"
+                :rows="2"
+                placeholder="请输入消息"
+                v-model="form.text"
+              ></el-input>
+
+              <el-button type="primary" @click="sendMessage">
+                发送消息
+              </el-button>
+            </el-col>
+          </el-row>
+        </el-col>
+        <el-col :span="12">
+          <div>
+            <p v-for="log in logs">
+              {{ log.type === 'upload' ? '⬆️' : '⬇️' }}
+              <span
+                :class="{'red': log.type ==='download', 'green': log.type === 'upload'}"
+              >
+                {{ log.raw }}
+              </span>
+            </p>
+          </div>
+        </el-col>
+      </el-row>
+    </div>
+
+    <script>
+      var app = new Vue({
+        el: '#app',
+        data: {
+          ws: undefined,
+          uuid: '',
+          message: [],
+          logs: [], // 消息记录
+          form: {
+            text: '',
+          },
+          connection: [],
+          actionConnection: '',
+          // 当前状态
+          // connect_success: 已连接
+          // connect_queue: 正在排队
+          // disconnect: 已断开连接
+          status: '未连接',
+        },
+        methods: {
+          handlerMessage(message) {
+            message = message.toString().trim()
+            this.logs.push({ type: 'download', raw: message })
+            const msg = JSON.parse(message)
+
+            switch (msg.type) {
+              case 'initialize':
+                this.uuid = msg.to
+                break
+              case 'disconnected':
+                if (this.actionConnection === msg.from) {
+                  this.actionConnection = ''
+                }
+                for (let index in this.connection) {
+                  const id = this.connection[index]
+                  if (id === msg.from) {
+                    this.connection.splice(index, 1);
+                  }
+                }
+                break
+              case 'new_connection':
+                this.connection.push(msg.from)
+                if (!this.actionConnection) {
+                  this.actionConnection = msg.from
+                }
+                break
+              case 'message_text':
+                this.message.push({
+                  type: 'response',
+                  text: msg.payload.message,
+                })
+                break
+            }
+          },
+          send(msg) {
+            if (this.ws) {
+              const raw = JSON.stringify(msg)
+              this.logs.push({ type: 'upload', raw: raw })
+              this.ws.send(raw)
+            }
+          },
+          sendMessage() {
+            if (this.ws) {
+              this.message.push({
+                type: 'request',
+                text: this.form.text,
+              })
+              this.send({
+                type: 'message_text',
+                to: this.actionConnection,
+                payload: {
+                  message: this.form.text,
+                },
+              })
+            }
+          },
+        },
+        mounted() {
+          const host = location.host
+          const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
+          const socket = (this.ws = new WebSocket(
+                  `${protocol}//${host}/v1/ws/connect/waiter`,
+          ))
+
+          socket.addEventListener('open', (event) => {})
+
+          // Listen for messages
+          socket.addEventListener('message', (event) => {
+            this.handlerMessage(event.data)
+          })
+        },
+      })
+    </script>
+  </body>
+</html>

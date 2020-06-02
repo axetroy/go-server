@@ -20,3 +20,4 @@ deploy:
 
 generate-external:
 	pkger -include /external -o ./pkged
+	pkger -include /internal/app/customer_service/views -o ./internal/app/customer_service/views_pkged

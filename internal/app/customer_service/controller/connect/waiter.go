@@ -1,4 +1,5 @@
-package waiter
+// Copyright 2019-2020 Axetroy. All rights reserved. MIT license.
+package connect
 
 import (
 	"errors"
@@ -12,7 +13,7 @@ import (
 	"net/http"
 )
 
-var ConnectRouter = router.Handler(func(c router.Context) {
+var WaiterRouter = router.Handler(func(c router.Context) {
 	var (
 		client *ws.Client
 	)
@@ -52,16 +53,16 @@ var ConnectRouter = router.Handler(func(c router.Context) {
 		_ = webscoket.Close()
 		if client != nil {
 			// 移除客户端
-			ws.WaiterPoll.RemoveClient(client.UUID)
+			ws.WaiterPoll.Remove(client.UUID)
 			// 通知已连接的用户断开连接
-			users := ws.MatcherPool.GetUsersForWaiter(client.UUID)
-			//fmt.Println("断开连接", users)
+			users := ws.MatcherPool.GetMyUsers(client.UUID)
+
 			for _, user := range users {
-				userSocket := ws.UserPoll.GetClient(user)
+				userSocket := ws.UserPoll.Get(user)
 				if userSocket != nil {
 					_ = userSocket.WriteJSON(ws.Message{
 						From:    client.UUID,
-						To:      &user,
+						To:      user,
 						Type:    string(ws.TypeToUserDisconnected),
 						Payload: nil,
 					})
@@ -69,36 +70,40 @@ var ConnectRouter = router.Handler(func(c router.Context) {
 			}
 			// 从客服池中移除
 			ws.MatcherPool.RemoveWaiter(client.UUID)
+
+			// 因为当前连接已经断开，正在连接的用户会被加入到队列
+			// 所以触发一次任务调度
+			ws.MatcherPool.Broadcast <- true
 		}
 	}()
 
 	client = ws.NewClient(webscoket)
 
 	// 注册新的客户端
-	ws.WaiterPoll.AddClient(client)
+	ws.WaiterPoll.Add(client)
 	ws.MatcherPool.AddWaiter(client.UUID)
 
 	// 告诉客户端它的 UUID
 	_ = client.WriteJSON(ws.Message{
 		Type: string(ws.TypeToWaiterTypeInitializeToUser),
-		To:   &client.UUID,
+		To:   client.UUID,
 	})
 
-	users := ws.MatcherPool.GetUsersForWaiter(client.UUID)
+	users := ws.MatcherPool.GetMyUsers(client.UUID)
 
 	for _, userSocketUUID := range users {
-		userClient := ws.UserPoll.GetClient(userSocketUUID)
+		userClient := ws.UserPoll.Get(userSocketUUID)
 		if userClient != nil {
 			// 告诉用户端已连接成功
 			_ = userClient.WriteJSON(ws.Message{
 				From: client.UUID,
-				To:   &userSocketUUID,
+				To:   userSocketUUID,
 				Type: string(ws.TypeToUserConnectSuccess),
 			})
 			// 告诉客服端已连接成功
 			_ = client.WriteJSON(ws.Message{
 				From: userSocketUUID,
-				To:   &client.UUID,
+				To:   client.UUID,
 				Type: string(ws.TypeToWaiterNewConnection),
 			})
 		}
@@ -111,17 +116,49 @@ var ConnectRouter = router.Handler(func(c router.Context) {
 		err := webscoket.ReadJSON(&msg)
 
 		if err != nil {
+			_ = client.WriteJSON(ws.Message{
+				Type: string(ws.TypeToUserError),
+				To:   client.UUID,
+				Payload: map[string]interface{}{
+					"message": exception.InvalidParams.New(err.Error()).Error(),
+					"status":  exception.InvalidParams.Code(),
+					"data":    msg,
+				},
+			})
 			continue
 		}
 
 		// 传入的参数不正确
 		if err := validator.ValidateStruct(msg); err != nil {
-			continue
+			_ = client.WriteJSON(ws.Message{
+				Type: string(ws.TypeToWaiterError),
+				To:   client.UUID,
+				Payload: map[string]interface{}{
+					"message": exception.InvalidParams.New(err.Error()).Error(),
+					"status":  exception.InvalidParams.Code(),
+					"data":    msg,
+				},
+			})
 		}
 
 	typeCondition:
 		switch ws.TypeFromWaiter(msg.Type) {
+		case ws.TypeFromWaiterReady:
+			break typeCondition
 		case ws.TypeFromWaiterMessageText:
+			// 如果没有指定发送给谁
+			if msg.To == "" {
+				_ = client.WriteJSON(ws.Message{
+					Type: string(ws.TypeToUserError),
+					To:   client.UUID,
+					Payload: map[string]interface{}{
+						"message": exception.InvalidParams.Error(),
+						"status":  exception.InvalidParams.Code(),
+						"data":    msg,
+					},
+				})
+				break typeCondition
+			}
 			// 把收到的消息发送给用户
 			ws.UserPoll.Broadcast <- ws.Message{
 				From:    client.UUID,

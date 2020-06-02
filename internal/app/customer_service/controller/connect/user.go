@@ -1,4 +1,5 @@
-package user
+// Copyright 2019-2020 Axetroy. All rights reserved. MIT license.
+package connect
 
 import (
 	"errors"
@@ -12,7 +13,7 @@ import (
 	"net/http"
 )
 
-var ConnectRouter = router.Handler(func(c router.Context) {
+var UserRouter = router.Handler(func(c router.Context) {
 	var (
 		client *ws.Client
 	)
@@ -51,25 +52,41 @@ var ConnectRouter = router.Handler(func(c router.Context) {
 
 		_ = webscoket.Close()
 		if client != nil {
+			waiterId := ws.MatcherPool.GetMyWaiter(client.UUID)
+
+			// 通知客服，我断开连接
+			if waiterId != nil {
+				waiterClient := ws.WaiterPoll.Get(*waiterId)
+
+				_ = waiterClient.WriteJSON(ws.Message{
+					From:    client.UUID,
+					To:      *waiterId,
+					Type:    string(ws.TypeToWaiterDisconnected),
+					Payload: nil,
+				})
+			}
+
 			// 从池中删除该链接
-			ws.UserPoll.RemoveClient(client.UUID)
+			ws.UserPoll.Remove(client.UUID)
+
 			// 断开匹配
-			ws.MatcherPool.Disconnect(client.UUID)
-			// 从队列中删除
-			ws.MatcherPool.RemoveWaiter(client.UUID)
-			// TODO: 通知已连接的客服断开连接
+			ws.MatcherPool.Leave(client.UUID)
+
+			// 因为当前连接已经断开，应该会空出一个位置
+			// 让客服继续接待下一个
+			ws.MatcherPool.Broadcast <- true
 		}
 	}()
 
 	client = ws.NewClient(webscoket)
 
 	// 注册新的客户端
-	ws.UserPoll.AddClient(client)
+	ws.UserPoll.Add(client)
 
 	// 告诉客户端它的 UUID
 	_ = client.WriteJSON(ws.Message{
 		Type: string(ws.TypeToUserInitialize),
-		To:   &client.UUID,
+		To:   client.UUID,
 	})
 
 	for {
@@ -80,9 +97,11 @@ var ConnectRouter = router.Handler(func(c router.Context) {
 		if err != nil {
 			_ = client.WriteJSON(ws.Message{
 				Type: string(ws.TypeToUserError),
-				To:   &client.UUID,
-				Payload: map[string]string{
-					"message": exception.InvalidParams.Error(),
+				To:   client.UUID,
+				Payload: map[string]interface{}{
+					"message": exception.InvalidParams.New(err.Error()).Error(),
+					"status":  exception.InvalidParams.Code(),
+					"data":    msg,
 				},
 			})
 			continue
@@ -92,9 +111,11 @@ var ConnectRouter = router.Handler(func(c router.Context) {
 		if err := validator.ValidateStruct(msg); err != nil {
 			_ = client.WriteJSON(ws.Message{
 				Type: string(ws.TypeToUserError),
-				To:   &client.UUID,
-				Payload: map[string]string{
-					"message": exception.InvalidParams.Error(),
+				To:   client.UUID,
+				Payload: map[string]interface{}{
+					"message": exception.InvalidParams.New(err.Error()).Error(),
+					"status":  exception.InvalidParams.Code(),
+					"data":    msg,
 				},
 			})
 			continue
@@ -104,49 +125,60 @@ var ConnectRouter = router.Handler(func(c router.Context) {
 		switch ws.TypeFromUser(msg.Type) {
 		// 连接一个客服
 		case ws.TypeFromUserConnect:
-			waiterID := ws.MatcherPool.LookupWaiter()
+			waiterID := ws.MatcherPool.Join(client.UUID)
 
 			// 如果找不到合适的客服，则添加到等待队列
 			if waiterID == nil {
-				ws.MatcherPool.AppendToQueue(client.UUID)
 				// 告诉客户端要排队
 				_ = client.WriteJSON(ws.Message{
 					Type: string(ws.TypeToUserConnectQueue),
-					To:   &client.UUID,
+					To:   client.UUID,
 				})
 				break typeCondition
 			}
-
-			ws.MatcherPool.Connect(*waiterID, client.UUID)
 
 			// 告诉客户端已连接成功
 			_ = client.WriteJSON(ws.Message{
 				Type: string(ws.TypeToUserConnectSuccess),
 				From: *waiterID,
-				To:   &client.UUID,
-				Payload: map[string]string{
+				To:   client.UUID,
+				Payload: map[string]interface{}{
 					"uuid": *waiterID,
 					// TODO: 服务的基本信息
 				},
 			})
 
 			// 告诉客服有新的连接接入
-			waiterClient := ws.WaiterPoll.GetClient(*waiterID)
+			waiterClient := ws.WaiterPoll.Get(*waiterID)
 
 			if waiterClient != nil {
 				_ = waiterClient.WriteJSON(ws.Message{
-					To:   waiterID,
+					From: client.UUID,
+					To:   *waiterID,
 					Type: string(ws.TypeToWaiterNewConnection),
-					Payload: map[string]string{
-						"uuid": client.UUID,
-					},
 				})
 			}
 
 			break typeCondition
+		case ws.TypeFromUserDisconnect:
+			ws.MatcherPool.Leave(client.UUID)
+			waiterId := ws.MatcherPool.GetMyWaiter(client.UUID)
+
+			// 通知客服，我断开连接
+			if waiterId != nil {
+				waiterClient := ws.WaiterPoll.Get(*waiterId)
+
+				_ = waiterClient.WriteJSON(ws.Message{
+					From:    client.UUID,
+					To:      *waiterId,
+					Type:    string(ws.TypeToWaiterDisconnected),
+					Payload: nil,
+				})
+			}
+			break typeCondition
 		// 用户发送消息
 		case ws.TypeFromUserMessageText:
-			waiterId := ws.MatcherPool.GetCurrentWaiter(client.UUID)
+			waiterId := ws.MatcherPool.GetMyWaiter(client.UUID)
 
 			// 如果这个客户端没有连接客服，那么消息不会发送
 			if waiterId != nil {
@@ -154,9 +186,14 @@ var ConnectRouter = router.Handler(func(c router.Context) {
 				ws.WaiterPoll.Broadcast <- ws.Message{
 					From:    client.UUID,
 					Type:    msg.Type,
-					To:      waiterId,
+					To:      *waiterId,
 					Payload: msg.Payload,
 				}
+			} else {
+				_ = client.WriteJSON(ws.Message{
+					To:   client.UUID,
+					Type: string(ws.TypeToUserNotConnect),
+				})
 			}
 			break typeCondition
 		default:
