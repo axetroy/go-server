@@ -250,3 +250,218 @@ func TestUpdateRouter(t *testing.T) {
 	}
 
 }
+
+func TestUpdateDefaultAddr(t *testing.T) {
+	testUser, _ := tester.CreateUser()
+
+	defer tester.DeleteUserByUserName(testUser.Username)
+
+	header := mocker.Header{
+		"Authorization": token.Prefix + " " + testUser.Token,
+	}
+
+	var addr1 schema.Address
+	var addr2 schema.Address
+
+	// 创建多个默认地址，理论上应该只有一个默认地址
+	{
+		isDefault := true
+		body, _ := json.Marshal(&address.CreateAddressParams{
+			Name:         "张三",
+			Phone:        "18888888888",
+			ProvinceCode: "11",
+			CityCode:     "1101",
+			AreaCode:     "110101",
+			StreetCode:   "110101001",
+			Address:      "中关村28号526",
+			IsDefault:    &isDefault,
+		})
+
+		r := tester.HttpUser.Post("/v1/user/address", body, &header)
+
+		if !assert.Equal(t, http.StatusOK, r.Code) {
+			return
+		}
+
+		res := schema.Response{}
+
+		assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res))
+
+		assert.Equal(t, "", res.Message)
+
+		assert.Equal(t, schema.StatusSuccess, res.Status)
+
+		addr1 = schema.Address{}
+
+		assert.Nil(t, res.Decode(&addr1))
+
+		defer address.DeleteAddressById(addr1.Id)
+
+		assert.True(t, addr1.IsDefault)
+	}
+
+	// 创建多个默认地址，理论上应该只有一个默认地址
+	{
+		isDefault := true
+		body, _ := json.Marshal(&address.CreateAddressParams{
+			Name:         "张三",
+			Phone:        "18888888888",
+			ProvinceCode: "11",
+			CityCode:     "1101",
+			AreaCode:     "110101",
+			StreetCode:   "110101001",
+			Address:      "中关村28号526",
+			IsDefault:    &isDefault,
+		})
+
+		r := tester.HttpUser.Post("/v1/user/address", body, &header)
+
+		if !assert.Equal(t, http.StatusOK, r.Code) {
+			return
+		}
+
+		res := schema.Response{}
+
+		assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res))
+
+		assert.Equal(t, "", res.Message)
+
+		assert.Equal(t, schema.StatusSuccess, res.Status)
+
+		addr2 = schema.Address{}
+
+		assert.Nil(t, res.Decode(&addr2))
+
+		defer address.DeleteAddressById(addr2.Id)
+
+		assert.True(t, addr2.IsDefault)
+	}
+
+	// 更新地址 1 为默认
+	{
+		isDefault := true
+		body, _ := json.Marshal(&address.UpdateParams{
+			IsDefault: &isDefault,
+		})
+
+		r := tester.HttpUser.Put("/v1/user/address/"+addr1.Id, body, &header)
+
+		if !assert.Equal(t, http.StatusOK, r.Code) {
+			return
+		}
+
+		res := schema.Response{}
+
+		if !assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res)) {
+			return
+		}
+
+		if !assert.Equal(t, "", res.Message) {
+			return
+		}
+
+		if !assert.Equal(t, schema.StatusSuccess, res.Status) {
+			return
+		}
+
+		addressInfo := schema.Address{}
+
+		assert.Nil(t, res.Decode(&addressInfo))
+
+		assert.True(t, addressInfo.IsDefault)
+	}
+
+	// 获取详情 1
+	{
+		r := tester.HttpUser.Get("/v1/user/address/"+addr1.Id, nil, &header)
+
+		if !assert.Equal(t, http.StatusOK, r.Code) {
+			return
+		}
+
+		res := schema.Response{}
+
+		if !assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res)) {
+			return
+		}
+
+		if !assert.Equal(t, "", res.Message) {
+			return
+		}
+
+		if !assert.Equal(t, schema.StatusSuccess, res.Status) {
+			return
+		}
+
+		addressDetail := schema.Address{}
+
+		assert.Nil(t, res.Decode(&addressDetail))
+
+		assert.True(t, addressDetail.IsDefault)
+	}
+
+	// 获取详情 2
+	{
+		r := tester.HttpUser.Get("/v1/user/address/"+addr2.Id, nil, &header)
+
+		if !assert.Equal(t, http.StatusOK, r.Code) {
+			return
+		}
+
+		res := schema.Response{}
+
+		if !assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res)) {
+			return
+		}
+
+		if !assert.Equal(t, "", res.Message) {
+			return
+		}
+
+		if !assert.Equal(t, schema.StatusSuccess, res.Status) {
+			return
+		}
+
+		addressDetail := schema.Address{}
+
+		assert.Nil(t, res.Decode(&addressDetail))
+
+		assert.False(t, addressDetail.IsDefault)
+	}
+
+	// 获取列表
+	{
+		r := tester.HttpUser.Get("/v1/user/address", nil, &header)
+
+		assert.Equal(t, http.StatusOK, r.Code)
+
+		res := schema.Response{}
+
+		if !assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res)) {
+			return
+		}
+
+		if !assert.Equal(t, schema.StatusSuccess, res.Status) {
+			return
+		}
+
+		if !assert.Equal(t, "", res.Message) {
+			return
+		}
+
+		addresses := make([]schema.Address, 0)
+
+		assert.Nil(t, res.Decode(&addresses))
+
+		for _, b := range addresses {
+			switch b.Id {
+			case addr1.Id:
+				assert.True(t, b.IsDefault)
+				break
+			case addr2.Id:
+				assert.False(t, b.IsDefault)
+				break
+			}
+		}
+	}
+}

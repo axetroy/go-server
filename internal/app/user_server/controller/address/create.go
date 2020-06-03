@@ -85,25 +85,26 @@ func Create(c helper.Context, input CreateAddressParams) (res schema.Response) {
 	if input.IsDefault != nil {
 		isDefault = *input.IsDefault
 
-		defaultAddress := model.Address{
-			Uid:       c.Uid,
-			IsDefault: true,
-		}
-		if err = tx.First(&defaultAddress).Error; err != nil {
-			if err == gorm.ErrRecordNotFound {
-				err = nil
+		// 如果要创建一个默认地址
+		// 那么就把前面的默认地址修改为false
+		if *input.IsDefault == true {
+			defaultAddress := model.Address{
+				Uid:       c.Uid,
+				IsDefault: true,
+			}
+			if err = tx.Where(&defaultAddress).First(&defaultAddress).Error; err != nil {
+				if err == gorm.ErrRecordNotFound {
+					err = nil
+				} else {
+					return
+				}
 			} else {
-				return
-			}
-		} else {
-			// 如果存在了默认地址，则取消它的默认属性
-			if err = tx.Model(&defaultAddress).UpdateColumn(model.Address{
-				IsDefault: false,
-			}).Error; err != nil {
-				return
+				// 如果存在了默认地址，则取消它的默认属性
+				if err = tx.Model(&defaultAddress).Where("id = ?", defaultAddress.Id).UpdateColumn("is_default", false).Error; err != nil {
+					return
+				}
 			}
 		}
-
 	} else {
 		firstAddress := model.Address{
 			Uid: c.Uid,

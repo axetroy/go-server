@@ -96,16 +96,19 @@ func Update(c helper.Context, addressId string, input UpdateParams) (res schema.
 	if input.Name != nil {
 		shouldUpdate = true
 		updateModel["name"] = *input.Name
+		addressInfo.Name = *input.Name
 	}
 
 	if input.Phone != nil {
 		shouldUpdate = true
 		updateModel["phone"] = *input.Phone
+		addressInfo.Phone = *input.Phone
 	}
 
 	if input.Address != nil {
 		shouldUpdate = true
 		updateModel["address"] = *input.Address
+		addressInfo.Address = *input.Address
 	}
 
 	if input.ProvinceCode != nil {
@@ -118,6 +121,9 @@ func Update(c helper.Context, addressId string, input UpdateParams) (res schema.
 		updateModel["province_code"] = *input.ProvinceCode
 		updateModel["city_code"] = *input.CityCode
 		updateModel["area_code"] = *input.AreaCode
+		addressInfo.ProvinceCode = *input.ProvinceCode
+		addressInfo.CityCode = *input.CityCode
+		addressInfo.AreaCode = *input.AreaCode
 
 		if area.IsValid(*input.ProvinceCode, *input.CityCode, *input.AreaCode, *input.StreetCode) == false {
 			err = exception.InvalidParams
@@ -128,11 +134,34 @@ func Update(c helper.Context, addressId string, input UpdateParams) (res schema.
 	if input.IsDefault != nil {
 		shouldUpdate = true
 		updateModel["is_default"] = *input.IsDefault
+		addressInfo.IsDefault = *input.IsDefault
+
+		// 如果要创建一个默认地址
+		// 那么就把前面的默认地址修改为false
+		if *input.IsDefault == true {
+			defaultAddress := model.Address{
+				Uid:       c.Uid,
+				IsDefault: true,
+			}
+			if err = tx.Where(&defaultAddress).First(&defaultAddress).Error; err != nil {
+				if err == gorm.ErrRecordNotFound {
+					err = nil
+				} else {
+					return
+				}
+			} else {
+				// 如果存在了默认地址，则取消它的默认属性
+				if err = tx.Model(&defaultAddress).Where("id = ?", defaultAddress.Id).UpdateColumn("is_default", false).Error; err != nil {
+					return
+				}
+			}
+		}
 	}
 
 	if input.Note != nil {
 		shouldUpdate = true
 		updateModel["note"] = *input.Note
+		addressInfo.Note = input.Note
 	}
 
 	if shouldUpdate {
