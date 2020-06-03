@@ -146,7 +146,7 @@ func SignIn(c helper.Context, input SignInParams) (res schema.Response) {
 	}
 
 	// 写入登陆记录
-	log := model.LoginLog{
+	loginLog := model.LoginLog{
 		Uid:     userInfo.Id,                       // 用户ID
 		Type:    model.LoginLogTypeUserName,        // 默认用户名登陆
 		Command: model.LoginLogCommandLoginSuccess, // 登陆成功
@@ -154,7 +154,7 @@ func SignIn(c helper.Context, input SignInParams) (res schema.Response) {
 		LastIp:  c.Ip,                              // 用户的IP
 	}
 
-	if err = tx.Create(&log).Error; err != nil {
+	if err = tx.Create(&loginLog).Error; err != nil {
 		return
 	}
 
