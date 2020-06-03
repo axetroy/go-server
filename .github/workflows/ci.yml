@@ -36,7 +36,7 @@ jobs:
       - name: Build ${{ matrix.target }}
         if: matrix.kind == 'build'
         run: |
-          make generate-external
+          make generate-static
           bash ./scripts/build.sh ${{ matrix.target }}
 
       - uses: actions/upload-artifact@v2

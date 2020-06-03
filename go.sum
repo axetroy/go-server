@@ -18,8 +18,6 @@ github.com/ajg/form v1.5.1 h1:t9c7v8JUKu/XxOGBU0yjNpaMloxGEJhUkqFRq0ibGeU=
 github.com/ajg/form v1.5.1/go.mod h1:uL1WgH+h2mgNtvBq0339dVnzXdBETtL2LeUXaIv25UY=
 github.com/alexbrainman/sspi v0.0.0-20180613141037-e580b900e9f5 h1:P5U+E4x5OkVEKQDklVPmzs71WM56RTTRqV4OrDC//Y4=
 github.com/alexbrainman/sspi v0.0.0-20180613141037-e580b900e9f5/go.mod h1:976q2ETgjT2snVCf2ZaBnyBbVoPERGjUz+0sofzEfro=
-github.com/aliyun/alibaba-cloud-sdk-go v1.61.213 h1:O97p1t39u8Rr3QrZx4ELSk03KXcD+fqhmH4drYJvAF8=
-github.com/aliyun/alibaba-cloud-sdk-go v1.61.213/go.mod h1:pUKYbK5JQ+1Dfxk80P0qxGqe5dkxDoabbZS7zOcouyA=
 github.com/aliyun/alibaba-cloud-sdk-go v1.61.228 h1:foKhEuPQEwq6ah18UlN1VGg60AfW9mhBTgI80e78cyQ=
 github.com/aliyun/alibaba-cloud-sdk-go v1.61.228/go.mod h1:pUKYbK5JQ+1Dfxk80P0qxGqe5dkxDoabbZS7zOcouyA=
 github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6/go.mod h1:grANhF5doyWs3UAsr3K4I6qtAmlQcZDesFNEHPZAzj8=
@@ -160,8 +158,6 @@ github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af h1:pmfjZENx5i
 github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af/go.mod h1:Nht3zPeWKUH0NzdCt2Blrr5ys8VGpn0CEB0cQHVjt7k=
 github.com/joho/godotenv v1.3.0 h1:Zjp+RcGpHhGlrMbJzXTrZZPrWj+1vfm90La1wgB6Bhc=
 github.com/joho/godotenv v1.3.0/go.mod h1:7hK45KPybAkOC6peb+G5yklZfMxEjkZhHbwpqxOKXbg=
-github.com/jordan-wright/email v0.0.0-20200531192740-8694daca3fa7 h1:tm0rtMYB8JXr5/VnAFN0pSoVReFvkCzH+JD3co9wW34=
-github.com/jordan-wright/email v0.0.0-20200531192740-8694daca3fa7/go.mod h1:Fy2gCFfZhay8jplf/Csj6cyH/oshQTkLQYZbKkcV+SY=
 github.com/jordan-wright/email v0.0.0-20200602115436-fd8a7622303e h1:OGunVjqY7y4U4laftpEHv+mvZBlr7UGimJXKEGQtg48=
 github.com/jordan-wright/email v0.0.0-20200602115436-fd8a7622303e/go.mod h1:Fy2gCFfZhay8jplf/Csj6cyH/oshQTkLQYZbKkcV+SY=
 github.com/json-iterator/go v1.1.5/go.mod h1:+SdeFBvtyEkXs7REEP0seUULqWtbJapLOCVDaaPEHmU=

@@ -18,6 +18,6 @@ clean:
 deploy:
 	s4
 
-generate-external:
-	pkger -include /external -o ./pkged
+generate-static:
+	pkger -include /internal/service/area/external -o ./internal/service/area/external_pkged
 	pkger -include /internal/app/customer_service/views -o ./internal/app/customer_service/views_pkged

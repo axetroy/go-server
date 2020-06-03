@@ -3,7 +3,7 @@ package area
 
 import (
 	"encoding/json"
-	_ "github.com/axetroy/go-server/pkged"
+	_ "github.com/axetroy/go-server/internal/service/area/external_pkged"
 	"github.com/markbates/pkger"
 	"io/ioutil"
 	"log"
@@ -24,7 +24,7 @@ type Location struct {
 }
 
 func init() {
-	file, err := pkger.Open("/external/pcas-code.json")
+	file, err := pkger.Open("/internal/service/area/external/pcas-code.json")
 	if err != nil {
 		log.Fatalln(err)
 	}
