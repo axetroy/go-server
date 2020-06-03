@@ -68,6 +68,22 @@ curl http://localhost/v1/area
 }
 ```
 
+由于数据较大，为了移动端优化，这里提供了一个字段简化的版本 **推荐使用**
+
+```bash
+curl http://localhost/v1/area?simple=1
+```
+
+```json
+{
+  "message": "",
+  "status": 1,
+  "data": [{"n": "北京市", "c": "11", "s": [{"n":  "xx", "c":  "xx"}]}...]
+}
+```
+
+简化字段中 `n` 为 `name`, `c` 为 `code`, `s` 为 `chlidren`
+
 ### 获取指定地区码的详情
 
 [GET] /v1/area/:area_code

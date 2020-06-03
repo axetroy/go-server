@@ -10,17 +10,43 @@ import (
 )
 
 var (
-	Maps        []Location
-	ProvinceMap = map[string]string{} // 省份
-	CityMap     = map[string]string{} // 城市
-	AreaMap     = map[string]string{} // 地区
-	StreetMap   = map[string]string{} // 街道
+	Maps           []Location
+	MapsSimplified []LocationSimplified
+	ProvinceMap    = map[string]string{} // 省份
+	CityMap        = map[string]string{} // 城市
+	AreaMap        = map[string]string{} // 地区
+	StreetMap      = map[string]string{} // 街道
 )
 
 type Location struct {
 	Name     string     `json:"name"`
 	Code     string     `json:"code"`
 	Children []Location `json:"children,omitempty"`
+}
+
+type LocationSimplified struct {
+	N string               `json:"n"`           // 名称 name
+	C string               `json:"c"`           // 代码 code
+	S []LocationSimplified `json:"s,omitempty"` // 子地区 sub
+}
+
+// 把地区转换成简版，为了省流量支持
+func CoverToLocationSimplified(maps []Location) (result []LocationSimplified) {
+	for _, l := range maps {
+
+		s := LocationSimplified{
+			N: l.Name,
+			C: l.Code,
+		}
+
+		if len(l.Children) > 0 {
+			s.S = CoverToLocationSimplified(l.Children)
+		}
+
+		result = append(result, s)
+	}
+
+	return
 }
 
 func init() {
@@ -55,4 +81,6 @@ func init() {
 			}
 		}
 	}
+
+	MapsSimplified = CoverToLocationSimplified(Maps)
 }
