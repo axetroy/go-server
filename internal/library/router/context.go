@@ -45,7 +45,7 @@ func (c *Context) ClientIP() string {
 		if ipStr, _, err := net.SplitHostPort(addr); err == nil {
 			ip := net.ParseIP(ipStr)
 
-			clientIp = string(ip)
+			clientIp = ip.String()
 		}
 	}
 
