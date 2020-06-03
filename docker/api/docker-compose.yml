@@ -102,10 +102,24 @@ services:
     ports:
       - 9004:80
     working_dir: /app
+    volumes:
+      - './customer_service_server:/app/customer_service_server'
     environment:
       - MACHINE_ID=4
       - GO_MOD=development
-    command: ['./customer_service', 'start', '--host', '0.0.0.0']
+      - TOKEN_SECRET_KEY=user
+      # database
+      - DB_HOST=pg
+      - DB_PORT=5432
+      - DB_DRIVER=postgres
+      - DB_NAME=gotest
+      - DB_USERNAME=gotest
+      - DB_PASSWORD=gotest
+      # redis
+      - REDIS_SERVER=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=password
+    command: ['./customer_service_server', 'start', '--host', '0.0.0.0']
 
   # 消息队列
   message-queue:
