@@ -126,7 +126,7 @@ func Update(c helper.Context, addressId string, input UpdateParams) (res schema.
 		addressInfo.AreaCode = *input.AreaCode
 
 		if area.IsValid(*input.ProvinceCode, *input.CityCode, *input.AreaCode, *input.StreetCode) == false {
-			err = exception.InvalidParams
+			err = exception.InvalidParams.New("无效的城市码")
 			return
 		}
 	}

@@ -10,6 +10,37 @@
 | password    | `string` | 账号密码 | \*   |
 | invite_code | `string` | 邀请码   |      |
 
+```bash
+curl -X POST \
+     -d '{"username": "test1", "password": "test1"}' \
+     http://localhost:9001/v1/auth/signup
+```
+
+```json
+{
+  "message": "",
+  "data": {
+    "id": "274588402135859200",
+    "username": "test1",
+    "nickname": "test1",
+    "email": null,
+    "phone": null,
+    "status": 1,
+    "gender": 0,
+    "avatar": "",
+    "role": ["user"],
+    "level": 0,
+    "invite_code": "d9a566c5",
+    "username_rename_remaining": 0,
+    "pay_password": false,
+    "wechat": null,
+    "created_at": "2020-06-03T16:21:49.675462+08:00",
+    "updated_at": "2020-06-03T16:21:49.675462+08:00"
+  },
+  "status": 1
+}
+```
+
 #### 邮箱注册
 
 [POST] /v1/auth/signup/email
@@ -43,7 +74,7 @@
 ```bash
 curl -X POST \
      -d '{"account": "test1", "password": "test1"}' \
-     https://api.bendaye.vip/v1/auth/signin
+     http://localhost:9001/v1/auth/signin
 ```
 
 ```json

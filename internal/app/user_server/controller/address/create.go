@@ -65,7 +65,7 @@ func Create(c helper.Context, input CreateAddressParams) (res schema.Response) {
 	}
 
 	if area.IsValid(input.ProvinceCode, input.CityCode, input.AreaCode, input.StreetCode) == false {
-		err = exception.InvalidParams
+		err = exception.InvalidParams.New("无效的城市码")
 		return
 	}
 
