@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"github.com/axetroy/go-server/internal/library/config"
 	"github.com/axetroy/go-server/internal/library/exception"
+	"github.com/axetroy/go-server/internal/library/onesignal"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/service/database"
-	"github.com/axetroy/go-server/sdk/onesignal"
 	"github.com/jinzhu/gorm"
 )
 
