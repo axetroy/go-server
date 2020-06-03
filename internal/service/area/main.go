@@ -12,6 +12,7 @@ import (
 var (
 	Maps           []Location
 	MapsSimplified []LocationSimplified
+	MapsFlatten    map[string]string
 	ProvinceMap    = map[string]string{} // 省份
 	CityMap        = map[string]string{} // 城市
 	AreaMap        = map[string]string{} // 地区
@@ -49,6 +50,29 @@ func CoverToLocationSimplified(maps []Location) (result []LocationSimplified) {
 	return
 }
 
+// 把地区转换成简版，为了省流量支持
+func CoverToLocationFlatten() map[string]string {
+	maps := map[string]string{}
+
+	for k, v := range ProvinceMap {
+		maps[k] = v
+	}
+
+	for k, v := range CityMap {
+		maps[k] = v
+	}
+
+	for k, v := range AreaMap {
+		maps[k] = v
+	}
+
+	for k, v := range StreetMap {
+		maps[k] = v
+	}
+
+	return maps
+}
+
 func init() {
 	file, err := pkger.Open("/internal/service/area/external/pcas-code.json")
 	if err != nil {
@@ -83,4 +107,5 @@ func init() {
 	}
 
 	MapsSimplified = CoverToLocationSimplified(Maps)
+	MapsFlatten = CoverToLocationFlatten()
 }

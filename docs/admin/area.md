@@ -68,6 +68,11 @@ curl http://localhost/v1/area
 }
 ```
 
+| query 参数 | 类型      | 说明                                                  | 必选 |
+| ---------- | --------- | ----------------------------------------------------- | ---- |
+| simple     | `boolean` | 简化字段输出, `name`->`n` `code`->`c` `children`->`s` |      |
+| flatten    | `boolean` | 扁平化输出一个 map，所有的码都在 map 上               |      |
+
 ### 获取指定地区码的详情
 
 [GET] /v1/area/:area_code

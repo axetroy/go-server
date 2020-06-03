@@ -8,14 +8,21 @@ import (
 )
 
 type query struct {
-	Simple bool `json:"simple" url:"simple"`
+	Simple  bool `json:"simple" url:"simple"`   // 简化字段输出
+	Flatten bool `json:"flatten" url:"flatten"` // 扁平化输出
 }
 
 var GetArea = router.Handler(func(c router.Context) {
 	var query query
 
 	c.ResponseFunc(c.ShouldBindQuery(&query), func() schema.Response {
-		if query.Simple {
+		if query.Flatten {
+			return schema.Response{
+				Status:  schema.StatusSuccess,
+				Message: "",
+				Data:    area.MapsFlatten,
+			}
+		} else if query.Simple {
 			return schema.Response{
 				Status:  schema.StatusSuccess,
 				Message: "",
