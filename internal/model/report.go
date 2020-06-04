@@ -2,6 +2,7 @@
 package model
 
 import (
+	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
@@ -20,11 +21,7 @@ var (
 	ReportTypeFeature    ReportType = "feature"    // 新功能请求
 	ReportTypeSuggestion ReportType = "suggestion" // 建议
 	ReportTypeOther      ReportType = "other"      // 其他
-
-	ReportStatusPending ReportStatus = 0 // 初始状态
-	ReportStatusResolve ReportStatus = 1 // 已解决
-
-	ReportTypes = []ReportTypeDetail{
+	ReportTypes                     = []ReportTypeDetail{
 		{
 			Type:        ReportTypeBug,
 			Description: "BUG 反馈",
@@ -42,17 +39,11 @@ var (
 			Description: "其他",
 		},
 	}
-)
 
-// 检验是否是有效的报错类型
-func IsValidReportType(t ReportType) bool {
-	for _, v := range ReportTypes {
-		if v.Type == t {
-			return true
-		}
-	}
-	return false
-}
+	ReportStatusPending ReportStatus = 0 // 初始状态
+	ReportStatusResolve ReportStatus = 1 // 已解决
+	ReportStatuses                   = []ReportStatus{ReportStatusPending, ReportStatusResolve}
+)
 
 type Report struct {
 	Id          string         `gorm:"primary_key;unique;not null;index;type:varchar(32)" json:"id"` // 反馈ID
@@ -68,12 +59,42 @@ type Report struct {
 	DeletedAt   *time.Time `sql:"index"`
 }
 
-func (report *Report) TableName() string {
+func (r *Report) TableName() string {
 	return "report"
 }
 
-func (report *Report) BeforeCreate(scope *gorm.Scope) (err error) {
-	err = scope.SetColumn("id", util.GenerateId())
-	err = scope.SetColumn("status", ReportStatusPending)
+func (r *Report) IsValidType() bool {
+	for _, v := range ReportTypes {
+		if v.Type == r.Type {
+			return true
+		}
+	}
+	return false
+}
+
+func (r *Report) IsValidStatus() bool {
+	for _, v := range ReportStatuses {
+		if v == r.Status {
+			return true
+		}
+	}
+	return false
+}
+
+func (r *Report) BeforeCreate(scope *gorm.Scope) (err error) {
+	// 校验 type 是否正确
+	if r.IsValidType() == false {
+		return exception.InvalidParams.New("无效的类型")
+	}
+	if r.IsValidStatus() == false {
+		return exception.InvalidParams.New("无效的状态")
+	}
+
+	if err := scope.SetColumn("id", util.GenerateId()); err != nil {
+		return err
+	}
+	if err := scope.SetColumn("status", ReportStatusPending); err != nil {
+		return err
+	}
 	return
 }
