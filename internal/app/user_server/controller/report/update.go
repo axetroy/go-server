@@ -81,14 +81,15 @@ func Update(c helper.Context, reportId string, input UpdateParams) (res schema.R
 		return
 	}
 
-	updatedModel := model.Report{}
+	updatedModel := map[string]interface{}{}
 
 	if input.Status != nil {
 		// 状态不能重复改变, 忽略本次操作.
 		if reportInfo.Status == *input.Status {
 			return
 		}
-		updatedModel.Status = *input.Status
+		updatedModel["status"] = *input.Status
+		reportInfo.Status = *input.Status
 		shouldUpdate = true
 	}
 

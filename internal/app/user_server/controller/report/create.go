@@ -57,11 +57,6 @@ func Create(c helper.Context, input CreateParams) (res schema.Response) {
 		return
 	}
 
-	if model.IsValidReportType(input.Type) == false {
-		err = exception.InvalidParams
-		return
-	}
-
 	tx = database.Db.Begin()
 
 	reportInfo := model.Report{
@@ -76,8 +71,7 @@ func Create(c helper.Context, input CreateParams) (res schema.Response) {
 		return
 	}
 
-	if er := mapstructure.Decode(reportInfo, &data.ReportPure); er != nil {
-		err = er
+	if err = mapstructure.Decode(reportInfo, &data.ReportPure); err != nil {
 		return
 	}
 
