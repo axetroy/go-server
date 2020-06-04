@@ -11,9 +11,9 @@ func MessageFromUserHandler() {
 		msg := <-ws.WaiterPoll.Broadcast
 
 	typeCondition:
-		switch ws.TypeToWaiter(msg.Type) {
+		switch ws.TypeResponseWaiter(msg.Type) {
 		// 发送数据给客服
-		case ws.TypeToWaiterMessageText:
+		case ws.TypeResponseWaiterMessageText:
 			waiterClient := ws.WaiterPoll.Get(msg.To)
 
 			_ = waiterClient.WriteJSON(ws.Message{

@@ -24,10 +24,14 @@ func NewMatcher() *Matcher {
 var MatcherPool = NewMatcher()
 
 func (c *Matcher) GetPendingLength() int {
+	c.RLock()
+	defer c.RUnlock()
 	return len(c.pending)
 }
 
 func (c *Matcher) ShiftPending() *string {
+	c.RLock()
+	defer c.RUnlock()
 	if len(c.pending) == 0 {
 		return nil
 	}
@@ -47,6 +51,8 @@ func (c *Matcher) GetMatcher() map[string][]string {
 // 如果返回空，那么说明没有找到合适的客服，加入等待队列
 // 第二个参数
 func (c *Matcher) Join(userSocketUUID string, prepend ...bool) *string {
+	c.RLock()
+	defer c.RUnlock()
 	idleWaiter := c.GetIdleWaiter()
 
 	// 如果找不到最佳的客服，那么先加入队列
@@ -71,6 +77,8 @@ func (c *Matcher) Join(userSocketUUID string, prepend ...bool) *string {
 
 // 用户离开匹配池
 func (c *Matcher) Leave(userSocketUUID string) {
+	c.RLock()
+	defer c.RUnlock()
 	for waiter, users := range c.matcher {
 		for index, user := range users {
 			if user == userSocketUUID {
@@ -86,7 +94,7 @@ func (c *Matcher) Leave(userSocketUUID string) {
 	}
 }
 
-// 添加客服
+// 获取这个客服当前服务的用户
 func (c *Matcher) GetMyUsers(waiterSocketUUID string) []string {
 	c.RLock()
 	defer c.RUnlock()

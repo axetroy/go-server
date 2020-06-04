@@ -86,7 +86,7 @@ func (c *Context) GetBody() ([]byte, error) {
 
 func (c *Context) ShouldBindJSON(pr interface{}) error {
 	if err := c.context.ReadJSON(pr); err != nil {
-		return exception.InvalidParams
+		return exception.InvalidParams.New(err.Error())
 	}
 	return nil
 }

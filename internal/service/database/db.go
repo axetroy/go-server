@@ -6,6 +6,7 @@ import (
 	"github.com/axetroy/go-server/internal/library/config"
 	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/axetroy/go-server/internal/model"
+	"github.com/axetroy/go-server/internal/rbac/role"
 	"github.com/axetroy/go-server/internal/service/dotenv"
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
@@ -101,26 +102,35 @@ func Migrate(db *gorm.DB) error {
 		}
 	}
 
-	defaultRole := model.Role{Name: model.DefaultUser.Name}
+	// 确保内置的角色存在
+	buildInRoles := []*role.Role{
+		model.DefaultUser,
+		model.DefaultWaiter,
+	}
 
-	// 确保有默认的角色
-	if err := db.First(&defaultRole).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			err = db.Create(&model.Role{
-				Name:        model.DefaultUser.Name,
-				Description: model.DefaultUser.Description,
-				Accession:   model.DefaultUser.AccessionArray(),
-				BuildIn:     true,
-			}).Error
+	for _, buildInRole := range buildInRoles {
+		defaultRole := model.Role{Name: buildInRole.Name}
+
+		// 确保有默认的角色
+		if err := db.First(&defaultRole).Error; err != nil {
+			if err == gorm.ErrRecordNotFound {
+				err = db.Create(&model.Role{
+					Name:        buildInRole.Name,
+					Description: buildInRole.Description,
+					Accession:   buildInRole.AccessionArray(),
+					BuildIn:     true,
+				}).Error
+			} else {
+				return err
+			}
 		} else {
-			return err
-		}
-	} else {
-		// 如果角色已存在，则同步角色的权限
-		if err := db.Model(&defaultRole).Update(&model.Role{
-			Accession: model.DefaultUser.AccessionArray(),
-		}).Error; err != nil {
-			return err
+			// 如果角色已存在，则同步角色的权限
+			if err := db.Model(&defaultRole).Update(&model.Role{
+				Accession: buildInRole.AccessionArray(),
+				BuildIn:   true,
+			}).Error; err != nil {
+				return err
+			}
 		}
 	}
 

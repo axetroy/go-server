@@ -61,7 +61,7 @@ var UserRouter = router.Handler(func(c router.Context) {
 				_ = waiterClient.WriteJSON(ws.Message{
 					From:    client.UUID,
 					To:      *waiterId,
-					Type:    string(ws.TypeToWaiterDisconnected),
+					Type:    string(ws.TypeResponseWaiterDisconnected),
 					Payload: nil,
 				})
 			}
@@ -83,120 +83,51 @@ var UserRouter = router.Handler(func(c router.Context) {
 	// 注册新的客户端
 	ws.UserPoll.Add(client)
 
-	// 告诉客户端它的 UUID
-	_ = client.WriteJSON(ws.Message{
-		Type: string(ws.TypeToUserInitialize),
-		To:   client.UUID,
-	})
-
 	for {
 		var msg ws.Message
 		// 读取消息
 		err := webscoket.ReadJSON(&msg)
 
 		if err != nil {
-			_ = client.WriteJSON(ws.Message{
-				Type: string(ws.TypeToUserError),
-				To:   client.UUID,
-				Payload: map[string]interface{}{
-					"message": exception.InvalidParams.New(err.Error()).Error(),
-					"status":  exception.InvalidParams.Code(),
-					"data":    msg,
-				},
-			})
+			_ = client.WriteError(exception.InvalidParams.New(err.Error()), msg)
 			continue
 		}
 
 		// 传入的参数不正确
 		if err := validator.ValidateStruct(msg); err != nil {
-			_ = client.WriteJSON(ws.Message{
-				Type: string(ws.TypeToUserError),
-				To:   client.UUID,
-				Payload: map[string]interface{}{
-					"message": exception.InvalidParams.New(err.Error()).Error(),
-					"status":  exception.InvalidParams.Code(),
-					"data":    msg,
-				},
-			})
+			_ = client.WriteError(exception.InvalidParams.New(err.Error()), msg)
 			continue
 		}
 
 	typeCondition:
-		switch ws.TypeFromUser(msg.Type) {
-		// 连接一个客服
-		case ws.TypeFromUserConnect:
-			waiterID := ws.MatcherPool.Join(client.UUID)
-
-			// 如果找不到合适的客服，则添加到等待队列
-			if waiterID == nil {
-				// 告诉客户端要排队
-				_ = client.WriteJSON(ws.Message{
-					Type: string(ws.TypeToUserConnectQueue),
-					To:   client.UUID,
-				})
-				break typeCondition
-			}
-
-			// 告诉客户端已连接成功
-			_ = client.WriteJSON(ws.Message{
-				Type: string(ws.TypeToUserConnectSuccess),
-				From: *waiterID,
-				To:   client.UUID,
-				Payload: map[string]interface{}{
-					"uuid": *waiterID,
-					// TODO: 服务的基本信息
-				},
-			})
-
-			// 告诉客服有新的连接接入
-			waiterClient := ws.WaiterPoll.Get(*waiterID)
-
-			if waiterClient != nil {
-				_ = waiterClient.WriteJSON(ws.Message{
-					From: client.UUID,
-					To:   *waiterID,
-					Type: string(ws.TypeToWaiterNewConnection),
-				})
+		switch ws.TypeRequestUser(msg.Type) {
+		// 身份认证
+		case ws.TypeRequestUserAuth:
+			if err := userTypeAuthHandler(client, msg); err != nil {
+				_ = client.WriteError(err, msg)
 			}
 
 			break typeCondition
-		case ws.TypeFromUserDisconnect:
-			ws.MatcherPool.Leave(client.UUID)
-			waiterId := ws.MatcherPool.GetMyWaiter(client.UUID)
-
-			// 通知客服，我断开连接
-			if waiterId != nil {
-				waiterClient := ws.WaiterPoll.Get(*waiterId)
-
-				_ = waiterClient.WriteJSON(ws.Message{
-					From:    client.UUID,
-					To:      *waiterId,
-					Type:    string(ws.TypeToWaiterDisconnected),
-					Payload: nil,
-				})
+		// 申请连接一个客服
+		case ws.TypeRequestUserConnect:
+			if err := userTypeConnectHandler(client, msg); err != nil {
+				_ = client.WriteError(err, msg)
+			}
+			break typeCondition
+		// 用户主动和客服断开连接
+		case ws.TypeRequestUserDisconnect:
+			if err := userTypeDisconnectHandler(client); err != nil {
+				_ = client.WriteError(err, msg)
 			}
 			break typeCondition
 		// 用户发送消息
-		case ws.TypeFromUserMessageText:
-			waiterId := ws.MatcherPool.GetMyWaiter(client.UUID)
-
-			// 如果这个客户端没有连接客服，那么消息不会发送
-			if waiterId != nil {
-				// 把收到的消息广播到客服池
-				ws.WaiterPoll.Broadcast <- ws.Message{
-					From:    client.UUID,
-					Type:    msg.Type,
-					To:      *waiterId,
-					Payload: msg.Payload,
-				}
-			} else {
-				_ = client.WriteJSON(ws.Message{
-					To:   client.UUID,
-					Type: string(ws.TypeToUserNotConnect),
-				})
+		case ws.TypeRequestUserMessageText:
+			if err := userTypeMessageHandler(client, msg); err != nil {
+				_ = client.WriteError(err, msg)
 			}
 			break typeCondition
 		default:
+			_ = client.WriteError(exception.InvalidParams.New("未知的消息类型"), msg)
 			break typeCondition
 		}
 	}

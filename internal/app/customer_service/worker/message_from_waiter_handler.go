@@ -12,15 +12,15 @@ func MessageFromWaiterHandler() {
 		msg := <-ws.UserPoll.Broadcast
 
 	typeCondition:
-		switch ws.TypeToWaiter(msg.Type) {
+		switch ws.TypeResponseWaiter(msg.Type) {
 		// 发送消息给用户
-		case ws.TypeToWaiterMessageText:
+		case ws.TypeResponseWaiterMessageText:
 			userClient := ws.UserPoll.Get(msg.To)
 
 			err := userClient.WriteJSON(ws.Message{
 				From:    msg.From,
 				To:      msg.To,
-				Type:    string(ws.TypeToUserMessageText),
+				Type:    string(ws.TypeResponseUserMessageText),
 				Payload: msg.Payload,
 			})
 			// TODO: 处理发送失败的情况

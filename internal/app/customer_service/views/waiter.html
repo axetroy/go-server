@@ -26,6 +26,7 @@
   <body>
     <div id="app">
       当前 UUID: {{ uuid }}
+      {{ userInfo }}
       <el-row :gutter="20">
         <el-col :span="12">
           <el-row>
@@ -51,6 +52,7 @@
               <el-button type="primary" @click="sendMessage">
                 发送消息
               </el-button>
+              <el-button type="primary" @click="disconnect">断开连接</el-button>
             </el-col>
           </el-row>
         </el-col>
@@ -80,12 +82,9 @@
           form: {
             text: '',
           },
+          userInfo: undefined,
           connection: [],
           actionConnection: '',
-          // 当前状态
-          // connect_success: 已连接
-          // connect_queue: 正在排队
-          // disconnect: 已断开连接
           status: '未连接',
         },
         methods: {
@@ -95,8 +94,10 @@
             const msg = JSON.parse(message)
 
             switch (msg.type) {
-              case 'initialize':
+              case 'auth_success':
                 this.uuid = msg.to
+                this.userInfo = msg.payload
+                this.send({ type: 'ready', payload: {} })
                 break
               case 'disconnected':
                 if (this.actionConnection === msg.from) {
@@ -105,7 +106,7 @@
                 for (let index in this.connection) {
                   const id = this.connection[index]
                   if (id === msg.from) {
-                    this.connection.splice(index, 1);
+                    this.connection.splice(index, 1)
                   }
                 }
                 break
@@ -145,15 +146,31 @@
               })
             }
           },
+          disconnect() {
+            this.send({
+              type: 'disconnect',
+              payload: {
+                uuid: this.actionConnection,
+              },
+            })
+          },
         },
         mounted() {
-          const host = location.host
+          const host = location.host || 'localhost:9000'
           const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
           const socket = (this.ws = new WebSocket(
-                  `${protocol}//${host}/v1/ws/connect/waiter`,
+            `${protocol}//${host}/v1/ws/connect/waiter`,
           ))
 
-          socket.addEventListener('open', (event) => {})
+          socket.addEventListener('open', (event) => {
+            this.send({
+              type: 'auth',
+              payload: {
+                token:
+                  'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJNamMwT0RjeE1qY3pORGt5T0RRd05EUTQiLCJhdWQiOiIyNzQ4NzEyNzM0OTI4NDA0NDgiLCJleHAiOjE1OTEyODM3NjMsImp0aSI6IjI3NDg3MTI3MzQ5Mjg0MDQ0OCIsImlhdCI6MTU5MTI2MjE2MywiaXNzIjoidXNlciIsIm5iZiI6MTU5MTI2MjE2M30.V8xE7efZ-ZCXtghehFq5Wb_XFJHDjU92EVX3VVsHJ9c',
+              },
+            })
+          })
 
           // Listen for messages
           socket.addEventListener('message', (event) => {

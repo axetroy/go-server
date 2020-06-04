@@ -13,3 +13,6 @@
 3. api
 
 接口
+
+4. caddy
+   HTTP 服务器，类似于 nginx。用于反向代理，压缩和全自动 HTTPS

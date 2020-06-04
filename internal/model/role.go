@@ -17,6 +17,9 @@ var (
 		*accession.PasswordUpdate,
 		*accession.DoTransfer,
 	})
+	DefaultWaiter = role.New("waiter", "客服", []accession.Accession{
+		*accession.CustomerServiceConnect,
+	})
 )
 
 type Role struct {

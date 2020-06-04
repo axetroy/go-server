@@ -21,15 +21,17 @@ func DistributionSchedulerHandler() {
 				waiterClient := ws.WaiterPoll.Get(*idleWaiter)
 
 				_ = userClient.WriteJSON(ws.Message{
-					From: *idleWaiter,
-					To:   *userSocketUUID,
-					Type: string(ws.TypeToUserConnectSuccess),
+					From:    *idleWaiter,
+					To:      *userSocketUUID,
+					Type:    string(ws.TypeResponseUserConnectSuccess),
+					Payload: userClient.GetProfile(),
 				})
 
 				_ = waiterClient.WriteJSON(ws.Message{
-					From: *userSocketUUID,
-					To:   *idleWaiter,
-					Type: string(ws.TypeToUserConnectSuccess),
+					From:    *userSocketUUID,
+					To:      *idleWaiter,
+					Type:    string(ws.TypeResponseWaiterNewConnection),
+					Payload: userClient.GetProfile(),
 				})
 			}
 		}

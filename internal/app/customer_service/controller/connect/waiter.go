@@ -63,7 +63,7 @@ var WaiterRouter = router.Handler(func(c router.Context) {
 					_ = userSocket.WriteJSON(ws.Message{
 						From:    client.UUID,
 						To:      user,
-						Type:    string(ws.TypeToUserDisconnected),
+						Type:    string(ws.TypeResponseUserDisconnected),
 						Payload: nil,
 					})
 				}
@@ -81,34 +81,6 @@ var WaiterRouter = router.Handler(func(c router.Context) {
 
 	// 注册新的客户端
 	ws.WaiterPoll.Add(client)
-	ws.MatcherPool.AddWaiter(client.UUID)
-
-	// 告诉客户端它的 UUID
-	_ = client.WriteJSON(ws.Message{
-		Type: string(ws.TypeToWaiterTypeInitializeToUser),
-		To:   client.UUID,
-	})
-
-	users := ws.MatcherPool.GetMyUsers(client.UUID)
-
-	for _, userSocketUUID := range users {
-		userClient := ws.UserPoll.Get(userSocketUUID)
-		if userClient != nil {
-			// 告诉用户端已连接成功
-			_ = userClient.WriteJSON(ws.Message{
-				From: client.UUID,
-				To:   userSocketUUID,
-				Type: string(ws.TypeToUserConnectSuccess),
-			})
-			// 告诉客服端已连接成功
-			_ = client.WriteJSON(ws.Message{
-				From: userSocketUUID,
-				To:   client.UUID,
-				Type: string(ws.TypeToWaiterNewConnection),
-			})
-		}
-
-	}
 
 	for {
 		var msg ws.Message
@@ -116,58 +88,40 @@ var WaiterRouter = router.Handler(func(c router.Context) {
 		err := webscoket.ReadJSON(&msg)
 
 		if err != nil {
-			_ = client.WriteJSON(ws.Message{
-				Type: string(ws.TypeToUserError),
-				To:   client.UUID,
-				Payload: map[string]interface{}{
-					"message": exception.InvalidParams.New(err.Error()).Error(),
-					"status":  exception.InvalidParams.Code(),
-					"data":    msg,
-				},
-			})
+			_ = client.WriteError(exception.InvalidParams.New(err.Error()), msg)
 			continue
 		}
 
 		// 传入的参数不正确
 		if err := validator.ValidateStruct(msg); err != nil {
-			_ = client.WriteJSON(ws.Message{
-				Type: string(ws.TypeToWaiterError),
-				To:   client.UUID,
-				Payload: map[string]interface{}{
-					"message": exception.InvalidParams.New(err.Error()).Error(),
-					"status":  exception.InvalidParams.Code(),
-					"data":    msg,
-				},
-			})
+			_ = client.WriteError(exception.InvalidParams.New(err.Error()), msg)
+			continue
 		}
 
 	typeCondition:
-		switch ws.TypeFromWaiter(msg.Type) {
-		case ws.TypeFromWaiterReady:
-			break typeCondition
-		case ws.TypeFromWaiterMessageText:
-			// 如果没有指定发送给谁
-			if msg.To == "" {
-				_ = client.WriteJSON(ws.Message{
-					Type: string(ws.TypeToUserError),
-					To:   client.UUID,
-					Payload: map[string]interface{}{
-						"message": exception.InvalidParams.Error(),
-						"status":  exception.InvalidParams.Code(),
-						"data":    msg,
-					},
-				})
-				break typeCondition
+		switch ws.TypeRequestWaiter(msg.Type) {
+		case ws.TypeRequestWaiterAuth:
+			if er := waiterTypeAuthHandler(client, msg); er != nil {
+				_ = client.WriteError(er, msg)
 			}
-			// 把收到的消息发送给用户
-			ws.UserPoll.Broadcast <- ws.Message{
-				From:    client.UUID,
-				To:      msg.To,
-				Type:    msg.Type,
-				Payload: msg.Payload,
+			break typeCondition
+		case ws.TypeRequestWaiterReady:
+			if er := waiterTypeReadyHandler(client); er != nil {
+				_ = client.WriteError(er, msg)
+			}
+			break typeCondition
+		case ws.TypeRequestWaiterDisconnect:
+			if er := waiterTypeDisconnectHandler(client, msg); er != nil {
+				_ = client.WriteError(er, msg)
+			}
+			break typeCondition
+		case ws.TypeRequestWaiterMessageText:
+			if er := waiterTypeMessageHandler(client, msg); er != nil {
+				_ = client.WriteError(exception.InvalidParams.New(er.Error()), msg)
 			}
 			break typeCondition
 		default:
+			_ = client.WriteError(exception.InvalidParams.New("未知的消息类型"), msg)
 			break typeCondition
 		}
 	}
