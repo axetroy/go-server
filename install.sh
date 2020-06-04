@@ -8,6 +8,7 @@ targets=(
     admin
     user
     resource
+    customer_service
     message_queue
     scheduled
 )
