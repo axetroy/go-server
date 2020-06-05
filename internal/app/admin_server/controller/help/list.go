@@ -15,11 +15,11 @@ import (
 
 type Query struct {
 	schema.Query
-	Status *model.HelpStatus `json:"status" form:"status"` // 根据状态筛选
-	Type   *model.HelpType   `json:"type" form:"type"`     // 根据类型筛选
+	Status *model.HelpStatus `json:"status" url:"status" validate:"omitempty,number" comment:"状态"` // 根据状态筛选
+	Type   *model.HelpType   `json:"type" url:"type" validate:"omitempty" comment:"类型"`            // 根据类型筛选
 }
 
-func GetHelpList(c helper.Context, q Query) (res schema.Response) {
+func GetHelpList(c helper.Context, query Query) (res schema.Response) {
 	var (
 		err  error
 		data = make([]schema.Help, 0)
@@ -41,20 +41,22 @@ func GetHelpList(c helper.Context, q Query) (res schema.Response) {
 		helper.Response(&res, data, meta, err)
 	}()
 
-	query := q.Query
-
 	query.Normalize()
+
+	if err = query.Validate(); err != nil {
+		return
+	}
 
 	list := make([]model.Help, 0)
 
 	filter := map[string]interface{}{}
 
-	if q.Status != nil {
-		filter["status"] = *q.Status
+	if query.Status != nil {
+		filter["status"] = *query.Status
 	}
 
-	if q.Type != nil {
-		filter["type"] = *q.Type
+	if query.Type != nil {
+		filter["type"] = *query.Type
 	}
 
 	var total int64

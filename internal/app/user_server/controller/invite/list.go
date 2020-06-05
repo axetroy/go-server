@@ -15,7 +15,7 @@ type Query struct {
 	schema.Query
 }
 
-func GetInviteListByUser(input Query) (res schema.Response) {
+func GetInviteListByUser(query Query) (res schema.Response) {
 	var (
 		err  error
 		data = make([]model.InviteHistory, 0)
@@ -37,9 +37,11 @@ func GetInviteListByUser(input Query) (res schema.Response) {
 		helper.Response(&res, data, meta, err)
 	}()
 
-	query := input.Query
-
 	query.Normalize()
+
+	if err = query.Validate(); err != nil {
+		return
+	}
 
 	filter := map[string]interface{}{}
 

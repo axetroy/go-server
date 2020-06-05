@@ -15,13 +15,13 @@ import (
 
 type Query struct {
 	schema.Query
-	Uid     *string `json:"uid" form:"uid"`         // 根据用户 ID 筛选
-	Type    *int    `json:"type" form:"type"`       // 根据类型筛选
-	Command *int    `json:"command" form:"command"` // 根据登陆命令筛选
-	Ip      *string `json:"ip"`                     // 根据 IP 筛选
+	Uid     *string `json:"uid" url:"uid" validate:"omitempty" comment:"用户ID"`                // 根据用户 ID 筛选
+	Type    *int    `json:"type" url:"type" validate:"omitempty,number" comment:"类型"`         // 根据类型筛选
+	Command *int    `json:"command" url:"command" validate:"omitempty,number" comment:"登陆命令"` // 根据登陆命令筛选
+	Ip      *string `json:"ip" url:"ip" validate:"omitempty,ip" comment:"IP"`                 // 根据 IP 筛选
 }
 
-func GetLoginLogs(c helper.Context, q Query) (res schema.Response) {
+func GetLoginLogs(c helper.Context, query Query) (res schema.Response) {
 	var (
 		err  error
 		data = make([]schema.LogLogin, 0)
@@ -43,28 +43,30 @@ func GetLoginLogs(c helper.Context, q Query) (res schema.Response) {
 		helper.Response(&res, data, meta, err)
 	}()
 
-	query := q.Query
-
 	query.Normalize()
+
+	if err = query.Validate(); err != nil {
+		return
+	}
 
 	list := make([]model.LoginLog, 0)
 
 	filter := map[string]interface{}{}
 
-	if q.Uid != nil {
-		filter["uid"] = *q.Uid
+	if query.Uid != nil {
+		filter["uid"] = *query.Uid
 	}
 
-	if q.Type != nil {
-		filter["type"] = *q.Type
+	if query.Type != nil {
+		filter["type"] = *query.Type
 	}
 
-	if q.Command != nil {
-		filter["command"] = *q.Command
+	if query.Command != nil {
+		filter["command"] = *query.Command
 	}
 
-	if q.Ip != nil {
-		filter["last_ip"] = *q.Ip
+	if query.Ip != nil {
+		filter["last_ip"] = *query.Ip
 	}
 
 	var total int64

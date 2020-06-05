@@ -15,11 +15,11 @@ import (
 
 type Query struct {
 	schema.Query
-	Platform *model.BannerPlatform `json:"platform" form:"platform"` // 根据平台筛选
-	Active   *bool                 `json:"active" form:"active"`     // 是否激活
+	Platform *model.BannerPlatform `json:"platform" url:"platform" validate:"omitempty,oneof=pc app" comment:"平台"` // 根据平台筛选
+	Active   *bool                 `json:"active" url:"active" validate:"omitempty" comment:"是否激活"`                // 是否激活
 }
 
-func GetBannerList(c helper.Context, q Query) (res schema.Response) {
+func GetBannerList(c helper.Context, query Query) (res schema.Response) {
 	var (
 		err  error
 		data = make([]schema.Banner, 0)
@@ -41,20 +41,22 @@ func GetBannerList(c helper.Context, q Query) (res schema.Response) {
 		helper.Response(&res, data, meta, err)
 	}()
 
-	query := q.Query
-
 	query.Normalize()
+
+	if err = query.Validate(); err != nil {
+		return
+	}
 
 	list := make([]model.Banner, 0)
 
 	filter := map[string]interface{}{}
 
-	if q.Platform != nil {
-		filter["platform"] = *q.Platform
+	if query.Platform != nil {
+		filter["platform"] = *query.Platform
 	}
 
-	if q.Active != nil {
-		filter["active"] = *q.Active
+	if query.Active != nil {
+		filter["active"] = *query.Active
 	} else {
 		filter["active"] = true
 	}

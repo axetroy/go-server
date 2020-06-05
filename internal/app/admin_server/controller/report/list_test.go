@@ -53,7 +53,7 @@ func TestGetListByAdmin(t *testing.T) {
 
 	// 获取列表
 	{
-		r := report.GetListByAdmin(helper.Context{Uid: adminInfo.Id}, report.QueryAdmin{})
+		r := report.GetListByAdmin(helper.Context{Uid: adminInfo.Id}, report.Query{})
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
 		assert.Equal(t, "", r.Message)

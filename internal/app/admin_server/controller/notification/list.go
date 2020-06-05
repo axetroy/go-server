@@ -20,7 +20,7 @@ type Query struct {
 }
 
 // GetList get notification list
-func GetNotificationListByAdmin(c helper.Context, input Query) (res schema.Response) {
+func GetNotificationListByAdmin(c helper.Context, query Query) (res schema.Response) {
 	var (
 		err  error
 		data = make([]schema.NotificationAdmin, 0)
@@ -51,9 +51,11 @@ func GetNotificationListByAdmin(c helper.Context, input Query) (res schema.Respo
 		helper.Response(&res, data, meta, err)
 	}()
 
-	query := input.Query
-
 	query.Normalize()
+
+	if err = query.Validate(); err != nil {
+		return
+	}
 
 	tx = database.Db.Begin()
 

@@ -18,7 +18,7 @@ type Query struct {
 	schema.Query
 }
 
-func GetHistory(c helper.Context, input Query) (res schema.Response) {
+func GetHistory(c helper.Context, query Query) (res schema.Response) {
 	var (
 		err  error
 		tx   *gorm.DB
@@ -49,6 +49,12 @@ func GetHistory(c helper.Context, input Query) (res schema.Response) {
 		helper.Response(&res, data, meta, err)
 	}()
 
+	query.Normalize()
+
+	if err = query.Validate(); err != nil {
+		return
+	}
+
 	tx = database.Db.Begin()
 
 	userInfo := model.User{Id: c.Uid}
@@ -59,10 +65,6 @@ func GetHistory(c helper.Context, input Query) (res schema.Response) {
 		}
 		return
 	}
-
-	query := input.Query
-
-	query.Normalize()
 
 	list := make([]model.TransferLog, 0)
 

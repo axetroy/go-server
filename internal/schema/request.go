@@ -3,6 +3,7 @@ package schema
 
 import (
 	"fmt"
+	"github.com/axetroy/go-server/internal/library/validator"
 	"github.com/jinzhu/gorm"
 	"regexp"
 	"strings"
@@ -11,10 +12,10 @@ import (
 type Order string
 
 type Query struct {
-	Limit    int     `json:"limit" form:"limit"`
-	Page     int     `json:"page" form:"page"`
-	Sort     string  `json:"sort" form:"sort"`
-	Platform *string `json:"platform" form:"platform"`
+	Limit    int     `json:"limit" url:"limit" validate:"omitempty,number,gte=1" comment:"每页数量"`
+	Page     int     `json:"page" url:"page" validate:"omitempty,number,gte=0" comment:"页数"`
+	Sort     string  `json:"sort" url:"sort" validate:"omitempty,max=255" comment:"排序"`
+	Platform *string `json:"platform" url:"platform" validate:"omitempty,max=16" comment:"平台"`
 }
 
 type Sort struct {
@@ -92,4 +93,8 @@ func (q *Query) Normalize() *Query {
 	}
 
 	return q
+}
+
+func (q *Query) Validate() error {
+	return validator.ValidateStruct(q)
 }

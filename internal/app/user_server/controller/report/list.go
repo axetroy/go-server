@@ -15,16 +15,11 @@ import (
 
 type Query struct {
 	schema.Query
-	Type   *model.ReportType   `json:"type" form:"type"`     // 类型
-	Status *model.ReportStatus `json:"status" form:"status"` // 状态
+	Type   *model.ReportType   `json:"type" url:"type" validate:"omitempty,max=16" comment:"类型"` // 类型
+	Status *model.ReportStatus `json:"status" url:"status" validate:"omitempty" comment:"状态"`    // 状态
 }
 
-type QueryAdmin struct {
-	Query
-	Uid string `json:"uid"`
-}
-
-func GetList(c helper.Context, input Query) (res schema.Response) {
+func GetList(c helper.Context, query Query) (res schema.Response) {
 	var (
 		err  error
 		data = make([]schema.Report, 0)
@@ -46,9 +41,11 @@ func GetList(c helper.Context, input Query) (res schema.Response) {
 		helper.Response(&res, data, meta, err)
 	}()
 
-	query := input.Query
-
 	query.Normalize()
+
+	if err = query.Validate(); err != nil {
+		return
+	}
 
 	list := make([]model.Report, 0)
 
@@ -56,12 +53,12 @@ func GetList(c helper.Context, input Query) (res schema.Response) {
 
 	filter["uid"] = c.Uid
 
-	if input.Type != nil {
-		filter["type"] = *input.Type
+	if query.Type != nil {
+		filter["type"] = *query.Type
 	}
 
-	if input.Status != nil {
-		filter["status"] = *input.Status
+	if query.Status != nil {
+		filter["status"] = *query.Status
 	}
 
 	if err = query.Order(database.Db.Limit(query.Limit).Offset(query.Limit * query.Page)).Where(filter).Find(&list).Error; err != nil {

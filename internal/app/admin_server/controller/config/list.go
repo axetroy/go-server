@@ -18,7 +18,7 @@ type Query struct {
 	schema.Query
 }
 
-func GetList(c helper.Context, q Query) (res schema.Response) {
+func GetList(c helper.Context, query Query) (res schema.Response) {
 	var (
 		err  error
 		data = make([]schema.Config, 0)
@@ -49,6 +49,12 @@ func GetList(c helper.Context, q Query) (res schema.Response) {
 		helper.Response(&res, data, meta, err)
 	}()
 
+	query.Normalize()
+
+	if err = query.Validate(); err != nil {
+		return
+	}
+
 	tx = database.Db.Begin()
 
 	adminInfo := model.Admin{
@@ -67,10 +73,6 @@ func GetList(c helper.Context, q Query) (res schema.Response) {
 		err = exception.AdminNotSuper
 		return
 	}
-
-	query := q.Query
-
-	query.Normalize()
 
 	list := make([]model.Config, 0)
 

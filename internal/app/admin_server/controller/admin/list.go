@@ -15,10 +15,10 @@ import (
 
 type Query struct {
 	schema.Query
-	Status *model.AdminStatus `json:"status"` // 管理员状态
+	Status *model.AdminStatus `json:"status" url:"status" validate:"omitempty,number" comment:"管理员状态"` // 管理员状态
 }
 
-func GetList(c helper.Context, input Query) (res schema.Response) {
+func GetList(c helper.Context, query Query) (res schema.Response) {
 	var (
 		err  error
 		data = make([]schema.AdminProfile, 0)
@@ -40,15 +40,17 @@ func GetList(c helper.Context, input Query) (res schema.Response) {
 		helper.Response(&res, data, meta, err)
 	}()
 
-	query := input.Query
-
 	query.Normalize()
+
+	if err = query.Validate(); err != nil {
+		return
+	}
 
 	list := make([]model.Admin, 0)
 	filter := map[string]interface{}{}
 
-	if input.Status != nil {
-		filter["status"] = *input.Status
+	if query.Status != nil {
+		filter["status"] = *query.Status
 	}
 
 	if err = query.Order(database.Db.Limit(query.Limit).Offset(query.Limit * query.Page)).Where(filter).Find(&list).Error; err != nil {

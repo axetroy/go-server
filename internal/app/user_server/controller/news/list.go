@@ -15,11 +15,11 @@ import (
 
 type Query struct {
 	schema.Query
-	Status *model.NewsStatus `json:"status" form:"status"`
-	Type   *model.NewsType   `json:"type" form:"type"`
+	Status *model.NewsStatus `json:"status" url:"status" validate:"omitempty,number" comment:"状态"`
+	Type   *model.NewsType   `json:"type" url:"type" validate:"omitempty" comment:"类型"`
 }
 
-func GetNewsList(input Query) (res schema.Response) {
+func GetNewsList(query Query) (res schema.Response) {
 	var (
 		err  error
 		data = make([]schema.News, 0) // 接口输出的数据
@@ -42,18 +42,20 @@ func GetNewsList(input Query) (res schema.Response) {
 		helper.Response(&res, data, meta, err)
 	}()
 
-	query := input.Query
-
 	query.Normalize()
+
+	if err = query.Validate(); err != nil {
+		return
+	}
 
 	filter := map[string]interface{}{}
 
-	if input.Status != nil {
-		filter["status"] = *input.Status
+	if query.Status != nil {
+		filter["status"] = *query.Status
 	}
 
-	if input.Type != nil {
-		filter["type"] = *input.Type
+	if query.Type != nil {
+		filter["type"] = *query.Type
 	}
 
 	if err = query.Order(database.Db.Limit(query.Limit).Offset(query.Limit * query.Page)).Where(filter).Find(&list).Error; err != nil {

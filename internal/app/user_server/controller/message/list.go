@@ -15,12 +15,12 @@ import (
 
 type Query struct {
 	schema.Query
-	Status *model.MessageStatus `json:"status" form:"status"`
-	Read   *bool                `json:"read" form:"read"`
+	Status *model.MessageStatus `json:"status" url:"status" validate:"omitempty,number" comment:"状态"`
+	Read   *bool                `json:"read" url:"read" validate:"omitempty" comment:"是否已读"`
 }
 
 // 用户获取自己的消息列表
-func GetMessageListByUser(c helper.Context, input Query) (res schema.Response) {
+func GetMessageListByUser(c helper.Context, query Query) (res schema.Response) {
 	var (
 		err  error
 		data = make([]schema.Message, 0) // 接口输出的数据
@@ -43,9 +43,11 @@ func GetMessageListByUser(c helper.Context, input Query) (res schema.Response) {
 		helper.Response(&res, data, meta, err)
 	}()
 
-	query := input.Query
-
 	query.Normalize()
+
+	if err = query.Validate(); err != nil {
+		return
+	}
 
 	var total int64
 
@@ -53,12 +55,12 @@ func GetMessageListByUser(c helper.Context, input Query) (res schema.Response) {
 
 	filter["uid"] = c.Uid
 
-	if input.Read != nil {
-		filter["read"] = *input.Read
+	if query.Read != nil {
+		filter["read"] = *query.Read
 	}
 
-	if input.Status != nil {
-		filter["status"] = *input.Status
+	if query.Status != nil {
+		filter["status"] = *query.Status
 	}
 
 	if err = query.Order(database.Db.Limit(query.Limit).Offset(query.Limit * query.Page)).Where(filter).Find(&list).Error; err != nil {
