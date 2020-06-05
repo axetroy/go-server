@@ -46,7 +46,7 @@ require (
 	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/shirou/gopsutil v2.20.5+incompatible
 	github.com/sirupsen/logrus v1.6.0
-	github.com/stretchr/testify v1.6.0
+	github.com/stretchr/testify v1.6.1
 	github.com/urfave/cli/v2 v2.2.0
 	github.com/valyala/fasthttp v1.12.0 // indirect
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
