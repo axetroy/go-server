@@ -53,9 +53,7 @@ func TestUpdateByAdmin(t *testing.T) {
 	{
 		locked := true
 		r := report.UpdateByAdmin(helper.Context{Uid: adminInfo.Id}, reportInfo.Id, report.UpdateByAdminParams{
-			UpdateParams: report.UpdateParams{
-				Status: &model.ReportStatusResolve,
-			},
+			Status: &model.ReportStatusResolve,
 			Locked: &locked,
 		})
 
@@ -116,9 +114,7 @@ func TestUpdateByAdminRouter(t *testing.T) {
 
 		locked := true
 		body, _ := json.Marshal(&report.UpdateByAdminParams{
-			UpdateParams: report.UpdateParams{
-				Status: &model.ReportStatusResolve,
-			},
+			Status: &model.ReportStatusResolve,
 			Locked: &locked,
 		})
 

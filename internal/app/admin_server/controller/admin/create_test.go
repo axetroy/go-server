@@ -28,7 +28,7 @@ func TestCreateAdmin(t *testing.T) {
 		r := admin.CreateAdmin(admin.CreateAdminParams{
 			Account:  "admin",
 			Name:     "test",
-			Password: "123",
+			Password: "123123",
 		}, true)
 
 		assert.Equal(t, schema.StatusFail, r.Status)
@@ -40,13 +40,13 @@ func TestCreateAdmin(t *testing.T) {
 		input := admin.CreateAdminParams{
 			Account:  "test",
 			Name:     "test",
-			Password: "123",
+			Password: "123123",
 		}
 
 		r := admin.CreateAdmin(input, false)
 
-		assert.Equal(t, r.Status, schema.StatusSuccess)
-		assert.Equal(t, r.Message, "")
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
 
 		defer func() {
 			// 删除这个刚创建的管理员
@@ -72,7 +72,7 @@ func TestCreateAdminRouter(t *testing.T) {
 		}
 
 		username := "test-TestCreateAdminRouter"
-		password := "12312"
+		password := "123123"
 
 		body, _ := json.Marshal(&admin.CreateAdminParams{
 			Account:  username,

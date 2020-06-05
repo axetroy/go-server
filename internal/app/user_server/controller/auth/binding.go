@@ -15,17 +15,17 @@ import (
 )
 
 type BindingEmailParams struct {
-	Email string `json:"email" valid:"required~请输入邮箱"` // 邮箱
-	Code  string `json:"code" valid:"required~请输入验证码"` // 邮箱收到的验证码
+	Email string `json:"email" validate:"required,email,max=36" comment:"邮箱"` // 邮箱
+	Code  string `json:"code" valid:"required,len=6" comment:"验证码"`           // 邮箱收到的验证码
 }
 
 type BindingPhoneParams struct {
-	Phone string `json:"phone" valid:"required~请输入手机号"` // 手机号
-	Code  string `json:"code" valid:"required~请输入验证码"`  // 手机收到的验证码
+	Phone string `json:"phone" validate:"required,numeric,len=11" comment:"手机号"` // 手机号
+	Code  string `json:"code" validate:"required,len=6" comment:"验证码"`           // 手机收到的验证码
 }
 
 type BindingWechatMiniAppParams struct {
-	Code string `json:"code" valid:"required~请输入微信认证码"` // 微信小程序调用 wx.login() 之后，返回的 code
+	Code string `json:"code" validate:"required,max=255" comment:"微信授权代码"` // 微信小程序调用 wx.login() 之后，返回的 code
 }
 
 // 绑定邮箱

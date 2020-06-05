@@ -22,7 +22,7 @@ func TestCreate(t *testing.T) {
 	// 创建一个 Banner
 	{
 		var (
-			image    = "test.png"
+			image    = "https://example.com/test.png"
 			href     = "https://example.com"
 			platform = model.BannerPlatformApp
 		)
@@ -57,7 +57,7 @@ func TestCreate(t *testing.T) {
 		defer tester.DeleteUserByUserName(userInfo.Username)
 
 		var (
-			image    = "test.png"
+			image    = "https://example.com/test.png"
 			href     = "https://example.com"
 			platform = model.BannerPlatformApp
 		)
@@ -81,7 +81,7 @@ func TestCreateRouter(t *testing.T) {
 	// 创建 banner
 	{
 		var (
-			image    = "test.png"
+			image    = "https://example.com/test.png"
 			href     = "https://example.com"
 			platform = model.BannerPlatformApp
 		)

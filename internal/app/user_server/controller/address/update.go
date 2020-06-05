@@ -17,15 +17,15 @@ import (
 )
 
 type UpdateParams struct {
-	Name         *string `json:"name"`
-	Phone        *string `json:"phone"`
-	ProvinceCode *string `json:"province_code"`
-	CityCode     *string `json:"city_code"`
-	AreaCode     *string `json:"area_code"`
-	StreetCode   *string `json:"street_code"`
-	Address      *string `json:"address"`
-	IsDefault    *bool   `json:"is_default"`
-	Note         *string `json:"note"`
+	Name         *string `json:"name" validate:"omitempty,max=32" comment:"收货人"`                    // 收货人
+	Phone        *string `json:"phone" validate:"omitempty,numeric,len=11" comment:"电话号码"`          // 收货人手机号
+	ProvinceCode *string `json:"province_code" validate:"omitempty,numeric,len=2" comment:"省份代码"`   // 省份代码
+	CityCode     *string `json:"city_code" validate:"omitempty,numeric,len=4" comment:"城市代码"`       // 城市代码
+	AreaCode     *string `json:"area_code" validate:"omitempty,numeric,len=6" comment:"区域代码"`       // 区域代码
+	StreetCode   *string `json:"street_code" validate:"omitempty,numeric,len=9" comment:"街道/乡/镇代码"` // 街道/乡/镇
+	Address      *string `json:"address" validate:"omitempty,max=32" comment:"详细地址"`                // 详细的地址
+	IsDefault    *bool   `json:"is_default" omitempty:"omitempty"`                                  // 是否是默认地址
+	Note         *string `json:"note" validate:"omitempty,max=12"`                                  // 备注/标签
 }
 
 func Update(c helper.Context, addressId string, input UpdateParams) (res schema.Response) {

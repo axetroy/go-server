@@ -21,7 +21,7 @@ func TestGetAdminInfo(t *testing.T) {
 		input := admin.CreateAdminParams{
 			Account:  "test",
 			Name:     "test",
-			Password: "123",
+			Password: "123123",
 		}
 
 		r := admin.CreateAdmin(input, false)

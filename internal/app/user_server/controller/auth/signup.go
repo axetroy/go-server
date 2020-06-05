@@ -21,26 +21,26 @@ import (
 )
 
 type SignUpWithUsernameParams struct {
-	Username   string  `json:"username" valid:"required~请输入用户名"` // 用户名
-	Password   string  `json:"password" valid:"required~请输入密码"`  // 密码
-	InviteCode *string `json:"invite_code"`                      // 邀请码
+	Username   string  `json:"username" validate:"required,max=32" comment:"用户名"`    // 用户名
+	Password   string  `json:"password" validate:"required,max=32" comment:"密码"`     // 密码
+	InviteCode *string `json:"invite_code" validate:"omitempty,len=8" comment:"邀请码"` // 邀请码
 }
 
 type SignUpWithEmailParams struct {
-	Email      string  `json:"email" valid:"required~请输入邮箱"`    // 邮箱
-	Password   string  `json:"password" valid:"required~请输入密码"` // 密码
-	Code       string  `json:"code" valid:"required~请输入邮箱验证码"`  // 邮箱验证码
-	InviteCode *string `json:"invite_code"`                     // 邀请码
+	Email      string  `json:"email" validate:"required,email,max=255" comment:"邮箱"` // 邮箱
+	Password   string  `json:"password" validate:"required,max=32" comment:"密码"`     // 密码
+	Code       string  `json:"code" validate:"required" comment:"验证码"`               // 邮箱验证码
+	InviteCode *string `json:"invite_code" validate:"omitempty,len=8" comment:"邀请码"` // 邀请码
 }
 
 type SignUpWithEmailActionParams struct {
-	Email string `json:"email" valid:"required~请输入邮箱"` // 邮箱
+	Email string `json:"email" validate:"required,email,max=255" comment:"邮箱"` // 邮箱
 }
 
 type SignUpWithPhoneParams struct {
-	Phone      string  `json:"phone" valid:"required~请输入手机号"`  // 手机号
-	Code       string  `json:"code" valid:"required~请输入手机验证码"` // 短信验证码
-	InviteCode *string `json:"invite_code"`                    // 邀请码
+	Phone      string  `json:"phone" validate:"required,numeric,len=11" comment:"手机号"` // 手机号
+	Code       string  `json:"code" validate:"required" comment:"验证码"`                 // 短信验证码
+	InviteCode *string `json:"invite_code" validate:"omitempty,len=8" comment:"邀请码"`   // 邀请码
 }
 
 // 创建用户帐号，包括创建的邀请码，钱包数据等，继承到一起

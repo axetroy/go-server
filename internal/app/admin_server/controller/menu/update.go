@@ -17,12 +17,12 @@ import (
 )
 
 type UpdateParams struct {
-	Name      *string   `json:"name"`      // 菜单名
-	Url       *string   `json:"url"`       // 菜单链接的 URL 地址
-	Icon      *string   `json:"icon"`      // 菜单的图标
-	Accession *[]string `json:"accession"` // 该菜单所需要的权限
-	Sort      *int      `json:"sort"`      // 菜单排序, 越大的越靠前
-	ParentId  *string   `json:"parent_id"` // 该菜单的父级 ID
+	Name      *string   `json:"name" validate:"omitempty,max=32" comment:"菜单名"`       // 菜单名
+	Url       *string   `json:"url" validate:"omitempty,url,max=255" comment:"菜单地址"`  // 菜单链接的 URL 地址
+	Icon      *string   `json:"icon" validate:"omitempty,max=64" comment:"菜单图标"`      // 菜单的图标
+	Accession *[]string `json:"accession" validate:"omitempty" comment:"菜单权限"`        // 该菜单所需要的权限
+	Sort      *int      `json:"sort" validate:"omitempty,min=1" comment:"菜单排序"`       // 菜单排序, 越大的越靠前
+	ParentId  *string   `json:"parent_id" validate:"omitempty,max=32" comment:"父级ID"` // 该菜单的父级 ID
 }
 
 func Update(c helper.Context, bannerId string, input UpdateParams) (res schema.Response) {

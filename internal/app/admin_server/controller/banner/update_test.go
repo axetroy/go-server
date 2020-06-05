@@ -29,7 +29,7 @@ func TestUpdate(t *testing.T) {
 	// 创建一个 Banner
 	{
 		var (
-			image    = "test.png"
+			image    = "https://example/test.png"
 			href     = "https://example.com"
 			platform = model.BannerPlatformApp
 		)
@@ -107,7 +107,7 @@ func TestUpdateRouter(t *testing.T) {
 	{
 
 		body, _ := json.Marshal(&banner2.CreateParams{
-			Image:    "test.png",
+			Image:    "https://example.com/test.png",
 			Href:     "http://example.org",
 			Platform: model.BannerPlatformApp,
 		})
@@ -141,7 +141,7 @@ func TestUpdateRouter(t *testing.T) {
 	{
 
 		var (
-			newImage       = "new.png"
+			newImage       = "https://example.com/new.png"
 			newDescription = "13333333333"
 		)
 

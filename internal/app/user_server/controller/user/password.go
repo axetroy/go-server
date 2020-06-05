@@ -15,12 +15,12 @@ import (
 )
 
 type UpdatePasswordParams struct {
-	OldPassword string `json:"old_password" valid:"required~请输入旧密码"`
-	NewPassword string `json:"new_password" valid:"required~请输入新密码"`
+	OldPassword string `json:"old_password" validate:"required,max=32" comment:"旧密码"`
+	NewPassword string `json:"new_password" validate:"required,max=32,nefield=OldPassword" comment:"新密码"`
 }
 
 type UpdatePasswordByAdminParams struct {
-	NewPassword string `json:"new_password" valid:"required~请输入新密码"`
+	NewPassword string `json:"new_password" validate:"required,max=32" comment:"新密码"`
 }
 
 func UpdatePassword(c helper.Context, input UpdatePasswordParams) (res schema.Response) {

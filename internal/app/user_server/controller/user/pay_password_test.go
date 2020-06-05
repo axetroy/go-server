@@ -55,8 +55,8 @@ func TestSetPayPassword(t *testing.T) {
 			PasswordConfirm: "321321",
 		})
 
-		assert.Equal(t, exception.InvalidConfirmPassword.Code(), r.Status)
-		assert.Equal(t, exception.InvalidConfirmPassword.Error(), r.Message)
+		assert.Equal(t, exception.InvalidParams.Code(), r.Status)
+		assert.Equal(t, "确认密码必须等于Password", r.Message)
 	}
 
 	{

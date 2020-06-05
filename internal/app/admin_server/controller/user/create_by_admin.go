@@ -9,6 +9,7 @@ import (
 	"github.com/axetroy/go-server/internal/library/helper"
 	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/library/util"
+	"github.com/axetroy/go-server/internal/library/validator"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
@@ -21,12 +22,12 @@ import (
 )
 
 type CreateUserParams struct {
-	Username *string      `json:"username"`
-	Email    *string      `json:"email"`
-	Phone    *string      `json:"phone"`
-	Nickname *string      `json:"nickname"`
-	Gender   model.Gender `json:"gender"`
-	Password string       `json:"password"`
+	Username *string      `json:"username" valid:"omitempty,min=3,max=36" comment:"用户名"`
+	Email    *string      `json:"email" valid:"omitempty,email,max=36" comment:"邮箱"`
+	Phone    *string      `json:"phone" valid:"omitempty,numeric,max=11" comment:"手机号"`
+	Nickname *string      `json:"nickname" valid:"omitempty" comment:"昵称"`
+	Gender   model.Gender `json:"gender" valid:"required,min=0,oneof=0 1 2" comment:"性别"`
+	Password string       `json:"password" valid:"required,min=6,max=32" comment:"密码"`
 }
 
 func CreateUser(input CreateUserParams) (res schema.Response) {
@@ -59,8 +60,8 @@ func CreateUser(input CreateUserParams) (res schema.Response) {
 		helper.Response(&res, data, nil, err)
 	}()
 
-	if input.Password == "" {
-		err = exception.RequirePassword
+	// 参数校验
+	if err = validator.ValidateStruct(input); err != nil {
 		return
 	}
 

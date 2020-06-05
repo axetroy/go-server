@@ -18,9 +18,9 @@ import (
 )
 
 type CreateAdminParams struct {
-	Account  string `json:"account" valid:"required~请输入管理员账号"`  // 管理员账号，登陆凭证
-	Password string `json:"password" valid:"required~请输入管理员密码"` // 管理员密码
-	Name     string `json:"name" valid:"required~请输入管理员名称"`     // 管理员名称，注册后不可修改
+	Account  string `json:"account" validate:"required,min=1,max=36" comment:"帐号"`  // 管理员账号，登陆凭证
+	Password string `json:"password" validate:"required,min=6,max=36" comment:"密码"` // 管理员密码
+	Name     string `json:"name" validate:"required,min=2,max=36" comment:"名称"`     // 管理员名称，注册后不可修改
 }
 
 // 创建管理员
@@ -63,7 +63,14 @@ func CreateAdmin(input CreateAdminParams, isSuper bool) (res schema.Response) {
 
 	n := model.Admin{Username: input.Account}
 
-	if tx.Where(&n).First(&n).RecordNotFound() == false {
+	if err = tx.Where(&n).First(&n).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = nil
+		} else {
+			err = exception.Database.New(err.Error())
+			return
+		}
+	} else {
 		err = exception.AdminExist
 		return
 	}

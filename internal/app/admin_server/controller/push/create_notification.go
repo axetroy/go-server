@@ -11,9 +11,9 @@ import (
 )
 
 type CreateNotificationParams struct {
-	UserIds []string `json:"user_ids" valid:"required~请输入用户 ID"` // 需要推送的指定用户
-	Title   string   `json:"title" valid:"required~请输入标题"`       // 标题
-	Content string   `json:"content" valid:"required~请输入内容"`     // 内容
+	UserIds []string `json:"user_ids" validate:"required,max=32" comment:"用户ID"` // 需要推送的指定用户
+	Title   string   `json:"title" validate:"required,max=32" comment:"标题"`      // 标题
+	Content string   `json:"content" validate:"required" comment:"内容"`           // 内容
 }
 
 func CreateNotification(c helper.Context, input CreateNotificationParams) (res schema.Response) {

@@ -17,10 +17,10 @@ import (
 )
 
 type CreateParams struct {
-	Name        string   `json:"name" valid:"required~请输入角色名"`       // 角色名
-	Description string   `json:"description" valid:"required~请输入描述"` // 描述
-	Accession   []string `json:"accession" valid:"required~请输入权限"`   // 权限列表
-	Note        *string  `json:"note"`                               // 备注
+	Name        string   `json:"name" validate:"required,max=64" comment:"角色名"`       // 角色名
+	Description string   `json:"description" validate:"required,max=64" comment:"描述"` // 描述
+	Accession   []string `json:"accession" validate:"omitempty" comment:"权限"`         // 权限列表
+	Note        *string  `json:"note" validate:"omitempty,max=64" comment:"备注"`       // 备注
 }
 
 func Create(c helper.Context, input CreateParams) (res schema.Response) {

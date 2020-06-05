@@ -16,12 +16,12 @@ import (
 )
 
 type UpdateParams struct {
-	Title    *string           `json:"title"`
-	Content  *string           `json:"content"`
-	Tags     *[]string         `json:"tags"`
-	Status   *model.HelpStatus `json:"status"`
-	Type     *model.HelpType   `json:"type"`
-	ParentId *string           `json:"parent_id"`
+	Title    *string           `json:"title" validate:"omitempty,max=32" comment:"标题"`
+	Content  *string           `json:"content" validate:"omitempty" comment:"内容"`
+	Tags     *[]string         `json:"tags" validate:"omitempty,max=32" comment:"标签"`
+	Status   *model.HelpStatus `json:"status" validate:"omitempty" comment:"状态"`
+	Type     *model.HelpType   `json:"type" validate:"omitempty,oneof=article class" comment:"类型"`
+	ParentId *string           `json:"parent_id" validate:"omitempty,max=32" comment:"父级ID"`
 }
 
 func Update(c helper.Context, helpId string, input UpdateParams) (res schema.Response) {

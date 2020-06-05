@@ -18,9 +18,9 @@ import (
 )
 
 type CreateParams struct {
-	Title   string  `json:"title" valid:"required~请输入公告标题"`   // 公告标题
-	Content string  `json:"content" valid:"required~请输入公告内容"` // 公告内容
-	Note    *string `json:"note"`                             // 备注
+	Title   string  `json:"title" validate:"required,max=32" comment:"标题"`  // 公告标题
+	Content string  `json:"content" validate:"required" comment:"内容"`       // 公告内容
+	Note    *string `json:"note" validate:"omitempty,max=255" comment:"备注"` // 备注
 }
 
 func Create(c helper.Context, input CreateParams) (res schema.Response) {

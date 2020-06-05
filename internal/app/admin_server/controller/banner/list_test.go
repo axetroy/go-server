@@ -23,8 +23,8 @@ func TestGetList(t *testing.T) {
 
 	{
 		var (
-			image    = "test"
-			href     = "test"
+			image    = "https://example/test.png"
+			href     = "https://example.com"
 			platform = model.BannerPlatformApp
 		)
 
@@ -86,8 +86,8 @@ func TestGetListRouter(t *testing.T) {
 
 	{
 		var (
-			image    = "test"
-			href     = "test"
+			image    = "https://example/test.png"
+			href     = "https://example.com"
 			platform = model.BannerPlatformApp
 		)
 

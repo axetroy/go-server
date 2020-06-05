@@ -16,8 +16,8 @@ import (
 )
 
 type ResetPasswordParams struct {
-	Code        string `json:"code" valid:"required~请输入激活码"`
-	NewPassword string `json:"new_password" valid:"required~请输入新密码"`
+	Code        string `json:"code" validate:"required" comment:"激活码"`
+	NewPassword string `json:"new_password" validate:"required,max=32" comment:"新密码"`
 }
 
 func ResetPassword(input ResetPasswordParams) (res schema.Response) {

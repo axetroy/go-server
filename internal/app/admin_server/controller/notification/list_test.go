@@ -3,7 +3,6 @@ package notification_test
 
 import (
 	"encoding/json"
-	"github.com/axetroy/go-server/internal/app/admin_server/controller/admin"
 	"github.com/axetroy/go-server/internal/app/admin_server/controller/notification"
 	"github.com/axetroy/go-server/internal/library/helper"
 	"github.com/axetroy/go-server/internal/schema"
@@ -16,29 +15,9 @@ import (
 
 func TestGetNotificationListByAdmin(t *testing.T) {
 	{
-		var (
-			adminUid string
-		)
-		// 1. 先登陆获取管理员的Token
-		{
-			r := admin.Login(admin.SignInParams{
-				Username: "admin",
-				Password: "admin",
-			})
+		adminInfo, err := tester.LoginAdmin()
 
-			assert.Equal(t, schema.StatusSuccess, r.Status)
-			assert.Equal(t, "", r.Message)
-
-			adminInfo := schema.AdminProfileWithToken{}
-
-			assert.Nil(t, r.Decode(&adminInfo))
-
-			if c, er := token.Parse(token.Prefix+" "+adminInfo.Token, true); er != nil {
-				t.Error(er)
-			} else {
-				adminUid = c.Uid
-			}
-		}
+		assert.Nil(t, err)
 
 		// 2. 先创建一个通知作为测试
 		{
@@ -48,7 +27,7 @@ func TestGetNotificationListByAdmin(t *testing.T) {
 			)
 
 			r := notification.Create(helper.Context{
-				Uid: adminUid,
+				Uid: adminInfo.Id,
 			}, notification.CreateParams{
 				Title:   title,
 				Content: content,

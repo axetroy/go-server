@@ -16,13 +16,13 @@ import (
 )
 
 type UpdateParams struct {
-	Image       *string               `json:"image"`        // 图片 URL
-	Href        *string               `json:"href"`         // 图片跳转的 URL
-	Platform    *model.BannerPlatform `json:"platform"`     // 用于哪个平台, web/app
-	Description *string               `json:"description"`  // Banner 描述
-	Priority    *int                  `json:"priority"`     // 优先级，用于排序
-	Identifier  *string               `json:"identifier"`   // APP 跳转标识符
-	FallbackUrl *string               `json:"fallback_url"` // APP 跳转标识符的备选方案
+	Image       *string               `json:"image" validate:"omitempty,url,max=255" comment:"图片地址"`                  // 图片 URL
+	Href        *string               `json:"href" validate:"omitempty,url,max=255" comment:"图片跳转的地址"`                // 图片跳转的 URL
+	Platform    *model.BannerPlatform `json:"platform" validate:"omitempty,max=32,oneof=web app" comment:"平台"`        // 用于哪个平台, web/app
+	Description *string               `json:"description" validate:"omitempty,max=255" comment:"描述"`                  // Banner 描述
+	Priority    *int                  `json:"priority" validate:"omitempty,gt=0" comment:"优先级"`                       // 优先级，用于排序
+	Identifier  *string               `json:"identifier" validate:"omitempty,max=32" comment:"APP 标识符"`               // APP 跳转标识符
+	FallbackUrl *string               `json:"fallback_url" validate:"omitempty,url,max=255" comment:"APP 跳转标识符的备选方案"` // APP 跳转标识符的备选方案
 }
 
 func Update(c helper.Context, bannerId string, input UpdateParams) (res schema.Response) {

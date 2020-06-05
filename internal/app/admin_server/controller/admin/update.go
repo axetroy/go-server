@@ -17,9 +17,9 @@ import (
 )
 
 type UpdateParams struct {
-	Status    *model.AdminStatus `json:"status"`    // 管理员状态
-	Name      *string            `json:"name"`      // 管理员名字
-	Accession *[]string          `json:"accession"` // 管理员的权限
+	Status    *model.AdminStatus `json:"status" validate:"omitempty" comment:"管理员状态"`         // 管理员状态
+	Name      *string            `json:"name" validate:"omitempty,min=2,max=36" comment:"名称"` // 管理员名字
+	Accession *[]string          `json:"accession" validate:"omitempty" comment:"管理员的权限"`     // 管理员的权限
 }
 
 func Update(c helper.Context, adminId string, input UpdateParams) (res schema.Response) {

@@ -88,7 +88,7 @@ func Migrate(db *gorm.DB) error {
 			err = db.Create(&model.Admin{
 				Username:  "admin",
 				Name:      "admin",
-				Password:  util.GeneratePassword(dotenv.GetByDefault("ADMIN_DEFAULT_PASSWORD", "admin")),
+				Password:  util.GeneratePassword(dotenv.GetByDefault("ADMIN_DEFAULT_PASSWORD", "123456")),
 				Accession: []string{},
 				Status:    model.AdminStatusInit,
 				IsSuper:   true,

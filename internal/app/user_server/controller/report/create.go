@@ -16,10 +16,10 @@ import (
 )
 
 type CreateParams struct {
-	Title       string           `json:"title" valid:"required~请填写标题"`     // 标题
-	Content     string           `json:"content" valid:"required~请填写反馈内容"` // 内容
-	Type        model.ReportType `json:"type" valid:"required~请填写反馈类型"`    // 反馈类型
-	Screenshots []string         `json:"screenshots"`                      // 截图
+	Title       string           `json:"title" validate:"required,max=32" comment:"标题"`  // 标题
+	Content     string           `json:"content" validate:"required" comment:"内容"`       // 内容
+	Type        model.ReportType `json:"type" validate:"required,max=12" comment:"反馈类型"` // 反馈类型
+	Screenshots []string         `json:"screenshots" validate:"omitempty" comment:"截图"`  // 截图
 }
 
 func Create(c helper.Context, input CreateParams) (res schema.Response) {

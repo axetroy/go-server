@@ -17,7 +17,7 @@ import (
 )
 
 type SendResetPasswordEmailParams struct {
-	Email string `json:"email" valid:"required~请输入邮箱地址"` // 要发送的邮箱地址
+	Email string `json:"email" validate:"required,email,max=255" comment:"邮箱"` // 要发送的邮箱地址
 }
 
 func SendResetPasswordEmail(input SendResetPasswordEmailParams) (res schema.Response) {

@@ -17,15 +17,15 @@ import (
 )
 
 type CreateAddressParams struct {
-	Name         string  `json:"name" valid:"required~请填写收货人"`           // 收货人
-	Phone        string  `json:"phone" valid:"required~请输入收货人电话号码"`      // 收货人手机号
-	ProvinceCode string  `json:"province_code" valid:"required~请选择省份"`   // 省份代码
-	CityCode     string  `json:"city_code" valid:"required~请选择城市"`       // 城市代码
-	AreaCode     string  `json:"area_code" valid:"required~请选择区域"`       // 区域代码
-	StreetCode   string  `json:"street_code" valid:"required~请选择街道/乡/镇"` // 街道/乡/镇
-	Address      string  `json:"address" valid:"required~请输入详细地址"`       // 详细的地址
-	IsDefault    *bool   `json:"is_default"`                             // 是否是默认地址
-	Note         *string `json:"note"`                                   // 备注/标签
+	Name         string  `json:"name" validate:"required,max=32" comment:"收货人"`                    // 收货人
+	Phone        string  `json:"phone" validate:"required,numeric,len=11" comment:"电话号码"`          // 收货人手机号
+	ProvinceCode string  `json:"province_code" validate:"required,numeric,len=2" comment:"省份代码"`   // 省份代码
+	CityCode     string  `json:"city_code" validate:"required,numeric,len=4" comment:"城市代码"`       // 城市代码
+	AreaCode     string  `json:"area_code" validate:"required,numeric,len=6" comment:"区域代码"`       // 区域代码
+	StreetCode   string  `json:"street_code" validate:"required,numeric,len=9" comment:"街道/乡/镇代码"` // 街道/乡/镇
+	Address      string  `json:"address" validate:"required,max=32" comment:"详细地址"`                // 详细的地址
+	IsDefault    *bool   `json:"is_default" validate:"omitempty"`                                  // 是否是默认地址
+	Note         *string `json:"note" validate:"omitempty,max=12"`                                 // 备注/标签
 }
 
 func Create(c helper.Context, input CreateAddressParams) (res schema.Response) {

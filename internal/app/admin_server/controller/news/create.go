@@ -6,6 +6,7 @@ import (
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
 	"github.com/axetroy/go-server/internal/library/router"
+	"github.com/axetroy/go-server/internal/library/validator"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
@@ -15,10 +16,10 @@ import (
 )
 
 type CreateNewParams struct {
-	Title   string         `json:"title"`
-	Content string         `json:"content"`
-	Type    model.NewsType `json:"type"`
-	Tags    []string       `json:"tags"`
+	Title   string         `json:"title" validate:"required,max=32" comment:"标题"`
+	Content string         `json:"content" validate:"required" comment:"内容"`
+	Type    model.NewsType `json:"type" validate:"required,max=32" comment:"类型"`
+	Tags    []string       `json:"tags" validate:"omitempty" comment:"标题"`
 }
 
 func Create(c helper.Context, input CreateNewParams) (res schema.Response) {
@@ -50,6 +51,11 @@ func Create(c helper.Context, input CreateNewParams) (res schema.Response) {
 
 		helper.Response(&res, data, nil, err)
 	}()
+
+	// 参数校验
+	if err = validator.ValidateStruct(input); err != nil {
+		return
+	}
 
 	// 参数校验
 	if !model.IsValidNewsType(input.Type) {

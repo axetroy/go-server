@@ -27,8 +27,8 @@ func TestGetBanner(t *testing.T) {
 	{
 		var (
 			bannerId string
-			image    = "test"
-			href     = "test"
+			image    = "https://example/test.png"
+			href     = "https://example.com"
 			platform = model.BannerPlatformApp
 		)
 
@@ -78,8 +78,8 @@ func TestGetBanner(t *testing.T) {
 func TestGetBannerRouter(t *testing.T) {
 	var (
 		bannerId string
-		image    = "test"
-		href     = "test"
+		image    = "https://example/test.png"
+		href     = "https://example.com"
 		platform = model.BannerPlatformApp
 	)
 

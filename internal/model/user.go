@@ -22,8 +22,8 @@ const (
 
 	// 用户性别
 	GenderUnknown Gender = 0 // 未知性别
-	GenderMale               // 男
-	GenderFemmale            // 女
+	GenderMale    Gender = 1 // 男
+	GenderFemale  Gender = 2 // 女
 )
 
 type User struct {

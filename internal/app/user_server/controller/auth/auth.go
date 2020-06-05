@@ -15,11 +15,11 @@ import (
 )
 
 type SendEmailAuthCodeParams struct {
-	Email string `json:"email" valid:"required~请输入邮箱"`
+	Email string `json:"email" validate:"required,email" comment:"邮箱"`
 }
 
 type SendPhoneAuthCodeParams struct {
-	Phone string `json:"phone" valid:"required~请输入手机号"`
+	Phone string `json:"phone" validate:"required,numeric,len=11" comment:"手机号"`
 }
 
 func GenerateAuthCode() string {

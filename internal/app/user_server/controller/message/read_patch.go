@@ -14,7 +14,7 @@ import (
 )
 
 type MarkBatchParams struct {
-	IDs []string `json:"ids" valid:"required~请输入 ID 组"`
+	IDs []string `json:"ids" validate:"required" comment:"ID组"`
 }
 
 func MarkBatchRead(c helper.Context, input MarkBatchParams) (res schema.Response) {

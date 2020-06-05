@@ -54,7 +54,7 @@ func CreateUser() (profile schema.ProfileWithToken, err error) {
 func LoginAdmin() (profile schema.AdminProfileWithToken, err error) {
 	r := admin.Login(admin.SignInParams{
 		Username: "admin",
-		Password: "admin",
+		Password: "123456",
 	})
 
 	if r.Status != schema.StatusSuccess {

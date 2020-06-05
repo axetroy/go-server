@@ -14,13 +14,8 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-type UpdatePasswordParams struct {
-	OldPassword string `json:"old_password" valid:"required~请输入旧密码"`
-	NewPassword string `json:"new_password" valid:"required~请输入新密码"`
-}
-
 type UpdatePasswordByAdminParams struct {
-	NewPassword string `json:"new_password" valid:"required~请输入新密码"`
+	NewPassword string `json:"new_password" validate:"required" comment:"新密码"`
 }
 
 func UpdatePasswordByAdmin(c helper.Context, userId string, input UpdatePasswordByAdminParams) (res schema.Response) {

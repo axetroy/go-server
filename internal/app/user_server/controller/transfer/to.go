@@ -24,10 +24,10 @@ import (
 )
 
 type ToParams struct {
-	Currency string  `json:"currency" valid:"required~请选择币种"`                   // 币种
-	To       string  `json:"to" valid:"required~请输入转账对象,numeric~请输入正确的接受人ID"`   // 转账给谁
-	Amount   string  `json:"amount" valid:"required~请输入转账数量,float~请输入纯数字的转账数量"` // 转账数量
-	Note     *string `json:"note"`                                              // 转账备注
+	Currency string  `json:"currency" validate:"required" comment:"币种"`              // 币种
+	To       string  `json:"to" validate:"required,numeric" comment:"转账对象"`          // 转账给谁
+	Amount   string  `json:"amount" validate:"required,numeric,gt=0" comment:"转账数量"` // 转账数量
+	Note     *string `json:"note" validate:"omitempty" comment:"转账备注"`               // 转账备注
 }
 
 func To(c helper.Context, input ToParams, signature string) (res schema.Response) {

@@ -23,7 +23,7 @@ func TestDeleteAdminByAccount(t *testing.T) {
 		r := admin.CreateAdmin(admin.CreateAdminParams{
 			Account:  "admin123",
 			Name:     "test",
-			Password: "123",
+			Password: "123123",
 		}, false)
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
@@ -59,7 +59,7 @@ func TestDeleteAdminById(t *testing.T) {
 		r := admin.CreateAdmin(admin.CreateAdminParams{
 			Account:  "admin321",
 			Name:     "test",
-			Password: "123",
+			Password: "123123",
 		}, false)
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
@@ -106,7 +106,7 @@ func TestDeleteAdminByIdRouter(t *testing.T) {
 		r := admin.CreateAdmin(admin.CreateAdminParams{
 			Account:  "admin321",
 			Name:     "test",
-			Password: "123",
+			Password: "123123",
 		}, false)
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)

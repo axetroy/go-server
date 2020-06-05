@@ -1,27 +1,72 @@
 package validator
 
 import (
-	"github.com/asaskevich/govalidator"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/util"
+	"github.com/go-playground/locales/zh"
+	ut "github.com/go-playground/universal-translator"
+	"github.com/go-playground/validator/v10"
+	zhTranslations "github.com/go-playground/validator/v10/translations/zh"
+	"log"
+	"reflect"
 	"regexp"
 )
 
 var (
 	usernameReg = regexp.MustCompile("^[\\w\\-]+$")
+	validate    = validator.New()
+	trans       ut.Translator
 )
 
+func init() {
+	z := zh.New()
+	uni := ut.New(z, z)
+	// this is usually know or extracted from http 'Accept-Language' header
+	// also see uni.FindTranslator(...)
+	trans, _ = uni.GetTranslator("zh")
+	if err := zhTranslations.RegisterDefaultTranslations(validate, trans); err != nil {
+		log.Fatalln(err)
+	}
+
+	validate.RegisterTagNameFunc(func(fld reflect.StructField) string {
+		return fld.Tag.Get("comment")
+	})
+}
+
 func ValidateStruct(any interface{}) error {
-	if isValid, err := govalidator.ValidateStruct(any); err != nil {
-		return exception.InvalidParams.New(err.Error())
-	} else if !isValid {
-		return exception.InvalidParams
+	if err := validate.Struct(any); err != nil {
+		// translate all error at once
+		errs := err.(validator.ValidationErrors)
+
+		// returns a map with key = namespace & value = translated error
+		// NOTICE: 2 errors are returned and you'll see something surprising
+		// translations are i18n aware!!!!
+		// eg. '10 characters' vs '1 character'
+		errorsMap := errs.Translate(trans)
+
+		msg := ""
+
+		for _, e := range errorsMap {
+			if msg == "" {
+				msg = e
+			} else {
+				msg = msg + ";" + e
+			}
+		}
+
+		return exception.InvalidParams.New(msg)
 	}
 	return nil
 }
 
 func IsEmail(email string) bool {
-	return govalidator.IsEmail(email)
+	err := validate.Var(email, "required,email")
+
+	if err == nil {
+		return true
+	}
+
+	return false
 }
 
 func IsPhone(phone string) bool {
@@ -30,22 +75,6 @@ func IsPhone(phone string) bool {
 
 func IsValidUsername(username string) bool {
 	return usernameReg.MatchString(username)
-}
-
-func ValidatePhone(phone string) error {
-	if !IsPhone(phone) {
-		return exception.InvalidFormat
-	} else {
-		return nil
-	}
-}
-
-func ValidateEmail(email string) error {
-	if !govalidator.IsEmail(email) {
-		return exception.InvalidFormat
-	} else {
-		return nil
-	}
 }
 
 func ValidateUsername(username string) error {

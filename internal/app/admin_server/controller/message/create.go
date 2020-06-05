@@ -16,9 +16,9 @@ import (
 )
 
 type CreateMessageParams struct {
-	Uid     string `json:"uid" valid:"required~请添加用户ID"`
-	Title   string `json:"title" valid:"required~请填写消息标题"`
-	Content string `json:"content" valid:"required~请填写消息内容"`
+	Uid     string `json:"uid" validate:"required,max=32" comment:"用户 ID "`
+	Title   string `json:"title" valid:"required,max=32" comment:"标题"`
+	Content string `json:"content" valid:"required" comment:"内容"`
 }
 
 func Create(c helper.Context, input CreateMessageParams) (res schema.Response) {

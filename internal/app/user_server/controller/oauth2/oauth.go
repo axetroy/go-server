@@ -4,15 +4,11 @@ package oauth2
 import (
 	"errors"
 	"github.com/axetroy/go-server/internal/app/user_server/controller/auth"
-	"github.com/axetroy/go-server/internal/library/router"
-	"github.com/axetroy/go-server/internal/schema"
-	"net/http"
-	"net/url"
-	"time"
-
 	"github.com/axetroy/go-server/internal/library/exception"
+	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/axetroy/go-server/internal/model"
+	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
 	"github.com/axetroy/go-server/internal/service/dotenv"
 	"github.com/axetroy/go-server/internal/service/redis"
@@ -20,6 +16,9 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
+	"net/http"
+	"net/url"
+	"time"
 )
 
 func redirectToClient(c *router.Context, user *goth.User) {

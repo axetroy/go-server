@@ -3,7 +3,6 @@ package admin_test
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/axetroy/go-server/internal/app/admin_server/controller/admin"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/schema"
@@ -17,7 +16,7 @@ import (
 func init() {
 	admin.CreateAdmin(admin.CreateAdminParams{
 		Account:  "admin",
-		Password: "admin",
+		Password: "123456",
 		Name:     "admin",
 	}, true)
 }
@@ -38,7 +37,7 @@ func TestLogin(t *testing.T) {
 	{
 		r := admin.Login(admin.SignInParams{
 			Username: "admin",
-			Password: "admin",
+			Password: "123456",
 		})
 
 		assert.Equal(t, schema.StatusSuccess, r.Status)
@@ -58,8 +57,7 @@ func TestLogin(t *testing.T) {
 			t.Error(er)
 		} else {
 			// 判断UID是否与用户一致
-			//c.Uid
-			fmt.Printf("%+v", c)
+			assert.Equal(t, adminInfo.Id, c.Uid)
 		}
 	}
 }
@@ -88,7 +86,7 @@ func TestLoginRouter(t *testing.T) {
 	{
 		body, _ := json.Marshal(&admin.SignInParams{
 			Username: "admin",
-			Password: "admin",
+			Password: "123456",
 		})
 
 		r := tester.HttpAdmin.Post("/v1/login", body, nil)
@@ -110,10 +108,11 @@ func TestLoginRouter(t *testing.T) {
 
 		assert.True(t, len(adminInfo.Token) > 0)
 
-		if _, er := token.Parse(token.Prefix+" "+adminInfo.Token, true); er != nil {
+		if c, er := token.Parse(token.Prefix+" "+adminInfo.Token, true); er != nil {
 			t.Error(er)
 		} else {
-			// 到这里说明token已经解析成功了
+			// 判断UID是否与用户一致
+			assert.Equal(t, adminInfo.Id, c.Uid)
 		}
 	}
 }

@@ -3,7 +3,6 @@ package news_test
 
 import (
 	"encoding/json"
-	"github.com/axetroy/go-server/internal/app/admin_server/controller/admin"
 	"github.com/axetroy/go-server/internal/app/admin_server/controller/news"
 	"github.com/axetroy/go-server/internal/library/helper"
 	"github.com/axetroy/go-server/internal/model"
@@ -20,28 +19,12 @@ func TestUpdate(t *testing.T) {
 	// 更新成功
 	// 1. 先登陆获取管理员的Token
 	var (
-		adminUid string
-		newsId   string
+		newsId string
 	)
-	{
-		r := admin.Login(admin.SignInParams{
-			Username: "admin",
-			Password: "admin",
-		})
 
-		assert.Equal(t, schema.StatusSuccess, r.Status)
-		assert.Equal(t, "", r.Message)
+	adminInfo, err := tester.LoginAdmin()
 
-		adminInfo := schema.AdminProfileWithToken{}
-
-		assert.Nil(t, r.Decode(&adminInfo))
-
-		if c, er := token.Parse(token.Prefix+" "+adminInfo.Token, true); er != nil {
-			t.Error(er)
-		} else {
-			adminUid = c.Uid
-		}
-	}
+	assert.Nil(t, err)
 
 	// 2. 先创建一篇新闻作为测试
 	{
@@ -52,7 +35,7 @@ func TestUpdate(t *testing.T) {
 		)
 
 		r := news.Create(helper.Context{
-			Uid: adminUid,
+			Uid: adminInfo.Id,
 		}, news.CreateNewParams{
 			Title:   title,
 			Content: content,
@@ -84,7 +67,7 @@ func TestUpdate(t *testing.T) {
 		)
 
 		r := news.Update(helper.Context{
-			Uid: adminUid,
+			Uid: adminInfo.Id,
 		}, newsId, news.UpdateParams{
 			Title:   &newTittle,
 			Content: &newContent,
@@ -111,7 +94,7 @@ func TestUpdate(t *testing.T) {
 		// 只更新部分字段
 		// 其余字段应该保持不变
 		r2 := news.Update(helper.Context{
-			Uid: adminUid,
+			Uid: adminInfo.Id,
 		}, newsId, news.UpdateParams{
 			Title: &newTittle2,
 		})

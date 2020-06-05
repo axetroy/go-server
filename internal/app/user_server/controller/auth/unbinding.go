@@ -15,15 +15,15 @@ import (
 )
 
 type UnbindingEmailParams struct {
-	Code string `json:"code" valid:"required~请输入验证码"` // 解除邮箱绑定前，需要发送邮箱验证码验证
+	Code string `json:"code" validate:"required" comment:"验证码"` // 解除邮箱绑定前，需要发送邮箱验证码验证
 }
 
 type UnbindingPhoneParams struct {
-	Code string `json:"code" valid:"required~请输入验证码"` // 解除手机号绑定前，需要发送手机验证码验证
+	Code string `json:"code" validate:"required" comment:"验证码"` // 解除手机号绑定前，需要发送手机验证码验证
 }
 
 type UnbindingWechatParams struct {
-	Code string `json:"code" valid:"required~请输入验证码"` // 验证码，如果帐号已绑定手机，则为手机号收到的验证码，如果有为邮箱，则用邮箱收到的验证码，否则使用 `wx.login()` 返回的 code
+	Code string `json:"code" validate:"required" comment:"验证码"` // 验证码，如果帐号已绑定手机，则为手机号收到的验证码，如果有为邮箱，则用邮箱收到的验证码，否则使用 `wx.login()` 返回的 code
 }
 
 // 解除邮箱绑定

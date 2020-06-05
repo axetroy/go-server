@@ -15,13 +15,9 @@ import (
 	"time"
 )
 
-type UpdateParams struct {
-	Status *model.ReportStatus `json:"status" valid:"required~请选择要标记的状态"`
-}
-
 type UpdateByAdminParams struct {
-	UpdateParams
-	Locked *bool `json:"locked"` // 是否锁定
+	Status *model.ReportStatus `json:"status" validate:"omitempty" comment:"状态"`   // 更改状态
+	Locked *bool               `json:"locked" validate:"omitempty" comment:"是否锁定"` // 是否锁定
 }
 
 func UpdateByAdmin(c helper.Context, reportId string, input UpdateByAdminParams) (res schema.Response) {

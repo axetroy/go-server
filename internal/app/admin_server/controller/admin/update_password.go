@@ -18,9 +18,9 @@ import (
 )
 
 type UpdatePasswordParams struct {
-	OldPassword     string `json:"old_password" valid:"required~请输入旧密码"`      // 旧密码
-	NewPassword     string `json:"new_password" valid:"required~请输入新密码"`      // 新密码
-	ConfirmPassword string `json:"confirm_password" valid:"required~请输入确认密码"` // 确认密码
+	OldPassword     string `json:"old_password" validate:"required,max=36" comment:"旧密码"`                          // 旧密码
+	NewPassword     string `json:"new_password" validate:"required,max=36" comment:"新密码"`                          // 新密码
+	ConfirmPassword string `json:"confirm_password" validate:"required,max=36,eqfield=NewPassword" comment:"确认密码"` // 确认密码
 }
 
 func UpdatePassword(c helper.Context, input UpdatePasswordParams) (res schema.Response) {

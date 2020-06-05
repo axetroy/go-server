@@ -6,6 +6,7 @@ import (
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
 	"github.com/axetroy/go-server/internal/library/router"
+	"github.com/axetroy/go-server/internal/library/validator"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
@@ -15,11 +16,11 @@ import (
 )
 
 type UpdateParams struct {
-	Title   *string           `json:"title"`
-	Content *string           `json:"content"`
-	Type    *model.NewsType   `json:"type"`
-	Tags    *[]string         `json:"tags"`
-	Status  *model.NewsStatus `json:"status"`
+	Title   *string           `json:"title" validate:"omitempty,max=32" comment:"标题"`
+	Content *string           `json:"content" validate:"omitempty" comment:"内容"`
+	Type    *model.NewsType   `json:"type" validate:"omitempty,max=32" comment:"类型"`
+	Tags    *[]string         `json:"tags" validate:"omitempty" comment:"标题"`
+	Status  *model.NewsStatus `json:"status" validate:"omitempty" comment:"状态"`
 }
 
 func Update(c helper.Context, newsId string, input UpdateParams) (res schema.Response) {
@@ -53,6 +54,11 @@ func Update(c helper.Context, newsId string, input UpdateParams) (res schema.Res
 
 		helper.Response(&res, data, nil, err)
 	}()
+
+	// 参数校验
+	if err = validator.ValidateStruct(input); err != nil {
+		return
+	}
 
 	tx = database.Db.Begin()
 

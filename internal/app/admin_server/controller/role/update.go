@@ -17,9 +17,9 @@ import (
 )
 
 type UpdateParams struct {
-	Description *string   `json:"description"`
-	Accession   *[]string `json:"accession"`
-	Note        *string   `json:"note"`
+	Description *string   `json:"description" validate:"required,max=64" comment:"描述"` // 描述
+	Accession   *[]string `json:"accession" validate:"omitempty" comment:"权限"`         // 权限列表
+	Note        *string   `json:"note" validate:"omitempty,max=64" comment:"备注"`       // 备注
 }
 
 type UpdateUserRoleParams struct {

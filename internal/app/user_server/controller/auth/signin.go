@@ -25,32 +25,32 @@ import (
 )
 
 type SignInParams struct {
-	Account  string `json:"account" valid:"required~请输入登陆账号"`
-	Password string `json:"password" valid:"required~请输入密码"`
+	Account  string `json:"account" validate:"required,max=36" comment:"帐号"`
+	Password string `json:"password" validate:"required,max=32" comment:"密码"`
 }
 
 type SignInWithEmailParams struct {
-	Email string `json:"email" valid:"required~请输入邮箱"`
-	Code  string `json:"code" valid:"required~请输入验证码"`
+	Email string `json:"email" validate:"required,email" comment:"邮箱"`
+	Code  string `json:"code" validate:"required" comment:"验证码"`
 }
 
 type SignInWithPhoneParams struct {
-	Phone string `json:"phone" valid:"required~请输入手机号"`
-	Code  string `json:"code" valid:"required~请输入验证码"`
+	Phone string `json:"phone" validate:"required,numeric,len=11" comment:"手机号"`
+	Code  string `json:"code" validate:"required" comment:"验证码"`
 }
 
 type SignInWithWechatParams struct {
-	Code string `json:"code" valid:"required~请输入微信授权代码"` // 微信小程序授权之后返回的 code
+	Code string `json:"code" validate:"required" comment:"微信授权代码"` // 微信小程序授权之后返回的 code
 }
 
 type SignInWithOAuthParams struct {
-	Code string `json:"code" valid:"required~请输入授权代码"` // oAuth 授权之后回调返回的 code
+	Code string `json:"code" validate:"required" comment:"oAuth授权代码"` // oAuth 授权之后回调返回的 code
 }
 
 type WechatCompleteParams struct {
-	Code     string  `json:"code" valid:"required~请输入微信授权代码"` // 微信小程序授权之后返回的 code
-	Phone    *string `json:"phone"`                           // 手机号
-	Username *string `json:"username"`                        // 用户名
+	Code     string  `json:"code" validate:"required" comment:"微信授权代码"`               // 微信小程序授权之后返回的 code
+	Phone    *string `json:"phone" validate:"omitempty,numeric,len=11" comment:"手机号"` // 手机号
+	Username *string `json:"username" validate:"omitempty,max=32" comment:"用户名"`      // 用户名
 }
 
 // 普通帐号登陆

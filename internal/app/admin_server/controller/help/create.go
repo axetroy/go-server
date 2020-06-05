@@ -15,12 +15,12 @@ import (
 )
 
 type CreateParams struct {
-	Title    string           `json:"title" valid:"required~请填写标题"`
-	Content  string           `json:"content" valid:"required~请填写内容"`
-	Tags     []string         `json:"tags"`
-	Status   model.HelpStatus `json:"status" valid:"required~请填写状态"`
-	Type     model.HelpType   `json:"type" valid:"required~请填写类型"`
-	ParentId *string          `json:"parent_id"`
+	Title    string           `json:"title" validate:"required,max=32" comment:"标题"`
+	Content  string           `json:"content" validate:"required" comment:"内容"`
+	Tags     []string         `json:"tags" validate:"omitempty,max=32" comment:"标签"`
+	Status   model.HelpStatus `json:"status" validate:"required" comment:"状态"`
+	Type     model.HelpType   `json:"type" validate:"required,oneof=article class" comment:"类型"`
+	ParentId *string          `json:"parent_id" validate:"omitempty,max=32" comment:"父级ID"`
 }
 
 func Create(c helper.Context, input CreateParams) (res schema.Response) {

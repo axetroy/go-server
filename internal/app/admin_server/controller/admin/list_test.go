@@ -18,7 +18,7 @@ func TestGetList(t *testing.T) {
 
 	adminRes := admin.CreateAdmin(admin.CreateAdminParams{
 		Account:  "test",
-		Password: "test",
+		Password: "test123",
 		Name:     "test",
 	}, false)
 
@@ -54,7 +54,7 @@ func TestGetListRouter(t *testing.T) {
 
 	adminRes := admin.CreateAdmin(admin.CreateAdminParams{
 		Account:  "test",
-		Password: "test",
+		Password: "test123",
 		Name:     "test",
 	}, false)
 

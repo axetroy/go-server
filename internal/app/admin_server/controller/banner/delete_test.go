@@ -20,7 +20,7 @@ import (
 func TestDelete(t *testing.T) {
 	var (
 		bannerId string
-		image    = "test.png"
+		image    = "https://example.com/test.png"
 		href     = "https://example.com"
 		platform = model.BannerPlatformApp
 	)
@@ -87,7 +87,7 @@ func TestDelete(t *testing.T) {
 func TestDeleteRouter(t *testing.T) {
 	var (
 		bannerId string
-		image    = "test.png"
+		image    = "https://example/test.png"
 		href     = "https://example.com"
 		platform = model.BannerPlatformApp
 	)

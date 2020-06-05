@@ -19,18 +19,18 @@ import (
 )
 
 type SetPayPasswordParams struct {
-	Password        string `json:"password" valid:"required~请输入密码,int~请输入纯数字的密码,length(6|6)~密码长度为6位"`
-	PasswordConfirm string `json:"password_confirm" valid:"required~请输入确认密码,int~请输入纯数字的确认密码,length(6|6)~确认密码长度为6位"`
+	Password        string `json:"password" validate:"required,numeric,len=6" comment:"密码"`
+	PasswordConfirm string `json:"password_confirm" validate:"required,numeric,len=6,eqfield=Password" comment:"确认密码"`
 }
 
 type UpdatePayPasswordParams struct {
-	OldPassword string `json:"old_password" valid:"required~请输入旧密码,int~请输入纯数字的旧密码,length(6|6)~旧密码长度为6位"`
-	NewPassword string `json:"new_password" valid:"required~请输入新密码,int~请输入纯数字的新密码,length(6|6)~新密码长度为6位"`
+	OldPassword string `json:"old_password" validate:"required,numeric,len=6" comment:"旧密码"`
+	NewPassword string `json:"new_password" validate:"required,numeric,len=6,nefield=OldPassword" comment:"新密码"`
 }
 
 type ResetPayPasswordParams struct {
-	Code        string `json:"code" valid:"required~请输入重置码"`                                                // 重置码
-	NewPassword string `json:"new_password" valid:"required~请输入新的交易密码,int~请输入纯数字的旧密码,length(6|6)~新密码长度为6位"` // 新的交易密码
+	Code        string `json:"code" validate:"required" comment:"重置码"`                       // 重置码
+	NewPassword string `json:"new_password" validate:"required,numeric,len=6" comment:"新密码"` // 新的交易密码
 }
 
 func GenerateResetPayPasswordCode(uid string) string {

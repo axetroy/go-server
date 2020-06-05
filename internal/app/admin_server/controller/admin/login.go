@@ -7,6 +7,7 @@ import (
 	"github.com/axetroy/go-server/internal/library/helper"
 	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/library/util"
+	"github.com/axetroy/go-server/internal/library/validator"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
@@ -17,8 +18,8 @@ import (
 )
 
 type SignInParams struct {
-	Username string
-	Password string
+	Username string `json:"username" validate:"required,min=1,max=36" comment:"帐号"`
+	Password string `json:"password" validate:"required,min=6,max=36" comment:"密码"`
 }
 
 func Login(input SignInParams) (res schema.Response) {
@@ -50,6 +51,11 @@ func Login(input SignInParams) (res schema.Response) {
 
 		helper.Response(&res, data, nil, err)
 	}()
+
+	// 参数校验
+	if err = validator.ValidateStruct(input); err != nil {
+		return
+	}
 
 	tx = database.Db.Begin()
 
