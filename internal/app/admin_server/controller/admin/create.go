@@ -93,7 +93,7 @@ func CreateAdmin(input CreateAdminParams, isSuper bool) (res schema.Response) {
 	}
 
 	// generate token
-	if data.Token, err = token.Generate(adminInfo.Id, true); err != nil {
+	if data.Token, err = token.Generate(adminInfo.Id, token.StateAdmin); err != nil {
 		return
 	}
 

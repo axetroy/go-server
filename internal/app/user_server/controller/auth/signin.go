@@ -27,24 +27,29 @@ import (
 type SignInParams struct {
 	Account  string `json:"account" validate:"required,max=36" comment:"帐号"`
 	Password string `json:"password" validate:"required,max=32" comment:"密码"`
+	Duration *int64 `json:"duration" validate:"omitempty,number,gt=0" comment:"有效时间"`
 }
 
 type SignInWithEmailParams struct {
-	Email string `json:"email" validate:"required,email" comment:"邮箱"`
-	Code  string `json:"code" validate:"required" comment:"验证码"`
+	Email    string `json:"email" validate:"required,email" comment:"邮箱"`
+	Code     string `json:"code" validate:"required" comment:"验证码"`
+	Duration *int64 `json:"duration" validate:"omitempty,number,gt=0" comment:"有效时间"`
 }
 
 type SignInWithPhoneParams struct {
-	Phone string `json:"phone" validate:"required,numeric,len=11" comment:"手机号"`
-	Code  string `json:"code" validate:"required" comment:"验证码"`
+	Phone    string `json:"phone" validate:"required,numeric,len=11" comment:"手机号"`
+	Code     string `json:"code" validate:"required" comment:"验证码"`
+	Duration *int64 `json:"duration" validate:"omitempty,number,gt=0" comment:"有效时间"`
 }
 
 type SignInWithWechatParams struct {
-	Code string `json:"code" validate:"required" comment:"微信授权代码"` // 微信小程序授权之后返回的 code
+	Code     string `json:"code" validate:"required" comment:"微信授权代码"` // 微信小程序授权之后返回的 code
+	Duration *int64 `json:"duration" validate:"omitempty,number,gt=0" comment:"有效时间"`
 }
 
 type SignInWithOAuthParams struct {
-	Code string `json:"code" validate:"required" comment:"oAuth授权代码"` // oAuth 授权之后回调返回的 code
+	Code     string `json:"code" validate:"required" comment:"oAuth授权代码"` // oAuth 授权之后回调返回的 code
+	Duration *int64 `json:"duration" validate:"omitempty,number,gt=0" comment:"有效时间"`
 }
 
 type WechatCompleteParams struct {
@@ -137,8 +142,14 @@ func SignIn(c helper.Context, input SignInParams) (res schema.Response) {
 	data.CreatedAt = userInfo.CreatedAt.Format(time.RFC3339Nano)
 	data.UpdatedAt = userInfo.UpdatedAt.Format(time.RFC3339Nano)
 
+	var duration time.Duration
+
+	if input.Duration != nil {
+		duration = time.Duration(*input.Duration * int64(time.Second))
+	}
+
 	// generate token
-	if t, er := token.Generate(userInfo.Id, false); er != nil {
+	if t, er := token.Generate(userInfo.Id, token.StateUser, duration); er != nil {
 		err = er
 		return
 	} else {
@@ -235,8 +246,14 @@ func SignInWithEmail(c helper.Context, input SignInWithEmailParams) (res schema.
 	data.CreatedAt = userInfo.CreatedAt.Format(time.RFC3339Nano)
 	data.UpdatedAt = userInfo.UpdatedAt.Format(time.RFC3339Nano)
 
+	var duration time.Duration
+
+	if input.Duration != nil {
+		duration = time.Duration(*input.Duration * int64(time.Second))
+	}
+
 	// generate token
-	if t, er := token.Generate(userInfo.Id, false); er != nil {
+	if t, er := token.Generate(userInfo.Id, token.StateUser, duration); er != nil {
 		err = er
 		return
 	} else {
@@ -244,7 +261,7 @@ func SignInWithEmail(c helper.Context, input SignInWithEmailParams) (res schema.
 	}
 
 	// 写入登陆记录
-	log := model.LoginLog{
+	loginLog := model.LoginLog{
 		Uid:     userInfo.Id,                       // 用户ID
 		Type:    model.LoginLogTypeUserName,        // 默认用户名登陆
 		Command: model.LoginLogCommandLoginSuccess, // 登陆成功
@@ -252,7 +269,7 @@ func SignInWithEmail(c helper.Context, input SignInWithEmailParams) (res schema.
 		LastIp:  c.Ip,                              // 用户的IP
 	}
 
-	if err = tx.Create(&log).Error; err != nil {
+	if err = tx.Create(&loginLog).Error; err != nil {
 		return
 	}
 
@@ -333,8 +350,14 @@ func SignInWithPhone(c helper.Context, input SignInWithPhoneParams) (res schema.
 	data.CreatedAt = userInfo.CreatedAt.Format(time.RFC3339Nano)
 	data.UpdatedAt = userInfo.UpdatedAt.Format(time.RFC3339Nano)
 
+	var duration time.Duration
+
+	if input.Duration != nil {
+		duration = time.Duration(*input.Duration * int64(time.Second))
+	}
+
 	// generate token
-	if t, er := token.Generate(userInfo.Id, false); er != nil {
+	if t, er := token.Generate(userInfo.Id, token.StateUser, duration); er != nil {
 		err = er
 		return
 	} else {
@@ -342,7 +365,7 @@ func SignInWithPhone(c helper.Context, input SignInWithPhoneParams) (res schema.
 	}
 
 	// 写入登陆记录
-	log := model.LoginLog{
+	loginLog := model.LoginLog{
 		Uid:     userInfo.Id,                       // 用户ID
 		Type:    model.LoginLogTypeUserName,        // 默认用户名登陆
 		Command: model.LoginLogCommandLoginSuccess, // 登陆成功
@@ -350,7 +373,7 @@ func SignInWithPhone(c helper.Context, input SignInWithPhoneParams) (res schema.
 		LastIp:  c.Ip,                              // 用户的IP
 	}
 
-	if err = tx.Create(&log).Error; err != nil {
+	if err = tx.Create(&loginLog).Error; err != nil {
 		return
 	}
 
@@ -486,8 +509,14 @@ func SignInWithWechat(c helper.Context, input SignInWithWechatParams) (res schem
 	data.CreatedAt = userInfo.CreatedAt.Format(time.RFC3339Nano)
 	data.UpdatedAt = userInfo.UpdatedAt.Format(time.RFC3339Nano)
 
+	var duration time.Duration
+
+	if input.Duration != nil {
+		duration = time.Duration(*input.Duration * int64(time.Second))
+	}
+
 	// generate token
-	if t, er := token.Generate(userInfo.Id, false); er != nil {
+	if t, er := token.Generate(userInfo.Id, token.StateUser, duration); er != nil {
 		err = er
 		return
 	} else {
@@ -495,7 +524,7 @@ func SignInWithWechat(c helper.Context, input SignInWithWechatParams) (res schem
 	}
 
 	// 写入登陆记录
-	log := model.LoginLog{
+	loginLog := model.LoginLog{
 		Uid:     userInfo.Id,                       // 用户ID
 		Type:    model.LoginLogTypeWechat,          // 微信登陆
 		Command: model.LoginLogCommandLoginSuccess, // 登陆成功
@@ -503,7 +532,7 @@ func SignInWithWechat(c helper.Context, input SignInWithWechatParams) (res schem
 		LastIp:  c.Ip,                              // 用户的IP
 	}
 
-	if err = tx.Create(&log).Error; err != nil {
+	if err = tx.Create(&loginLog).Error; err != nil {
 		return
 	}
 
@@ -574,8 +603,14 @@ func SignInWithOAuth(c helper.Context, input SignInWithOAuthParams) (res schema.
 		data.Wechat = &wechatBindingInfo
 	}
 
+	var duration time.Duration
+
+	if input.Duration != nil {
+		duration = time.Duration(*input.Duration * int64(time.Second))
+	}
+
 	// generate token
-	if t, er := token.Generate(userInfo.Id, false); er != nil {
+	if t, er := token.Generate(userInfo.Id, token.StateUser, duration); er != nil {
 		err = er
 		return
 	} else {
@@ -583,7 +618,7 @@ func SignInWithOAuth(c helper.Context, input SignInWithOAuthParams) (res schema.
 	}
 
 	// 写入登陆记录
-	log := model.LoginLog{
+	loginLog := model.LoginLog{
 		Uid:     userInfo.Id,                       // 用户ID
 		Type:    model.LoginLogTypeUserName,        // 默认用户名登陆
 		Command: model.LoginLogCommandLoginSuccess, // 登陆成功
@@ -591,7 +626,7 @@ func SignInWithOAuth(c helper.Context, input SignInWithOAuthParams) (res schema.
 		LastIp:  c.Ip,                              // 用户的IP
 	}
 
-	if err = tx.Create(&log).Error; err != nil {
+	if err = tx.Create(&loginLog).Error; err != nil {
 		return
 	}
 

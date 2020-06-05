@@ -53,7 +53,7 @@ func TestLogin(t *testing.T) {
 		assert.Equal(t, "admin", adminInfo.Username)
 		assert.True(t, len(adminInfo.Token) > 0)
 
-		if c, er := token.Parse(token.Prefix+" "+adminInfo.Token, true); er != nil {
+		if c, er := token.Parse(token.Prefix+" "+adminInfo.Token, token.StateAdmin); er != nil {
 			t.Error(er)
 		} else {
 			// 判断UID是否与用户一致
@@ -108,7 +108,7 @@ func TestLoginRouter(t *testing.T) {
 
 		assert.True(t, len(adminInfo.Token) > 0)
 
-		if c, er := token.Parse(token.Prefix+" "+adminInfo.Token, true); er != nil {
+		if c, er := token.Parse(token.Prefix+" "+adminInfo.Token, token.StateAdmin); er != nil {
 			t.Error(er)
 		} else {
 			// 判断UID是否与用户一致

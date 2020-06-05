@@ -26,7 +26,7 @@ func userTypeAuthHandler(userClient *ws.Client, msg ws.Message) error {
 		return err
 	}
 
-	c, err := token.Parse(body.Token, false)
+	c, err := token.Parse(body.Token, token.StateUser)
 
 	if err != nil {
 		return err

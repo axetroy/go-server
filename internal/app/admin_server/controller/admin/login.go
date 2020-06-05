@@ -20,6 +20,7 @@ import (
 type SignInParams struct {
 	Username string `json:"username" validate:"required,min=1,max=36" comment:"帐号"`
 	Password string `json:"password" validate:"required,min=6,max=36" comment:"密码"`
+	Duration *int64 `json:"duration" validate:"omitempty,number,gt=0" comment:"有效时间"`
 }
 
 func Login(input SignInParams) (res schema.Response) {
@@ -78,8 +79,14 @@ func Login(input SignInParams) (res schema.Response) {
 	data.CreatedAt = adminInfo.CreatedAt.Format(time.RFC3339Nano)
 	data.UpdatedAt = adminInfo.UpdatedAt.Format(time.RFC3339Nano)
 
+	var duration time.Duration
+
+	if input.Duration != nil {
+		duration = time.Duration(*input.Duration * int64(time.Second))
+	}
+
 	// generate token
-	if t, er := token.Generate(adminInfo.Id, true); er != nil {
+	if t, er := token.Generate(adminInfo.Id, token.StateAdmin, duration); er != nil {
 		err = er
 		return
 	} else {

@@ -10,17 +10,13 @@ import (
 )
 
 // parse jwt token
-func Parse(tokenString string, isAdmin bool) (claims Claims, err error) {
+func Parse(tokenString string, state State) (claims Claims, err error) {
 	var (
 		token *jwt.Token
 		key   string
 	)
 
-	if isAdmin {
-		key = config.Jwt.Secret
-	} else {
-		key = config.Jwt.Secret
-	}
+	key = config.Jwt.Secret
 
 	if strings.HasPrefix(tokenString, Prefix+" ") == false {
 		err = exception.InvalidAuth

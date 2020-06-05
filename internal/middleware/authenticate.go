@@ -64,7 +64,14 @@ func AuthenticateNew(isAdmin bool) iris.Handler {
 			return
 		}
 
-		if claims, er := token.Parse(*tokenString, isAdmin); er != nil {
+		var state token.State
+		if isAdmin {
+			state = token.StateAdmin
+		} else {
+			state = token.StateUser
+		}
+
+		if claims, er := token.Parse(*tokenString, state); er != nil {
 			err = er
 			status = exception.InvalidToken.Code()
 			return

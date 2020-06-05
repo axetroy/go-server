@@ -86,7 +86,7 @@ func TestSignInSuccess(t *testing.T) {
 
 	assert.NotEmpty(t, profile.Token)
 
-	if c, err := token.Parse("Bearer "+profile.Token, false); err != nil {
+	if c, err := token.Parse("Bearer "+profile.Token, token.StateUser); err != nil {
 		t.Error(err)
 		return
 	} else {

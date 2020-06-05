@@ -10,7 +10,7 @@ import (
 func init() {
 	admin.CreateAdmin(admin.CreateAdminParams{
 		Account:  "admin",
-		Password: "admin",
+		Password: "123456",
 		Name:     "admin",
 	}, true)
 }

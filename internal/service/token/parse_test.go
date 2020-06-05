@@ -9,12 +9,12 @@ import (
 
 func TestParse(t *testing.T) {
 	uid := "123123"
-	tokenStr, err := token.Generate(uid, false)
+	tokenStr, err := token.Generate(uid, token.StateUser)
 
 	assert.Nil(t, err)
 	assert.IsType(t, "123", tokenStr)
 
-	c, err1 := token.Parse(token.Prefix+" "+tokenStr, false)
+	c, err1 := token.Parse(token.Prefix+" "+tokenStr, token.StateUser)
 
 	assert.Nil(t, err1)
 
