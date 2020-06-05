@@ -16,6 +16,7 @@ type NotificationBody struct {
 | none                    | 无意义的事件，APP 应该什么都不做 | `none`                                             |
 | login_abnormal          | 用户登录异常的推送               | `none`                                             |
 | new_system_notification | 管理员发送一个新的系统通知的推送 | `{"id": "xxxx", "title": "xxx", "content": "xxx"}` |
+| new_user_message        | 一个新的用户消息                 | `{"id": "xxxx", "title": "xxx", "content": "xxx"}` |
 
 ### 生成一条推送
 

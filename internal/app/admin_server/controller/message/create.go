@@ -10,6 +10,7 @@ import (
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
+	"github.com/axetroy/go-server/internal/service/message_queue"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
 	"time"
@@ -46,6 +47,12 @@ func Create(c helper.Context, input CreateMessageParams) (res schema.Response) {
 			} else {
 				err = tx.Commit().Error
 			}
+		}
+
+		// 推送用户
+		if err != nil {
+			// 把它加入到队列中
+			_ = message_queue.PublishUserMessage(data.Id)
 		}
 
 		helper.Response(&res, data, nil, err)

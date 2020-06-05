@@ -28,6 +28,7 @@ const (
 	NotificationClickEventNone                  NotificationClickEvent = "none"                    // 空事件，点击通知什么都不会发送
 	NotificationClickEventLoginAbnormal         NotificationClickEvent = "login_abnormal"          // 新的系统通知事件
 	NotificationClickEventNewSystemNotification NotificationClickEvent = "new_system_notification" // 新的系统通知事件
+	NotificationClickEventNewUserMessage        NotificationClickEvent = "new_user_message"        // 新的系统通知事件
 )
 
 // 发送推送附带的数据体结构
@@ -106,6 +107,39 @@ func (n *NotifierOneSignal) SendNotifySystemNotificationToUser(notificationId st
 				"id":      notificationInfo.Id,
 				"title":   notificationInfo.Title,
 				"content": notificationInfo.Content,
+			},
+		},
+	})
+
+	if err != nil {
+		err = exception.ThirdParty.New(err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func (n *NotifierOneSignal) SendNotifyUserNewMessage(messageId string) error {
+	messageInfo := model.Message{}
+
+	if err := database.Db.Model(messageInfo).Where("id = ?", messageInfo).First(&messageInfo).Error; err != nil {
+		// 如果没有这条消息，则跳过
+		if err == gorm.ErrRecordNotFound {
+			return nil
+		}
+		return err
+	}
+
+	err := sdk.CreateNotification(onesignal.CreateNotificationParams{
+		IncludedSegments: []string{string(SegmentSubscribedUsers)},
+		Headings:         map[string]string{"en": messageInfo.Title},
+		Contents:         map[string]string{"en": messageInfo.Content},
+		Data: NotificationBody{
+			Event: NotificationClickEventNewUserMessage,
+			Payload: map[string]interface{}{
+				"id":      messageInfo.Id,
+				"title":   messageInfo.Title,
+				"content": messageInfo.Content,
 			},
 		},
 	})

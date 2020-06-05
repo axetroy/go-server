@@ -3,6 +3,7 @@ package report
 
 import (
 	"errors"
+	"fmt"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
 	"github.com/axetroy/go-server/internal/library/router"
@@ -10,14 +11,15 @@ import (
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
+	"github.com/axetroy/go-server/internal/service/message_queue"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
 	"time"
 )
 
 type UpdateByAdminParams struct {
-	Status *model.ReportStatus `json:"status" validate:"omitempty" comment:"状态"`   // 更改状态
-	Locked *bool               `json:"locked" validate:"omitempty" comment:"是否锁定"` // 是否锁定
+	Status *model.ReportStatus `json:"status" validate:"omitempty,number,gte=0" comment:"状态"` // 更改状态
+	Locked *bool               `json:"locked" validate:"omitempty" comment:"是否锁定"`            // 是否锁定
 }
 
 func UpdateByAdmin(c helper.Context, reportId string, input UpdateByAdminParams) (res schema.Response) {
@@ -70,15 +72,51 @@ func UpdateByAdmin(c helper.Context, reportId string, input UpdateByAdminParams)
 		return
 	}
 
-	updatedModel := model.Report{}
+	updatedModel := map[string]interface{}{}
 
 	if input.Status != nil {
-		updatedModel.Status = *input.Status
+		reportInfo.Status = *input.Status
+		updatedModel["status"] = *input.Status
 		shouldUpdate = true
+
+		var statusText = ""
+		switch *input.Status {
+		case 0:
+			statusText = "待解决"
+			break
+		case 1:
+			statusText = "已解决"
+			break
+		default:
+			break
+		}
+
+		messageInfo := model.Message{
+			Uid:   reportInfo.Uid,
+			Title: "反馈:" + reportInfo.Title,
+			Content: fmt.Sprintf(`感谢你的反馈。
+您反馈的 【%s】已被标记为 【%s】
+祝您生活愉快
+`, reportInfo.Title, statusText),
+		}
+
+		// 生成一个用户的个人消息
+		if err = tx.Create(&messageInfo).Error; err != nil {
+			return
+		}
+
+		// 通过 APP 推送给这个用户
+		defer func() {
+			if err != nil && len(messageInfo.Id) > 0 {
+				// 把它加入到队列中
+				_ = message_queue.PublishUserMessage(messageInfo.Id)
+			}
+		}()
 	}
 
 	if input.Locked != nil {
-		updatedModel.Locked = *input.Locked
+		reportInfo.Locked = *input.Locked
+		updatedModel["locked"] = *input.Locked
 		shouldUpdate = true
 	}
 
@@ -86,9 +124,7 @@ func UpdateByAdmin(c helper.Context, reportId string, input UpdateByAdminParams)
 		return
 	}
 
-	if err = tx.Model(&reportInfo).Where(&model.Report{
-		Id: reportId,
-	}).Update(updatedModel).Error; err != nil {
+	if err = tx.Model(&reportInfo).Where(&model.Report{Id: reportId}).Update(updatedModel).Error; err != nil {
 		return
 	}
 

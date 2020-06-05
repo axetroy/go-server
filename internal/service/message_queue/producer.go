@@ -91,24 +91,28 @@ func Publish(topic Topic, message []byte) (err error) {
 }
 
 type PayloadPublishSystemNotification struct {
-	NotificationID string `json:"notification_id" valid:"required"`
+	NotificationID string `json:"notification_id" validate:"required" comment:"系统通知 ID"`
+}
+
+type PayloadPublishUserMessage struct {
+	MessageID string `json:"message_id"`
 }
 
 type PayloadPublishCheckUserLoginStatus struct {
-	UserID string `json:"user_id" valid:"required"`
+	UserID string `json:"user_id" validate:"required" comment:"用户ID"`
 }
 
 type PayloadToAllUsers struct {
-	Title   string                 `json:"title" valid:"required"`   // 推送的标题
-	Content string                 `json:"content" valid:"required"` // 推送的内容
-	Data    map[string]interface{} `json:"data"`                     // 附带给 APP 的数据
+	Title   string                 `json:"title" validate:"required" comment:"标题"`   // 推送的标题
+	Content string                 `json:"content" validate:"required" comment:"内容"` // 推送的内容
+	Data    map[string]interface{} `json:"data" validate:"omitempty" comment:"附加数据"` // 附带给 APP 的数据
 }
 
 type PayloadToSpecificUsers struct {
-	UserID  []string               `json:"user_id" valid:"required"` // 要指定的推送用户 ID
-	Title   string                 `json:"title" valid:"required"`   // 推送的标题
-	Content string                 `json:"content" valid:"required"` // 推送的内容
-	Data    map[string]interface{} `json:"data"`                     // 附带给 APP 的数据
+	UserID  []string               `json:"user_id" validate:"required" comment:"用户 ID"` // 要指定的推送用户 ID
+	Title   string                 `json:"title" validate:"required" comment:"标题"`      // 推送的标题
+	Content string                 `json:"content" validate:"required" comment:"内容"`    // 推送的内容
+	Data    map[string]interface{} `json:"data" validate:"omitempty" comment:"附带数据"`    // 附带给 APP 的数据
 }
 
 // 推送 - 系统通知
@@ -126,7 +130,25 @@ func PublishSystemNotify(notificationID string) error {
 		return err
 	}
 
-	return DeferredPublish(TopicPushNotify, 0, b)
+	return DeferredPublish(TopicPushNotify, time.Second*10, b)
+}
+
+// 推送 - 用户个人消息
+func PublishUserMessage(messageID string) error {
+	body := BodySendNotify{
+		Event: notify.EventSendNotifyToUserNewMessage,
+		Payload: PayloadPublishUserMessage{
+			MessageID: messageID,
+		},
+	}
+
+	b, err := json.Marshal(body)
+
+	if err != nil {
+		return err
+	}
+
+	return DeferredPublish(TopicPushNotify, time.Second*10, b)
 }
 
 // 推送 - 检查用户的登录状态

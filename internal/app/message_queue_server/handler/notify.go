@@ -130,6 +130,31 @@ func (h *NotifyHandler) handlerSendNewSystemNotification(payload interface{}) er
 	return nil
 }
 
+// 推送通知 - 用户有新的系统通知
+func (h *NotifyHandler) handlerSendNewMessage(payload interface{}) error {
+	b, err := json.Marshal(payload)
+
+	if err != nil {
+		return err
+	}
+
+	var data message_queue.PayloadPublishUserMessage
+
+	if err := json.Unmarshal(b, &data); err != nil {
+		return err
+	}
+
+	if err := validator.ValidateStruct(data); err != nil {
+		return err
+	}
+
+	// 发送推送给用户
+	if err := notify.Notify.SendNotifyUserNewMessage(data.MessageID); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (h *NotifyHandler) OnMessage(message *nsq.Message) error {
 	body := message_queue.BodySendNotify{}
 
@@ -143,6 +168,8 @@ func (h *NotifyHandler) OnMessage(message *nsq.Message) error {
 	// 推送通知 - 用户有新的系统通知
 	case notify.EventSendNotifyToUserNewNotification:
 		return h.handlerSendNewSystemNotification(body.Payload)
+	case notify.EventSendNotifyToUserNewMessage:
+		return h.handlerSendNewMessage(body.Payload)
 	// 推送一个自定义通知给所有用户
 	case notify.EventSendNotifyToAllUser:
 		return h.handlerSendToAllUser(body.Payload)
