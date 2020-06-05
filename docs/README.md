@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/axetroy/go-server.svg?token=QMG6TLRNwECnaTsy6ssj&branch=master)](https://travis-ci.com/axetroy/go-server)
+![ci](https://github.com/axetroy/go-server/workflows/ci/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/axetroy/go-server/badge.svg?branch=master)](https://coveralls.io/github/axetroy/go-server?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/axetroy/go-server)](https://goreportcard.com/report/github.com/axetroy/go-server)
 ![License](https://img.shields.io/github/license/axetroy/go-server.svg)
@@ -38,6 +38,8 @@
 | 新闻模块     | 新闻公告类的相关操作, CMS 内容                                                              |
 | 系统通知     | 系统通知的相关模块，主要用于`管理员发送给全员的通知`                                        |
 | 消息模块     | 用户的个人消息模块, 主要用于`管理员发送给某个用户的通知`                                    |
+| 推送模块     | APP 的推送通知模块，接入第三方 `onesignal`                                                  |
+| 地区模块     | 包含全国各地区的行政码划分等                                                                |
 | 地址模块     | 用户设置相关的地址模块，例如`收货地址`等                                                    |
 | 上传模块     | 包含用户`上传文件/图片`的相关操作, 包含 `hash 去重`/`图片压缩`/`生成缩略图`等               |
 | 下载模块     | 包含用户`下载文件/图片`的相关操作                                                           |
@@ -48,36 +50,57 @@
 | 页面菜单模块 | 定义`后台页面菜单`/`页面权限`等                                                             |
 | 日志模块     | `系统日志`/`登陆日志`/`操作日志`/`异常日志`等                                               |
 | 帮助中心     | 可嵌套的帮助中心模块                                                                        |
+| 配置中心     | 由后台接口控制的配置中心，配置例如 SMTP/短信/小程序 等信息                                  |
+| 定时任务模块 | 进行一系列的定时任务，例如切割表，迁移冷数据等                                              |
+| 客服系统     | 基于 Websocket 的客服系统，实时消息推送，一对多服务关系                                     |
 
 ## 如何使用?
 
 首先搭建项目需要的`依赖数据库/服务`, 这里推荐使用 `Docker`。
 
-在 [docker](docker) 目录中提供了 2 个 配置文件，方便一键搭建。
+在 [docker](docker) 目录中提供了 `docker-compose` 配置文件，方便一键搭建。
 
 然后获取[构建好的可执行文件](https://github.com/axetroy/go-server/releases), 找到对应的平台，并且下载。或者自行构建。
 
-你需要使用 3 个文件
+你需要使用 5 个文件
 
 1. message_queue_server
 
 > 启用消息队列消费服务器，用于消费在队列里面的事物。
 
-2. user_server
+2. resource_server
+
+> 静态文件服务器。用于静态文件的上传/下载/缩略图等
+
+3. user_server
 
 > 监听用户相关的接口服务
 
-3. admin_server
+4. admin_server
 
 > 监听管理员相关的接口服务
 
+5。scheduled_server
+
+> 定时任务
+
+6. customer_service
+
+> 客服系统
+
 然后复制 [.env](.env) 到可执行文件目录下，运行可执行文件即可。例如 `./user_server start`
+
+快速下载可执行文件
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/axetroy/go-server/master/install.sh | bash -s v0.5.2
+```
 
 ## 如何进行本地开发?
 
 首选确保你安装有:
 
-- [Golang](https://golang.org/) >= 1.11.x
+- [Golang](https://golang.org/) >= 1.14.x
 - [Docker](https://www.docker.com/)
 - [Docker Compose](https://docs.docker.com/compose/)
 
@@ -94,9 +117,13 @@ $ ./start.sh
 
 # 启动接口服务
 $ cd $GOPATH/github/axetroy/go-server # 切换到项目目录
+$ go run ./cmd/admin/main.go migrate # 同步数据库表
 $ go run ./cmd/message_queue/main.go # 启动消息队列
 $ go run ./cmd/user/main.go # 运行用户端的接口服务
 $ go run ./cmd/admin/main.go # 运行管理员端的接口服务
+$ go run ./cmd/resource/main.go # 运行资源类的接口服务
+$ go run ./cmd/scheduled/main.go # 运行定时任务
+$ go run ./cmd/customer_service/main.go # 运行客服系统
 ```
 
 可以通过 [.env](.env) 文件进行配置
@@ -104,8 +131,7 @@ $ go run ./cmd/admin/main.go # 运行管理员端的接口服务
 ## 如何构建?
 
 ```bash
-$ make build-simple # 仅构建目前的主流平台，构建时间短【推荐】
-$ make build # 构建全平台的可执行文件，构建时间很久
+$ make build
 ```
 
 在生成的 bin 目录下查找对应平台的可执行文件运行即可
