@@ -111,7 +111,7 @@ func Load() (err error) {
 		return
 	}
 
-	fmt.Println(fmt.Sprintf("加载环境变量文件 `%s`", color.GreenString(dotEnvFilePath)))
+	fmt.Printf("加载环境变量文件 `%s`", color.GreenString(dotEnvFilePath))
 
 	err = godotenv.Load(dotEnvFilePath)
 	return
