@@ -66,9 +66,7 @@ jobs:
           go version
           go env
 
-
       - name: Lint
-        if: matrix.kind == 'build'
         run: |
           go get github.com/golangci/golangci-lint/cmd/golangci-lint@v1.27.0
           golangci-lint --version
