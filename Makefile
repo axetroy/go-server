@@ -24,3 +24,6 @@ generate-static:
 
 lint:
 	golangci-lint run ./... -v
+
+format:
+	go fmt ./...
