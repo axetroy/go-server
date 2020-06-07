@@ -36,7 +36,6 @@ require (
 	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/mitchellh/mapstructure v1.3.1
 	github.com/moul/http2curl v1.0.0 // indirect
-	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/nsqio/go-nsq v1.0.8
 	github.com/sec51/convert v0.0.0-20190309075348-ebe586d87951 // indirect
 	github.com/sec51/cryptoengine v0.0.0-20180911112225-2306d105a49e // indirect
@@ -54,6 +53,7 @@ require (
 	github.com/yudai/gojsondiff v1.0.0 // indirect
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 	github.com/yudai/pp v2.0.1+incompatible // indirect
+	golang.org/x/image v0.0.0-20200430140353-33d19683fad8
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45 // indirect
 	google.golang.org/appengine v1.6.5 // indirect
 	gopkg.in/yaml.v2 v2.2.8 // indirect

@@ -136,6 +136,18 @@ func GetIntByDefault(key string, defaultValue int) int {
 	return result
 }
 
+func GetFloat64ByDefault(key string, defaultValue float64) float64 {
+	val := GetByDefault(key, fmt.Sprintf("%f", defaultValue))
+
+	f, err := strconv.ParseFloat(val, 10)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return f
+}
+
 func GetInt64ByDefault(key string, defaultValue int64) int64 {
 	val := GetByDefault(key, fmt.Sprintf("%d", defaultValue))
 

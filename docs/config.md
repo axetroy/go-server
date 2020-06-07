@@ -92,8 +92,7 @@
 | UPLOAD_FILE_MAX_SIZE          | `int`    | 文件上传的最大大小                             | `1024*1024*10` = 10M |
 | UPLOAD_FILE_EXTENSION         | `string` | 允许上传的文件类型, 以为 `,` 作为分隔符        | `.txt,.md`           |
 | UPLOAD_IMAGE_MAX_SIZE         | `int`    | 图片上传的最大大小                             | `1024*1024*10` = 10M |
-| UPLOAD_IMAGE_THUMBNAIL_WIDTH  | `int`    | 图片缩略图宽度, 单位 `px`                      | `100`                |
-| UPLOAD_IMAGE_THUMBNAIL_HEIGHT | `int`    | 图片缩略图高度, 单位 `px`                      | `100`                |
+| UPLOAD_IMAGE_THUMBNAIL_RATE  | `int`    | 缩略图为原图的 1/2 尺寸, 按比例缩放                      | `2`                |
 
 ### 消息队列服务器
 

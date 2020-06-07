@@ -20,9 +20,8 @@ type ImageConfig struct {
 }
 
 type ThumbnailConfig struct {
-	Path      string `json:"path"`       // 缩略图存放路径
-	MaxWidth  int    `json:"max_width"`  // 缩略图最大宽度
-	MaxHeight int    `json:"max_height"` // 缩略图最大高度
+	Path string `json:"path"` // 缩略图存放路径
+	Rate int    `json:"rate"` // 缩放比例, 最小值为 1, 默认 2. 则缩小 1/2 倍
 }
 
 type AvatarConfig struct {
@@ -46,9 +45,8 @@ var Upload = TConfig{
 		Path:    "image",
 		MaxSize: dotenv.GetInt64ByDefault("UPLOAD_IMAGE_MAX_SIZE", 1024*1024*10), // max 10MB
 		Thumbnail: ThumbnailConfig{
-			Path:      "thumbnail",
-			MaxWidth:  dotenv.GetIntByDefault("UPLOAD_IMAGE_THUMBNAIL_WIDTH", 100),
-			MaxHeight: dotenv.GetIntByDefault("UPLOAD_IMAGE_THUMBNAIL_HEIGHT", 100),
+			Path: "thumbnail",
+			Rate: dotenv.GetIntByDefault("UPLOAD_IMAGE_THUMBNAIL_RATE", 2),
 		},
 		Avatar: AvatarConfig{
 			Path: "avatar",

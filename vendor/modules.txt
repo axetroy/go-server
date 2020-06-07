@@ -273,7 +273,6 @@ github.com/modern-go/reflect2
 github.com/mrjones/oauth
 # github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 ## explicit
-github.com/nfnt/resize
 # github.com/nsqio/go-nsq v1.0.8
 ## explicit
 github.com/nsqio/go-nsq
@@ -350,6 +349,10 @@ golang.org/x/crypto/nacl/secretbox
 golang.org/x/crypto/pbkdf2
 golang.org/x/crypto/poly1305
 golang.org/x/crypto/salsa20/salsa
+# golang.org/x/image v0.0.0-20200430140353-33d19683fad8
+## explicit
+golang.org/x/image/draw
+golang.org/x/image/math/f64
 # golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp

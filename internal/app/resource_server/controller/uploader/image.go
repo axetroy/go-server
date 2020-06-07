@@ -5,11 +5,11 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
-	config2 "github.com/axetroy/go-server/internal/app/resource_server/config"
+	"github.com/axetroy/go-server/internal/app/resource_server/config"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/schema"
-	"github.com/nfnt/resize"
+	"golang.org/x/image/draw"
 	"image"
 	"image/gif"
 	"image/jpeg"
@@ -30,12 +30,21 @@ type ImageResponse struct {
 // 支持的图片后缀名
 var supportImageExtNames = []string{".jpg", ".jpeg", ".png", ".ico", ".svg", ".bmp", ".gif"}
 
+// src   - source image
+// rect  - size we want
+// scale - scaler
+func scaleTo(src image.Image, rect image.Rectangle, scale draw.Scaler) image.Image {
+	dst := image.NewRGBA(rect)
+	scale.Scale(dst, rect, src, src.Bounds(), draw.Over, nil)
+	return dst
+}
+
 var Image = router.Handler(func(c router.Context) {
 	var (
-		maxUploadSize = config2.Upload.Image.MaxSize // 最大上传大小
+		maxUploadSize = config.Upload.Image.MaxSize // 最大上传大小
 		err           error
 		data          = make([]ImageResponse, 0)
-		imageDir      = path.Join(config2.Upload.Path, config2.Upload.Image.Path)
+		imageDir      = path.Join(config.Upload.Path, config.Upload.Image.Path)
 	)
 
 	defer func() {
@@ -160,12 +169,11 @@ Generate thumbnail
 */
 func GenerateThumbnail(imagePath string) (outputPath string, err error) {
 	var (
-		file         *os.File
-		img          image.Image
-		filename     = path.Base(imagePath)
-		maxWidth     = config2.Upload.Image.Thumbnail.MaxWidth
-		maxHeight    = config2.Upload.Image.Thumbnail.MaxHeight
-		thumbnailDir = path.Join(config2.Upload.Path, config2.Upload.Image.Thumbnail.Path)
+		file          *os.File
+		img           image.Image
+		filename      = path.Base(imagePath)
+		thumbnailRate = config.Upload.Image.Thumbnail.Rate
+		thumbnailDir  = path.Join(config.Upload.Path, config.Upload.Image.Thumbnail.Path)
 	)
 
 	extname := strings.ToLower(path.Ext(imagePath))
@@ -202,16 +210,26 @@ func GenerateThumbnail(imagePath string) (outputPath string, err error) {
 		return
 	}
 
-	m := resize.Thumbnail(uint(maxWidth), uint(maxHeight), img, resize.Lanczos3)
+	if thumbnailRate < 1 {
+		thumbnailRate = 1
+	}
+
+	// new size of image
+	width := img.Bounds().Max.X / thumbnailRate
+	height := img.Bounds().Max.Y / thumbnailRate
+
+	dr := image.Rect(0, 0, width, height)
+
+	m := scaleTo(img, dr, draw.BiLinear)
 
 	out, err := os.Create(outputPath)
+
 	if err != nil {
 		return
 	}
+
 	defer func() {
-		if er := out.Close(); er != nil {
-			return
-		}
+		_ = out.Close()
 	}()
 
 	// write new image to file
