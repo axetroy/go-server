@@ -28,6 +28,8 @@
 
 获取上传的图片, `filename` 为上传时返回的字段
 
+通过 `?scale=0.5` 获取 `0.5` 倍大小的缩略图
+
 ### 获取上传的缩略图
 
 [GET] /v1/resource/thumbnail/:filename
