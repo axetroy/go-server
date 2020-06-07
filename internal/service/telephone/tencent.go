@@ -105,7 +105,15 @@ func (c *Tencent) send(phone string, templateID string, templateMap map[string]s
 
 	r, err := http.Post(fmt.Sprintf("https://yun.tim.qq.com/v5/tlssmssvr/sendsms?sdkappid=%s&random=%s", appKey, randomStr), "application/json", body)
 
-	if err != nil || r.StatusCode != http.StatusOK {
+	if err != nil {
+		return exception.SendMsgFail
+	}
+
+	defer func() {
+		_ = r.Body.Close()
+	}()
+
+	if r.StatusCode != http.StatusOK {
 		return exception.SendMsgFail
 	}
 

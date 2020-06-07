@@ -187,6 +187,10 @@ func (o OneSignal) CreateNotification(params CreateNotificationParams) error {
 		return err
 	}
 
+	defer func() {
+		_ = res.Body.Close()
+	}()
+
 	resByte, err := ioutil.ReadAll(res.Body)
 
 	if err != nil {

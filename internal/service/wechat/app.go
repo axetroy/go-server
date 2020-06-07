@@ -51,6 +51,10 @@ func FetchOpenID(code string) (*Response, error) {
 		return nil, reqErr
 	}
 
+	defer func() {
+		_ = r.Body.Close()
+	}()
+
 	resBytes, ioErr := ioutil.ReadAll(r.Body)
 
 	if ioErr != nil {
