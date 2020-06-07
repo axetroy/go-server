@@ -175,6 +175,7 @@ func init() {
 			notificationRouter := v1.Party("/notification")
 			notificationRouter.Use(userAuthMiddleware)
 			notificationRouter.Get("", notification.GetNotificationListByUserRouter) // 获取系统通知列表
+			notificationRouter.Put("/read/batch", notification.MarkReadBatchRouter)  // 标记多个通知为已读
 			notificationRouter.Put("/{id}/read", notification.ReadRouter)            // 标记通知为已读
 			notificationRouter.Get("/{id}", notification.GetRouter)                  // 获取某一条系统通知详情
 		}

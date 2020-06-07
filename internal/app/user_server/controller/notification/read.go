@@ -12,7 +12,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-// MarkRead mark notification as read
+// 标记已读
 func MarkRead(c helper.Context, notificationID string) (res schema.Response) {
 	var (
 		err error
@@ -94,11 +94,102 @@ func MarkRead(c helper.Context, notificationID string) (res schema.Response) {
 	return
 }
 
-// ReadRouter read this notification router
 var ReadRouter = router.Handler(func(c router.Context) {
 	notificationID := c.Param("id")
 
 	c.ResponseFunc(nil, func() schema.Response {
 		return MarkRead(helper.NewContext(&c), notificationID)
+	})
+})
+
+// 批量标记已读
+func MarkReadBatch(c helper.Context, notificationIDs []string) (res schema.Response) {
+	var (
+		err error
+		tx  *gorm.DB
+	)
+
+	defer func() {
+		if r := recover(); r != nil {
+			switch t := r.(type) {
+			case string:
+				err = errors.New(t)
+			case error:
+				err = t
+			default:
+				err = exception.Unknown
+			}
+		}
+
+		if tx != nil {
+			if err != nil {
+				_ = tx.Rollback().Error
+			} else {
+				err = tx.Commit().Error
+			}
+		}
+
+		helper.Response(&res, nil, nil, err)
+	}()
+
+	tx = database.Db.Begin()
+
+	userInfo := model.User{
+		Id: c.Uid,
+	}
+
+	if err = tx.Where(&userInfo).First(&userInfo).Error; err != nil {
+		// 没有找到用户
+		if err == gorm.ErrRecordNotFound {
+			err = exception.UserNotExist
+		}
+		return
+	}
+
+	notifications := make([]model.Notification, 0)
+
+	// 先获取通知
+	if err = tx.Model(model.Notification{}).Where("id IN (?)", notificationIDs).Find(&notifications).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = exception.NoData
+		}
+		return
+	}
+
+loop:
+	for _, notificationInfo := range notifications {
+		mark := model.NotificationMark{
+			Id:  notificationInfo.Id,
+			Uid: c.Uid,
+		}
+
+		// 再确认以读表有没有这个用户的已读记录
+		if err = tx.Where(&mark).Last(&mark).Error; err != nil {
+			// 如果没找到这条记录，则说明没有创建
+			// 继续下面的页面
+			if err == gorm.ErrRecordNotFound {
+				err = nil
+			} else {
+				return
+			}
+		} else {
+			continue loop
+		}
+
+		if err = tx.Create(&mark).Error; err != nil {
+			return
+		}
+	}
+
+	return
+}
+
+type MarkReadBatchParams []string
+
+var MarkReadBatchRouter = router.Handler(func(c router.Context) {
+	var ids MarkReadBatchParams
+
+	c.ResponseFunc(c.ShouldBindJSON(&ids), func() schema.Response {
+		return MarkReadBatch(helper.NewContext(&c), ids)
 	})
 })

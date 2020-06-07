@@ -15,3 +15,13 @@
 [PUT] /v1/notification/:notification_id/read
 
 标记系统通知为已读
+
+### 批量标记已读
+
+[PUT] /v1/notification/read/batch
+
+批量标记已读
+
+| 参数 | 类型       | 说明             | 必选 |
+| ---- | ---------- | ---------------- | ---- |
+| ids  | `[]string` | 要已读的 ID 数组 | \*   |

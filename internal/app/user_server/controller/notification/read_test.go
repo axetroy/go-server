@@ -171,3 +171,101 @@ func TestReadRouter(t *testing.T) {
 		assert.Equal(t, userInfo.Id, notificationMarkInfo.Uid)
 	}
 }
+
+func TestReadBatchRouter(t *testing.T) {
+	var notificationId1 string
+	var notificationId2 string
+	adminInfo, _ := tester.LoginAdmin()
+	userInfo, _ := tester.CreateUser()
+
+	defer tester.DeleteUserByUserName(userInfo.Username)
+
+	context := helper.Context{
+		Uid: adminInfo.Id,
+	}
+
+	// 创建一篇系统通知
+	{
+		var (
+			title   = "TestUpdate"
+			content = "TestUpdate"
+		)
+
+		r := notificationAdmin.Create(context, notificationAdmin.CreateParams{
+			Title:   title,
+			Content: content,
+		})
+
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
+
+		testNotification := schema.Notification{}
+
+		assert.Nil(t, r.Decode(&testNotification))
+
+		notificationId1 = testNotification.Id
+
+		defer notificationAdmin.DeleteNotificationById(testNotification.Id)
+
+		assert.Equal(t, title, testNotification.Title)
+		assert.Equal(t, content, testNotification.Content)
+	}
+	{
+		var (
+			title   = "TestUpdate"
+			content = "TestUpdate"
+		)
+
+		r := notificationAdmin.Create(context, notificationAdmin.CreateParams{
+			Title:   title,
+			Content: content,
+		})
+
+		assert.Equal(t, schema.StatusSuccess, r.Status)
+		assert.Equal(t, "", r.Message)
+
+		testNotification := schema.Notification{}
+
+		assert.Nil(t, r.Decode(&testNotification))
+
+		notificationId2 = testNotification.Id
+
+		defer notificationAdmin.DeleteNotificationById(testNotification.Id)
+
+		assert.Equal(t, title, testNotification.Title)
+		assert.Equal(t, content, testNotification.Content)
+	}
+
+	// 标记为已读
+	{
+		header := mocker.Header{
+			"Authorization": token.Prefix + " " + userInfo.Token,
+		}
+
+		body, _ := json.Marshal(&notification.MarkReadBatchParams{
+			notificationId1,
+			notificationId2,
+		})
+
+		r := tester.HttpUser.Put("/v1/notification/read/batch", body, &header)
+		res := schema.Response{}
+
+		assert.Nil(t, json.Unmarshal(r.Body.Bytes(), &res))
+		assert.Equal(t, "", res.Message)
+		assert.Equal(t, schema.StatusSuccess, res.Status)
+		assert.Equal(t, nil, res.Data)
+
+		var ids = []string{notificationId1, notificationId2}
+
+		for _, id := range ids {
+			// 再读取这条系统通知
+			notificationMarkInfo := model.NotificationMark{}
+
+			assert.Nil(t, database.Db.Where("id = ?", id).Where("uid = ?", userInfo.Id).Last(&notificationMarkInfo).Error)
+			assert.Equal(t, userInfo.Id, notificationMarkInfo.Uid)
+
+			assert.Nil(t, database.Db.Where("id = ?", id).Where("uid = ?", userInfo.Id).Last(&notificationMarkInfo).Error)
+			assert.Equal(t, userInfo.Id, notificationMarkInfo.Uid)
+		}
+	}
+}
