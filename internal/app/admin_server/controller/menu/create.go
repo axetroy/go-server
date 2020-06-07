@@ -291,9 +291,7 @@ func CreateFromTree(c helper.Context, input []TreeParams) (res schema.Response) 
 			} else {
 				var children []*schema.MenuTreeItem
 
-				for _, x := range c {
-					children = append(children, x)
-				}
+				children = append(children, c...)
 
 				info.Children = children
 			}

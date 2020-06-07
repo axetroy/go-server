@@ -55,7 +55,7 @@ func (o *OAuth) TableName() string {
 }
 
 func (o *OAuth) IsValidProvider() bool {
-	if _, ok := providerMap[o.Provider]; ok == false {
+	if _, ok := providerMap[o.Provider]; !ok {
 		return false
 	}
 	return true

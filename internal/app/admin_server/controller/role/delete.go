@@ -61,6 +61,11 @@ func Delete(c helper.Context, roleName string) (res schema.Response) {
 		return
 	}
 
+	if !adminInfo.IsSuper {
+		err = exception.NoPermission
+		return
+	}
+
 	roleInfo := model.Role{
 		Name: roleName,
 	}
@@ -76,9 +81,13 @@ func Delete(c helper.Context, roleName string) (res schema.Response) {
 	// 查询是否有用户属于这个角色，如果有，不允许删除
 	var roleUsersNum int64
 
-	if err = tx.Raw(fmt.Sprintf(`SELECT COUNT(*) FROM "user"  WHERE "user"."role" IN ('{%s}')`, roleInfo.Name)).Count(&roleUsersNum).Error; err != nil {
+	if err = tx.Model(model.User{}).Where("role @> ARRAY[?::varchar]", roleInfo.Name).Count(&roleUsersNum).Error; err != nil {
 		return
 	}
+
+	//if err = tx.Raw(fmt.Sprintf(`SELECT COUNT(*) FROM "user"  WHERE "user"."role" IN ('{%s}')`, roleInfo.Name)).Count(&roleUsersNum).Error; err != nil {
+	//	return
+	//}
 
 	if roleUsersNum > 0 {
 		err = exception.RoleHadBeenUsed

@@ -27,7 +27,6 @@ func moveLoginLog(startAt time.Time, endAt time.Time) (bool, error) {
 	var (
 		tx  = database.Db.Begin()
 		err error
-		eol = true // 这个时间段的数据是否已经迁移完，当 eol == true 时，则迁移下一个时间段
 	)
 
 	defer func() {
@@ -72,14 +71,14 @@ func moveLoginLog(startAt time.Time, endAt time.Time) (bool, error) {
 	}
 
 	// 如果获取的数据已经不够，那么我们就认为它已经是最后一页了
-	eol = len(logs) < limit
+	eol := len(logs) < limit
 
 	return eol, nil
 }
 
 func ensureLoginLogTableExist(tableName string, db *gorm.DB) error {
 	// 如果表不存在，那么创建表
-	if db.HasTable(tableName) == false {
+	if !db.HasTable(tableName) {
 		if err := db.Table(tableName).CreateTable(model.LoginLog{}).Error; err != nil {
 			return err
 		}
@@ -111,7 +110,7 @@ func SplitLoginLog() {
 	for {
 		if eol, err := moveLoginLog(startAt, endAt); err != nil {
 			return
-		} else if eol == true {
+		} else if eol {
 			// 开始时间往后推一个月，继续遍历
 			startAt = startAt.AddDate(0, 1, 0)
 			endAt = startAt.AddDate(0, 1, 0)

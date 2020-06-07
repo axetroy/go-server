@@ -155,7 +155,7 @@ func SignUpWithUsername(input SignUpWithUsernameParams) (res schema.Response) {
 
 	u := model.User{Username: input.Username}
 
-	if err = tx.Where("username = ?", input.Username).Find(&u).Error; err != nil {
+	if err = tx.Model(u).Where("username = ?", input.Username).Find(&u).Error; err != nil {
 		if err != gorm.ErrRecordNotFound {
 			return
 		}

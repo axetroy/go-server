@@ -70,7 +70,7 @@ func GetWallet(c helper.Context, currencyName string) (res schema.Response) {
 	}
 
 	// 检查是否是有效的钱包
-	if IsValidWallet(strings.ToUpper(currencyName)) == false {
+	if !IsValidWallet(strings.ToUpper(currencyName)) {
 		err = exception.InvalidWallet
 		return
 	}

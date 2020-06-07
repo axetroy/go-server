@@ -7,7 +7,7 @@ import "github.com/axetroy/go-server/internal/app/customer_service/ws"
 func DistributionSchedulerHandler() {
 	for {
 		// 从客服池中取消息
-		_ = <-ws.MatcherPool.Broadcast
+		<-ws.MatcherPool.Broadcast
 
 		idleWaiter := ws.MatcherPool.GetIdleWaiter()
 

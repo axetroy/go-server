@@ -125,7 +125,7 @@ func Update(c helper.Context, addressId string, input UpdateParams) (res schema.
 		addressInfo.CityCode = *input.CityCode
 		addressInfo.AreaCode = *input.AreaCode
 
-		if area.IsValid(*input.ProvinceCode, *input.CityCode, *input.AreaCode, *input.StreetCode) == false {
+		if !area.IsValid(*input.ProvinceCode, *input.CityCode, *input.AreaCode, *input.StreetCode) {
 			err = exception.InvalidParams.New("无效的城市码")
 			return
 		}
@@ -138,7 +138,7 @@ func Update(c helper.Context, addressId string, input UpdateParams) (res schema.
 
 		// 如果要创建一个默认地址
 		// 那么就把前面的默认地址修改为false
-		if *input.IsDefault == true {
+		if *input.IsDefault {
 			defaultAddress := model.Address{
 				Uid:       c.Uid,
 				IsDefault: true,

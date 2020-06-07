@@ -42,11 +42,9 @@ func Generate(userId string, state State, d ...time.Duration) (tokenString strin
 	case StateAdmin:
 		issuer = "admin"
 		key = config.Jwt.Secret
-		break
 	case StateUser:
 		issuer = "user"
 		key = config.Jwt.Secret
-		break
 	}
 
 	// 生成token

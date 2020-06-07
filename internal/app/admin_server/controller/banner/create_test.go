@@ -17,7 +17,9 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	adminInfo, _ := tester.LoginAdmin()
+	adminInfo, err := tester.LoginAdmin()
+
+	assert.Nil(t, err)
 
 	// 创建一个 Banner
 	{
@@ -52,7 +54,9 @@ func TestCreate(t *testing.T) {
 	// 非管理员的uid去创建，应该报错
 	{
 
-		userInfo, _ := tester.CreateUser()
+		userInfo, err := tester.CreateUser()
+
+		assert.Nil(t, err)
 
 		defer tester.DeleteUserByUserName(userInfo.Username)
 

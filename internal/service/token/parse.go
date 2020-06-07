@@ -18,7 +18,7 @@ func Parse(tokenString string, state State) (claims Claims, err error) {
 
 	key = config.Jwt.Secret
 
-	if strings.HasPrefix(tokenString, Prefix+" ") == false {
+	if !strings.HasPrefix(tokenString, Prefix+" ") {
 		err = exception.InvalidAuth
 		return
 	}

@@ -8,19 +8,19 @@ func IsValid(provinceCode string, cityCode string, areaCode string, streetCode s
 		return false
 	}
 
-	if strings.HasPrefix(cityCode, provinceCode) == false {
+	if !strings.HasPrefix(cityCode, provinceCode) {
 		return false
 	}
 
-	if strings.HasPrefix(areaCode, cityCode) == false {
+	if !strings.HasPrefix(areaCode, cityCode) {
 		return false
 	}
 
-	if strings.HasPrefix(areaCode, cityCode) == false {
+	if !strings.HasPrefix(areaCode, cityCode) {
 		return false
 	}
 
-	if strings.HasPrefix(streetCode, areaCode) == false {
+	if !strings.HasPrefix(streetCode, areaCode) {
 		return false
 	}
 

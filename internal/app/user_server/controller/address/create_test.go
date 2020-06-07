@@ -284,10 +284,8 @@ func TestCreateDefaultAddr(t *testing.T) {
 			switch b.Id {
 			case addr1.Id:
 				assert.False(t, b.IsDefault)
-				break
 			case addr2.Id:
 				assert.True(t, b.IsDefault)
-				break
 			}
 		}
 	}

@@ -12,7 +12,7 @@ import (
 var File = router.Handler(func(c router.Context) {
 	filename := c.Param("filename")
 	filePath := path.Join(config2.Upload.Path, config2.Upload.File.Path, filename)
-	if isExistFile := fs.PathExists(filePath); isExistFile == false {
+	if !fs.PathExists(filePath) {
 		// if the path not found
 		http.NotFound(c.Writer(), c.Request())
 		return

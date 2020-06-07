@@ -1,8 +1,6 @@
 // Copyright 2019-2020 Axetroy. All rights reserved. Apache License 2.0.
 package exception
 
-import "fmt"
-
 func New(text string, code int) Error {
 	return Error{
 		message: text,
@@ -24,5 +22,5 @@ func (e Error) Code() int {
 }
 
 func (e Error) New(msg string) Error {
-	return New(fmt.Sprintf("%s", msg), e.code)
+	return New(msg, e.code)
 }

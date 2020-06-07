@@ -35,11 +35,11 @@ func Serve() error {
 
 	// Wait for interrupt signal to gracefully shutdown the server with
 	// a timeout of 5 seconds.
-	quit := make(chan os.Signal)
+	quit := make(chan os.Signal, 1)
 	// kill (no param) default send syscall.SIGTERM
 	// kill -2 is syscall.SIGINT
 	// kill -9 is syscall.SIGKILL but can't be catch, so don't need add it
-	signal.Notify(quit, os.Kill, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+	signal.Notify(quit, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 	<-quit
 
 	config.Common.Exiting = true
@@ -50,7 +50,7 @@ func Serve() error {
 
 	defer cancel()
 
-	if consumers != nil && len(consumers) > 0 {
+	if len(consumers) > 0 {
 		for _, c := range consumers {
 			c.Stop()
 			_ = c.DisconnectFromNSQD(message_queue.Address)
@@ -58,10 +58,8 @@ func Serve() error {
 	}
 
 	// catching ctx.Done(). timeout of 5 seconds.
-	select {
-	case <-ctx.Done():
-		log.Println("Timeout of 5 seconds.")
-	}
+	<-ctx.Done()
+	log.Println("Timeout of 5 seconds.")
 
 	redis.Dispose()
 	database.Dispose()

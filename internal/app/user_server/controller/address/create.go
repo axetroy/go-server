@@ -64,7 +64,7 @@ func Create(c helper.Context, input CreateAddressParams) (res schema.Response) {
 		return
 	}
 
-	if area.IsValid(input.ProvinceCode, input.CityCode, input.AreaCode, input.StreetCode) == false {
+	if !area.IsValid(input.ProvinceCode, input.CityCode, input.AreaCode, input.StreetCode) {
 		err = exception.InvalidParams.New("无效的城市码")
 		return
 	}
@@ -87,7 +87,7 @@ func Create(c helper.Context, input CreateAddressParams) (res schema.Response) {
 
 		// 如果要创建一个默认地址
 		// 那么就把前面的默认地址修改为false
-		if *input.IsDefault == true {
+		if *input.IsDefault {
 			defaultAddress := model.Address{
 				Uid:       c.Uid,
 				IsDefault: true,

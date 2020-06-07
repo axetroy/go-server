@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	usernameReg = regexp.MustCompile("^[\\w\\-]+$")
+	usernameReg = regexp.MustCompile(`^[\w\-]+$`)
 	validate    = validator.New()
 	trans       ut.Translator
 )
@@ -62,11 +62,7 @@ func ValidateStruct(any interface{}) error {
 func IsEmail(email string) bool {
 	err := validate.Var(email, "required,email")
 
-	if err == nil {
-		return true
-	}
-
-	return false
+	return err == nil
 }
 
 func IsPhone(phone string) bool {

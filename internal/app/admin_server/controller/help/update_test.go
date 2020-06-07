@@ -17,7 +17,7 @@ import (
 
 func TestUpdate(t *testing.T) {
 	var (
-		helpId  = ""
+		helpId  string
 		title   = "test title"
 		content = "test content"
 		tags    = []string{"test"}
@@ -105,7 +105,7 @@ func TestUpdate(t *testing.T) {
 
 func TestUpdateRouter(t *testing.T) {
 	var (
-		helpId  = ""
+		helpId  string
 		title   = "test title"
 		content = "test content"
 		tags    = []string{"test"}

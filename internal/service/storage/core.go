@@ -23,10 +23,8 @@ func init() {
 	switch provider(config.Telephone.Provider) {
 	case providerLocal:
 		initClient(NewLocalStorage())
-		break
 	case providerSFTP:
 		initClient(NewSFTPStorage())
-		break
 	default:
 		log.Fatal(fmt.Sprintf(`Invalid storage provider "%s"`, config.Telephone.Provider))
 	}

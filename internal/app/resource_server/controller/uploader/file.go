@@ -63,7 +63,7 @@ var File = router.Handler(func(c router.Context) {
 					}
 				}
 
-				if isSupportFile == false {
+				if !isSupportFile {
 					err = exception.NotSupportType
 					return
 				}

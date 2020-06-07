@@ -167,7 +167,7 @@ func To(c helper.Context, input ToParams, signature string) (res schema.Response
 	}
 
 	// 如果转账记录的表不存在的话，那么就生成这个表
-	if tx.HasTable(transferTableName) == false {
+	if !tx.HasTable(transferTableName) {
 		if err = tx.CreateTable(model.TransferLogMap[strings.ToUpper(input.Currency)]).Error; err != nil {
 			return
 		}
@@ -194,7 +194,7 @@ func To(c helper.Context, input ToParams, signature string) (res schema.Response
 	data.UpdatedAt = transferLog.UpdatedAt.Format(time.RFC3339Nano)
 
 	// 如果财务日志表不存在的话, 那么就生成这个表
-	if tx.HasTable(financeLogTableName) == false {
+	if !tx.HasTable(financeLogTableName) {
 		if err = tx.CreateTable(model.FinanceLogMap[input.Currency]).Error; err != nil {
 			return
 		}

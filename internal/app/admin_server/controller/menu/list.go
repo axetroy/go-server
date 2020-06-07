@@ -22,8 +22,8 @@ type Query struct {
 func findChild(allMenus []schema.Menu, parentId string, myAccession []string, isSuperAdmin bool) (children []schema.Menu) {
 	for _, v := range allMenus {
 		if v.ParentId == parentId {
-			if isSuperAdmin == false && len(v.Accession) > 0 {
-				if matchAccession(v.Accession, myAccession) == true {
+			if !isSuperAdmin && len(v.Accession) > 0 {
+				if matchAccession(v.Accession, myAccession) {
 					children = append(children, v)
 				}
 			} else {
@@ -44,9 +44,7 @@ func set(menus []schema.Menu, allMenus []schema.Menu, myAccession []string, isSu
 		}
 		// 获取该父级菜单下的所有子菜单
 		children := findChild(allMenus, v.Id, myAccession, isSuperAdmin)
-		for _, c := range children {
-			v.Children = append(v.Children, c)
-		}
+		v.Children = append(v.Children, children...)
 		// 再查找子菜单的子菜单
 		if len(v.Children) > 0 {
 			v.Children = set(v.Children, allMenus, myAccession, isSuperAdmin)
@@ -69,7 +67,7 @@ func findStrInSlice(list []string, str string) bool {
 
 func matchAccession(accessionRequire []string, myAccession []string) bool {
 	for _, a := range accessionRequire {
-		if findStrInSlice(myAccession, a) == false {
+		if !findStrInSlice(myAccession, a) {
 			return false
 		}
 	}
@@ -91,8 +89,8 @@ func transform(menus []schema.Menu, myAccession []string, isSuperAdmin bool) (da
 		}
 
 		// 如果这个菜单需要权限验证的话
-		if isSuperAdmin == false && isRequireAccession {
-			if matchAccession(v.Accession, myAccession) == true {
+		if !isSuperAdmin && isRequireAccession {
+			if matchAccession(v.Accession, myAccession) {
 				data = append(data, v)
 			}
 		} else {

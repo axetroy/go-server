@@ -13,7 +13,7 @@ import (
 var Image = router.Handler(func(c router.Context) {
 	filename := c.Param("filename")
 	originImagePath := path.Join(config2.Upload.Path, config2.Upload.Image.Path, filename)
-	if fs.PathExists(originImagePath) == false {
+	if !fs.PathExists(originImagePath) {
 		// if the path not found
 		http.NotFound(c.Writer(), c.Request())
 		return

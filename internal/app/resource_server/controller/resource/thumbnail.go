@@ -14,9 +14,9 @@ var Thumbnail = router.Handler(func(c router.Context) {
 	Config := config2.Upload
 	originImagePath := path.Join(Config.Path, Config.Image.Path, filename)
 	thumbnailImagePath := path.Join(Config.Path, Config.Image.Thumbnail.Path, filename)
-	if fs.PathExists(thumbnailImagePath) == false {
+	if !fs.PathExists(thumbnailImagePath) {
 		// if thumbnail image not exist, try to get origin image
-		if fs.PathExists(originImagePath) == true {
+		if fs.PathExists(originImagePath) {
 			http.ServeFile(c.Writer(), c.Request(), originImagePath)
 			return
 		}

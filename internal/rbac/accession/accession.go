@@ -9,7 +9,7 @@ type Accession struct {
 // 校验一个权限是否是合法的字符串
 func ValidAdmin(s []string) bool {
 	for _, v := range s {
-		if _, ok := AdminMap[v]; ok == false {
+		if _, ok := AdminMap[v]; !ok {
 			return false
 		}
 	}
@@ -19,7 +19,7 @@ func ValidAdmin(s []string) bool {
 // 校验一个权限是否是合法的字符串
 func Valid(s []string) bool {
 	for _, v := range s {
-		if _, ok := Map[v]; ok == false {
+		if _, ok := Map[v]; !ok {
 			return false
 		}
 	}
@@ -53,7 +53,7 @@ func New(name string, description string) *Accession {
 // 筛选出有效的管理员权限
 func FilterAdminAccession(AccessionStr []string) (accession []string) {
 	for _, v := range AccessionStr {
-		if _, ok := AdminMap[v]; ok == true {
+		if _, ok := AdminMap[v]; ok {
 			accession = append(accession, v)
 		}
 	}

@@ -65,7 +65,7 @@ func UpdatePasswordByAdmin(c helper.Context, userId string, input UpdatePassword
 	}
 
 	// 只有超级管理员才能操作
-	if adminInfo.IsSuper == false {
+	if !adminInfo.IsSuper {
 		err = exception.NoPermission
 		return
 	}

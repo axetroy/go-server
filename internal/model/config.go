@@ -75,7 +75,6 @@ func (config *Config) IsValidConfigField() error {
 		if err := validator.ValidateStruct(c); err != nil {
 			return err
 		}
-		break
 	case ConfigFieldNameSMTP.Field:
 		c := ConfigFieldSMTP{}
 		if err := json.Unmarshal([]byte(config.Fields), &c); err != nil {
@@ -84,7 +83,6 @@ func (config *Config) IsValidConfigField() error {
 		if err := validator.ValidateStruct(c); err != nil {
 			return err
 		}
-		break
 	case ConfigFieldNameWechatApp.Field:
 		c := ConfigFieldWechatApp{}
 		if err := json.Unmarshal([]byte(config.Fields), &c); err != nil {
@@ -93,7 +91,6 @@ func (config *Config) IsValidConfigField() error {
 		if err := validator.ValidateStruct(c); err != nil {
 			return err
 		}
-		break
 	default:
 		return exception.InvalidParams
 	}

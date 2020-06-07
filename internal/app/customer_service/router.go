@@ -2,7 +2,6 @@
 package customer_service
 
 import (
-	"errors"
 	"fmt"
 	"github.com/axetroy/go-server/internal/app/customer_service/controller/connect"
 	"github.com/axetroy/go-server/internal/app/customer_service/controller/example"
@@ -29,7 +28,7 @@ func init() {
 
 		c.StatusCode(code)
 
-		c.JSON(errors.New(fmt.Sprintf("%d %s", code, http.StatusText(code))), nil, nil)
+		c.JSON(fmt.Errorf("%d %s", code, http.StatusText(code)), nil, nil)
 	}))
 
 	v1 := app.Party("v1")

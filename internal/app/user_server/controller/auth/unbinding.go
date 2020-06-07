@@ -224,7 +224,9 @@ func UnbindingWechat(c helper.Context, input UnbindingWechatParams) (res schema.
 		// 如果不匹配，则校验失败
 		if phone != *userInfo.Phone {
 			err = exception.InvalidParams
-			return
+			if err != nil {
+				return
+			}
 		}
 	} else if userInfo.Email != nil {
 		// 	如果用户已有邮箱，则用邮箱作为验证码
@@ -239,7 +241,9 @@ func UnbindingWechat(c helper.Context, input UnbindingWechatParams) (res schema.
 		// 如果邮箱不匹配，则校验失败
 		if email != *userInfo.Email {
 			err = exception.InvalidParams
-			return
+			if err != nil {
+				return
+			}
 		}
 	} else {
 		// 否则按照 `wx.login()` 返回的 code
@@ -260,6 +264,9 @@ func UnbindingWechat(c helper.Context, input UnbindingWechatParams) (res schema.
 		// 如果 UID 对不上，则说明 code 不正确
 		if wechatInfo.Uid != c.Uid {
 			err = exception.InvalidParams
+			if err != nil {
+				return
+			}
 		}
 	}
 

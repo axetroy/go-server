@@ -37,7 +37,7 @@ func Permission(accessions ...accession.Accession) iris.Handler {
 			return
 		}
 
-		if cc.Require(accessions) == false {
+		if !cc.Require(accessions) {
 			err = exception.NoPermission
 		}
 	}

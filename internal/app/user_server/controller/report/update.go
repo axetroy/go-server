@@ -88,7 +88,7 @@ func Update(c helper.Context, reportId string, input UpdateParams) (res schema.R
 		shouldUpdate = true
 	}
 
-	if shouldUpdate == false {
+	if !shouldUpdate {
 		return
 	}
 

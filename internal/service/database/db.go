@@ -114,12 +114,14 @@ func Migrate(db *gorm.DB) error {
 		// 确保有默认的角色
 		if err := db.First(&defaultRole).Error; err != nil {
 			if err == gorm.ErrRecordNotFound {
-				err = db.Create(&model.Role{
+				if err = db.Create(&model.Role{
 					Name:        buildInRole.Name,
 					Description: buildInRole.Description,
 					Accession:   buildInRole.AccessionArray(),
 					BuildIn:     true,
-				}).Error
+				}).Error; err != nil {
+					return err
+				}
 			} else {
 				return err
 			}

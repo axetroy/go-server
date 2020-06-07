@@ -63,7 +63,7 @@ func GetAdminInfo(c helper.Context) (res schema.Response) {
 	}
 
 	// 如果是超级管理员，则拥有全部权限
-	if adminInfo.IsSuper == true {
+	if adminInfo.IsSuper {
 		data.Accession = []string{}
 		for _, v := range accession.AdminList {
 			data.Accession = append(data.Accession, v.Name)

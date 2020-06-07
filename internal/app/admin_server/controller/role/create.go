@@ -77,7 +77,7 @@ func Create(c helper.Context, input CreateParams) (res schema.Response) {
 		return
 	}
 
-	if accession.Valid(input.Accession) == false {
+	if !accession.Valid(input.Accession) {
 		err = exception.InvalidParams
 		return
 	}

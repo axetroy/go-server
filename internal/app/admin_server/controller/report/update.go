@@ -83,10 +83,8 @@ func UpdateByAdmin(c helper.Context, reportId string, input UpdateByAdminParams)
 		switch *input.Status {
 		case 0:
 			statusText = "待解决"
-			break
 		case 1:
 			statusText = "已解决"
-			break
 		default:
 			break
 		}
@@ -120,7 +118,7 @@ func UpdateByAdmin(c helper.Context, reportId string, input UpdateByAdminParams)
 		shouldUpdate = true
 	}
 
-	if shouldUpdate == false {
+	if !shouldUpdate {
 		return
 	}
 

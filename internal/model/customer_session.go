@@ -28,7 +28,7 @@ type CustomerSession struct {
 	Uid        string   `gorm:"not null;index;type:varchar(32)" json:"uid"`                   // 用户ID
 	User       User     `gorm:"foreignkey:Uid" json:"user"`                                   // **外键**
 	CustomerID string   `gorm:"not null;index;type:varchar(32)" json:"customer_id"`           // 客服 ID
-	Customer   Customer `gorm:"foreignkey:CustomerID" json:"customer_id"`                     //  **外键**
+	Customer   Customer `gorm:"foreignkey:CustomerID" json:"customer"`                        //  **外键**
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 	DeletedAt  *time.Time `sql:"index"`

@@ -77,6 +77,4 @@ func Init() {
 	if err = fs.EnsureDir(path.Join(Upload.Path, Upload.Image.Avatar.Path)); err != nil {
 		return
 	}
-
-	return
 }

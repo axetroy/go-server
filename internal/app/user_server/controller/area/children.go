@@ -22,26 +22,20 @@ var GetChildren = router.Handler(func(c router.Context) {
 		switch len(target.Code) {
 		case 2:
 			resultMap = area.CityMap
-			break
 		case 4:
 			resultMap = area.AreaMap
-			break
 		case 6:
 			resultMap = area.StreetMap
-			break
 		case 9:
 			resultMap = nil
-			break
 		}
 
-		if resultMap != nil {
-			for code, name := range resultMap {
-				if strings.HasPrefix(code, target.Code) {
-					result = append(result, area.Location{
-						Code: code,
-						Name: name,
-					})
-				}
+		for code, name := range resultMap {
+			if strings.HasPrefix(code, target.Code) {
+				result = append(result, area.Location{
+					Code: code,
+					Name: name,
+				})
 			}
 		}
 

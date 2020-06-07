@@ -2,7 +2,6 @@ package tester
 
 import (
 	"errors"
-
 	"github.com/axetroy/go-server/internal/app/admin_server/controller/admin"
 	"github.com/axetroy/go-server/internal/app/user_server/controller/auth"
 	"github.com/axetroy/go-server/internal/library/helper"
@@ -16,7 +15,7 @@ func CreateUser() (profile schema.ProfileWithToken, err error) {
 	var (
 		username  = "test-" + util.RandomString(6)
 		password  = "123123"
-		ip        = "0.0.0.0"
+		ip        = "192.168.0.1"
 		userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3788.1 Safari/537.36"
 	)
 
@@ -74,7 +73,7 @@ func DeleteUserByUserName(username string) {
 	database.DeleteRowByTable("user", "username", username)
 }
 
-// 删除用户
+//DeleteUserByUid 删除用户
 func DeleteUserByUid(uid string) {
 	database.DeleteRowByTable("user", "id", uid)
 	database.DeleteRowByTable("wechat_open_id", "uid", uid)

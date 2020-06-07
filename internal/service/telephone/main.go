@@ -30,10 +30,8 @@ func init() {
 	switch provider(config.Telephone.Provider) {
 	case providerAliyun:
 		initClient(NewAliyun())
-		break
 	case providerTencent:
 		initClient(NewTencent())
-		break
 	default:
 		log.Fatal(fmt.Sprintf(`Invalid telephone provider "%s"`, config.Telephone.Provider))
 	}

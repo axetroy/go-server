@@ -131,7 +131,7 @@ var CreateAdminRouter = router.Handler(func(c router.Context) {
 		return
 	}
 
-	if adminInfo.IsSuper == false {
+	if !adminInfo.IsSuper {
 		err = exception.AdminNotSuper
 		return
 	}

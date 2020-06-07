@@ -40,9 +40,5 @@ func Verify2FA(uid string, token string) bool {
 
 	err = otp.Validate(token)
 
-	if err != nil {
-		return false
-	}
-
-	return true
+	return err == nil
 }

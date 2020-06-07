@@ -12,7 +12,6 @@ import (
 
 type Context struct {
 	context iris.Context
-	err     error
 }
 
 func (c *Context) Param(key string) string {
@@ -93,7 +92,7 @@ func (c *Context) ShouldBindJSON(pr interface{}) error {
 
 func (c *Context) ShouldBindQuery(pr interface{}) error {
 	if err := c.context.ReadQuery(pr); err != nil {
-		err = exception.InvalidParams
+		return exception.InvalidParams.New(err.Error())
 	}
 	return nil
 }

@@ -28,7 +28,7 @@ func init() {
 	}
 
 	if !Test {
-		if os.Getenv("GO_TESTING") != "" || strings.Index(os.Getenv("XPC_SERVICE_NAME"), "com.jetbrains.goland") >= 0 {
+		if os.Getenv("GO_TESTING") != "" || strings.Contains(os.Getenv("XPC_SERVICE_NAME"), "goland") {
 			Test = true
 		}
 	}
@@ -56,7 +56,7 @@ func Load() (err error) {
 			isRunInTest = true
 		} else {
 			e, _ := os.Executable()
-			isRunInTest = regexp.MustCompile("\\/T\\/___").MatchString(e)
+			isRunInTest = regexp.MustCompile(`\\/T\\/___`).MatchString(e)
 		}
 	}
 
@@ -75,11 +75,9 @@ func Load() (err error) {
 	case isRunInTravis:
 		Test = true
 		RootDir = os.Getenv("TRAVIS_BUILD_DIR")
-		break
 	// 如果运行在测试用例
 	case isRunInTest:
 		RootDir = pwd
-		break
 	default:
 		ex, err := os.Executable()
 
@@ -92,9 +90,9 @@ func Load() (err error) {
 		RootDir = exPathDir
 
 		// 如果是以 go run main.go 运行, 则取工作目录
-		goRunReg := regexp.MustCompile("/go-build\\d+/")
+		goRunReg := regexp.MustCompile(`/go-build\\d+/`)
 		// 如果是运行在 IDEA 里面的话
-		ideaRunReg := regexp.MustCompile("___go_build_")
+		ideaRunReg := regexp.MustCompile(`___go_build_`)
 
 		ifRunInGoRun := goRunReg.MatchString(ex)
 		ifRunInIdea := ideaRunReg.MatchString(ex)
@@ -102,10 +100,8 @@ func Load() (err error) {
 		switch true {
 		case ifRunInGoRun:
 			RootDir = pwd
-			break
 		case ifRunInIdea:
 			RootDir = pwd
-			break
 		}
 	}
 
@@ -122,7 +118,7 @@ func Load() (err error) {
 }
 
 func Get(key string) string {
-	if loaded == false {
+	if !loaded {
 		_ = Load()
 	}
 	return os.Getenv(key)
@@ -153,7 +149,7 @@ func GetInt64ByDefault(key string, defaultValue int64) int64 {
 }
 
 func GetStrArrayByDefault(key string, defaultValue []string) []string {
-	val := GetByDefault(key, fmt.Sprintf("%s", strings.Join(defaultValue, ",")))
+	val := GetByDefault(key, strings.Join(defaultValue, ","))
 
 	var result []string
 
@@ -167,7 +163,7 @@ func GetStrArrayByDefault(key string, defaultValue []string) []string {
 }
 
 func GetByDefault(key string, defaultValue string) string {
-	if loaded == false {
+	if !loaded {
 		_ = Load()
 	}
 	result := os.Getenv(key)

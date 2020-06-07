@@ -45,6 +45,35 @@ jobs:
           name: ${{ matrix.target }}
           path: ./bin/*.tar.gz
 
+  lint:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        go: ['^1.14.2']
+        os: [ubuntu-latest]
+    name: Go ${{ matrix.go }} lint in ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go }}
+
+      - name: Environment
+        run: |
+          go version
+          go env
+
+
+      - name: Lint
+        if: matrix.kind == 'build'
+        run: |
+          go get github.com/golangci/golangci-lint/cmd/golangci-lint@v1.27.0
+          golangci-lint --version
+          make lint
+
   test:
     runs-on: ${{ matrix.os }}
     strategy:

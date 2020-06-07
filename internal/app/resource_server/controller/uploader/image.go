@@ -71,7 +71,7 @@ var Image = router.Handler(func(c router.Context) {
 		extname := strings.ToLower(path.Ext(file.Filename))
 
 		{
-			if isImage(extname) == false {
+			if !isImage(extname) {
 				err = exception.NotSupportType
 				return
 			}
@@ -188,13 +188,10 @@ func GenerateThumbnail(imagePath string) (outputPath string, err error) {
 	switch extname {
 	case ".jpg", ".jpeg":
 		img, err = jpeg.Decode(file)
-		break
 	case ".png":
 		img, err = png.Decode(file)
-		break
 	case ".gif":
 		img, err = gif.Decode(file)
-		break
 	default:
 		err = exception.NotSupportType
 		return
@@ -225,17 +222,14 @@ func GenerateThumbnail(imagePath string) (outputPath string, err error) {
 		if err = jpeg.Encode(out, m, nil); err != nil {
 			return
 		}
-		break
 	case ".png":
 		if err = png.Encode(out, m); err != nil {
 			return
 		}
-		break
 	case ".gif":
 		if err = gif.Encode(out, m, nil); err != nil {
 			return
 		}
-		break
 	default:
 		err = exception.NotSupportType
 		return

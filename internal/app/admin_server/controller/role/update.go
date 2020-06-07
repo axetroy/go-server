@@ -98,7 +98,7 @@ func Update(c helper.Context, roleName string, input UpdateParams) (res schema.R
 	if input.Accession != nil {
 
 		// 检验要更新的权限是否合法
-		if accession.Valid(*input.Accession) == false {
+		if !accession.Valid(*input.Accession) {
 			err = exception.InvalidParams
 			return
 		}
@@ -123,7 +123,7 @@ func Update(c helper.Context, roleName string, input UpdateParams) (res schema.R
 	}
 
 	// 内建的角色是无法修改的
-	if roleInfo.BuildIn == true {
+	if roleInfo.BuildIn {
 		err = exception.RoleCannotUpdate
 		return
 	}

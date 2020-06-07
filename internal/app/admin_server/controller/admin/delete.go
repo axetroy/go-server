@@ -71,7 +71,7 @@ func DeleteAdminById(c helper.Context, adminId string) (res schema.Response) {
 	}
 
 	// 超级管理员才能操作
-	if myInfo.IsSuper == false {
+	if !myInfo.IsSuper {
 		err = exception.NoPermission
 		return
 	}

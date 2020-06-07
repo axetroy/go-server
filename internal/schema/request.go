@@ -30,8 +30,8 @@ var (
 	MaxLimit           = 100           // 最大的查询数量，100 条 防止查询数据过大拖慢服务端性能
 	OrderAsc     Order = "ASC"         // 排序方式，正序
 	OrderDesc    Order = "DESC"        // 排序方式，倒序
-	ascReg             = regexp.MustCompile("^\\+")
-	descReg            = regexp.MustCompile("^-")
+	ascReg             = regexp.MustCompile(`^\\+`)
+	descReg            = regexp.MustCompile(`^-`)
 )
 
 func NewQuery() *Query {

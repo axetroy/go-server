@@ -19,7 +19,7 @@ import (
 
 func TestDelete(t *testing.T) {
 	var (
-		helpId  = ""
+		helpId  string
 		title   = "test title"
 		content = "test content"
 		tags    = []string{"test"}
@@ -91,7 +91,7 @@ func TestDelete(t *testing.T) {
 
 func TestDeleteRouter(t *testing.T) {
 	var (
-		helpId  = ""
+		helpId  string
 		title   = "test title"
 		content = "test content"
 		tags    = []string{"test"}

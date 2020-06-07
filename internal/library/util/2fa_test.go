@@ -7,10 +7,6 @@ import (
 	"testing"
 )
 
-var (
-	secret string
-)
-
 func TestGenerate2FASecret(t *testing.T) {
 	secret, err := util.Generate2FASecret("101645075095748608")
 	assert.Nil(t, err)

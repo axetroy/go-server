@@ -37,7 +37,7 @@ func (c *Matcher) ShiftPending() *string {
 	}
 	userSocketUUID := c.pending[len(c.pending)-1]
 
-	c.pending = append(c.pending[1:])
+	c.pending = c.pending[1:]
 
 	return &userSocketUUID
 }
@@ -57,7 +57,7 @@ func (c *Matcher) Join(userSocketUUID string, prepend ...bool) *string {
 
 	// 如果找不到最佳的客服，那么先加入队列
 	if idleWaiter == nil {
-		if len(prepend) > 0 && prepend[0] == true {
+		if len(prepend) > 0 && prepend[0] {
 			c.pending = append([]string{userSocketUUID}, c.pending...)
 		} else {
 			c.pending = append(c.pending, userSocketUUID)
@@ -117,7 +117,7 @@ func (c *Matcher) AddWaiter(waiterSocketUUID string) {
 	c.RLock()
 	defer c.RUnlock()
 
-	for id, _ := range c.matcher {
+	for id := range c.matcher {
 		if id == waiterSocketUUID {
 			return
 		}
@@ -130,7 +130,7 @@ func (c *Matcher) AddWaiter(waiterSocketUUID string) {
 		var users []string
 		if len(c.pending) > c.max {
 			users = c.pending[:c.max]
-			c.pending = append(c.pending[c.max:])
+			c.pending = c.pending[c.max:]
 		} else {
 			users = c.pending
 			c.pending = []string{}
@@ -140,8 +140,6 @@ func (c *Matcher) AddWaiter(waiterSocketUUID string) {
 			c.Join(userSocketUUID)
 		}
 	}
-
-	return
 }
 
 // 移除客服
@@ -160,8 +158,6 @@ func (c *Matcher) RemoveWaiter(waiterSocketUUID string) {
 			}
 		}
 	}
-
-	return
 }
 
 // 获取当前最空闲的客服

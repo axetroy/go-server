@@ -83,10 +83,10 @@ func (r *Report) IsValidStatus() bool {
 
 func (r *Report) BeforeCreate(scope *gorm.Scope) (err error) {
 	// 校验 type 是否正确
-	if r.IsValidType() == false {
+	if !r.IsValidType() {
 		return exception.InvalidParams.New("无效的类型")
 	}
-	if r.IsValidStatus() == false {
+	if !r.IsValidStatus() {
 		return exception.InvalidParams.New("无效的状态")
 	}
 

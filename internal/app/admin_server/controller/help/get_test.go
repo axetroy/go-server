@@ -77,7 +77,7 @@ func TestGetHelp(t *testing.T) {
 
 func TestGetHelpRouter(t *testing.T) {
 	var (
-		helpId  = ""
+		helpId  string
 		title   = "test title"
 		content = "test content"
 		tags    = []string{"test"}

@@ -26,5 +26,5 @@ func TestRandomNumeric(t *testing.T) {
 	assert.Len(t, util.RandomNumeric(8), 8)
 	assert.Len(t, util.RandomNumeric(16), 16)
 	assert.IsType(t, "string", util.RandomNumeric(16))
-	assert.True(t, regexp.MustCompile("^\\d+$").MatchString(util.RandomNumeric(32)))
+	assert.True(t, regexp.MustCompile(`^\d+$`).MatchString(util.RandomNumeric(32)))
 }
