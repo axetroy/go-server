@@ -4,6 +4,7 @@ package connect
 import (
 	"github.com/axetroy/go-server/internal/app/customer_service/ws"
 	"github.com/axetroy/go-server/internal/library/exception"
+	"time"
 )
 
 func waiterTypeReadyHandler(waiterClient *ws.Client) error {
@@ -27,6 +28,7 @@ func waiterTypeReadyHandler(waiterClient *ws.Client) error {
 				To:      userSocketUUID,
 				Type:    string(ws.TypeResponseUserConnectSuccess),
 				Payload: waiterClient.GetProfile(),
+				Date:    time.Now().Format(time.RFC3339Nano),
 			})
 			// 告诉客服端已连接成功
 			_ = waiterClient.WriteJSON(ws.Message{
@@ -34,6 +36,7 @@ func waiterTypeReadyHandler(waiterClient *ws.Client) error {
 				To:      waiterClient.UUID,
 				Type:    string(ws.TypeResponseWaiterNewConnection),
 				Payload: userClient.GetProfile(),
+				Date:    time.Now().Format(time.RFC3339Nano),
 			})
 		}
 	}

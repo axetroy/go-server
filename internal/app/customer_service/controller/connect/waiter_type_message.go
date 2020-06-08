@@ -6,6 +6,7 @@ import (
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/axetroy/go-server/internal/library/validator"
+	"time"
 )
 
 func waiterTypeMessageHandler(waiterClient *ws.Client, msg ws.Message) error {
@@ -37,6 +38,7 @@ func waiterTypeMessageHandler(waiterClient *ws.Client, msg ws.Message) error {
 		To:      msg.To,
 		Type:    msg.Type,
 		Payload: msg.Payload,
+		Date:    time.Now().Format(time.RFC3339Nano),
 	}
 	return nil
 }

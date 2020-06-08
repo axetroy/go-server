@@ -6,6 +6,7 @@ import (
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/axetroy/go-server/internal/library/validator"
+	"time"
 )
 
 func userTypeMessageHandler(userClient *ws.Client, msg ws.Message) error {
@@ -37,11 +38,13 @@ func userTypeMessageHandler(userClient *ws.Client, msg ws.Message) error {
 			Type:    msg.Type,
 			To:      *waiterId,
 			Payload: msg.Payload,
+			Date:    time.Now().Format(time.RFC3339Nano),
 		}
 	} else {
 		_ = userClient.WriteJSON(ws.Message{
 			To:   userClient.UUID,
 			Type: string(ws.TypeResponseUserNotConnect),
+			Date: time.Now().Format(time.RFC3339Nano),
 		})
 	}
 

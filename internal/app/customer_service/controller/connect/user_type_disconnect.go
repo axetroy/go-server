@@ -4,6 +4,7 @@ package connect
 import (
 	"github.com/axetroy/go-server/internal/app/customer_service/ws"
 	"github.com/axetroy/go-server/internal/library/exception"
+	"time"
 )
 
 func userTypeDisconnectHandler(userClient *ws.Client) error {
@@ -25,6 +26,7 @@ func userTypeDisconnectHandler(userClient *ws.Client) error {
 			To:      *waiterId,
 			Type:    string(ws.TypeResponseWaiterDisconnected),
 			Payload: nil,
+			Date:    time.Now().Format(time.RFC3339Nano),
 		})
 
 		fromId = *waiterId
@@ -38,6 +40,7 @@ func userTypeDisconnectHandler(userClient *ws.Client) error {
 		To:      userClient.UUID,
 		Type:    string(ws.TypeResponseUserDisconnected),
 		Payload: nil,
+		Date:    time.Now().Format(time.RFC3339Nano),
 	})
 
 	return nil

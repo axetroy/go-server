@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"sync"
+	"time"
 )
 
 // 来回传输的消息体
@@ -66,6 +67,7 @@ func (c *Client) WriteError(err error, data Message) error {
 				"status":  e.Code(),
 				"data":    data,
 			},
+			Date: time.Now().Format(time.RFC3339Nano),
 		})
 	} else {
 		_ = c.WriteJSON(Message{
@@ -76,6 +78,7 @@ func (c *Client) WriteError(err error, data Message) error {
 				"status":  exception.Unknown.Code(),
 				"data":    data,
 			},
+			Date: time.Now().Format(time.RFC3339Nano),
 		})
 	}
 

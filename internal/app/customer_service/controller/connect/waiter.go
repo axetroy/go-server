@@ -11,6 +11,7 @@ import (
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/gorilla/websocket"
 	"net/http"
+	"time"
 )
 
 var WaiterRouter = router.Handler(func(c router.Context) {
@@ -65,6 +66,7 @@ var WaiterRouter = router.Handler(func(c router.Context) {
 						To:      user,
 						Type:    string(ws.TypeResponseUserDisconnected),
 						Payload: nil,
+						Date:    time.Now().Format(time.RFC3339Nano),
 					})
 				}
 			}

@@ -9,6 +9,7 @@ import (
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
 	"github.com/axetroy/go-server/internal/service/token"
+	"time"
 )
 
 func waiterTypeAuthHandler(waiterClient *ws.Client, msg ws.Message) error {
@@ -53,6 +54,7 @@ func waiterTypeAuthHandler(waiterClient *ws.Client, msg ws.Message) error {
 		Type:    string(ws.TypeResponseUserAuthSuccess),
 		To:      waiterClient.UUID,
 		Payload: profile,
+		Date:    time.Now().Format(time.RFC3339Nano),
 	})
 
 	return nil

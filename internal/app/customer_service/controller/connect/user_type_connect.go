@@ -4,6 +4,7 @@ package connect
 import (
 	"github.com/axetroy/go-server/internal/app/customer_service/ws"
 	"github.com/axetroy/go-server/internal/library/exception"
+	"time"
 )
 
 func userTypeConnectHandler(userClient *ws.Client, msg ws.Message) error {
@@ -19,6 +20,7 @@ func userTypeConnectHandler(userClient *ws.Client, msg ws.Message) error {
 		_ = userClient.WriteJSON(ws.Message{
 			Type: string(ws.TypeResponseUserConnectQueue),
 			To:   userClient.UUID,
+			Date: time.Now().Format(time.RFC3339Nano),
 		})
 		return nil
 	}
@@ -32,6 +34,7 @@ func userTypeConnectHandler(userClient *ws.Client, msg ws.Message) error {
 			From:    *waiterID,
 			To:      userClient.UUID,
 			Payload: waiterClient.GetProfile(),
+			Date:    time.Now().Format(time.RFC3339Nano),
 		})
 
 		// 告诉客服端有新的连接接入
@@ -40,6 +43,7 @@ func userTypeConnectHandler(userClient *ws.Client, msg ws.Message) error {
 			To:      *waiterID,
 			Type:    string(ws.TypeResponseWaiterNewConnection),
 			Payload: userClient.GetProfile(),
+			Date:    time.Now().Format(time.RFC3339Nano),
 		})
 	}
 

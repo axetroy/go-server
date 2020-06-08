@@ -6,6 +6,7 @@ import (
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/axetroy/go-server/internal/library/validator"
+	"time"
 )
 
 func waiterTypeDisconnectHandler(waiterClient *ws.Client, msg ws.Message) error {
@@ -34,6 +35,7 @@ func waiterTypeDisconnectHandler(waiterClient *ws.Client, msg ws.Message) error 
 			To:      userClient.UUID,
 			Type:    string(ws.TypeResponseUserDisconnected),
 			Payload: nil,
+			Date:    time.Now().Format(time.RFC3339Nano),
 		})
 
 		// 告诉客服端已断开连接
@@ -42,6 +44,7 @@ func waiterTypeDisconnectHandler(waiterClient *ws.Client, msg ws.Message) error 
 			To:      waiterClient.UUID,
 			Type:    string(ws.TypeResponseWaiterDisconnected),
 			Payload: nil,
+			Date:    time.Now().Format(time.RFC3339Nano),
 		})
 	} else {
 		return exception.InvalidParams.New("未连接")
