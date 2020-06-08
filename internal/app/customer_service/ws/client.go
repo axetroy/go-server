@@ -11,10 +11,11 @@ import (
 
 // 来回传输的消息体
 type Message struct {
-	From    string      `json:"from,omitempty"`                // 从谁发出来的
-	To      string      `json:"to,omitempty"`                  // 要发送的目标 ID，只有客服才需要带 target 字段，指明发送给谁
-	Type    string      `json:"type" valid:"required~请输入会话类型"` // 会话类型
-	Payload interface{} `json:"payload,omitempty"`             // 本次消息的数据
+	From    string      `json:"from,omitempty" validate:"omitempty,uuid" comment:"发送者"` // 从谁发出来的
+	To      string      `json:"to,omitempty" validate:"omitempty,uuid" comment:"发送目标"`  // 要发送的目标 ID，只有客服才需要带 target 字段，指明发送给谁
+	Type    string      `json:"type" validate:"required" comment:"会话类型"`                // 会话类型
+	Payload interface{} `json:"payload,omitempty" validate:"omitempty" comment:"消息数据"`  // 本次消息的数据
+	Date    string      `json:"date,omitempty" validate:"omitempty" comment:"时间戳"`      // 消息的时间
 }
 
 type Client struct {

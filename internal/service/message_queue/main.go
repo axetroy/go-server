@@ -23,13 +23,13 @@ var (
 )
 
 type BodySendActivationEmail struct {
-	Email string `json:"email" valid:"required"` // 要发送的邮箱
-	Code  string `json:"code" valid:"required"`  // 发送的激活码
+	Email string `json:"email" validate:"required,email" comment:"邮箱"` // 要发送的邮箱
+	Code  string `json:"code" validate:"required" comment:"激活码"`       // 发送的激活码
 }
 
 type BodySendNotify struct {
-	Event   notify.Event `json:"event" valid:"required"`   // 事件名称
-	Payload interface{}  `json:"payload" valid:"required"` // 数据体
+	Event   notify.Event `json:"event" validate:"required" comment:"事件名称"`  // 事件名称
+	Payload interface{}  `json:"payload" validate:"required" comment:"数据体"` // 数据体
 }
 
 func (c *BodySendNotify) ToByte() ([]byte, error) {

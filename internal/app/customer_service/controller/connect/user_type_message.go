@@ -10,7 +10,7 @@ import (
 
 func userTypeMessageHandler(userClient *ws.Client, msg ws.Message) error {
 	type MessageBody struct {
-		Message string `json:"message" valid:"required~请输入消息"`
+		Message string `json:"message" validate:"required" comment:"信息"`
 	}
 
 	// 如果还没有认证

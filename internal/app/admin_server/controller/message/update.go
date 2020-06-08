@@ -16,8 +16,8 @@ import (
 )
 
 type UpdateParams struct {
-	Title   *string `json:"title" valid:"required,max=32" comment:"标题"`
-	Content *string `json:"content" valid:"required" comment:"内容"`
+	Title   *string `json:"title" validate:"required,max=32" comment:"标题"`
+	Content *string `json:"content" validate:"required" comment:"内容"`
 }
 
 func Update(c helper.Context, messageId string, input UpdateParams) (res schema.Response) {

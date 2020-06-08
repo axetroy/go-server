@@ -22,12 +22,12 @@ import (
 )
 
 type CreateUserParams struct {
-	Username *string      `json:"username" valid:"omitempty,min=3,max=36" comment:"用户名"`
-	Email    *string      `json:"email" valid:"omitempty,email,max=36" comment:"邮箱"`
-	Phone    *string      `json:"phone" valid:"omitempty,numeric,max=11" comment:"手机号"`
-	Nickname *string      `json:"nickname" valid:"omitempty" comment:"昵称"`
-	Gender   model.Gender `json:"gender" valid:"required,min=0,oneof=0 1 2" comment:"性别"`
-	Password string       `json:"password" valid:"required,min=6,max=32" comment:"密码"`
+	Username *string      `json:"username" validate:"omitempty,min=3,max=36" comment:"用户名"`
+	Email    *string      `json:"email" validate:"omitempty,email,max=36" comment:"邮箱"`
+	Phone    *string      `json:"phone" validate:"omitempty,numeric,max=11" comment:"手机号"`
+	Nickname *string      `json:"nickname" validate:"omitempty" comment:"昵称"`
+	Gender   model.Gender `json:"gender" validate:"required,min=0,oneof=0 1 2" comment:"性别"`
+	Password string       `json:"password" validate:"required,min=6,max=32" comment:"密码"`
 }
 
 func CreateUser(input CreateUserParams) (res schema.Response) {

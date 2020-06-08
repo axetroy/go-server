@@ -27,17 +27,17 @@ type ConfigFieldPhone struct {
 }
 
 type ConfigFieldWechatApp struct {
-	AppID  string `json:"app_id" valid:"required~请输入微信小程序的 APP ID"` // 微信小程序的 APP ID
-	Secret string `json:"secret" valid:"required~请输入微信小程序的 Secret"` // 微信小程序的密钥
+	AppID  string `json:"app_id" validate:"required" comment:"微信小程序APPID"`  // 微信小程序的 APP ID
+	Secret string `json:"secret" validate:"required" comment:"微信小程序Secret"` // 微信小程序的密钥
 }
 
 type ConfigFieldSMTP struct {
-	Server    string `json:"server" valid:"required~请输入 SMTP 地址"`       // SMTP 服务器地址(域名)
-	Port      int    `json:"port" valid:"required~请输入 SMTP 端口"`         // SMTP 服务器端口
-	Username  string `json:"username" valid:"required~请输入 SMTP 用户名"`    // SMTP 用户名
-	Password  string `json:"password" valid:"required~请输入 SMTP 密码"`     // SMTP 密码
-	FromName  string `json:"from_name" valid:"required~请输入 SMTP 发送者名字"` // 邮件发送者的名字
-	FromEmail string `json:"from_email" valid:"required~请输入 SMTP 邮箱地址"` // 邮件发送者的邮箱地址
+	Server    string `json:"server" validate:"required" comment:"服务器地址"`            // SMTP 服务器地址(域名)
+	Port      int    `json:"port" validate:"required,min=1,max=65535" comment:"端口"` // SMTP 服务器端口
+	Username  string `json:"username" validate:"required" comment:"用户名"`            // SMTP 用户名
+	Password  string `json:"password" validate:"required" comment:"密码"`             // SMTP 密码
+	FromName  string `json:"from_name" validate:"required" comment:"发送者名字"`         // 邮件发送者的名字
+	FromEmail string `json:"from_email" validate:"required,email" comment:"发送者地址"`  // 邮件发送者的邮箱地址
 }
 
 type Config struct {

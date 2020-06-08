@@ -16,7 +16,7 @@ import (
 
 type BindingEmailParams struct {
 	Email string `json:"email" validate:"required,email,max=36" comment:"邮箱"` // 邮箱
-	Code  string `json:"code" valid:"required,len=6" comment:"验证码"`           // 邮箱收到的验证码
+	Code  string `json:"code" validate:"required,len=6" comment:"验证码"`        // 邮箱收到的验证码
 }
 
 type BindingPhoneParams struct {

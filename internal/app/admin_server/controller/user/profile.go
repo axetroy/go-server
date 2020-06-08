@@ -16,22 +16,22 @@ import (
 )
 
 type UpdateProfileParams struct {
-	Username *string                    `json:"username"` // 用户名，部分用户有机会修改自己的用户名，比如微信注册的帐号
-	Nickname *string                    `json:"nickname" valid:"length(1|36)~昵称长度为1-36位"`
-	Gender   *model.Gender              `json:"gender"`
-	Avatar   *string                    `json:"avatar"`
-	Wechat   *UpdateWechatProfileParams `json:"wechat"` // 更新微信绑定的帐号相关
+	Username *string                    `json:"username" validate:"omitempty,min=1,max=36" comment:"用户名"` // 用户名，部分用户有机会修改自己的用户名，比如微信注册的帐号
+	Nickname *string                    `json:"nickname" validate:"omitempty,min=1,max=36" comment:"昵称"`
+	Gender   *model.Gender              `json:"gender" validate:"omitempty,oneof=0 1 2" comment:"性别"`
+	Avatar   *string                    `json:"avatar" validate:"omitempty,url" comment:"头像"`
+	Wechat   *UpdateWechatProfileParams `json:"wechat" validate:"omitempty" comment:"微信信息"` // 更新微信绑定的帐号相关
 }
 
 // 绑定的微信信息帐号相关
 type UpdateWechatProfileParams struct {
-	Nickname  *string `json:"nickname"`   // 用户昵称
-	AvatarUrl *string `json:"avatar_url"` // 用户头像
-	Gender    *int    `json:"gender"`     // 性别
-	Country   *string `json:"country"`    // 国家
-	Province  *string `json:"province"`   // 省份
-	City      *string `json:"city"`       // 城市
-	Language  *string `json:"language"`   // 语言
+	Nickname  *string `json:"nickname" validate:"omitempty,min=1,max=36" comment:"微信昵称"` // 用户昵称
+	AvatarUrl *string `json:"avatar_url" validate:"omitempty,url" comment:"微信头像"`        // 用户头像
+	Gender    *int    `json:"gender" validate:"omitempty,number" comment:"微信性别"`         // 性别
+	Country   *string `json:"country" validate:"omitempty" comment:"微信信息国家"`             // 国家
+	Province  *string `json:"province" validate:"omitempty" comment:"微信信息省份"`            // 省份
+	City      *string `json:"city" validate:"omitempty" comment:"微信信息城市"`                // 城市
+	Language  *string `json:"language" validate:"omitempty" comment:"微信信息语言"`            // 语言
 }
 
 func GetProfileByAdmin(c helper.Context, userId string) (res schema.Response) {

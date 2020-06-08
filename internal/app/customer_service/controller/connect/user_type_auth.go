@@ -13,7 +13,7 @@ import (
 
 func userTypeAuthHandler(userClient *ws.Client, msg ws.Message) error {
 	type AuthBody struct {
-		Token string `json:"token" valid:"required~请输入 token"`
+		Token string `json:"token" validate:"required" comment:"Token"`
 	}
 
 	var body AuthBody

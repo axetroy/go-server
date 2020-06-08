@@ -30,10 +30,10 @@ type WechatBindingInfo struct {
 
 // 公开的用户资料，任何人都可以查阅
 type ProfilePublic struct {
-	Id       string  `json:"id" valid:"required"`
-	Username string  `json:"username" valid:"required"`
-	Nickname *string `json:"nickname" valid:"required"`
-	Avatar   string  `json:"avatar" valid:"required"`
+	Id       string  `json:"id"`
+	Username string  `json:"username"`
+	Nickname *string `json:"nickname"`
+	Avatar   string  `json:"avatar"`
 }
 
 type ProfileWithToken struct {

@@ -10,7 +10,7 @@ import (
 
 func waiterTypeDisconnectHandler(waiterClient *ws.Client, msg ws.Message) error {
 	type DisconnectBody struct {
-		UUID string `json:"uuid" valid:"required~请输入 uuid"`
+		UUID string `json:"uuid" validate:"required"`
 	}
 
 	var body DisconnectBody
