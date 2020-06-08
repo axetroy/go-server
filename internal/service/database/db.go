@@ -48,32 +48,34 @@ func Migrate(db *gorm.DB) error {
 
 	// Migrate the schema
 	if err := db.AutoMigrate(
-		new(model.Config),           // 配置表
-		new(model.Admin),            // 管理员表
-		new(model.News),             // 新闻公告
-		new(model.Role),             // 角色表 - RBAC
-		new(model.User),             // 用户表
-		new(model.WalletCny),        // 钱包 - CNY
-		new(model.WalletUsd),        // 钱包 - USD
-		new(model.WalletCoin),       // 钱包 - COIN
-		new(model.InviteHistory),    // 邀请表
-		new(model.LoginLog),         // 登陆成功表
-		new(model.TransferLogCny),   // 转账记录 - CNY
-		new(model.TransferLogUsd),   // 转账记录 - USD
-		new(model.TransferLogCoin),  // 转账记录 - COIN
-		new(model.FinanceLogCny),    // 流水列表 - CNY
-		new(model.FinanceLogUsd),    // 流水列表 - USD
-		new(model.FinanceLogCoin),   // 流水列表 - COIN
-		new(model.Notification),     // 系统消息
-		new(model.NotificationMark), // 系统消息的已读记录
-		new(model.Message),          // 个人消息
-		new(model.Address),          // 收货地址
-		new(model.Banner),           // Banner 表
-		new(model.Report),           // 反馈表
-		new(model.Menu),             // 后台管理员菜单
-		new(model.Help),             // 帮助中心
-		new(model.WechatOpenID),     // 微信 open_id 外键表
-		new(model.OAuth),            // oAuth2 表
+		new(model.Config),              // 配置表
+		new(model.Admin),               // 管理员表
+		new(model.News),                // 新闻公告
+		new(model.Role),                // 角色表 - RBAC
+		new(model.User),                // 用户表
+		new(model.WalletCny),           // 钱包 - CNY
+		new(model.WalletUsd),           // 钱包 - USD
+		new(model.WalletCoin),          // 钱包 - COIN
+		new(model.InviteHistory),       // 邀请表
+		new(model.LoginLog),            // 登陆成功表
+		new(model.TransferLogCny),      // 转账记录 - CNY
+		new(model.TransferLogUsd),      // 转账记录 - USD
+		new(model.TransferLogCoin),     // 转账记录 - COIN
+		new(model.FinanceLogCny),       // 流水列表 - CNY
+		new(model.FinanceLogUsd),       // 流水列表 - USD
+		new(model.FinanceLogCoin),      // 流水列表 - COIN
+		new(model.Notification),        // 系统消息
+		new(model.NotificationMark),    // 系统消息的已读记录
+		new(model.Message),             // 个人消息
+		new(model.Address),             // 收货地址
+		new(model.Banner),              // Banner 表
+		new(model.Report),              // 反馈表
+		new(model.Menu),                // 后台管理员菜单
+		new(model.Help),                // 帮助中心
+		new(model.WechatOpenID),        // 微信 open_id 外键表
+		new(model.OAuth),               // oAuth2 表
+		new(model.CustomerSession),     // 客服会话表
+		new(model.CustomerSessionItem), // 客服会话内容表
 	).Error; err != nil {
 		return err
 	}

@@ -7,10 +7,14 @@ import (
 	"github.com/axetroy/go-server/internal/app/customer_service/ws"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/router"
+	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/axetroy/go-server/internal/library/validator"
+	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
+	"github.com/axetroy/go-server/internal/service/database"
 	"github.com/gorilla/websocket"
 	"net/http"
+	"time"
 )
 
 var UserRouter = router.Handler(func(c router.Context) {
@@ -64,6 +68,15 @@ var UserRouter = router.Handler(func(c router.Context) {
 					Type:    string(ws.TypeResponseWaiterDisconnected),
 					Payload: nil,
 				})
+
+				hash := util.MD5(client.UUID + waiterClient.UUID)
+
+				now := time.Now()
+
+				// 标记会话为已关闭
+				_ = database.Db.Model(model.CustomerSession{}).Where("id = ?", hash).Update(model.CustomerSession{
+					ClosedAt: &now,
+				}).Error
 			}
 
 			// 从池中删除该链接

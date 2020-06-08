@@ -12,18 +12,18 @@ import (
 	"time"
 )
 
-func waiterTypeAuthHandler(waiterClient *ws.Client, msg ws.Message) error {
+func waiterTypeAuthHandler(waiterClient *ws.Client, msg ws.Message) (err error) {
 	type AuthBody struct {
 		Token string `json:"token" validate:"required" comment:"Token"`
 	}
 
 	var body AuthBody
 
-	if err := util.Decode(&body, msg.Payload); err != nil {
+	if err = util.Decode(&body, msg.Payload); err != nil {
 		return err
 	}
 
-	if err := validator.ValidateStruct(&body); err != nil {
+	if err = validator.ValidateStruct(&body); err != nil {
 		return err
 	}
 
@@ -37,25 +37,27 @@ func waiterTypeAuthHandler(waiterClient *ws.Client, msg ws.Message) error {
 		Id: c.Uid,
 	}
 
-	if err := database.Db.Model(&userInfo).Where(&userInfo).Where("role @> ARRAY[?::varchar]", "waiter").First(&userInfo).Error; err != nil {
+	if err = database.Db.Model(&userInfo).Where(&userInfo).Where("role @> ARRAY[?::varchar]", "waiter").First(&userInfo).Error; err != nil {
 		return err
 	}
 
 	var profile schema.ProfilePublic
 
-	if err := util.Decode(&profile, userInfo); err != nil {
+	if err = util.Decode(&profile, userInfo); err != nil {
 		return err
 	}
 
 	waiterClient.UpdateProfile(profile)
 
 	// 告诉客户端它的身份信息
-	_ = waiterClient.WriteJSON(ws.Message{
+	if err = waiterClient.WriteJSON(ws.Message{
 		Type:    string(ws.TypeResponseUserAuthSuccess),
 		To:      waiterClient.UUID,
 		Payload: profile,
 		Date:    time.Now().Format(time.RFC3339Nano),
-	})
+	}); err != nil {
+		return
+	}
 
-	return nil
+	return err
 }

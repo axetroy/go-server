@@ -7,8 +7,11 @@ import (
 	"github.com/axetroy/go-server/internal/app/customer_service/ws"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/router"
+	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/axetroy/go-server/internal/library/validator"
+	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
+	"github.com/axetroy/go-server/internal/service/database"
 	"github.com/gorilla/websocket"
 	"net/http"
 	"time"
@@ -68,6 +71,16 @@ var WaiterRouter = router.Handler(func(c router.Context) {
 						Payload: nil,
 						Date:    time.Now().Format(time.RFC3339Nano),
 					})
+
+					// 关闭会话
+					hash := util.MD5(userSocket.UUID + client.UUID)
+
+					now := time.Now()
+
+					// 标记会话为已关闭
+					_ = database.Db.Model(model.CustomerSession{}).Where("id = ?", hash).Update(model.CustomerSession{
+						ClosedAt: &now,
+					}).Error
 				}
 			}
 			// 从客服池中移除

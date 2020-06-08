@@ -4,6 +4,9 @@ package connect
 import (
 	"github.com/axetroy/go-server/internal/app/customer_service/ws"
 	"github.com/axetroy/go-server/internal/library/exception"
+	"github.com/axetroy/go-server/internal/library/util"
+	"github.com/axetroy/go-server/internal/model"
+	"github.com/axetroy/go-server/internal/service/database"
 	"time"
 )
 
@@ -30,6 +33,18 @@ func userTypeDisconnectHandler(userClient *ws.Client) error {
 		})
 
 		fromId = *waiterId
+
+		// 关闭会话
+		hash := util.MD5(userClient.UUID + waiterClient.UUID)
+
+		now := time.Now()
+
+		// 标记会话为已关闭
+		if err := database.Db.Model(model.CustomerSession{}).Where("id = ?", hash).Update(model.CustomerSession{
+			ClosedAt: &now,
+		}).Error; err != nil {
+			return err
+		}
 	}
 
 	ws.MatcherPool.Leave(userClient.UUID)

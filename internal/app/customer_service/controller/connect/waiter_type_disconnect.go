@@ -6,6 +6,8 @@ import (
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/axetroy/go-server/internal/library/validator"
+	"github.com/axetroy/go-server/internal/model"
+	"github.com/axetroy/go-server/internal/service/database"
 	"time"
 )
 
@@ -46,6 +48,18 @@ func waiterTypeDisconnectHandler(waiterClient *ws.Client, msg ws.Message) error 
 			Payload: nil,
 			Date:    time.Now().Format(time.RFC3339Nano),
 		})
+
+		// 关闭会话
+		hash := util.MD5(userClient.UUID + waiterClient.UUID)
+
+		now := time.Now()
+
+		// 标记会话为已关闭
+		if err := database.Db.Model(model.CustomerSession{}).Where("id = ?", hash).Update(model.CustomerSession{
+			ClosedAt: &now,
+		}).Error; err != nil {
+			return err
+		}
 	} else {
 		return exception.InvalidParams.New("未连接")
 	}

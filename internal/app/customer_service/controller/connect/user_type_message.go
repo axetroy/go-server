@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func userTypeMessageHandler(userClient *ws.Client, msg ws.Message) error {
+func userTypeMessageHandler(userClient *ws.Client, msg ws.Message) (err error) {
 	type MessageBody struct {
 		Message string `json:"message" validate:"required" comment:"信息"`
 	}
@@ -22,11 +22,11 @@ func userTypeMessageHandler(userClient *ws.Client, msg ws.Message) error {
 
 	var body MessageBody
 
-	if err := util.Decode(&body, msg.Payload); err != nil {
+	if err = util.Decode(&body, msg.Payload); err != nil {
 		return err
 	}
 
-	if err := validator.ValidateStruct(&body); err != nil {
+	if err = validator.ValidateStruct(&body); err != nil {
 		return err
 	}
 
@@ -41,12 +41,14 @@ func userTypeMessageHandler(userClient *ws.Client, msg ws.Message) error {
 			Date:    time.Now().Format(time.RFC3339Nano),
 		}
 	} else {
-		_ = userClient.WriteJSON(ws.Message{
+		if err = userClient.WriteJSON(ws.Message{
 			To:   userClient.UUID,
 			Type: string(ws.TypeResponseUserNotConnect),
 			Date: time.Now().Format(time.RFC3339Nano),
-		})
+		}); err != nil {
+			return
+		}
 	}
 
-	return nil
+	return err
 }

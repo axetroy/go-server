@@ -9,28 +9,30 @@ import (
 	"time"
 )
 
-func waiterTypeMessageHandler(waiterClient *ws.Client, msg ws.Message) error {
+func waiterTypeMessageHandler(waiterClient *ws.Client, msg ws.Message) (err error) {
 	type MessageBody struct {
 		Message string `json:"message" validate:"required" comment:"消息体"`
 	}
 
 	if waiterClient.GetProfile() == nil {
-		return exception.UserNotLogin
+		err = exception.UserNotLogin
+		return err
 	}
 
 	var body MessageBody
 
-	if err := util.Decode(&body, msg.Payload); err != nil {
+	if err = util.Decode(&body, msg.Payload); err != nil {
 		return err
 	}
 
-	if err := validator.ValidateStruct(&body); err != nil {
+	if err = validator.ValidateStruct(&body); err != nil {
 		return err
 	}
 
 	// 如果没有指定发送给谁
 	if msg.To == "" {
-		return exception.InvalidParams.New("缺少发送者")
+		err = exception.InvalidParams.New("缺少发送者")
+		return
 	}
 	// 把收到的消息发送给用户
 	ws.UserPoll.Broadcast <- ws.Message{
