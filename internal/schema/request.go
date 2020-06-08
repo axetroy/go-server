@@ -16,6 +16,8 @@ type Query struct {
 	Page     int     `json:"page" url:"page" validate:"omitempty,number,gte=0" comment:"页数"`
 	Sort     string  `json:"sort" url:"sort" validate:"omitempty,max=255" comment:"排序"`
 	Platform *string `json:"platform" url:"platform" validate:"omitempty,max=16" comment:"平台"`
+	Total    *int    `json:"total" url:"total" validate:"omitempty" comment:"总数"` // 客户端应该不传过来，定义在这里只是允许接收这个参数
+	Num      *int    `json:"num" url:"num" validate:"omitempty" comment:"当前页数"`   // 客户端应该不传过来，定义在这里只是允许接收这个参数
 }
 
 type Sort struct {
