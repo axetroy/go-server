@@ -54,8 +54,6 @@ func (c *Client) RegenerateUUID() {
 	id, _ := uuid.NewRandom()
 
 	c.UUID = id.String()
-
-	return
 }
 
 func (c *Client) UpdateProfile(profile schema.ProfilePublic) {
