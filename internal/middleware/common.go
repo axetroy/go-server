@@ -7,7 +7,7 @@ import (
 
 func Common() iris.Handler {
 	return func(c iris.Context) {
-		// alone dns prefect
+		//alone dns prefect
 		c.Header("X-DNS-Prefetch-Control", "on")
 		// IE No Open
 		c.Header("X-Download-Options", "noopen")

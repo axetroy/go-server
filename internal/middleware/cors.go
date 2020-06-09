@@ -1,15 +1,15 @@
 package middleware
 
 import (
+	"github.com/iris-contrib/middleware/cors"
 	"github.com/kataras/iris/v12"
 	"net/http"
-	"strings"
 )
 
 var (
-	allowHeaders = strings.Join([]string{
-		"accept",
-		"origin",
+	allowHeaders = []string{
+		"Accept",
+		"Origin",
 		"Authorization",
 		"Content-Type",
 		"Content-Length",
@@ -18,38 +18,29 @@ var (
 		"Cache-Control",
 		"X-CSRF-Token",
 		"X-Requested-With",
-		SignatureHeader,    // 接受签名的 Header
-		PayPasswordHeader,  // 接收交易密码的 Header
-		"X-Wechat-Binding", // 激活微信帐号
-	}, ",")
-	allowMethods = strings.Join([]string{
+		SignatureHeader,   // 接受签名的 Header
+		PayPasswordHeader, // 接收交易密码的 Header
+	}
+	allowMethods = []string{
 		http.MethodOptions,
+		http.MethodHead,
 		http.MethodGet,
 		http.MethodPost,
 		http.MethodPut,
+		http.MethodPatch,
 		http.MethodDelete,
-	}, ",")
+	}
 )
 
 func CORS() iris.Handler {
-	return func(c iris.Context) {
-		origin := c.GetHeader("Origin")
 
-		if origin == "" {
-			origin = "*"
-		}
+	crs := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"}, // allows everything, use that to change the hosts.
+		AllowCredentials: true,
+		AllowedMethods:   allowMethods,
+		AllowedHeaders:   allowHeaders,
+		MaxAge:           60,
+	})
 
-		c.Header("Access-Control-Allow-Origin", origin)
-		c.Header("Access-Control-Allow-Credentials", "true")
-		c.Header("Access-Control-Allow-Headers", allowHeaders)
-		c.Header("Access-Control-Allow-Methods", allowMethods)
-
-		if c.Request().Method == http.MethodOptions {
-			c.StatusCode(http.StatusNoContent)
-			c.EndRequest()
-			return
-		} else {
-			c.Next()
-		}
-	}
+	return crs
 }
