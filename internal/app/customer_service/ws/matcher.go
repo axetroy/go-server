@@ -57,6 +57,13 @@ func (c *Matcher) Join(userSocketUUID string, prepend ...bool) *string {
 
 	// 如果找不到最佳的客服，那么先加入队列
 	if idleWaiter == nil {
+		// 确保当前连接不在队列中
+		for _, id := range c.pending {
+			if id == userSocketUUID {
+				return nil
+			}
+		}
+
 		if len(prepend) > 0 && prepend[0] {
 			c.pending = append([]string{userSocketUUID}, c.pending...)
 		} else {
