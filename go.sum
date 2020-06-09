@@ -138,7 +138,6 @@ github.com/iris-contrib/blackfriday v2.0.0+incompatible/go.mod h1:UzZ2bDEoaSGPbk
 github.com/iris-contrib/go.uuid v2.0.0+incompatible/go.mod h1:iz2lgM/1UnEf1kP0L/+fafWORmlnuysV2EMP8MW+qe0=
 github.com/iris-contrib/jade v1.1.3 h1:p7J/50I0cjo0wq/VWVCDFd8taPJbuFC+bq23SniRFX0=
 github.com/iris-contrib/jade v1.1.3/go.mod h1:H/geBymxJhShH5kecoiOCSssPX7QWYH7UaeZTSWddIk=
-github.com/iris-contrib/middleware v12.1.2+incompatible h1:c1cZShMYVo3qlprxmNvidMZ8JJgDzFLkSrQqKdaVTTg=
 github.com/iris-contrib/middleware/cors v0.0.0-20191219204441-78279b78a367 h1:8sqPsO9g8khKdBGu9jJ1O7EgOblntuv1sLra6UVpuNY=
 github.com/iris-contrib/middleware/cors v0.0.0-20191219204441-78279b78a367/go.mod h1:2p74oN7zAlsFSyDjs23eCuG4lzouZycTEg9nHGe0cnM=
 github.com/iris-contrib/pongo2 v0.0.1 h1:zGP7pW51oi5eQZMIlGA3I+FHY9/HOQWDB+572yin0to=
