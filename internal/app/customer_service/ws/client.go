@@ -12,7 +12,7 @@ import (
 
 // 来回传输的消息体
 type Message struct {
-	Id      string      `json:"id" validate:"omitempty" comment:"消息 ID"`                // 每条消息的 ID，在写入数据库之后会有
+	Id      string      `json:"id,omitempty" validate:"omitempty" comment:"消息 ID"`      // 每条消息的 ID，在写入数据库之后会有
 	From    string      `json:"from,omitempty" validate:"omitempty,uuid" comment:"发送者"` // 从谁发出来的
 	To      string      `json:"to,omitempty" validate:"omitempty,uuid" comment:"发送目标"`  // 要发送的目标 ID，只有客服才需要带 target 字段，指明发送给谁
 	Type    string      `json:"type" validate:"required" comment:"会话类型"`                // 会话类型
