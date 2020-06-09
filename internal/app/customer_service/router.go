@@ -31,7 +31,7 @@ func init() {
 		c.JSON(fmt.Errorf("%d %s", code, http.StatusText(code)), nil, nil)
 	}))
 
-	v1 := app.Party("v1")
+	v1 := app.Party("v1").AllowMethods(iris.MethodOptions)
 
 	{
 		v1.Use(recover.New())

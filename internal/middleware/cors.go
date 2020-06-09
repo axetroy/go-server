@@ -40,6 +40,9 @@ func CORS() iris.Handler {
 		AllowedMethods:   allowMethods,
 		AllowedHeaders:   allowHeaders,
 		MaxAge:           60,
+		AllowOriginFunc: func(origin string) bool {
+			return true
+		},
 	})
 
 	return crs

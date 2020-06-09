@@ -43,7 +43,7 @@ func init() {
 	}))
 
 	{
-		v1 := app.Party("/v1")
+		v1 := app.Party("/v1").AllowMethods(iris.MethodOptions)
 		v1.Use(recover.New())
 		v1.Use(middleware.Common())
 		v1.Use(middleware.CORS())
