@@ -29,6 +29,10 @@ func (c *Matcher) GetPendingLength() int {
 	return len(c.pending)
 }
 
+func (c *Matcher) GetPendingQueue() []string {
+	return c.pending
+}
+
 func (c *Matcher) ShiftPending() *string {
 	c.RLock()
 	defer c.RUnlock()
@@ -49,8 +53,9 @@ func (c *Matcher) GetMatcher() map[string][]string {
 // 用户加入匹配池
 // 返回接待的客服 UUID
 // 如果返回空，那么说明没有找到合适的客服，加入等待队列
-// 第二个参数
-func (c *Matcher) Join(userSocketUUID string, prepend ...bool) *string {
+// 第二个参数用于插入到最前面的队列，出于最优先级
+// 返回 int 代表出于队列的地 n 位
+func (c *Matcher) Join(userSocketUUID string, prepend ...bool) (*string, int) {
 	c.RLock()
 	defer c.RUnlock()
 	idleWaiter := c.GetIdleWaiter()
@@ -58,9 +63,9 @@ func (c *Matcher) Join(userSocketUUID string, prepend ...bool) *string {
 	// 如果找不到最佳的客服，那么先加入队列
 	if idleWaiter == nil {
 		// 确保当前连接不在队列中
-		for _, id := range c.pending {
+		for index, id := range c.pending {
 			if id == userSocketUUID {
-				return nil
+				return nil, index
 			}
 		}
 
@@ -69,17 +74,18 @@ func (c *Matcher) Join(userSocketUUID string, prepend ...bool) *string {
 		} else {
 			c.pending = append(c.pending, userSocketUUID)
 		}
-		return nil
-	}
-
-	for waiter, users := range c.matcher {
-		if waiter == *idleWaiter {
-			c.matcher[waiter] = append(users, userSocketUUID)
-			return idleWaiter
+		return nil, len(c.pending) - 1
+	} else {
+		// 如果找到了空闲的客服
+		for waiter, users := range c.matcher {
+			if waiter == *idleWaiter {
+				c.matcher[waiter] = append(users, userSocketUUID)
+				return idleWaiter, 0
+			}
 		}
 	}
 
-	return nil
+	return nil, 0
 }
 
 // 用户离开匹配池

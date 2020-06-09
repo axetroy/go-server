@@ -8,15 +8,46 @@ import (
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/service/database"
 	"log"
+	"time"
 )
 
 func handle() (err error) {
 	idleWaiter := ws.MatcherPool.GetIdleWaiter()
 	userSocketUUID := ws.MatcherPool.ShiftPending()
 
+	// 没有排队的用户，那么啥也不干
+	if userSocketUUID == nil {
+		return nil
+	}
+
+	// 虽然有用户还在排队，但是客服不空闲，通知下排队的用户排队的情况
+	if idleWaiter == nil {
+		// 把用户重新加入到队列中
+		ws.MatcherPool.Join(*userSocketUUID, true)
+		for location, userID := range ws.MatcherPool.GetPendingQueue() {
+			userClient := ws.UserPoll.Get(userID)
+
+			if userClient == nil {
+				continue
+			}
+
+			// 告诉客户端要排队
+			if err = userClient.WriteJSON(ws.Message{
+				Type: string(ws.TypeResponseUserConnectQueue),
+				To:   userClient.UUID,
+				Date: time.Now().Format(time.RFC3339Nano),
+				Payload: map[string]interface{}{
+					"location": location,
+				},
+			}); err != nil {
+				return
+			}
+		}
+	}
+
 	// 如果有空闲的客服和正在排队的用户，那么就匹配他们
-	if idleWaiter != nil && userSocketUUID != nil {
-		waiterID := ws.MatcherPool.Join(*userSocketUUID)
+	{
+		waiterID, _ := ws.MatcherPool.Join(*userSocketUUID)
 
 		if waiterID == nil {
 			return exception.NoData.New("找不到 waiter")

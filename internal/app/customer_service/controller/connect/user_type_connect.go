@@ -17,7 +17,7 @@ func userTypeConnectHandler(userClient *ws.Client, msg ws.Message) (err error) {
 		err = exception.UserNotLogin
 		return
 	}
-	waiterID := ws.MatcherPool.Join(userClient.UUID)
+	waiterID, location := ws.MatcherPool.Join(userClient.UUID)
 
 	// 如果找不到合适的客服，则添加到等待队列
 	if waiterID == nil {
@@ -26,6 +26,9 @@ func userTypeConnectHandler(userClient *ws.Client, msg ws.Message) (err error) {
 			Type: string(ws.TypeResponseUserConnectQueue),
 			To:   userClient.UUID,
 			Date: time.Now().Format(time.RFC3339Nano),
+			Payload: map[string]interface{}{
+				"location": location,
+			},
 		}); err != nil {
 			return
 		}
