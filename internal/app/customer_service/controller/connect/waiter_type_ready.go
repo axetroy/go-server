@@ -2,7 +2,6 @@
 package connect
 
 import (
-	"github.com/axetroy/go-server/internal/app/customer_service/controller/history"
 	"github.com/axetroy/go-server/internal/app/customer_service/ws"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/util"
@@ -70,34 +69,6 @@ func waiterTypeReadyHandler(waiterClient *ws.Client) (err error) {
 			// 创建 session
 			if err = tx.Create(&session).Error; err != nil {
 				return
-			}
-
-			// 推送聊天记录
-			if historyMessage, e := history.GetHistory(userClient.GetProfile().Id); e != nil {
-				err = e
-				return
-			} else {
-				// 推送给用户端
-				if err = userClient.WriteJSON(ws.Message{
-					Type:    string(ws.TypeResponseUserMessageHistory),
-					From:    waiterClient.UUID,
-					To:      userClient.UUID,
-					Payload: historyMessage,
-					Date:    time.Now().Format(time.RFC3339Nano),
-				}); err != nil {
-					return
-				}
-
-				// 推送给客服端
-				if err = waiterClient.WriteJSON(ws.Message{
-					Type:    string(ws.TypeResponseWaiterMessageHistory),
-					From:    userClient.UUID,
-					To:      waiterClient.UUID,
-					Payload: historyMessage,
-					Date:    time.Now().Format(time.RFC3339Nano),
-				}); err != nil {
-					return
-				}
 			}
 		}
 	}

@@ -1,14 +1,13 @@
+// Copyright 2019-2020 Axetroy. All rights reserved. MIT license.
 package worker
 
 import (
-	"github.com/axetroy/go-server/internal/app/customer_service/controller/history"
 	"github.com/axetroy/go-server/internal/app/customer_service/ws"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/service/database"
 	"log"
-	"time"
 )
 
 func handle() (err error) {
@@ -70,34 +69,6 @@ func handle() (err error) {
 			Payload: userClient.GetProfile(),
 		}); err != nil {
 			return
-		}
-
-		// 推送聊天记录
-		if historyMessage, e := history.GetHistory(userClient.GetProfile().Id); e != nil {
-			err = e
-			return
-		} else {
-			// 推送给用户端
-			if err = userClient.WriteJSON(ws.Message{
-				Type:    string(ws.TypeResponseUserMessageHistory),
-				From:    *waiterID,
-				To:      userClient.UUID,
-				Payload: historyMessage,
-				Date:    time.Now().Format(time.RFC3339Nano),
-			}); err != nil {
-				return
-			}
-
-			// 推送给客服端
-			if err = waiterClient.WriteJSON(ws.Message{
-				Type:    string(ws.TypeResponseWaiterMessageHistory),
-				From:    userClient.UUID,
-				To:      waiterClient.UUID,
-				Payload: historyMessage,
-				Date:    time.Now().Format(time.RFC3339Nano),
-			}); err != nil {
-				return
-			}
 		}
 	}
 

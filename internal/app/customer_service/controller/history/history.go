@@ -8,6 +8,7 @@ import (
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
 	"github.com/jinzhu/gorm"
+	"time"
 )
 
 type History struct {
@@ -16,6 +17,7 @@ type History struct {
 	Receiver schema.ProfilePublic `json:"receiver"` // 消息接受者
 	Type     ws.TypeResponseUser  `json:"type"`     // 消息类型
 	Payload  interface{}          `json:"payload"`  // 消息体
+	Date     string               `json:"date"`     // 消息时间
 }
 
 // 获取某个用户的聊天记录
@@ -61,6 +63,7 @@ func GetHistory(userID string, txs ...*gorm.DB) (result []History, err error) {
 				Avatar:   info.Receiver.Avatar,
 			},
 			Payload: info.Payload,
+			Date:    info.CreatedAt.Format(time.RFC3339Nano),
 		}
 
 		switch info.Type {

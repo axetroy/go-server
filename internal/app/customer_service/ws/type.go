@@ -1,3 +1,4 @@
+// Copyright 2019-2020 Axetroy. All rights reserved. MIT license.
 package ws
 
 type typeForWriteMessage string             // 所有的类型总称
@@ -12,6 +13,7 @@ const (
 	TypeRequestUserConnect     TypeRequestUser = "connect"      // 请求连接一个客服
 	TypeRequestUserDisconnect  TypeRequestUser = "disconnect"   // 请求和客服断开连接
 	TypeRequestUserMessageText TypeRequestUser = "message_text" // 发送文本消息
+	TypeRequestUserGetHistory  TypeRequestUser = "get_history"  // 请求获取用户聊天记录，应该返回 `message_history`
 )
 
 // 用户收到的类型
@@ -32,6 +34,7 @@ const (
 	TypeRequestWaiterReady       TypeRequestWaiter = "ready"        // 客服已准备就绪，可以开始接收客人
 	TypeRequestWaiterMessageText TypeRequestWaiter = "message_text" // 客服发出文本消息
 	TypeRequestWaiterDisconnect  TypeRequestWaiter = "disconnect"   // 请求断开连接
+	TypeRequestWaiterGetHistory  TypeRequestWaiter = "get_history"  // 请求获取用户聊天记录，应该返回 `message_history`, 需要指定 payload
 )
 
 // 客服收到的消息

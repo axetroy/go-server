@@ -125,6 +125,11 @@ var WaiterRouter = router.Handler(func(c router.Context) {
 				_ = client.WriteError(er, msg)
 			}
 			break typeCondition
+		case ws.TypeRequestWaiterGetHistory:
+			if er := waiterTypeGetHistoryHandler(client, msg); er != nil {
+				_ = client.WriteError(er, msg)
+			}
+			break typeCondition
 		case ws.TypeRequestWaiterDisconnect:
 			if er := waiterTypeDisconnectHandler(client, msg); er != nil {
 				_ = client.WriteError(er, msg)

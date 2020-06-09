@@ -127,6 +127,11 @@ var UserRouter = router.Handler(func(c router.Context) {
 				_ = client.WriteError(err, msg)
 			}
 			break typeCondition
+		case ws.TypeRequestUserGetHistory:
+			if err := userTypeGetHistoryHandler(client); err != nil {
+				_ = client.WriteError(err, msg)
+			}
+			break typeCondition
 		// 用户主动和客服断开连接
 		case ws.TypeRequestUserDisconnect:
 			if err := userTypeDisconnectHandler(client); err != nil {
