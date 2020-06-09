@@ -7,6 +7,7 @@ import (
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/service/database"
 	"log"
+	"time"
 )
 
 func textMessageFromWaiterHandler(msg ws.Message) (err error) {
@@ -67,6 +68,18 @@ func textMessageFromWaiterHandler(msg ws.Message) (err error) {
 	// 讲聊天记录写入会话
 	if err := tx.Create(&sessionItem).Error; err != nil {
 		return err
+	}
+
+	// 给客服端一个回执
+	if err = waiterClient.WriteJSON(ws.Message{
+		Id:      sessionItem.Id,
+		Type:    string(ws.TypeResponseUserMessageText),
+		From:    waiterClient.UUID,
+		To:      userClient.UUID,
+		Payload: msg.Payload,
+		Date:    sessionItem.CreatedAt.Format(time.RFC3339Nano),
+	}); err != nil {
+		return
 	}
 
 	return
