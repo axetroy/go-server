@@ -61,7 +61,7 @@ func (c *Client) WriteJSON(data Message) error {
 
 func (c *Client) WriteError(err error, data Message) error {
 	if e, ok := err.(exception.Error); ok {
-		_ = c.WriteJSON(Message{
+		if e1 := c.WriteJSON(Message{
 			Type: string(TypeResponseUserError),
 			To:   c.UUID,
 			Payload: map[string]interface{}{
@@ -70,9 +70,11 @@ func (c *Client) WriteError(err error, data Message) error {
 				"data":    data,
 			},
 			Date: time.Now().Format(time.RFC3339Nano),
-		})
+		}); e1 != nil {
+			return e1
+		}
 	} else {
-		_ = c.WriteJSON(Message{
+		if e2 := c.WriteJSON(Message{
 			Type: string(TypeResponseUserError),
 			To:   c.UUID,
 			Payload: map[string]interface{}{
@@ -81,10 +83,12 @@ func (c *Client) WriteError(err error, data Message) error {
 				"data":    data,
 			},
 			Date: time.Now().Format(time.RFC3339Nano),
-		})
+		}); e2 != nil {
+			return e2
+		}
 	}
 
-	return c.conn.WriteJSON(data)
+	return nil
 }
 
 // 关闭连接
