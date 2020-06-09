@@ -64,5 +64,7 @@ func waiterTypeDisconnectHandler(waiterClient *ws.Client, msg ws.Message) error 
 		return exception.InvalidParams.New("未连接")
 	}
 
+	waiterClient.RegenerateUUID()
+
 	return nil
 }

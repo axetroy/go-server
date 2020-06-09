@@ -58,5 +58,7 @@ func userTypeDisconnectHandler(userClient *ws.Client) error {
 		Date:    time.Now().Format(time.RFC3339Nano),
 	})
 
+	userClient.RegenerateUUID()
+
 	return nil
 }

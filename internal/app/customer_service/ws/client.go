@@ -48,6 +48,16 @@ func (c *Client) GetProfile() *schema.ProfilePublic {
 	return c.profile
 }
 
+func (c *Client) RegenerateUUID() {
+	c.Lock()
+	defer c.Unlock()
+	id, _ := uuid.NewRandom()
+
+	c.UUID = id.String()
+
+	return
+}
+
 func (c *Client) UpdateProfile(profile schema.ProfilePublic) {
 	c.Lock()
 	defer c.Unlock()
