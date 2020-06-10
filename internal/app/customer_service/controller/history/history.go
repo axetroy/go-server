@@ -41,7 +41,7 @@ func GetHistory(userID string, txs ...*gorm.DB) (result []History, err error) {
 
 	list := make([]model.CustomerSessionItem, 0)
 
-	query := tx.Model(model.CustomerSessionItem{}).Where("sender_id = ?", userID).Or("receiver_id = ?", userID).Preload("Sender").Preload("Receiver").Limit(100)
+	query := tx.Model(model.CustomerSessionItem{}).Where("sender_id = ?", userID).Or("receiver_id = ?", userID).Order("created_at ASC").Preload("Sender").Preload("Receiver").Limit(100)
 
 	if err = query.Find(&list).Error; err != nil {
 		return
