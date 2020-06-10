@@ -73,7 +73,7 @@ func textMessageFromUserHandler(msg ws.Message) (err error) {
 	// 给用户端一个回执
 	if err = userClient.WriteJSON(ws.Message{
 		Id:      sessionItem.Id,
-		Type:    string(ws.TypeResponseUserMessageText),
+		Type:    string(ws.TypeResponseUserMessageTextSuccess),
 		From:    userClient.UUID,
 		To:      waiterClient.UUID,
 		Payload: msg.Payload,

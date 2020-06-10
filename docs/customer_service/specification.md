@@ -73,16 +73,17 @@
 
 #### 用户端会收到的消息类型
 
-| Type            | 说明                            | 对应的 Payload                                                                  |
-| --------------- | ------------------------------- | ------------------------------------------------------------------------------- |
-| auth_success    | 身份认证成功                    | `{"id":"274588402135859200","username":"test1","nickname":"test1","avatar":""}` |
-| not_connect     | 尚未与客服连接                  | `...`                                                                           |
-| connect_success | 连接客服成功                    | `{"uuid": "客服的 UUID"}`                                                       |
-| disconnected    | 连接已断开                      | `null`                                                                          |
-| connect_queue   | 请求连接客服，但是正忙,正在排队 | `{"location": 100}`                                                             |
-| message_text    | 收到来自客服的消息              | `{"message": "这是一条消息"}`                                                   |
-| message_history | 系统推送过来的聊天记录          | `[...]`                                                                         |
-| error           | 操作错误                        | `{"message": "这是错误信息"}`                                                   |
+| Type                 | 说明                            | 对应的 Payload                                                                  |
+| -------------------- | ------------------------------- | ------------------------------------------------------------------------------- |
+| auth_success         | 身份认证成功                    | `{"id":"274588402135859200","username":"test1","nickname":"test1","avatar":""}` |
+| not_connect          | 尚未与客服连接                  | `...`                                                                           |
+| connect_success      | 连接客服成功                    | `{"uuid": "客服的 UUID"}`                                                       |
+| disconnected         | 连接已断开                      | `null`                                                                          |
+| connect_queue        | 请求连接客服，但是正忙,正在排队 | `{"location": 100}`                                                             |
+| message_text         | 收到来自客服的消息              | `{"message": "这是一条消息"}`                                                   |
+| message_text_success | `message_text` 的成功回执       | `代表发送 message_text 发送成功`                                                |
+| message_history      | 系统推送过来的聊天记录          | `[...]`                                                                         |
+| error                | 操作错误                        | `{"message": "这是错误信息"}`                                                   |
 
 #### 客服端可以发出的消息类型
 
@@ -95,11 +96,12 @@
 
 #### 客服端会收到的消息类型
 
-| Type            | 说明                   | 对应的 Payload                                                                  |
-| --------------- | ---------------------- | ------------------------------------------------------------------------------- |
-| auth_success    | 身份认证成功           | `{"id":"274588402135859200","username":"test1","nickname":"test1","avatar":""}` |
-| new_connection  | 有新的用户与客服连接   | `{"uuid": "用户的 UUID"}`                                                       |
-| disconnected    | 用户主动与客服断开     | `null`                                                                          |
-| message_text    | 收到来自用户的消息     | `{"message": "这是一条消息"}`                                                   |
-| message_history | 系统推送过来的聊天记录 | `[...]`                                                                         |
-| error           | 操作错误               | `{"message": "这是错误信息"}`                                                   |
+| Type                 | 说明                      | 对应的 Payload                                                                  |
+| -------------------- | ------------------------- | ------------------------------------------------------------------------------- |
+| auth_success         | 身份认证成功              | `{"id":"274588402135859200","username":"test1","nickname":"test1","avatar":""}` |
+| new_connection       | 有新的用户与客服连接      | `{"uuid": "用户的 UUID"}`                                                       |
+| disconnected         | 用户主动与客服断开        | `null`                                                                          |
+| message_text         | 收到来自用户的消息        | `{"message": "这是一条消息"}`                                                   |
+| message_text_success | `message_text` 的成功回执 | `代表发送 message_text 发送成功`                                                |
+| message_history      | 系统推送过来的聊天记录    | `[...]`                                                                         |
+| error                | 操作错误                  | `{"message": "这是错误信息"}`                                                   |
