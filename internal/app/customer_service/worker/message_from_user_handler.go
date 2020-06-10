@@ -18,15 +18,6 @@ func textMessageFromUserHandler(msg ws.Message) (err error) {
 		return
 	}
 
-	if err = waiterClient.WriteJSON(ws.Message{
-		From:    msg.From,
-		To:      msg.To,
-		Type:    msg.Type,
-		Payload: msg.Payload,
-	}); err != nil {
-		return
-	}
-
 	// 发送成功，写入聊天记录
 	tx := database.Db.Begin()
 
@@ -68,6 +59,16 @@ func textMessageFromUserHandler(msg ws.Message) (err error) {
 	// 讲聊天记录写入会话
 	if err := tx.Create(&sessionItem).Error; err != nil {
 		return err
+	}
+
+	// 推送消息给客服
+	if err = waiterClient.WriteJSON(ws.Message{
+		From:    msg.From,
+		To:      msg.To,
+		Type:    msg.Type,
+		Payload: msg.Payload,
+	}); err != nil {
+		return
 	}
 
 	// 给用户端一个回执
