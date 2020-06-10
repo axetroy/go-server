@@ -63,10 +63,12 @@ func textMessageFromUserHandler(msg ws.Message) (err error) {
 
 	// 推送消息给客服
 	if err = waiterClient.WriteJSON(ws.Message{
+		Id:      session.Id,
 		From:    msg.From,
 		To:      msg.To,
 		Type:    msg.Type,
 		Payload: msg.Payload,
+		Date:    sessionItem.CreatedAt.Format(time.RFC3339Nano),
 	}); err != nil {
 		return
 	}
