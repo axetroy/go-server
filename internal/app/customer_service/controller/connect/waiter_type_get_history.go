@@ -34,7 +34,7 @@ func waiterTypeGetHistoryHandler(waiterClient *ws.Client, msg ws.Message) (err e
 		return err
 	} else {
 		if err = waiterClient.WriteJSON(ws.Message{
-			Type:    string(ws.TypeResponseUserMessageHistory),
+			Type:    string(ws.TypeResponseWaiterMessageHistory),
 			To:      waiterClient.UUID,
 			Payload: list,
 			Date:    time.Now().Format(time.RFC3339Nano),
