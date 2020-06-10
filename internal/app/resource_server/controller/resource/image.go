@@ -147,6 +147,4 @@ var Image = router.Handler(func(c router.Context) {
 	if err = EncodeImage(&img, file, c.Writer(), query); err != nil {
 		return
 	}
-
-	return
 })
