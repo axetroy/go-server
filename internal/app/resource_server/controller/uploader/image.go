@@ -4,16 +4,12 @@ package uploader
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"errors"
 	"github.com/axetroy/go-server/internal/app/resource_server/config"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/schema"
 	"golang.org/x/image/draw"
 	"image"
-	"image/gif"
-	"image/jpeg"
-	"image/png"
 	"io"
 	"mime/multipart"
 	"os"
@@ -23,8 +19,6 @@ import (
 
 type ImageResponse struct {
 	schema.FileResponse
-	Thumbnail     bool   `json:"thumbnail"`      // 是否拥有缩略图
-	ThumbnailPath string `json:"thumbnail_path"` // 缩略图的路径
 }
 
 // 支持的图片后缀名
@@ -138,14 +132,6 @@ var Image = router.Handler(func(c router.Context) {
 				RawPath:      "/v1/resource/image/" + fileName,
 				DownloadPath: "/v1/download/image/" + fileName,
 			},
-			Thumbnail: false,
-		}
-
-		// 压缩缩略图
-		// 不管成功与否，都会进行下一步的返回
-		if _, er := GenerateThumbnail(distPath); er == nil {
-			res.Thumbnail = true
-			res.ThumbnailPath = "/v1/resource/thumbnail/" + fileName
 		}
 
 		data = append(data, res)
@@ -162,96 +148,4 @@ func isImage(extName string) bool {
 		}
 	}
 	return false
-}
-
-/**
-Generate thumbnail
-*/
-func GenerateThumbnail(imagePath string) (outputPath string, err error) {
-	var (
-		file          *os.File
-		img           image.Image
-		filename      = path.Base(imagePath)
-		thumbnailRate = config.Upload.Image.Thumbnail.Rate
-		thumbnailDir  = path.Join(config.Upload.Path, config.Upload.Image.Thumbnail.Path)
-	)
-
-	extname := strings.ToLower(path.Ext(imagePath))
-
-	outputPath = path.Join(thumbnailDir, filename)
-
-	// 读取文件
-	if file, err = os.Open(imagePath); err != nil {
-		return
-	}
-
-	defer func() {
-		if er := file.Close(); er != nil {
-			err = er
-			return
-		}
-	}()
-
-	// decode jpeg into image.Image
-	switch extname {
-	case ".jpg", ".jpeg":
-		img, err = jpeg.Decode(file)
-	case ".png":
-		img, err = png.Decode(file)
-	case ".gif":
-		img, err = gif.Decode(file)
-	default:
-		err = exception.NotSupportType
-		return
-	}
-
-	if img == nil {
-		err = errors.New("生成缩略图失败")
-		return
-	}
-
-	if thumbnailRate < 1 {
-		thumbnailRate = 1
-	}
-
-	// new size of image
-	width := img.Bounds().Max.X / thumbnailRate
-	height := img.Bounds().Max.Y / thumbnailRate
-
-	dr := image.Rect(0, 0, width, height)
-
-	m := scaleTo(img, dr, draw.BiLinear)
-
-	out, err := os.Create(outputPath)
-
-	if err != nil {
-		return
-	}
-
-	defer func() {
-		_ = out.Close()
-	}()
-
-	// write new image to file
-
-	// decode jpeg/png/gif into image.Image
-	switch extname {
-	case ".jpg", ".jpeg":
-		if err = jpeg.Encode(out, m, nil); err != nil {
-			return
-		}
-	case ".png":
-		if err = png.Encode(out, m); err != nil {
-			return
-		}
-	case ".gif":
-		if err = gif.Encode(out, m, nil); err != nil {
-			return
-		}
-	default:
-		err = exception.NotSupportType
-		return
-	}
-
-	return
 }

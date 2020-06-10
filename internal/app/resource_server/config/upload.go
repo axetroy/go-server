@@ -13,19 +13,8 @@ type FileConfig struct {
 }
 
 type ImageConfig struct {
-	Path      string          `json:"path"`      // 图片存储路径
-	MaxSize   int64           `json:"max_size"`  // 最大图片上传限制，单位byte
-	Thumbnail ThumbnailConfig `json:"thumbnail"` // 缩略图配置
-	Avatar    AvatarConfig    `json:"avatar"`    // 用户头像的配置
-}
-
-type ThumbnailConfig struct {
-	Path string `json:"path"` // 缩略图存放路径
-	Rate int    `json:"rate"` // 缩放比例, 最小值为 1, 默认 2. 则缩小 1/2 倍
-}
-
-type AvatarConfig struct {
-	Path string // 头像存储的路径
+	Path    string `json:"path"`     // 图片存储路径
+	MaxSize int64  `json:"max_size"` // 最大图片上传限制，单位byte
 }
 
 type TConfig struct {
@@ -44,13 +33,6 @@ var Upload = TConfig{
 	Image: ImageConfig{
 		Path:    "image",
 		MaxSize: dotenv.GetInt64ByDefault("UPLOAD_IMAGE_MAX_SIZE", 1024*1024*10), // max 10MB
-		Thumbnail: ThumbnailConfig{
-			Path: "thumbnail",
-			Rate: dotenv.GetIntByDefault("UPLOAD_IMAGE_THUMBNAIL_RATE", 2),
-		},
-		Avatar: AvatarConfig{
-			Path: "avatar",
-		},
 	},
 }
 
@@ -65,14 +47,6 @@ func Init() {
 	}
 
 	if err = fs.EnsureDir(path.Join(Upload.Path, Upload.Image.Path)); err != nil {
-		return
-	}
-
-	if err = fs.EnsureDir(path.Join(Upload.Path, Upload.Image.Thumbnail.Path)); err != nil {
-		return
-	}
-
-	if err = fs.EnsureDir(path.Join(Upload.Path, Upload.Image.Avatar.Path)); err != nil {
 		return
 	}
 }

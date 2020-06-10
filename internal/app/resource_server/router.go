@@ -53,13 +53,11 @@ func init() {
 			v1.Post("/upload/image", uploader.Image)    // 上传图片
 			v1.Get("/upload/example", uploader.Example) // 上传文件的 example
 			//// 单纯获取资源文本
-			v1.Get("/resource/file/{filename}", resource.File)           // 获取文件纯文本
-			v1.Get("/resource/image/{filename}", resource.Image)         // 获取图片纯文本
-			v1.Get("/resource/thumbnail/{filename}", resource.Thumbnail) // 获取缩略图纯文本
+			v1.Get("/resource/file/{filename}", resource.File)   // 获取文件纯文本
+			v1.Get("/resource/image/{filename}", resource.Image) // 获取图片纯文本
 			//// 下载资源
-			v1.Get("/download/file/{filename}", downloader.File)           // 下载文件
-			v1.Get("/download/image/{filename}", downloader.Image)         // 下载图片
-			v1.Get("/download/thumbnail/{filename}", downloader.Thumbnail) // 下载缩略图
+			v1.Get("/download/file/{filename}", downloader.File)   // 下载文件
+			v1.Get("/download/image/{filename}", downloader.Image) // 下载图片
 		}
 
 	}
