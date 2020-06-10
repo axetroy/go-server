@@ -12,6 +12,7 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
+	"io"
 	"mime"
 	"net/http"
 	"os"
@@ -44,13 +45,52 @@ func scaleImage(img image.Image, scale float64) image.Image {
 	return m
 }
 
-var Image = router.Handler(func(c router.Context) {
-	type Query struct {
-		Scale  float64 `json:"scale" url:"scale" validate:"omitempty,gt=0,max=1" comment:"缩放比例"` // 缩放比例
-		Width  int     `json:"width" url:"with" validate:"omitempty,gt=0" comment:"宽度"`          // 指定图片的宽度
-		Height int     `json:"height" url:"height" validate:"omitempty,gt=0" comment:"高度"`       // 指定图片的高度
+// 解码图片
+func DecodeImage(file *os.File) (img image.Image, err error) {
+	extname := path.Ext(file.Name())
+	// decode jpeg into image.Image
+	switch extname {
+	case ".jpg", ".jpeg":
+		img, err = jpeg.Decode(file)
+	case ".png":
+		img, err = png.Decode(file)
+	case ".gif":
+		img, err = gif.Decode(file)
+	default:
+		err = exception.NotSupportType
 	}
 
+	return
+}
+
+// 编码图片
+func EncodeImage(img *image.Image, file *os.File, writer io.Writer, option Query) (err error) {
+	extname := path.Ext(file.Name())
+
+	newImage := scaleImage(*img, option.Scale)
+
+	// decode jpeg into image.Image
+	switch extname {
+	case ".jpg", ".jpeg":
+		err = jpeg.Encode(writer, newImage, nil)
+	case ".png":
+		err = png.Encode(writer, newImage)
+	case ".gif":
+		err = gif.Encode(writer, newImage, nil)
+	default:
+		err = exception.NotSupportType
+	}
+
+	return
+}
+
+type Query struct {
+	Scale  float64 `json:"scale" url:"scale" validate:"omitempty,gt=0,max=1" comment:"缩放比例"` // 缩放比例
+	Width  int     `json:"width" url:"with" validate:"omitempty,gt=0" comment:"宽度"`          // 指定图片的宽度
+	Height int     `json:"height" url:"height" validate:"omitempty,gt=0" comment:"高度"`       // 指定图片的高度
+}
+
+var Image = router.Handler(func(c router.Context) {
 	var (
 		img      image.Image
 		err      error
@@ -79,6 +119,12 @@ var Image = router.Handler(func(c router.Context) {
 		return
 	}
 
+	// 如果不裁剪图片，那么就返回原始图片
+	if query.Scale == 0 || query.Scale == 1 {
+		http.ServeFile(c.Writer(), c.Request(), originImagePath)
+		return
+	}
+
 	extname := strings.ToLower(path.Ext(filename))
 
 	// 读取文件
@@ -92,38 +138,15 @@ var Image = router.Handler(func(c router.Context) {
 		}
 	}()
 
-	// decode jpeg into image.Image
-	switch extname {
-	case ".jpg", ".jpeg":
-		img, err = jpeg.Decode(file)
-	case ".png":
-		img, err = png.Decode(file)
-	case ".gif":
-		img, err = gif.Decode(file)
-	default:
-		err = exception.NotSupportType
-	}
-
-	if err != nil {
+	if img, err = DecodeImage(file); err != nil {
 		return
 	}
-
-	newImage := scaleImage(img, query.Scale)
 
 	c.Header("Content-Type", mime.TypeByExtension(extname))
 
-	switch extname {
-	case ".jpg", ".jpeg":
-		err = jpeg.Encode(c.Writer(), newImage, nil)
-	case ".png":
-		err = png.Encode(c.Writer(), newImage)
-	case ".gif":
-		err = gif.Encode(c.Writer(), newImage, nil)
-	default:
-		err = exception.NotSupportType
-	}
-
-	if err != nil {
+	if err = EncodeImage(&img, file, c.Writer(), query); err != nil {
 		return
 	}
+
+	return
 })
