@@ -12,6 +12,7 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
+	"mime"
 	"net/http"
 	"os"
 	"path"
@@ -45,7 +46,9 @@ func scaleImage(img image.Image, scale float64) image.Image {
 
 var Image = router.Handler(func(c router.Context) {
 	type Query struct {
-		Scale float64 `json:"scale" url:"scale" validate:"omitempty,gt=0,max=1" comment:"缩放比例"` // 缩放比例
+		Scale  float64 `json:"scale" url:"scale" validate:"omitempty,gt=0,max=1" comment:"缩放比例"` // 缩放比例
+		Width  int     `json:"width" url:"with" validate:"omitempty,gt=0" comment:"宽度"`          // 指定图片的宽度
+		Height int     `json:"height" url:"height" validate:"omitempty,gt=0" comment:"高度"`       // 指定图片的高度
 	}
 
 	var (
@@ -106,6 +109,8 @@ var Image = router.Handler(func(c router.Context) {
 	}
 
 	newImage := scaleImage(img, query.Scale)
+
+	c.Header("Content-Type", mime.TypeByExtension(extname))
 
 	switch extname {
 	case ".jpg", ".jpeg":
