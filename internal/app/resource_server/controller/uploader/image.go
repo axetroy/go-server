@@ -8,8 +8,6 @@ import (
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/router"
 	"github.com/axetroy/go-server/internal/schema"
-	"golang.org/x/image/draw"
-	"image"
 	"io"
 	"mime/multipart"
 	"os"
@@ -23,15 +21,6 @@ type ImageResponse struct {
 
 // 支持的图片后缀名
 var supportImageExtNames = []string{".jpg", ".jpeg", ".png", ".ico", ".svg", ".bmp", ".gif"}
-
-// src   - source image
-// rect  - size we want
-// scale - scaler
-func scaleTo(src image.Image, rect image.Rectangle, scale draw.Scaler) image.Image {
-	dst := image.NewRGBA(rect)
-	scale.Scale(dst, rect, src, src.Bounds(), draw.Over, nil)
-	return dst
-}
 
 var Image = router.Handler(func(c router.Context) {
 	var (
