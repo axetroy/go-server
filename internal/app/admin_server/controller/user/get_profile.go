@@ -2,6 +2,7 @@
 package user
 
 import (
+	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
 	"github.com/axetroy/go-server/internal/library/router"
