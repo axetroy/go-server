@@ -18,6 +18,7 @@ func NewMatcher() *Matcher {
 		Max:       5, // 一个客服最多接待 5 个用户
 		matcher:   map[string][]string{},
 		Broadcast: make(chan bool),
+		pending:   []string{},
 	}
 }
 

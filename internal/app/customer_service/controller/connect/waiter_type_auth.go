@@ -57,6 +57,7 @@ func waiterTypeAuthHandler(waiterClient *ws.Client, msg ws.Message) (err error) 
 				// 推送断开连接
 				if err = c.WriteJSON(ws.Message{
 					Type: string(ws.TypeResponseWaiterKickOut),
+					From: waiterClient.UUID,
 					To:   c.UUID,
 					Date: time.Now().Format(time.RFC3339Nano),
 				}); err != nil {
