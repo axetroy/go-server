@@ -8,14 +8,14 @@ import (
 type Matcher struct {
 	sync.RWMutex
 	Broadcast chan bool           // 调度器，当收到通知时，就安排客服接待排队的用户
-	max       int                 // 一个客服最多接待多少个用户
+	Max       int                 // 一个客服最多接待多少个用户
 	matcher   map[string][]string // 已经匹配的 socket对
 	pending   []string            // 排队的用户 socket
 }
 
 func NewMatcher() *Matcher {
 	return &Matcher{
-		max:       5, // 一个客服最多接待 5 个用户
+		Max:       5, // 一个客服最多接待 5 个用户
 		matcher:   map[string][]string{},
 		Broadcast: make(chan bool),
 	}
@@ -114,8 +114,8 @@ func (c *Matcher) GetMyUsers(waiterSocketUUID string) []string {
 
 	for id, users := range c.matcher {
 		if id == waiterSocketUUID {
-			if len(users) > c.max {
-				return users[:c.max]
+			if len(users) > c.Max {
+				return users[:c.Max]
 			} else {
 				return users
 			}
@@ -141,9 +141,9 @@ func (c *Matcher) AddWaiter(waiterSocketUUID string) {
 	// 如果这时候等待队列里面有排队的，就先处理它
 	if len(c.pending) > 0 {
 		var users []string
-		if len(c.pending) > c.max {
-			users = c.pending[:c.max]
-			c.pending = c.pending[c.max:]
+		if len(c.pending) > c.Max {
+			users = c.pending[:c.Max]
+			c.pending = c.pending[c.Max:]
 		} else {
 			users = c.pending
 			c.pending = []string{}
@@ -180,7 +180,7 @@ func (c *Matcher) GetIdleWaiter() *string {
 
 	var (
 		bestWaiterId      *string
-		currentUserNumber = c.max
+		currentUserNumber = c.Max
 	)
 
 	for waiter, users := range c.matcher {
