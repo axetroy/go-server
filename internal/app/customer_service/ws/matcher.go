@@ -137,22 +137,6 @@ func (c *Matcher) AddWaiter(waiterSocketUUID string) {
 	}
 
 	c.matcher[waiterSocketUUID] = []string{}
-
-	// 如果这时候等待队列里面有排队的，就先处理它
-	if len(c.pending) > 0 {
-		var users []string
-		if len(c.pending) > c.Max {
-			users = c.pending[:c.Max]
-			c.pending = c.pending[c.Max:]
-		} else {
-			users = c.pending
-			c.pending = []string{}
-		}
-
-		for _, userSocketUUID := range users {
-			c.Join(userSocketUUID)
-		}
-	}
 }
 
 // 移除客服
