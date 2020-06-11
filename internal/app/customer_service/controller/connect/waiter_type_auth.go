@@ -51,7 +51,9 @@ func waiterTypeAuthHandler(waiterClient *ws.Client, msg ws.Message) (err error) 
 
 	// 如果这个客服之前已经登录，那么我们就把原有的连接关闭
 	if oldClient := ws.WaiterPoll.GetWaiterFromUserID(profile.Id); oldClient != nil {
-		err = oldClient.Close()
+		if err := oldClient.Close(); err != nil {
+			return err
+		}
 	}
 
 	// 告诉客户端它的身份信息
