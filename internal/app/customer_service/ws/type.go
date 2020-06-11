@@ -46,7 +46,7 @@ const (
 	TypeResponseWaiterMessageTextSuccess TypeResponseWaiter = "message_text_success" // message_text 成功的回执
 	TypeResponseWaiterNewConnection      TypeResponseWaiter = "new_connection"       // 有新连接
 	TypeResponseWaiterDisconnected       TypeResponseWaiter = "disconnected"         // 有新连接断开
-	TypeResponseWaiterKickOut            TypeResponseWaiter = "kickout"              // socket 连接断开
+	TypeResponseWaiterKickOut            TypeResponseWaiter = "kickout"              // 被踢下线
 	TypeResponseWaiterMessageHistory     TypeResponseWaiter = "message_history"      // 用户的聊天记录
 	TypeResponseWaiterError              TypeResponseWaiter = "error"                // 有新连接断开
 )
