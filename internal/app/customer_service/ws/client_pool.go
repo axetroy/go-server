@@ -33,7 +33,7 @@ func (c *Pool) Get(UUID string) *Client {
 }
 
 // 获取连接
-func (c *Pool) GetWaiterFromUserID(UserID string) *Client {
+func (c *Pool) GetWaiterFromUserID(UserID string) (list []*Client) {
 	c.RLock()
 	defer c.RUnlock()
 	for client := range c.clients {
@@ -44,10 +44,10 @@ func (c *Pool) GetWaiterFromUserID(UserID string) *Client {
 		}
 
 		if profile.Id == UserID {
-			return client
+			list = append(list, client)
 		}
 	}
-	return nil
+	return
 }
 
 // 删除连接

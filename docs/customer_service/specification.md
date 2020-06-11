@@ -102,6 +102,7 @@
 | auth_success         | 身份认证成功              | `{"id":"274588402135859200","username":"test1","nickname":"test1","avatar":""}` |
 | new_connection       | 有新的用户与客服连接      | `{"uuid": "用户的 UUID"}`                                                       |
 | disconnected         | 用户主动与客服断开        | `null`                                                                          |
+| kickout              | 被踢下线                  | `null`                                                                          |
 | message_text         | 收到来自用户的消息        | `{"message": "这是一条消息"}`                                                   |
 | message_text_success | `message_text` 的成功回执 | `代表发送 message_text 发送成功`                                                |
 | message_history      | 系统推送过来的聊天记录    | `[...]`                                                                         |
