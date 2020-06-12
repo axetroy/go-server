@@ -18,16 +18,13 @@ import (
 )
 
 var UserRouter = router.Handler(func(c router.Context) {
-	var (
-		client *ws.Client
-	)
 	upgrader := websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
 			return true
 		},
 	}
 
-	webscoket, err := upgrader.Upgrade(c.Writer(), c.Request(), nil)
+	websocket, err := upgrader.Upgrade(c.Writer(), c.Request(), nil)
 
 	if err != nil {
 		c.ResponseFunc(nil, func() schema.Response {
@@ -39,6 +36,11 @@ var UserRouter = router.Handler(func(c router.Context) {
 		})
 		return
 	}
+
+	client := ws.NewClient(websocket)
+
+	// 注册新的用户
+	ws.UserPoll.Add(client)
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -54,52 +56,98 @@ var UserRouter = router.Handler(func(c router.Context) {
 			fmt.Printf("%+v\n", err)
 		}
 
-		_ = webscoket.Close()
-		if client != nil {
-			waiterId := ws.MatcherPool.GetMyWaiter(client.UUID)
+		waiterId := ws.MatcherPool.GetMyWaiter(client.UUID)
 
-			// 通知客服，我断开连接
-			if waiterId != nil {
-				waiterClient := ws.WaiterPoll.Get(*waiterId)
+		// 通知客服，我断开连接
+		if waiterId != nil {
+			waiterClient := ws.WaiterPoll.Get(*waiterId)
 
-				_ = waiterClient.WriteJSON(ws.Message{
-					From:    client.UUID,
-					To:      *waiterId,
-					Type:    string(ws.TypeResponseWaiterDisconnected),
-					Payload: nil,
-				})
+			_ = waiterClient.WriteJSON(ws.Message{
+				From:    client.UUID,
+				To:      *waiterId,
+				Type:    string(ws.TypeResponseWaiterDisconnected),
+				Payload: nil,
+			})
 
-				hash := util.MD5(client.UUID + waiterClient.UUID)
+			hash := util.MD5(client.UUID + waiterClient.UUID)
 
-				now := time.Now()
+			now := time.Now()
 
-				// 标记会话为已关闭
-				_ = database.Db.Model(model.CustomerSession{}).Where("id = ?", hash).Update(model.CustomerSession{
-					ClosedAt: &now,
-				}).Error
+			// 标记会话为已关闭
+			_ = database.Db.Model(model.CustomerSession{}).Where("id = ?", hash).Update(model.CustomerSession{
+				ClosedAt: &now,
+			}).Error
+		}
+
+		// 从池中删除该链接
+		ws.UserPoll.Remove(client.UUID)
+
+		// 断开匹配
+		ws.MatcherPool.Leave(client.UUID)
+
+		// 因为当前连接已经断开，应该会空出一个位置
+		// 让客服继续接待下一个
+		ws.MatcherPool.Broadcast <- true
+
+		_ = client.Close()
+	}()
+
+	// 定时检查连接是否空闲
+	go func() {
+		isIdle := false // 当前连接是否出于空闲状态
+
+		for range time.Tick(time.Minute * 1) {
+			// 如果 socket 已断开，退出循环
+			if client.Closed {
+				break
 			}
 
-			// 从池中删除该链接
-			ws.UserPoll.Remove(client.UUID)
+			// 每次间隔一分钟，检查最新的
+			now := time.Now()
 
-			// 断开匹配
-			ws.MatcherPool.Leave(client.UUID)
+			// 如果最新一条消息，来之 10 分钟之前的
+			if client.LatestReceiveAt.Add(time.Minute * 10).Before(now) {
+				//if client.LatestReceiveAt.Add(time.Second * 10).Before(now) {
+				if isIdle == true {
+					// 发出一条提醒，当前连接正在空闲，否则断开连接
+					// 告诉用户端已连接成功
+					_ = client.WriteJSON(ws.Message{
+						Type: string(ws.TypeResponseUserDisconnected),
+						To:   client.UUID,
+						Date: time.Now().Format(time.RFC3339Nano),
+					})
 
-			// 因为当前连接已经断开，应该会空出一个位置
-			// 让客服继续接待下一个
-			ws.MatcherPool.Broadcast <- true
+					// 断开于客服的匹配
+					ws.MatcherPool.Leave(client.UUID)
+					// 关闭 socket
+					_ = client.Close()
+					break
+				} else {
+					// 发出一条提醒，当前连接正在空闲，否则断开连接
+					// 告诉用户端已连接成功
+					_ = client.WriteJSON(ws.Message{
+						Type: string(ws.TypeResponseUserIdle),
+						To:   client.UUID,
+						Payload: map[string]interface{}{
+							"message": "当前连接出于空闲状态，如果您未回复，则在 60 秒钟之后断开连接",
+						},
+						Date: time.Now().Format(time.RFC3339Nano),
+					})
+
+					isIdle = true
+				}
+			} else {
+				isIdle = false
+			}
 		}
 	}()
 
-	client = ws.NewClient(webscoket)
-
-	// 注册新的客户端
-	ws.UserPoll.Add(client)
-
+	// 接收消息
 	for {
+		client.LatestReceiveAt = time.Now()
 		var msg ws.Message
 		// 读取消息
-		err := webscoket.ReadJSON(&msg)
+		err := websocket.ReadJSON(&msg)
 
 		if err != nil {
 			_ = client.WriteError(exception.InvalidParams.New(err.Error()), msg)

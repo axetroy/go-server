@@ -9,7 +9,7 @@ type Matcher struct {
 	sync.RWMutex
 	Broadcast chan bool           // 调度器，当收到通知时，就安排客服接待排队的用户
 	Max       int                 // 一个客服最多接待多少个用户
-	matcher   map[string][]string // 已经匹配的 socket对
+	matcher   map[string][]string // 已经匹配的 socket对, 以客服的 UUID 作为 key
 	pending   []string            // 排队的用户 socket
 }
 

@@ -23,9 +23,11 @@ type Message struct {
 
 type Client struct {
 	sync.RWMutex
-	conn    *websocket.Conn       // Socket 连接
-	UUID    string                // Socket 连接的唯一标识符
-	profile *schema.ProfilePublic // 用户的身份信息，仅用于成功身份认证的连接
+	conn            *websocket.Conn       // Socket 连接
+	UUID            string                // Socket 连接的唯一标识符
+	profile         *schema.ProfilePublic // 用户的身份信息，仅用于成功身份认证的连接
+	LatestReceiveAt time.Time             // 最近接收到的消息的时间，用于判断用户是否空闲
+	Closed          bool                  // 连接是否已关闭
 }
 
 func NewClient(conn *websocket.Conn) *Client {
@@ -36,9 +38,10 @@ func NewClient(conn *websocket.Conn) *Client {
 	}
 
 	return &Client{
-		conn:    conn,
-		UUID:    id.String(),
-		profile: nil,
+		conn:            conn,
+		UUID:            id.String(),
+		profile:         nil,
+		LatestReceiveAt: time.Now(),
 	}
 }
 
@@ -101,5 +104,6 @@ func (c *Client) WriteError(err error, data Message) error {
 
 // 关闭连接
 func (c *Client) Close() error {
+	c.Closed = true
 	return c.conn.Close()
 }

@@ -11,7 +11,7 @@ import (
 
 func waiterTypeMessageHandler(waiterClient *ws.Client, msg ws.Message) (err error) {
 	type MessageBody struct {
-		Message string `json:"message" validate:"required" comment:"消息体"`
+		Message string `json:"message" validate:"required" comment:"消息体"` // 发送的消息体
 	}
 
 	if waiterClient.GetProfile() == nil {

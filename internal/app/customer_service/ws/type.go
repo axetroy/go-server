@@ -26,6 +26,7 @@ const (
 	TypeResponseUserConnectQueue       TypeResponseUser = "connect_queue"        // 正在排队，请等待
 	TypeResponseUserMessageText        TypeResponseUser = "message_text"         // 用户收到文本消息
 	TypeResponseUserMessageTextSuccess TypeResponseUser = "message_text_success" // message_text 的回执
+	TypeResponseUserIdle               TypeResponseUser = "idle"                 // 当前连接出于空闲状态
 	TypeResponseUserError              TypeResponseUser = "error"                // 用户收到一个错误
 )
 
