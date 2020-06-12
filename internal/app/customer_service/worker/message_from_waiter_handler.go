@@ -61,29 +61,28 @@ func textMessageFromWaiterHandler(msg ws.Message) (err error) {
 		return err
 	}
 
+	// 推送给两个端口
+	// 不管成功与否，因为服务端已经收到
+
 	// 发送给客户端
-	if err = userClient.WriteJSON(ws.Message{
+	_ = userClient.WriteJSON(ws.Message{
 		Id:      session.Id,
 		From:    msg.From,
 		To:      msg.To,
 		Type:    string(ws.TypeResponseUserMessageText),
 		Payload: msg.Payload,
 		Date:    sessionItem.CreatedAt.Format(time.RFC3339Nano),
-	}); err != nil {
-		return
-	}
+	})
 
 	// 给客服端一个回执
-	if err = waiterClient.WriteJSON(ws.Message{
+	_ = waiterClient.WriteJSON(ws.Message{
 		Id:      sessionItem.Id,
 		Type:    string(ws.TypeResponseWaiterMessageTextSuccess),
 		From:    waiterClient.UUID,
 		To:      userClient.UUID,
 		Payload: msg.Payload,
 		Date:    sessionItem.CreatedAt.Format(time.RFC3339Nano),
-	}); err != nil {
-		return
-	}
+	})
 
 	return
 }
