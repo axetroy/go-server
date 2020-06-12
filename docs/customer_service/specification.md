@@ -25,7 +25,7 @@
 
 ### 2. 连接流程
 
-#### `用户端` 的连接流程 `ws://localhost/v1/ws/user/connect`
+#### `用户端` 的连接流程 `ws://localhost/v1/ws/connect/user`
 
 1 - 连接 WebSocket
 
@@ -41,7 +41,7 @@
 
 7 - 客服主动与你断开连接，收到来自服务器的推送 `{"from":"对方的 UUID","to":"你的UUID","type":"disconnected"}`
 
-#### `客服端` 的连接流程 `ws://localhost/v1/ws/waiter/connect`
+#### `客服端` 的连接流程 `ws://localhost/v1/ws/connect/waiter`
 
 1 - 连接 WebSocket
 
@@ -83,7 +83,7 @@
 | message_text         | 收到来自客服的消息                                       | `{"message": "这是一条消息"}`                                                   |
 | message_text_success | `message_text` 的成功回执                                | `代表发送 message_text 发送成功`                                                |
 | message_history      | 系统推送过来的聊天记录                                   | `[...]`                                                                         |
-| idle                 | 当连接空闲时，系统推送给用户的，则在接下来的时间断开连接 | `null`                                                                          |
+| idle                 | 当连接空闲时，系统推送给用户的，则在接下来的时间断开连接 | `{ "message": "xxxx" }`                                                         |
 | error                | 操作错误                                                 | `{"message": "这是错误信息"}`                                                   |
 
 #### 客服端可以发出的消息类型
