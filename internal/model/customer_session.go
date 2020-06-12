@@ -45,13 +45,15 @@ func (c *CustomerSession) BeforeCreate(scope *gorm.Scope) error {
 
 // 客服聊天的会话记录
 type CustomerSessionItem struct {
-	Id         string      `gorm:"primary_key;not null;unique;index;type:varchar(32)" json:"id"` // 会话 ID
-	Type       SessionType `gorm:"not null;index;type:varchar(32)" json:"type"`                  // 会话类型
-	SenderID   string      `gorm:"not null;index;type:varchar(32)" json:"sender_id"`             // 发送者 ID
-	Sender     User        `gorm:"foreignkey:SenderID" json:"sender"`                            // **外键**
-	ReceiverID string      `gorm:"not null;index;type:varchar(32)" json:"receiver_id"`           // 接受者的 ID
-	Receiver   User        `gorm:"foreignkey:ReceiverID" json:"receiver"`                        // 接受者的 ID
-	Payload    string      `gorm:"not null;index;type:text" json:"payload"`                      // 数据
+	Id         string          `gorm:"primary_key;not null;unique;index;type:varchar(32)" json:"id"` // 消息 ID
+	SessionID  string          `gorm:"not null;index;type:varchar(32)" json:"session_id"`            // 会话 ID
+	Session    CustomerSession `gorm:"foreignkey:SessionID" json:"session"`                          // **外键**
+	Type       SessionType     `gorm:"not null;index;type:varchar(32)" json:"type"`                  // 会话类型
+	SenderID   string          `gorm:"not null;index;type:varchar(32)" json:"sender_id"`             // 发送者 ID
+	Sender     User            `gorm:"foreignkey:SenderID" json:"sender"`                            // **外键**
+	ReceiverID string          `gorm:"not null;index;type:varchar(32)" json:"receiver_id"`           // 接受者的 ID
+	Receiver   User            `gorm:"foreignkey:ReceiverID" json:"receiver"`                        // **外键**
+	Payload    string          `gorm:"not null;index;type:text" json:"payload"`                      // 数据
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 	DeletedAt  *time.Time `sql:"index"`

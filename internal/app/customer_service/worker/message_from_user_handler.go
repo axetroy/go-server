@@ -49,7 +49,7 @@ func textMessageFromUserHandler(msg ws.Message) (err error) {
 	}
 
 	sessionItem := model.CustomerSessionItem{
-		Id:         session.Id,
+		SessionID:  session.Id,
 		Type:       model.SessionTypeText,
 		ReceiverID: waiterClient.GetProfile().Id,
 		SenderID:   userClient.GetProfile().Id,
