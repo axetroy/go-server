@@ -34,10 +34,13 @@ func waiterTypeGetHistoryHandler(waiterClient *ws.Client, msg ws.Message) (err e
 		return err
 	} else {
 		if err = waiterClient.WriteJSON(ws.Message{
-			Type:    string(ws.TypeResponseWaiterMessageHistory),
-			To:      waiterClient.UUID,
-			Payload: list,
-			Date:    time.Now().Format(time.RFC3339Nano),
+			Type: string(ws.TypeResponseWaiterMessageHistory),
+			To:   waiterClient.UUID,
+			Payload: map[string]interface{}{
+				"user_id": body.UserID,
+				"data":    list,
+			},
+			Date: time.Now().Format(time.RFC3339Nano),
 		}); err != nil {
 			return err
 		}
