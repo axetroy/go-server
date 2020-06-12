@@ -53,7 +53,7 @@ func CreateUser() (profile schema.ProfileWithToken, err error) {
 // 创建一个客服
 func CreateWaiter() (profile schema.ProfileWithToken, err error) {
 	var (
-		username  = "test-" + util.RandomString(6)
+		username  = "waiter-" + util.RandomString(6)
 		password  = "123123"
 		ip        = "192.168.0.1"
 		userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3788.1 Safari/537.36"
@@ -101,6 +101,25 @@ func CreateWaiter() (profile schema.ProfileWithToken, err error) {
 	if r2.Status != schema.StatusSuccess {
 		err = errors.New(r.Message)
 		return
+	}
+
+	// 更新用户的角色
+	{
+		adminInfo, er := LoginAdmin()
+
+		if er != nil {
+			err = er
+			return
+		}
+
+		r2 := role.UpdateUserRole(helper.Context{Uid: adminInfo.Id}, profile.Id, role.UpdateUserRoleParams{
+			Roles: []string{"waiter"},
+		})
+
+		if schema.StatusSuccess != r2.Status {
+			err = errors.New(r.Message)
+			return
+		}
 	}
 
 	return

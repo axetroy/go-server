@@ -16,6 +16,11 @@ import (
 )
 
 func TestUserRouter(t *testing.T) {
+	var (
+		userUUID   string // 用户 Socket 的 UUID
+		waiterUUID string // 客服 Socket 的 UUID
+	)
+
 	// Create test server with the echo handler.
 	s := httptest.NewServer(customer_service.CustomerServiceRouter)
 	defer s.Close()
@@ -28,12 +33,12 @@ func TestUserRouter(t *testing.T) {
 	assert.Nil(t, err)
 	defer socket.Close()
 
-	profile, err := tester.CreateUser()
+	userProfile, err := tester.CreateUser()
 
 	assert.Nil(t, err)
 
 	defer func() {
-		tester.DeleteUserByUid(profile.Id)
+		tester.DeleteUserByUid(userProfile.Id)
 	}()
 
 	type TestCase struct {
@@ -69,7 +74,7 @@ func TestUserRouter(t *testing.T) {
 	// 请求身份认证
 	{
 		reqMsg := ws.Message{Type: string(ws.TypeRequestUserAuth), Payload: map[string]interface{}{
-			"token": token.JoinPrefixToken(profile.Token),
+			"token": token.JoinPrefixToken(userProfile.Token),
 		}}
 
 		body, _ := json.Marshal(reqMsg)
@@ -91,10 +96,10 @@ func TestUserRouter(t *testing.T) {
 		var publicProfile schema.ProfilePublic
 		assert.Nil(t, util.Decode(&publicProfile, msg.Payload))
 
-		assert.Equal(t, profile.Id, publicProfile.Id)
-		assert.Equal(t, profile.Nickname, publicProfile.Nickname)
-		assert.Equal(t, profile.Username, publicProfile.Username)
-		assert.Equal(t, profile.Avatar, publicProfile.Avatar)
+		assert.Equal(t, userProfile.Id, publicProfile.Id)
+		assert.Equal(t, userProfile.Nickname, publicProfile.Nickname)
+		assert.Equal(t, userProfile.Username, publicProfile.Username)
+		assert.Equal(t, userProfile.Avatar, publicProfile.Avatar)
 	}
 
 	// 请求连接，此时没有客服,应该会排队
@@ -117,6 +122,8 @@ func TestUserRouter(t *testing.T) {
 		assert.NotNil(t, msg.To)
 		assert.NotNil(t, msg.Date)
 
+		userUUID = msg.To
+
 		var payload struct {
 			Location int `json:"location"`
 		}
@@ -135,12 +142,192 @@ func TestUserRouter(t *testing.T) {
 		u := "ws" + strings.TrimPrefix(waiterServer.URL, "http") + "/v1/ws/connect/waiter"
 
 		// Connect to the server
-		socket, _, err := websocket.DefaultDialer.Dial(u, nil)
+		waiterSocket, _, err := websocket.DefaultDialer.Dial(u, nil)
 		assert.Nil(t, err)
 
-		defer socket.Close()
+		defer waiterSocket.Close()
 
-		//socket.WriteJSON(ws)
-		assert.Nil(t, socket.WriteJSON(ws.Message{}))
+		waiterInfo, err := tester.CreateWaiter()
+
+		defer func() {
+			tester.DeleteUserByUid(waiterInfo.Id)
+		}()
+
+		assert.Nil(t, err)
+
+		// 发起认证
+		assert.Nil(t, waiterSocket.WriteJSON(ws.Message{
+			Type: string(ws.TypeRequestWaiterAuth),
+			Payload: map[string]interface{}{
+				"token": token.JoinPrefixToken(waiterInfo.Token),
+			},
+		}))
+
+		// 读取下一条消息，应该是认证成功
+		{
+			_, b, err := waiterSocket.ReadMessage()
+			assert.Nil(t, err)
+
+			var msg ws.Message
+
+			assert.Nil(t, json.Unmarshal(b, &msg))
+
+			assert.Equal(t, string(ws.TypeResponseWaiterAuthSuccess), msg.Type)
+			assert.Equal(t, "", msg.From)
+			assert.NotNil(t, msg.To)
+			assert.NotNil(t, msg.Date)
+
+			waiterUUID = msg.To
+
+			var waiterProfile schema.ProfilePublic
+
+			assert.Nil(t, util.Decode(&waiterProfile, msg.Payload))
+			assert.Equal(t, waiterInfo.Id, waiterProfile.Id)
+			assert.Equal(t, waiterInfo.Username, waiterProfile.Username)
+			assert.Equal(t, waiterInfo.Nickname, waiterProfile.Nickname)
+			assert.Equal(t, waiterInfo.Avatar, waiterProfile.Avatar)
+		}
+
+		// 发起 ready
+		assert.Nil(t, waiterSocket.WriteJSON(ws.Message{
+			Type: string(ws.TypeRequestWaiterReady),
+		}))
+
+		// 再读取吓一跳消息，应该是连接成功，应为楼上已经有在排队的用户
+		{
+			_, b, err := waiterSocket.ReadMessage()
+			assert.Nil(t, err)
+
+			var msg ws.Message
+
+			assert.Nil(t, json.Unmarshal(b, &msg))
+
+			assert.Equal(t, string(ws.TypeResponseWaiterNewConnection), msg.Type)
+			assert.Equal(t, userUUID, msg.From)
+			assert.Equal(t, waiterUUID, msg.To)
+			assert.NotNil(t, msg.Date)
+
+			var userProfile schema.ProfilePublic
+
+			assert.Nil(t, util.Decode(&userProfile, msg.Payload))
+			assert.Equal(t, userProfile.Id, userProfile.Id)
+			assert.Equal(t, userProfile.Username, userProfile.Username)
+			assert.Equal(t, userProfile.Nickname, userProfile.Nickname)
+			assert.Equal(t, userProfile.Avatar, userProfile.Avatar)
+		}
+
+		// 用户读取消息，应该可以读取到客服的信息
+		{
+			_, b, err := socket.ReadMessage()
+			assert.Nil(t, err)
+
+			var msg ws.Message
+
+			assert.Nil(t, json.Unmarshal(b, &msg))
+
+			assert.Equal(t, string(ws.TypeResponseUserConnectSuccess), msg.Type)
+			assert.Equal(t, waiterUUID, msg.From)
+			assert.Equal(t, userUUID, msg.To)
+			assert.NotNil(t, msg.Date)
+
+			var p schema.ProfilePublic
+
+			assert.Nil(t, util.Decode(&p, msg.Payload))
+			assert.Equal(t, waiterInfo.Id, p.Id)
+			assert.Equal(t, waiterInfo.Username, p.Username)
+			assert.Equal(t, waiterInfo.Nickname, p.Nickname)
+			assert.Equal(t, waiterInfo.Avatar, p.Avatar)
+		}
+
+		// 用户发送消息
+		{
+			assert.Nil(t, socket.WriteJSON(ws.Message{
+				Type: string(ws.TypeRequestUserMessageText),
+				Payload: map[string]interface{}{
+					"message": "Hello world!",
+				},
+			}))
+
+			// 读取消息回执
+			_, b, err := socket.ReadMessage()
+			assert.Nil(t, err)
+
+			var msg ws.Message
+
+			assert.Nil(t, json.Unmarshal(b, &msg))
+
+			assert.Equal(t, string(ws.TypeResponseUserMessageTextSuccess), msg.Type)
+			assert.Equal(t, userUUID, msg.From)
+			assert.Equal(t, waiterUUID, msg.To)
+			assert.NotNil(t, msg.Date)
+			assert.Equal(t, map[string]interface{}{
+				"message": "Hello world!",
+			}, msg.Payload)
+
+			// 客服读取消息，应该会收到
+			{
+				// 读取消息回执
+				_, b, err := waiterSocket.ReadMessage()
+				assert.Nil(t, err)
+
+				var msg ws.Message
+
+				assert.Nil(t, json.Unmarshal(b, &msg))
+
+				assert.Equal(t, string(ws.TypeResponseWaiterMessageText), msg.Type)
+				assert.Equal(t, userUUID, msg.From)
+				assert.Equal(t, waiterUUID, msg.To)
+				assert.NotNil(t, msg.Date)
+				assert.Equal(t, map[string]interface{}{
+					"message": "Hello world!",
+				}, msg.Payload)
+			}
+		}
+
+		// 客服反会一条消息
+		{
+			assert.Nil(t, waiterSocket.WriteJSON(ws.Message{
+				Type: string(ws.TypeRequestUserMessageText),
+				To:   userUUID,
+				Payload: map[string]interface{}{
+					"message": "你好!",
+				},
+			}))
+
+			// 读取消息回执
+			_, b, err := waiterSocket.ReadMessage()
+			assert.Nil(t, err)
+
+			var msg ws.Message
+
+			assert.Nil(t, json.Unmarshal(b, &msg))
+
+			assert.Equal(t, string(ws.TypeResponseUserMessageTextSuccess), msg.Type)
+			assert.Equal(t, waiterUUID, msg.From)
+			assert.Equal(t, userUUID, msg.To)
+			assert.NotNil(t, msg.Date)
+			assert.Equal(t, map[string]interface{}{
+				"message": "你好!",
+			}, msg.Payload)
+
+			// 用户读取消息，应该会收到
+			{
+				// 读取消息回执
+				_, b, err := socket.ReadMessage()
+				assert.Nil(t, err)
+
+				var msg ws.Message
+
+				assert.Nil(t, json.Unmarshal(b, &msg))
+
+				assert.Equal(t, string(ws.TypeResponseUserMessageText), msg.Type)
+				assert.Equal(t, waiterUUID, msg.From)
+				assert.Equal(t, userUUID, msg.To)
+				assert.NotNil(t, msg.Date)
+				assert.Equal(t, map[string]interface{}{
+					"message": "你好!",
+				}, msg.Payload)
+			}
+		}
 	}
 }

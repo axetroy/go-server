@@ -37,3 +37,12 @@ func TestLoginAdmin(t *testing.T) {
 	assert.Equal(t, "admin", adminInfo.Username)
 	assert.Equal(t, "admin", adminInfo.Name)
 }
+
+func TestCreateWaiter(t *testing.T) {
+	waiterInfo, err := tester.CreateWaiter()
+
+	assert.Nil(t, err)
+
+	assert.NotEmpty(t, waiterInfo.Token)
+	assert.NotEmpty(t, waiterInfo.Id)
+}

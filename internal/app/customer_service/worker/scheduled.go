@@ -88,7 +88,7 @@ func handle() (err error) {
 			From:    *waiterID,
 			To:      *userSocketUUID,
 			Type:    string(ws.TypeResponseUserConnectSuccess),
-			Payload: userClient.GetProfile(),
+			Payload: waiterClient.GetProfile(),
 		}); err != nil {
 			return
 		}
