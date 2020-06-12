@@ -15,6 +15,7 @@ import (
 	"testing"
 )
 
+// 测试连接流程
 func TestUserRouter(t *testing.T) {
 	var (
 		userUUID   string // 用户 Socket 的 UUID
@@ -329,5 +330,89 @@ func TestUserRouter(t *testing.T) {
 				}, msg.Payload)
 			}
 		}
+	}
+}
+
+// 测试发送消息，如果没有进行认证
+func TestUserRouterIfNotConnect(t *testing.T) {
+	var (
+		userUUID string // 用户 Socket 的 UUID
+	)
+
+	// Create test server with the echo handler.
+	s := httptest.NewServer(customer_service.CustomerServiceRouter)
+	defer s.Close()
+
+	// Convert http://127.0.0.1 to ws://127.0.0.
+	u := "ws" + strings.TrimPrefix(s.URL, "http") + "/v1/ws/connect/user"
+
+	// Connect to the server
+	socket, _, err := websocket.DefaultDialer.Dial(u, nil)
+	assert.Nil(t, err)
+	defer socket.Close()
+
+	userProfile, err := tester.CreateUser()
+
+	assert.Nil(t, err)
+
+	defer func() {
+		tester.DeleteUserByUid(userProfile.Id)
+	}()
+
+	// 请求身份认证
+	{
+		reqMsg := ws.Message{Type: string(ws.TypeRequestUserAuth), Payload: map[string]interface{}{
+			"token": token.JoinPrefixToken(userProfile.Token),
+		}}
+
+		body, _ := json.Marshal(reqMsg)
+		// 发送
+		assert.Nil(t, socket.WriteMessage(websocket.TextMessage, body))
+
+		_, b, err := socket.ReadMessage()
+		assert.Nil(t, err)
+
+		var msg ws.Message
+
+		assert.Nil(t, json.Unmarshal(b, &msg))
+
+		assert.Equal(t, string(ws.TypeResponseUserAuthSuccess), msg.Type)
+		assert.Equal(t, "", msg.From)
+		assert.NotNil(t, msg.To)
+		assert.NotNil(t, msg.Date)
+
+		userUUID = msg.To
+
+		var publicProfile schema.ProfilePublic
+		assert.Nil(t, util.Decode(&publicProfile, msg.Payload))
+
+		assert.Equal(t, userProfile.Id, publicProfile.Id)
+		assert.Equal(t, userProfile.Nickname, publicProfile.Nickname)
+		assert.Equal(t, userProfile.Username, publicProfile.Username)
+		assert.Equal(t, userProfile.Avatar, publicProfile.Avatar)
+	}
+
+	// 用户发送消息
+	{
+		assert.Nil(t, socket.WriteJSON(ws.Message{
+			Type: string(ws.TypeRequestUserMessageText),
+			Payload: map[string]interface{}{
+				"message": "Hello world!",
+			},
+		}))
+
+		// 读取消息回执
+		_, b, err := socket.ReadMessage()
+		assert.Nil(t, err)
+
+		var msg ws.Message
+
+		assert.Nil(t, json.Unmarshal(b, &msg))
+
+		assert.Equal(t, string(ws.TypeResponseUserNotConnect), msg.Type)
+		assert.Equal(t, "", msg.From)
+		assert.Equal(t, userUUID, msg.To)
+		assert.NotNil(t, msg.Date)
+		assert.Equal(t, nil, msg.Payload)
 	}
 }

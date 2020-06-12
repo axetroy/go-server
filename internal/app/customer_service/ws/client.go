@@ -72,10 +72,10 @@ func (c *Client) WriteError(err error, data Message) error {
 		if e1 := c.WriteJSON(Message{
 			Type: string(TypeResponseUserError),
 			To:   c.UUID,
-			Payload: map[string]interface{}{
-				"message": e.Error(),
-				"status":  e.Code(),
-				"data":    data,
+			Payload: schema.Response{
+				Message: e.Error(),
+				Status:  e.Code(),
+				Data:    data,
 			},
 			Date: time.Now().Format(time.RFC3339Nano),
 		}); e1 != nil {
@@ -85,10 +85,10 @@ func (c *Client) WriteError(err error, data Message) error {
 		if e2 := c.WriteJSON(Message{
 			Type: string(TypeResponseUserError),
 			To:   c.UUID,
-			Payload: map[string]interface{}{
-				"message": err.Error(),
-				"status":  exception.Unknown.Code(),
-				"data":    data,
+			Payload: schema.Response{
+				Message: e.Error(),
+				Status:  exception.Unknown.Code(),
+				Data:    data,
 			},
 			Date: time.Now().Format(time.RFC3339Nano),
 		}); e2 != nil {
