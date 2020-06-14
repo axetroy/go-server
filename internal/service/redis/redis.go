@@ -9,6 +9,8 @@ import (
 
 var (
 	Client               *redis.Client // 默认的redis存储
+	ClientTokenUser      *redis.Client // 存储用户 token 的地方
+	ClientTokenAdmin     *redis.Client // 存储管理员 token 的地方
 	ClientActivationCode *redis.Client // 存储帐号激活码的
 	ClientAuthEmailCode  *redis.Client // 存储邮箱验证码，存储结构 key: 验证码, value: 邮箱
 	ClientAuthPhoneCode  *redis.Client // 存储手机验证码，存储结构 key: 验证码, value: 手机号
@@ -41,6 +43,12 @@ func Dispose() {
 	}
 	if ClientOAuthCode != nil {
 		_ = ClientOAuthCode.Close()
+	}
+	if ClientTokenUser != nil {
+		_ = ClientTokenUser.Close()
+	}
+	if ClientTokenAdmin != nil {
+		_ = ClientTokenAdmin.Close()
 	}
 }
 
@@ -85,6 +93,18 @@ func Connect() {
 		Addr:     addr,
 		Password: password,
 		DB:       5,
+	})
+
+	ClientTokenUser = redis.NewClient(&redis.Options{
+		Addr:     addr,
+		Password: password,
+		DB:       10,
+	})
+
+	ClientTokenAdmin = redis.NewClient(&redis.Options{
+		Addr:     addr,
+		Password: password,
+		DB:       11,
 	})
 
 }
