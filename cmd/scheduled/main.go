@@ -2,7 +2,7 @@
 package main
 
 import (
-	"github.com/axetroy/go-server/cmd/scheduled/job"
+	"github.com/axetroy/go-server/cmd/scheduled/migrate"
 	"github.com/axetroy/go-server/internal/library/daemon"
 	"github.com/jasonlvhit/gocron"
 	"github.com/urfave/cli/v2"
@@ -12,8 +12,20 @@ import (
 
 func runJobs() error {
 	// 每天凌晨 3 点检查 login_log 表，并且进行切割数据
-	// 选择半夜主要是因为怕影响性能，在用户最少的情况下执行
-	if err := gocron.Every(1).Day().At("03:00:01").Do(job.SplitLoginLog); err != nil {
+	if err := gocron.Every(1).Day().At("03:00:01").Do(func() {
+		if err := migrate.LoginLogMigrate.Do(); err != nil {
+			log.Println(err)
+		}
+	}); err != nil {
+		return err
+	}
+
+	// 每天凌晨 4 点检查，把客服的聊天记录迁移到另一个表
+	if err := gocron.Every(1).Day().At("04:00:01").Do(func() {
+		if err := migrate.CustomerMigrate.Do(); err != nil {
+			log.Println(err)
+		}
+	}); err != nil {
 		return err
 	}
 
