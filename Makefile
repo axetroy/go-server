@@ -1,6 +1,6 @@
 # Copyright 2019-2020 Axetroy. All rights reserved. MIT license.
 test:
-	GO_TESTING=1 go test -mod=vendor --cover -covermode=count -coverprofile=coverage.out ./...
+	GO_TESTING=1 go test -timeout=15m -mod=vendor --cover -covermode=count -coverprofile=coverage.out ./...
 
 build:
 	bash ./scripts/build.sh admin
