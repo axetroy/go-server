@@ -41,7 +41,7 @@ func (c Customer) Next(nows ...time.Time) (shouldGoNext bool, err error) {
 		now = time.Now()
 	)
 
-	if len(nows) == 0 {
+	if len(nows) > 0 {
 		now = nows[0]
 	}
 
