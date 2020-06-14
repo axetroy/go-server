@@ -92,13 +92,20 @@ var UserRouter = router.Handler(func(c router.Context) {
 		_ = client.Close()
 	}()
 
+	ticker := time.NewTicker(time.Minute * 1)
+
+	defer func() {
+		ticker.Stop()
+	}()
+
 	// 定时检查连接是否空闲
 	go func() {
 		isIdle := false // 当前连接是否出于空闲状态
 
-		for range time.Tick(time.Minute * 1) {
+		for range ticker.C {
 			// 如果 socket 已断开，退出循环
 			if client.Closed {
+				ticker.Stop()
 				break
 			}
 
@@ -108,7 +115,7 @@ var UserRouter = router.Handler(func(c router.Context) {
 			// 如果最新一条消息，来之 10 分钟之前的
 			if client.LatestReceiveAt.Add(time.Minute * 10).Before(now) {
 				//if client.LatestReceiveAt.Add(time.Second * 10).Before(now) {
-				if isIdle == true {
+				if isIdle {
 					// 发出一条提醒，当前连接正在空闲，否则断开连接
 					// 告诉用户端已连接成功
 					_ = client.WriteJSON(ws.Message{
@@ -121,6 +128,7 @@ var UserRouter = router.Handler(func(c router.Context) {
 					ws.MatcherPool.Leave(client.UUID)
 					// 关闭 socket
 					_ = client.Close()
+					ticker.Stop()
 					break
 				} else {
 					// 发出一条提醒，当前连接正在空闲，否则断开连接
