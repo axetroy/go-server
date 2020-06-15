@@ -175,7 +175,7 @@ func (c *Matcher) GetIdleWaiter() *string {
 			continue
 		}
 
-		if client.Ready == false {
+		if !client.Ready {
 			continue
 		}
 
