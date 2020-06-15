@@ -208,8 +208,8 @@ func GetWaiterSession(waiterID string, txs ...*gorm.DB) (result []Session, err e
 
 	// 去除重复的 session
 	for _, data := range result {
-		if _, ok := noDuplicationMap[data.User.Id]; ok {
-			noDuplicationMap[data.User.Id] = append(noDuplicationMap[data.User.Id], data)
+		if sessions, ok := noDuplicationMap[data.User.Id]; ok {
+			noDuplicationMap[data.User.Id] = append(sessions, data)
 		} else {
 			noDuplicationMap[data.User.Id] = []Session{data}
 		}
