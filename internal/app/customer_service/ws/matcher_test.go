@@ -12,6 +12,14 @@ func TestMatcher_Join(t *testing.T) {
 	// 没有客服的时候
 	// 应该在排队
 	matcher := ws.NewMatcher()
+
+	matcher.SetGetClientFunc(func(id string) *ws.Client {
+		return &ws.Client{
+			UUID:  "waiter",
+			Ready: true,
+		}
+	})
+
 	{
 		waiter, location := matcher.Join("test")
 
@@ -56,6 +64,12 @@ func TestMatcher_Join(t *testing.T) {
 	// 测试
 	{
 		matcher = ws.NewMatcher()
+		matcher.SetGetClientFunc(func(id string) *ws.Client {
+			return &ws.Client{
+				UUID:  "waiter",
+				Ready: true,
+			}
+		})
 		matcher.AddWaiter("waiter")
 
 		index := 0
