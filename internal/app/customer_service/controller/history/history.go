@@ -23,10 +23,11 @@ type History struct {
 }
 
 type Session struct {
-	User    schema.ProfilePublic `json:"user"`    // 用户信息
-	Waiter  schema.ProfilePublic `json:"waiter"`  // 客服信息
-	History []History            `json:"history"` // 历史消息
-	Date    string               `json:"date"`    // 创建会话的时间
+	Id        string               `json:"id"`         // 会话 ID
+	User      schema.ProfilePublic `json:"user"`       // 用户信息
+	Waiter    schema.ProfilePublic `json:"waiter"`     // 客服信息
+	History   []History            `json:"history"`    // 历史消息
+	CreatedAt string               `json:"created_at"` // 创建会话的时间
 }
 
 func SessionItemToMap(sessionItems []model.CustomerSessionItem) (result []History, err error) {
@@ -198,8 +199,8 @@ func GetWaiterSession(waiterID string, txs ...*gorm.DB) (result []Session, err e
 				Nickname: info.Waiter.Nickname,
 				Avatar:   info.Waiter.Avatar,
 			},
-			History: histories,
-			Date:    info.CreatedAt.Format(time.RFC3339Nano),
+			History:   histories,
+			CreatedAt: info.CreatedAt.Format(time.RFC3339Nano),
 		}
 
 		result = append(result, target)
@@ -228,10 +229,11 @@ func GetWaiterSession(waiterID string, txs ...*gorm.DB) (result []Session, err e
 		sort.SliceStable(histories, func(i, j int) bool { return histories[i].Date > histories[j].Date })
 
 		targets = append(targets, Session{
-			User:    sessions[0].User,
-			Waiter:  sessions[0].Waiter,
-			History: histories,
-			Date:    sessions[0].Date,
+			Id:        sessions[0].Id,
+			User:      sessions[0].User,
+			Waiter:    sessions[0].Waiter,
+			History:   histories,
+			CreatedAt: sessions[0].CreatedAt,
 		})
 	}
 
