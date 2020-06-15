@@ -13,7 +13,7 @@ func TestMatcher_Join(t *testing.T) {
 	// 应该在排队
 	matcher := ws.NewMatcher()
 
-	matcher.SetGetClientFunc(func(id string) *ws.Client {
+	matcher.SetWaiterClientFunc(func(id string) *ws.Client {
 		return &ws.Client{
 			UUID:  "waiter",
 			Ready: true,
@@ -64,7 +64,7 @@ func TestMatcher_Join(t *testing.T) {
 	// 测试
 	{
 		matcher = ws.NewMatcher()
-		matcher.SetGetClientFunc(func(id string) *ws.Client {
+		matcher.SetWaiterClientFunc(func(id string) *ws.Client {
 			return &ws.Client{
 				UUID:  "waiter",
 				Ready: true,
@@ -125,6 +125,13 @@ func TestMatcher_AddWaiter(t *testing.T) {
 // 客服移除，那么剩下的用户会分配到队列中
 func TestMatcher_RemoveWaiter(t *testing.T) {
 	matcher := ws.NewMatcher()
+
+	matcher.SetWaiterClientFunc(func(id string) *ws.Client {
+		return &ws.Client{
+			UUID:  "test",
+			Ready: true,
+		}
+	})
 
 	// 添加客服
 	matcher.AddWaiter("test")

@@ -7,11 +7,12 @@ import (
 
 type Matcher struct {
 	sync.RWMutex
-	Broadcast chan bool               // 调度器，当收到通知时，就安排客服接待排队的用户
-	Max       int                     // 一个客服最多接待多少个用户
-	matcher   map[string][]string     // 已经匹配的 socket对, 以客服的 UUID 作为 key
-	pending   []string                // 排队的用户 socket
-	getClient func(id string) *Client // 内涵函数，获取 socket 连接
+	Broadcast       chan bool               // 调度器，当收到通知时，就安排客服接待排队的用户
+	Max             int                     // 一个客服最多接待多少个用户
+	matcher         map[string][]string     // 已经匹配的 socket对, 以客服的 UUID 作为 key
+	pending         []string                // 排队的用户 socket
+	getWaiterClient func(id string) *Client // 内部函数，获取 socket 连接
+	getUserClient   func(id string) *Client // 内部函数，获取 socket 连接
 }
 
 func NewMatcher() *Matcher {
@@ -20,18 +21,27 @@ func NewMatcher() *Matcher {
 		matcher:   map[string][]string{},
 		Broadcast: make(chan bool),
 		pending:   []string{},
-		getClient: func(id string) *Client {
+		getWaiterClient: func(id string) *Client {
 			return WaiterPoll.Get(id)
+		},
+		getUserClient: func(id string) *Client {
+			return UserPoll.Get(id)
 		},
 	}
 }
 
 var MatcherPool = NewMatcher()
 
-func (c *Matcher) SetGetClientFunc(fn func(id string) *Client) {
+func (c *Matcher) SetWaiterClientFunc(fn func(id string) *Client) {
 	c.RLock()
 	defer c.RUnlock()
-	c.getClient = fn
+	c.getWaiterClient = fn
+}
+
+func (c *Matcher) SetUserClientFunc(fn func(id string) *Client) {
+	c.RLock()
+	defer c.RUnlock()
+	c.getUserClient = fn
 }
 
 func (c *Matcher) GetPendingLength() int {
@@ -87,7 +97,6 @@ func (c *Matcher) Join(userSocketUUID string, prepend ...bool) (*string, int) {
 		}
 		return nil, len(c.pending) - 1
 	} else {
-		// 如果找到了空闲的客服
 		for waiter, users := range c.matcher {
 			if waiter == *idleWaiter {
 				c.matcher[waiter] = append(users, userSocketUUID)
@@ -179,7 +188,7 @@ func (c *Matcher) GetIdleWaiter() *string {
 	)
 
 	for waiter, users := range c.matcher {
-		client := c.getClient(waiter)
+		client := c.getWaiterClient(waiter)
 
 		if client == nil {
 			continue
