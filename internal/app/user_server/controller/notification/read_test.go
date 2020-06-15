@@ -243,8 +243,10 @@ func TestReadBatchRouter(t *testing.T) {
 		}
 
 		body, _ := json.Marshal(&notification.MarkReadBatchParams{
-			notificationId1,
-			notificationId2,
+			IDs: []string{
+				notificationId1,
+				notificationId2,
+			},
 		})
 
 		r := tester.HttpUser.Put("/v1/notification/read/batch", body, &header)
