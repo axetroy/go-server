@@ -3,11 +3,13 @@ package history
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/axetroy/go-server/internal/app/customer_service/ws"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/database"
 	"github.com/jinzhu/gorm"
+	"sort"
 	"time"
 )
 
@@ -27,6 +29,7 @@ type Session struct {
 }
 
 func SessionItemToMap(sessionItems []model.CustomerSessionItem) (result []History, err error) {
+	result = make([]History, 0)
 	for _, item := range sessionItems {
 		target := History{
 			ID: item.Id,
@@ -138,6 +141,8 @@ func GetHistory(userID string, txs ...*gorm.DB) (result []History, err error) {
 	return
 }
 
+type sessionMap map[string][]Session
+
 // 获取客服最近的聊天记录
 func GetWaiterSession(waiterID string, txs ...*gorm.DB) (result []Session, err error) {
 	var tx *gorm.DB
@@ -159,11 +164,23 @@ func GetWaiterSession(waiterID string, txs ...*gorm.DB) (result []Session, err e
 
 	list := make([]model.CustomerSession, 0)
 
-	query := tx.Model(model.CustomerSession{}).Where("waiter_id = ?", waiterID).Order("created_at DESC").Preload("User").Preload("Waiter").Preload("Items").Preload("Items.Sender").Preload("Items.Receiver").Limit(100)
+	query := tx.Model(model.CustomerSession{}).
+		Where("waiter_id = ?", waiterID).
+		Order("created_at DESC").
+		Preload("User").Preload("Waiter").
+		Preload("Items", func(db *gorm.DB) *gorm.DB {
+			m := model.CustomerSessionItem{}
+			return db.Order(fmt.Sprintf("%s.created_at DESC", m.TableName())).Limit(1)
+		}).
+		Preload("Items.Sender").
+		Preload("Items.Receiver").
+		Limit(100)
 
 	if err = query.Find(&list).Error; err != nil {
 		return
 	}
+
+	var noDuplicationMap = sessionMap{}
 
 	for _, info := range list {
 		histories, err := SessionItemToMap(info.Items)
@@ -191,6 +208,37 @@ func GetWaiterSession(waiterID string, txs ...*gorm.DB) (result []Session, err e
 
 		result = append(result, target)
 	}
+
+	// 去除重复的 session
+	for _, data := range result {
+		if _, ok := noDuplicationMap[data.User.Id]; ok {
+			noDuplicationMap[data.User.Id] = append(noDuplicationMap[data.User.Id], data)
+		} else {
+			noDuplicationMap[data.User.Id] = []Session{data}
+		}
+	}
+
+	targets := make([]Session, 0)
+
+	// session 去除重
+	for _, sessions := range noDuplicationMap {
+		// 合并聊天记录
+		histories := make([]History, 0)
+		for _, session := range sessions {
+			histories = append(histories, session.History...)
+		}
+
+		// 最新的历史消息在上面
+		sort.SliceStable(histories, func(i, j int) bool { return histories[i].Date > histories[j].Date })
+
+		targets = append(targets, Session{
+			User:    sessions[0].User,
+			Waiter:  sessions[0].Waiter,
+			History: histories,
+		})
+	}
+
+	result = targets
 
 	return
 }
