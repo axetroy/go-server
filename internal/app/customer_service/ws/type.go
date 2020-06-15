@@ -49,6 +49,7 @@ const (
 	TypeResponseWaiterNewConnection      TypeResponseWaiter = "new_connection"       // 有新连接
 	TypeResponseWaiterDisconnected       TypeResponseWaiter = "disconnected"         // 有新连接断开
 	TypeResponseWaiterKickOut            TypeResponseWaiter = "kickout"              // 被踢下线
+	TypeResponseWaiterUnready            TypeResponseWaiter = "unready"              // 客服进入未就绪状态
 	TypeResponseWaiterMessageHistory     TypeResponseWaiter = "message_history"      // 用户的聊天记录
 	TypeResponseWaiterSessionHistory     TypeResponseWaiter = "session_history"      // 客服的会话记录
 	TypeResponseWaiterError              TypeResponseWaiter = "error"                // 有新连接断开

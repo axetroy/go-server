@@ -28,6 +28,7 @@ type Client struct {
 	profile         *schema.ProfilePublic // 用户的身份信息，仅用于成功身份认证的连接
 	LatestReceiveAt time.Time             // 最近接收到的消息的时间，用于判断用户是否空闲
 	Closed          bool                  // 连接是否已关闭
+	Ready           bool                  // 该客户端是否已准备就绪，给客服端用的，ready  = true 的时候系统才会分配用户
 }
 
 func NewClient(conn *websocket.Conn) *Client {
@@ -104,6 +105,14 @@ func (c *Client) WriteError(err error, data Message) error {
 
 // 关闭连接
 func (c *Client) Close() error {
+	c.Lock()
+	defer c.Unlock()
 	c.Closed = true
 	return c.conn.Close()
+}
+
+func (c *Client) SetReady(ready bool) {
+	c.Lock()
+	defer c.Unlock()
+	c.Ready = ready
 }

@@ -169,6 +169,16 @@ func (c *Matcher) GetIdleWaiter() *string {
 	)
 
 	for waiter, users := range c.matcher {
+		client := WaiterPoll.Get(waiter)
+
+		if client == nil {
+			continue
+		}
+
+		if client.Ready == false {
+			continue
+		}
+
 		if len(users) == 0 {
 			bestWaiterId = &waiter
 			break
