@@ -82,6 +82,7 @@ func textMessageFromWaiterHandler(msg ws.Message) (err error) {
 		To:      userClient.UUID,
 		Payload: msg.Payload,
 		Date:    sessionItem.CreatedAt.Format(time.RFC3339Nano),
+		OpID:    msg.OpID,
 	})
 
 	return
@@ -159,6 +160,7 @@ func imageMessageFromWaiterHandler(msg ws.Message) (err error) {
 		To:      userClient.UUID,
 		Payload: msg.Payload,
 		Date:    sessionItem.CreatedAt.Format(time.RFC3339Nano),
+		OpID:    msg.OpID,
 	})
 
 	return

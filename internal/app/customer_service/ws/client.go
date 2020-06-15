@@ -13,12 +13,13 @@ import (
 
 // 来回传输的消息体
 type Message struct {
-	Id      string      `json:"id,omitempty" validate:"omitempty" comment:"消息 ID"`      // 每条消息的 ID，在写入数据库之后会有
-	From    string      `json:"from,omitempty" validate:"omitempty,uuid" comment:"发送者"` // 从谁发出来的
-	To      string      `json:"to,omitempty" validate:"omitempty,uuid" comment:"发送目标"`  // 要发送的目标 ID，只有客服才需要带 target 字段，指明发送给谁
-	Type    string      `json:"type" validate:"required" comment:"会话类型"`                // 会话类型
-	Payload interface{} `json:"payload,omitempty" validate:"omitempty" comment:"消息数据"`  // 本次消息的数据
-	Date    string      `json:"date,omitempty" validate:"omitempty" comment:"时间戳"`      // 消息的时间
+	Id      string      `json:"id,omitempty" validate:"omitempty" comment:"消息 ID"`        // 每条消息的 ID，在写入数据库之后会有
+	From    string      `json:"from,omitempty" validate:"omitempty,uuid" comment:"发送者"`   // 从谁发出来的
+	To      string      `json:"to,omitempty" validate:"omitempty,uuid" comment:"发送目标"`    // 要发送的目标 ID，只有客服才需要带 target 字段，指明发送给谁
+	Type    string      `json:"type" validate:"required" comment:"会话类型"`                  // 会话类型
+	Payload interface{} `json:"payload,omitempty" validate:"omitempty" comment:"消息数据"`    // 本次消息的数据
+	Date    string      `json:"date,omitempty" validate:"omitempty" comment:"时间戳"`        // 消息的时间
+	OpID    *string     `json:"op_id,omitempty" validate:"omitempty,uuid" comment:"操作ID"` // 客户端发送的 UUID 用于标记该消息，服务端应该返回相同的 op_id，主要用于消息回执
 }
 
 type Client struct {
@@ -82,6 +83,7 @@ func (c *Client) WriteError(err error, data Message) error {
 				Data:    data,
 			},
 			Date: time.Now().Format(time.RFC3339Nano),
+			OpID: data.OpID,
 		}); e1 != nil {
 			return e1
 		}
@@ -95,6 +97,7 @@ func (c *Client) WriteError(err error, data Message) error {
 				Data:    data,
 			},
 			Date: time.Now().Format(time.RFC3339Nano),
+			OpID: data.OpID,
 		}); e2 != nil {
 			return e2
 		}
