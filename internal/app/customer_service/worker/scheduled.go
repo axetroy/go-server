@@ -89,6 +89,7 @@ func handle() (err error) {
 			To:      *userSocketUUID,
 			Type:    string(ws.TypeResponseUserConnectSuccess),
 			Payload: waiterClient.GetProfile(),
+			Date:    time.Now().Format(time.RFC3339Nano),
 		}); err != nil {
 			return
 		}
@@ -98,6 +99,7 @@ func handle() (err error) {
 			To:      *waiterID,
 			Type:    string(ws.TypeResponseWaiterNewConnection),
 			Payload: userClient.GetProfile(),
+			Date:    time.Now().Format(time.RFC3339Nano),
 		}); err != nil {
 			return
 		}
