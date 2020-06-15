@@ -3,7 +3,7 @@ package main
 
 import (
 	message_queue_server2 "github.com/axetroy/go-server/internal/app/message_queue_server"
-	"github.com/axetroy/go-server/internal/library/daemon"
+	"github.com/axetroy/go-server/pkg/daemon"
 	"github.com/urfave/cli/v2"
 	"log"
 	"os"

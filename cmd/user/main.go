@@ -3,7 +3,7 @@ package main
 
 import (
 	"github.com/axetroy/go-server/internal/app/user_server"
-	"github.com/axetroy/go-server/internal/library/daemon"
+	"github.com/axetroy/go-server/pkg/daemon"
 	"github.com/urfave/cli/v2"
 	"log"
 	"os"
