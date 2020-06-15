@@ -12,11 +12,14 @@ var (
 
 	// 用户的所有的权限
 	List = []*Accession{
+		// 普通用户的权限
 		ProfileUpdate,
 		PasswordUpdate,
 		Password2Set,
 		Password2Update,
 		DoTransfer,
+		// 客服权限
+		CustomerServiceConnect,
 	}
 
 	Map = map[string]*Accession{}
