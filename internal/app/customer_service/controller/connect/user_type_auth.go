@@ -13,11 +13,7 @@ import (
 )
 
 func userTypeAuthHandler(userClient *ws.Client, msg ws.Message) (err error) {
-	type AuthBody struct {
-		Token string `json:"token" validate:"required" comment:"Token"`
-	}
-
-	var body AuthBody
+	var body ws.AuthPayload
 
 	if err = util.Decode(&body, msg.Payload); err != nil {
 		return err

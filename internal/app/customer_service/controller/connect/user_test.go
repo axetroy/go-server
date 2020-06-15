@@ -125,12 +125,11 @@ func TestUserRouter(t *testing.T) {
 
 		userUUID = msg.To
 
-		var payload struct {
-			Location int `json:"location"`
-		}
+		var payload ws.QueuePayload
+
 		assert.Nil(t, util.Decode(&payload, msg.Payload))
 
-		assert.Equal(t, 0, payload.Location)
+		assert.Equal(t, uint(0), payload.Location)
 	}
 
 	// 连接客服
@@ -243,10 +242,8 @@ func TestUserRouter(t *testing.T) {
 		// 用户发送消息
 		{
 			assert.Nil(t, socket.WriteJSON(ws.Message{
-				Type: string(ws.TypeRequestUserMessageText),
-				Payload: map[string]interface{}{
-					"message": "Hello world!",
-				},
+				Type:    string(ws.TypeRequestUserMessageText),
+				Payload: ws.MessageTextPayload{Text: "Hello world!"},
 			}))
 
 			// 读取消息回执
@@ -261,9 +258,7 @@ func TestUserRouter(t *testing.T) {
 			assert.Equal(t, userUUID, msg.From)
 			assert.Equal(t, waiterUUID, msg.To)
 			assert.NotNil(t, msg.Date)
-			assert.Equal(t, map[string]interface{}{
-				"message": "Hello world!",
-			}, msg.Payload)
+			assert.Equal(t, map[string]interface{}{"text": "Hello world!"}, msg.Payload)
 
 			// 客服读取消息，应该会收到
 			{
@@ -279,20 +274,16 @@ func TestUserRouter(t *testing.T) {
 				assert.Equal(t, userUUID, msg.From)
 				assert.Equal(t, waiterUUID, msg.To)
 				assert.NotNil(t, msg.Date)
-				assert.Equal(t, map[string]interface{}{
-					"message": "Hello world!",
-				}, msg.Payload)
+				assert.Equal(t, map[string]interface{}{"text": "Hello world!"}, msg.Payload)
 			}
 		}
 
 		// 客服反会一条消息
 		{
 			assert.Nil(t, waiterSocket.WriteJSON(ws.Message{
-				Type: string(ws.TypeRequestUserMessageText),
-				To:   userUUID,
-				Payload: map[string]interface{}{
-					"message": "你好!",
-				},
+				Type:    string(ws.TypeRequestUserMessageText),
+				To:      userUUID,
+				Payload: ws.MessageTextPayload{Text: "你好!"},
 			}))
 
 			// 读取消息回执
@@ -307,9 +298,7 @@ func TestUserRouter(t *testing.T) {
 			assert.Equal(t, waiterUUID, msg.From)
 			assert.Equal(t, userUUID, msg.To)
 			assert.NotNil(t, msg.Date)
-			assert.Equal(t, map[string]interface{}{
-				"message": "你好!",
-			}, msg.Payload)
+			assert.Equal(t, map[string]interface{}{"text": "你好!"}, msg.Payload)
 
 			// 用户读取消息，应该会收到
 			{
@@ -325,9 +314,7 @@ func TestUserRouter(t *testing.T) {
 				assert.Equal(t, waiterUUID, msg.From)
 				assert.Equal(t, userUUID, msg.To)
 				assert.NotNil(t, msg.Date)
-				assert.Equal(t, map[string]interface{}{
-					"message": "你好!",
-				}, msg.Payload)
+				assert.Equal(t, map[string]interface{}{"text": "你好!"}, msg.Payload)
 			}
 		}
 	}
@@ -395,10 +382,8 @@ func TestUserRouterIfNotConnect(t *testing.T) {
 	// 用户发送消息
 	{
 		assert.Nil(t, socket.WriteJSON(ws.Message{
-			Type: string(ws.TypeRequestUserMessageText),
-			Payload: map[string]interface{}{
-				"message": "Hello world!",
-			},
+			Type:    string(ws.TypeRequestUserMessageText),
+			Payload: ws.MessageTextPayload{Text: "Hello world!"},
 		}))
 
 		// 读取消息回执

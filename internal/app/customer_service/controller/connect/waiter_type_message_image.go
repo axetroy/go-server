@@ -9,17 +9,13 @@ import (
 	"time"
 )
 
-func waiterTypeMessageHandler(waiterClient *ws.Client, msg ws.Message) (err error) {
-	type MessageBody struct {
-		Message string `json:"message" validate:"required" comment:"消息体"` // 发送的消息体
-	}
-
+func waiterTypeMessageImageHandler(waiterClient *ws.Client, msg ws.Message) (err error) {
+	// 如果还没有认证
 	if waiterClient.GetProfile() == nil {
-		err = exception.UserNotLogin
-		return err
+		return exception.UserNotLogin
 	}
 
-	var body MessageBody
+	var body ws.MessageImagePayload
 
 	if err = util.Decode(&body, msg.Payload); err != nil {
 		return err
@@ -34,13 +30,15 @@ func waiterTypeMessageHandler(waiterClient *ws.Client, msg ws.Message) (err erro
 		err = exception.InvalidParams.New("缺少发送者")
 		return
 	}
-	// 把收到的消息发送给用户
+
+	// 如果这个客户端没有连接客服，那么消息不会发送
 	ws.UserPoll.Broadcast <- ws.Message{
+		Type:    msg.Type,
 		From:    waiterClient.UUID,
 		To:      msg.To,
-		Type:    msg.Type,
 		Payload: msg.Payload,
 		Date:    time.Now().Format(time.RFC3339Nano),
 	}
-	return nil
+
+	return err
 }

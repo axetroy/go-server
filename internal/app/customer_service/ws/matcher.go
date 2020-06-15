@@ -76,7 +76,7 @@ func (c *Matcher) GetMatcher() map[string][]string {
 // 如果返回空，那么说明没有找到合适的客服，加入等待队列
 // 第二个参数用于插入到最前面的队列，出于最优先级
 // 返回 int 代表出于队列的地 n 位
-func (c *Matcher) Join(userSocketUUID string, prepend ...bool) (*string, int) {
+func (c *Matcher) Join(userSocketUUID string, prepend ...bool) (*string, uint) {
 	c.RLock()
 	defer c.RUnlock()
 	idleWaiter := c.GetIdleWaiter()
@@ -86,7 +86,7 @@ func (c *Matcher) Join(userSocketUUID string, prepend ...bool) (*string, int) {
 		// 确保当前连接不在队列中
 		for index, id := range c.pending {
 			if id == userSocketUUID {
-				return nil, index
+				return nil, uint(index)
 			}
 		}
 
@@ -95,7 +95,7 @@ func (c *Matcher) Join(userSocketUUID string, prepend ...bool) (*string, int) {
 		} else {
 			c.pending = append(c.pending, userSocketUUID)
 		}
-		return nil, len(c.pending) - 1
+		return nil, uint(len(c.pending) - 1)
 	} else {
 		for waiter, users := range c.matcher {
 			if waiter == *idleWaiter {

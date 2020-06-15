@@ -54,11 +54,8 @@ func SessionItemToMap(sessionItems []model.CustomerSessionItem) (result []Histor
 		case model.SessionTypeText:
 			target.Type = ws.TypeResponseUserMessageText
 
-			type Payload struct {
-				Message string `json:"message"`
-			}
+			var payload ws.MessageTextPayload
 
-			var payload Payload
 			if err := json.Unmarshal([]byte(item.Payload), &payload); err != nil {
 				return nil, err
 			}
@@ -123,11 +120,8 @@ func GetHistory(userID string, txs ...*gorm.DB) (result []History, err error) {
 		case model.SessionTypeText:
 			target.Type = ws.TypeResponseUserMessageText
 
-			type Payload struct {
-				Message string `json:"message"`
-			}
+			var payload ws.MessageTextPayload
 
-			var payload Payload
 			if err = json.Unmarshal([]byte(info.Payload), &payload); err != nil {
 				return
 			}

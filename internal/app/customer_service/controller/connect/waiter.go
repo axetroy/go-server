@@ -150,6 +150,11 @@ var WaiterRouter = router.Handler(func(c router.Context) {
 				_ = client.WriteError(exception.InvalidParams.New(er.Error()), msg)
 			}
 			break typeCondition
+		case ws.TypeRequestWaiterMessageImage:
+			if er := waiterTypeMessageImageHandler(client, msg); er != nil {
+				_ = client.WriteError(exception.InvalidParams.New(er.Error()), msg)
+			}
+			break typeCondition
 		default:
 			_ = client.WriteError(exception.InvalidParams.New("未知的消息类型"), msg)
 			break typeCondition

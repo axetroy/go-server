@@ -24,7 +24,7 @@ func TestMatcher_Join(t *testing.T) {
 		waiter, location := matcher.Join("test")
 
 		assert.Nil(t, waiter)
-		assert.Equal(t, 0, location)
+		assert.Equal(t, uint(0), location)
 
 		assert.Equal(t, 1, matcher.GetPendingLength())
 

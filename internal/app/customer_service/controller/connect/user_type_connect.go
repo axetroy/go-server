@@ -26,8 +26,8 @@ func userTypeConnectHandler(userClient *ws.Client, msg ws.Message) (err error) {
 			Type: string(ws.TypeResponseUserConnectQueue),
 			To:   userClient.UUID,
 			Date: time.Now().Format(time.RFC3339Nano),
-			Payload: map[string]interface{}{
-				"location": location,
+			Payload: ws.QueuePayload{
+				Location: location,
 			},
 		}); err != nil {
 			return

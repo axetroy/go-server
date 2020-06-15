@@ -9,18 +9,15 @@ import (
 	"time"
 )
 
-func userTypeMessageHandler(userClient *ws.Client, msg ws.Message) (err error) {
-	type MessageBody struct {
-		Message string `json:"message" validate:"required" comment:"信息"`
-	}
-
+func userTypeMessageImageHandler(userClient *ws.Client, msg ws.Message) (err error) {
 	// 如果还没有认证
 	if userClient.GetProfile() == nil {
 		return exception.UserNotLogin
 	}
+
 	waiterId := ws.MatcherPool.GetMyWaiter(userClient.UUID)
 
-	var body MessageBody
+	var body ws.MessageImagePayload
 
 	if err = util.Decode(&body, msg.Payload); err != nil {
 		return err
