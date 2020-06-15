@@ -272,7 +272,7 @@ func TestUpdateUserRoleRouter(t *testing.T) {
 			Roles: []string{roleInfo.Name},
 		})
 
-		r := tester.HttpAdmin.Put("/v1/role/user/"+userInfo.Id, body, &header)
+		r := tester.HttpAdmin.Put("/v1/user/"+userInfo.Id+"/role", body, &header)
 
 		assert.Equal(t, http.StatusOK, r.Code)
 		res := schema.Response{}

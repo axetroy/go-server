@@ -88,7 +88,7 @@ func init() {
 			userRouter.Get("/{user_id}", user.GetProfileByAdminRouter)              // 获取单个会员的信息
 			userRouter.Put("/{user_id}/password", user.UpdatePasswordByAdminRouter) // 修改会员密码
 			userRouter.Put("/{user_id}", user.UpdateProfileByAdminRouter)           // 更新会员信息
-			userRouter.Put("/role/{user_id}", role.UpdateUserRoleRouter)            // 修改用户的角色
+			userRouter.Put("/{user_id}/role", role.UpdateUserRoleRouter)            // 修改用户的角色
 		}
 
 		// 用户角色
