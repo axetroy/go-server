@@ -1,14 +1,6 @@
 // Copyright 2019-2020 Axetroy. All rights reserved. MIT license.
 package notify
 
-type Content struct {
-	EN string `json:"en"`
-}
-
-type Headings struct {
-	EN string `json:"en"`
-}
-
 type Event string
 
 const (
@@ -27,8 +19,4 @@ type Notifier interface {
 	SendNotifyToUserForLoginStatus(userID string) error                                                          // 推送用户登录异常
 }
 
-var Notify = getInstance(NewNotifierOneSignal())
-
-func getInstance(n Notifier) Notifier {
-	return n
-}
+var Notify = NewNotifierOneSignal()
