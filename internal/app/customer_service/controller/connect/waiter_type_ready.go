@@ -12,7 +12,8 @@ func waiterTypeReadyHandler(waiterClient *ws.Client) (err error) {
 		return
 	}
 
-	// 添加客服到池里，并且分配正在排队的用户
+	waiterClient.SetReady(true)
+
 	ws.MatcherPool.AddWaiter(waiterClient.UUID)
 
 	i := 0
