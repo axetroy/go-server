@@ -22,12 +22,13 @@ var (
 
 // 客服聊天的会话记录
 type CustomerSession struct {
-	Id        string     `gorm:"primary_key;not null;unique;index;type:varchar(32)" json:"id"` // 会话 ID
-	Uid       string     `gorm:"not null;index;type:varchar(32)" json:"uid"`                   // 用户ID
-	User      User       `gorm:"foreignkey:Uid" json:"user"`                                   // **外键**
-	WaiterID  string     `gorm:"not null;index;type:varchar(32)" json:"waiter_id"`             // 客服 ID
-	Waiter    User       `gorm:"foreignkey:WaiterID" json:"waiter"`                            //  **外键**
-	ClosedAt  *time.Time `gorm:"null;index;" json:"closed_at"`                                 // 会话关闭时间
+	Id        string                `gorm:"primary_key;not null;unique;index;type:varchar(32)" json:"id"` // 会话 ID
+	Uid       string                `gorm:"not null;index;type:varchar(32)" json:"uid"`                   // 用户ID
+	User      User                  `gorm:"foreignkey:Uid" json:"user"`                                   // **外键**
+	WaiterID  string                `gorm:"not null;index;type:varchar(32)" json:"waiter_id"`             // 客服 ID
+	Waiter    User                  `gorm:"foreignkey:WaiterID" json:"waiter"`                            //  **外键**
+	Items     []CustomerSessionItem `gorm:"foreignkey:SessionID" json:"items"`                            //  **外键**
+	ClosedAt  *time.Time            `gorm:"null;index;" json:"closed_at"`                                 // 会话关闭时间
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt *time.Time `sql:"index"`

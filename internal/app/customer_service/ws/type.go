@@ -32,13 +32,14 @@ const (
 
 // 客服发出的消息类型
 const (
-	TypeRequestWaiterAuth         TypeRequestWaiter = "auth"         // 身份认证
-	TypeResponseWaiterAuthSuccess TypeRequestWaiter = "auth_success" // 身份认证
-	TypeRequestWaiterReady        TypeRequestWaiter = "ready"        // 客服已准备就绪，可以开始接收客人
-	TypeRequestWaiterUnReady      TypeRequestWaiter = "unready"      // 客服进入未就绪状态，意味着客服暂停接客
-	TypeRequestWaiterMessageText  TypeRequestWaiter = "message_text" // 客服发出文本消息
-	TypeRequestWaiterDisconnect   TypeRequestWaiter = "disconnect"   // 请求断开连接
-	TypeRequestWaiterGetHistory   TypeRequestWaiter = "get_history"  // 请求获取用户聊天记录，应该返回 `message_history`, 需要指定 payload
+	TypeRequestWaiterAuth              TypeRequestWaiter = "auth"                // 身份认证
+	TypeResponseWaiterAuthSuccess      TypeRequestWaiter = "auth_success"        // 身份认证
+	TypeRequestWaiterReady             TypeRequestWaiter = "ready"               // 客服已准备就绪，可以开始接收客人
+	TypeRequestWaiterUnReady           TypeRequestWaiter = "unready"             // 客服进入未就绪状态，意味着客服暂停接客
+	TypeRequestWaiterMessageText       TypeRequestWaiter = "message_text"        // 客服发出文本消息
+	TypeRequestWaiterDisconnect        TypeRequestWaiter = "disconnect"          // 请求断开连接
+	TypeRequestWaiterGetHistory        TypeRequestWaiter = "get_history"         // 请求获取用户聊天记录，应该返回 `message_history`, 需要指定 payload
+	TypeRequestWaiterGetHistorySession TypeRequestWaiter = "get_history_session" // 请求获取客服的会话记录，应该返回 `session_history`
 )
 
 // 客服收到的消息
@@ -49,5 +50,6 @@ const (
 	TypeResponseWaiterDisconnected       TypeResponseWaiter = "disconnected"         // 有新连接断开
 	TypeResponseWaiterKickOut            TypeResponseWaiter = "kickout"              // 被踢下线
 	TypeResponseWaiterMessageHistory     TypeResponseWaiter = "message_history"      // 用户的聊天记录
+	TypeResponseWaiterSessionHistory     TypeResponseWaiter = "session_history"      // 客服的会话记录
 	TypeResponseWaiterError              TypeResponseWaiter = "error"                // 有新连接断开
 )

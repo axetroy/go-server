@@ -20,6 +20,55 @@ type History struct {
 	Date     string               `json:"date"`     // 消息时间
 }
 
+type Session struct {
+	User    schema.ProfilePublic `json:"user"`    // 用户信息
+	Waiter  schema.ProfilePublic `json:"waiter"`  // 客服信息
+	History []History            `json:"history"` // 历史消息
+}
+
+func SessionItemToMap(sessionItems []model.CustomerSessionItem) (result []History, err error) {
+	for _, item := range sessionItems {
+		target := History{
+			ID: item.Id,
+			Sender: schema.ProfilePublic{
+				Id:       item.Sender.Id,
+				Username: item.Sender.Username,
+				Nickname: item.Sender.Nickname,
+				Avatar:   item.Sender.Avatar,
+			},
+			Receiver: schema.ProfilePublic{
+				Id:       item.Receiver.Id,
+				Username: item.Receiver.Username,
+				Nickname: item.Receiver.Nickname,
+				Avatar:   item.Receiver.Avatar,
+			},
+			Payload: item.Payload,
+			Date:    item.CreatedAt.Format(time.RFC3339Nano),
+		}
+
+		switch item.Type {
+		case model.SessionTypeText:
+			target.Type = ws.TypeResponseUserMessageText
+
+			type Payload struct {
+				Message string `json:"message"`
+			}
+
+			var payload Payload
+			if err := json.Unmarshal([]byte(item.Payload), &payload); err != nil {
+				return nil, err
+			}
+
+			target.Payload = payload
+		case model.SessionTypeImage:
+		}
+
+		result = append(result, target)
+	}
+
+	return
+}
+
 // 获取某个用户的聊天记录
 func GetHistory(userID string, txs ...*gorm.DB) (result []History, err error) {
 	var tx *gorm.DB
@@ -81,6 +130,63 @@ func GetHistory(userID string, txs ...*gorm.DB) (result []History, err error) {
 
 			target.Payload = payload
 		case model.SessionTypeImage:
+		}
+
+		result = append(result, target)
+	}
+
+	return
+}
+
+// 获取客服最近的聊天记录
+func GetWaiterSession(waiterID string, txs ...*gorm.DB) (result []Session, err error) {
+	var tx *gorm.DB
+	if len(txs) > 0 {
+		tx = txs[0]
+	}
+
+	if tx == nil {
+		tx = database.Db.Begin()
+	}
+
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback().Error
+		} else {
+			_ = tx.Commit().Error
+		}
+	}()
+
+	list := make([]model.CustomerSession, 0)
+
+	query := tx.Model(model.CustomerSession{}).Where("waiter_id = ?", waiterID).Order("created_at DESC").Preload("User").Preload("Waiter").Preload("Items").Preload("Items.Sender").Preload("Items.Receiver").Limit(100)
+
+	if err = query.Find(&list).Error; err != nil {
+		return
+	}
+
+	for _, info := range list {
+		histories, err := SessionItemToMap(info.Items)
+
+		if err != nil {
+			return nil, err
+		}
+
+		target := Session{
+			//User: info.User,
+			User: schema.ProfilePublic{
+				Id:       info.User.Id,
+				Username: info.User.Username,
+				Nickname: info.User.Nickname,
+				Avatar:   info.User.Avatar,
+			},
+			Waiter: schema.ProfilePublic{
+				Id:       info.Waiter.Id,
+				Username: info.Waiter.Username,
+				Nickname: info.Waiter.Nickname,
+				Avatar:   info.Waiter.Avatar,
+			},
+			History: histories,
 		}
 
 		result = append(result, target)
