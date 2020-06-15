@@ -61,13 +61,14 @@
 
 #### 用户端可以发出的消息类型
 
-| Type         | 说明                                     | 对应的 Payload                |
-| ------------ | ---------------------------------------- | ----------------------------- |
-| auth         | 身份认证                                 | `{"token": "xxxx"}`           |
-| connect      | 请求连接一个客服                         | `null`                        |
-| disconnect   | 与客服断开连接                           | `null`                        |
-| message_text | 发送消息文本给客服，**需要先连接到客服** | `{"message": "这是一条消息"}` |
-| get_history  | 获取聊天记录                             | 返回 `message_history`        |
+| Type          | 说明                                     | 对应的 Payload                                        |
+| ------------- | ---------------------------------------- | ----------------------------------------------------- |
+| auth          | 身份认证                                 | `{"token": "xxxx"}`                                   |
+| connect       | 请求连接一个客服                         | `null`                                                |
+| disconnect    | 与客服断开连接                           | `null`                                                |
+| message_text  | 发送消息文本给客服，**需要先连接到客服** | `{"text": "这是一条消息"}`                            |
+| message_image | 发送消息文本给客服，**需要先连接到客服** | `{"image": "[https/](https://example.com/demo.png)"}` |
+| get_history   | 获取聊天记录                             | 返回 `message_history`                                |
 
 #### 用户端会收到的消息类型
 
@@ -83,20 +84,21 @@
 | message_image         | 收到来自客服的图片消息             | `{"image": "https://example.com/demo.png"}`                                     |
 | message_image_success | `message_image` 的成功回执         | `{"image": "https://example.com/demo.png"}`                                     |
 | message_history       | 系统推送过来的聊天记录             | `[...]`                                                                         |
-| idle                  | 连接空闲，则在接下来的时间断开连接 | `{ "message": "xxxx" }`                                                         |
+| idle                  | 连接空闲，则在接下来的时间断开连接 | `{"message": "xxxx" }`                                                          |
 | error                 | 操作错误                           | `{"message": "这是错误信息"}`                                                   |
 
 #### 客服端可以发出的消息类型
 
-| Type                | 说明                                          | 对应的 Payload                |
-| ------------------- | --------------------------------------------- | ----------------------------- |
-| auth                | 身份认证                                      | `{"token": "xxxx"}`           |
-| ready               | 客服已就绪，可以连接客户                      | `null`                        |
-| unready             | 客服暂停接口，不会再接收新的用户分配          | `null`                        |
-| disconnect          | 与指定的用户断开连接                          | `{"uuid": "xxx"}`             |
-| message_text        | 发送消息文本给用户, **需要指定 to 字段**      | `{"message": "这是一条消息"}` |
-| get_history         | 获取聊天记录, payload 需要指定 `user_id` 字段 | 返回 `message_history`        |
-| get_history_session | 获取会话记录                                  | `null`                        |
+| Type                | 说明                                          | 对应的 Payload              |
+| ------------------- | --------------------------------------------- | --------------------------- |
+| auth                | 身份认证                                      | `{"token": "xxxx"}`         |
+| ready               | 客服已就绪，可以连接客户                      | `null`                      |
+| unready             | 客服暂停接口，不会再接收新的用户分配          | `null`                      |
+| disconnect          | 与指定的用户断开连接                          | `{"uuid": "xxx"}`           |
+| message_text        | 发送消息文本给用户, **需要指定 to 字段**      | `{"text": "这是一条消息"}`  |
+| message_image       | 发送消息文本给用户, **需要指定 to 字段**      | `{"image": "这是一条消息"}` |
+| get_history         | 获取聊天记录, payload 需要指定 `user_id` 字段 | 返回 `message_history`      |
+| get_history_session | 获取会话记录                                  | `null`                      |
 
 #### 客服端会收到的消息类型
 
@@ -107,8 +109,8 @@
 | disconnected          | 用户主动与客服断开                   | `null`                                                                          |
 | unready               | 客服暂停接口，不会再接收新的用户分配 | `null`                                                                          |
 | kickout               | 被踢下线                             | `null`                                                                          |
-| message_text          | 收到来自用户的文本消息               | `{"message": "这是一条消息"}`                                                   |
-| message_text_success  | `message_text` 的成功回执            | `{"message": "这是一条消息"}`                                                   |
+| message_text          | 收到来自用户的文本消息               | `{"text": "这是一条消息"}`                                                      |
+| message_text_success  | `message_text` 的成功回执            | `{"text": "这是一条消息"}`                                                      |
 | message_image         | 收到来自用户的图片消息               | `{"image": "https://example.com/demo.png"}`                                     |
 | message_image_success | `message_image` 的成功回执           | `{"image": "https://example.com/demo.png"}`                                     |
 | message_history       | 系统推送过来的聊天记录               | `[...]`                                                                         |
