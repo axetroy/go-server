@@ -184,12 +184,14 @@ loop:
 	return
 }
 
-type MarkReadBatchParams []string
+type MarkReadBatchParams struct {
+	IDs []string `json:"ids"`
+}
 
 var MarkReadBatchRouter = router.Handler(func(c router.Context) {
-	var ids MarkReadBatchParams
+	var params MarkReadBatchParams
 
-	c.ResponseFunc(c.ShouldBindJSON(&ids), func() schema.Response {
-		return MarkReadBatch(helper.NewContext(&c), ids)
+	c.ResponseFunc(c.ShouldBindJSON(&params), func() schema.Response {
+		return MarkReadBatch(helper.NewContext(&c), params.IDs)
 	})
 })
