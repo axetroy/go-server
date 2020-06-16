@@ -74,7 +74,7 @@ curl -X POST \
 
 ```bash
 curl -X POST \
-     -d '{"account": "test1", "password": "test1"}' \
+     -d '{"account": "test1", "password": "123456"}' \
      http://localhost:9001/v1/auth/signin
 ```
 

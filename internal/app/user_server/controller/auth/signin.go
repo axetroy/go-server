@@ -11,11 +11,11 @@ import (
 	"github.com/axetroy/go-server/internal/library/validator"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
+	"github.com/axetroy/go-server/internal/service/authentication"
 	"github.com/axetroy/go-server/internal/service/database"
 	"github.com/axetroy/go-server/internal/service/dotenv"
 	"github.com/axetroy/go-server/internal/service/message_queue"
 	"github.com/axetroy/go-server/internal/service/redis"
-	"github.com/axetroy/go-server/internal/service/token"
 	"github.com/axetroy/go-server/internal/service/wechat"
 	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
@@ -146,10 +146,12 @@ func SignIn(c helper.Context, input SignInParams) (res schema.Response) {
 
 	if input.Duration != nil {
 		duration = time.Duration(*input.Duration * int64(time.Second))
+	} else {
+		duration = time.Hour * 6
 	}
 
 	// generate token
-	if t, er := token.Generate(userInfo.Id, token.StateUser, duration); er != nil {
+	if t, er := authentication.Gateway(false).Generate(userInfo.Id, duration); er != nil {
 		err = er
 		return
 	} else {
@@ -250,10 +252,12 @@ func SignInWithEmail(c helper.Context, input SignInWithEmailParams) (res schema.
 
 	if input.Duration != nil {
 		duration = time.Duration(*input.Duration * int64(time.Second))
+	} else {
+		duration = time.Hour * 6
 	}
 
 	// generate token
-	if t, er := token.Generate(userInfo.Id, token.StateUser, duration); er != nil {
+	if t, er := authentication.Gateway(false).Generate(userInfo.Id, duration); er != nil {
 		err = er
 		return
 	} else {
@@ -354,10 +358,12 @@ func SignInWithPhone(c helper.Context, input SignInWithPhoneParams) (res schema.
 
 	if input.Duration != nil {
 		duration = time.Duration(*input.Duration * int64(time.Second))
+	} else {
+		duration = time.Hour * 6
 	}
 
 	// generate token
-	if t, er := token.Generate(userInfo.Id, token.StateUser, duration); er != nil {
+	if t, er := authentication.Gateway(false).Generate(userInfo.Id, duration); er != nil {
 		err = er
 		return
 	} else {
@@ -513,10 +519,12 @@ func SignInWithWechat(c helper.Context, input SignInWithWechatParams) (res schem
 
 	if input.Duration != nil {
 		duration = time.Duration(*input.Duration * int64(time.Second))
+	} else {
+		duration = time.Hour * 6
 	}
 
 	// generate token
-	if t, er := token.Generate(userInfo.Id, token.StateUser, duration); er != nil {
+	if t, er := authentication.Gateway(false).Generate(userInfo.Id, duration); er != nil {
 		err = er
 		return
 	} else {
@@ -607,10 +615,12 @@ func SignInWithOAuth(c helper.Context, input SignInWithOAuthParams) (res schema.
 
 	if input.Duration != nil {
 		duration = time.Duration(*input.Duration * int64(time.Second))
+	} else {
+		duration = time.Hour * 6
 	}
 
 	// generate token
-	if t, er := token.Generate(userInfo.Id, token.StateUser, duration); er != nil {
+	if t, er := authentication.Gateway(false).Generate(userInfo.Id, duration); er != nil {
 		err = er
 		return
 	} else {

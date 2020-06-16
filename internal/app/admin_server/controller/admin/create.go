@@ -10,8 +10,8 @@ import (
 	"github.com/axetroy/go-server/internal/library/validator"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
+	"github.com/axetroy/go-server/internal/service/authentication"
 	"github.com/axetroy/go-server/internal/service/database"
-	"github.com/axetroy/go-server/internal/service/token"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
 	"time"
@@ -93,7 +93,7 @@ func CreateAdmin(input CreateAdminParams, isSuper bool) (res schema.Response) {
 	}
 
 	// generate token
-	if data.Token, err = token.Generate(adminInfo.Id, token.StateAdmin); err != nil {
+	if data.Token, err = authentication.Gateway(true).Generate(adminInfo.Id); err != nil {
 		return
 	}
 

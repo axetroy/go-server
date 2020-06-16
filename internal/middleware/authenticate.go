@@ -4,6 +4,7 @@ package middleware
 import (
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/schema"
+	"github.com/axetroy/go-server/internal/service/authentication"
 	"github.com/axetroy/go-server/internal/service/token"
 	"github.com/kataras/iris/v12"
 )
@@ -64,20 +65,13 @@ func AuthenticateNew(isAdmin bool) iris.Handler {
 			return
 		}
 
-		var state token.State
-		if isAdmin {
-			state = token.StateAdmin
-		} else {
-			state = token.StateUser
-		}
+		userId, err := authentication.Gateway(isAdmin).Parse(*tokenString)
 
-		if claims, er := token.Parse(*tokenString, state); er != nil {
-			err = er
+		if err != nil {
 			status = exception.InvalidToken.Code()
 			return
-		} else {
-			// 把 UID 挂载到上下文中国呢
-			c.Values().Set(ContextUidField, claims.Uid)
 		}
+
+		c.Values().Set(ContextUidField, userId)
 	}
 }

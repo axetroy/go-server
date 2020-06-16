@@ -10,8 +10,8 @@ import (
 	"github.com/axetroy/go-server/internal/library/validator"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
+	"github.com/axetroy/go-server/internal/service/authentication"
 	"github.com/axetroy/go-server/internal/service/database"
-	"github.com/axetroy/go-server/internal/service/token"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
 	"time"
@@ -86,7 +86,7 @@ func Login(input SignInParams) (res schema.Response) {
 	}
 
 	// generate token
-	if t, er := token.Generate(adminInfo.Id, token.StateAdmin, duration); er != nil {
+	if t, er := authentication.Gateway(true).Generate(adminInfo.Id, duration); er != nil {
 		err = er
 		return
 	} else {

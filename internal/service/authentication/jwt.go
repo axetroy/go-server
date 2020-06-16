@@ -8,12 +8,18 @@ import (
 )
 
 type Jwt struct {
-	IsAdmin bool
+	isAdmin bool
+}
+
+func NewJwt(isAdmin bool) Jwt {
+	return Jwt{
+		isAdmin: isAdmin,
+	}
 }
 
 func (c Jwt) getState() token.State {
 	var state token.State
-	if c.IsAdmin {
+	if c.isAdmin {
 		state = token.StateAdmin
 	} else {
 		state = token.StateUser

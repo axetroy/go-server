@@ -184,8 +184,6 @@ func (n *NotifierOneSignal) SendNotifyToUserForLoginStatus(userID string) error 
 		return err
 	}
 
-	fmt.Printf("%+v\n", loginLogs)
-
 	// 如果没有两条记录，那么不用作比较
 	if len(loginLogs) < 2 {
 		return nil

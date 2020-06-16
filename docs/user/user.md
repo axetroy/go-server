@@ -4,24 +4,54 @@
 
 获取用户的详细信息资料
 
+```bash
+curl -H "Authorization: Bearer 你的身份令牌" \
+     http://localhost:9001/v1/user/profile
+```
+
+```json
+{
+  "message": "",
+  "data": {
+    "id": "274588402135859200",
+    "username": "test1",
+    "nickname": "nickname",
+    "email": null,
+    "phone": null,
+    "status": 1,
+    "gender": 0,
+    "avatar": "",
+    "role": [],
+    "level": 0,
+    "invite_code": "d9a566c5",
+    "username_rename_remaining": 0,
+    "pay_password": false,
+    "wechat": null,
+    "created_at": "2020-06-03T08:21:49.675462Z",
+    "updated_at": "2020-06-06T18:34:17.420393Z"
+  },
+  "status": 1
+}
+```
+
 ### 更新用户信息
 
 [PUT] /v1/user/profile
 
-| 参数              | 类型     | 说明                                                                                                                                                                   | 必选 |
-| ----------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
-| username          | `string` | 用户登陆名, 某些用户可以重命名自己的登陆名。例如微信注册的帐号                                                                                                         |      |
-| nickname          | `string` | 用户昵称                                                                                                                                                               |      |
-| gender            | `string` | 用户性别                                                                                                                                                               |      |
-| avatar            | `string` | 用户头像 URL                                                                                                                                                           |      |
-| wechat            | `object` | 更新微信绑定的相关信息<br/> 由于绑定微信后，还没有拿到微信的昵称/性别等信息。所以需要客户端手动调用更新信息<br/>相关的信息由微信小程序接口接口 `wx.getUserInfo()` 获得 |      |
-| wechat.nickname   | `string` | 微信昵称                                                                                                                                                               |      |
-| wechat.avatar_url | `string` | 微信头像 URL                                                                                                                                                           |      |
-| wechat.gender     | `int`    | 性别                                                                                                                                                                   |      |
-| wechat.country    | `string` | 国家                                                                                                                                                                   |      |
-| wechat.province   | `string` | 省份                                                                                                                                                                   |      |
-| wechat.city       | `string` | 城市                                                                                                                                                                   |      |
-| wechat.language   | `string` | 语言                                                                                                                                                                   |      |
+| 参数              | 类型     | 说明                                                                                                                                                       | 必选 |
+| ----------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| username          | `string` | 用户登陆名, 某些用户可以重命名自己的登陆名。例如微信注册的帐号                                                                                             |      |
+| nickname          | `string` | 用户昵称                                                                                                                                                   |      |
+| gender            | `string` | 用户性别                                                                                                                                                   |      |
+| avatar            | `string` | 用户头像 URL                                                                                                                                               |      |
+| wechat            | `object` | 更新微信绑定的相关信息<br/> 绑定微信后，没有拿到微信的昵称/性别等信息。所以需要客户端手动调用更新信息<br/>信息由微信小程序接口接口 `wx.getUserInfo()` 获得 |      |
+| wechat.nickname   | `string` | 微信昵称                                                                                                                                                   |      |
+| wechat.avatar_url | `string` | 微信头像 URL                                                                                                                                               |      |
+| wechat.gender     | `int`    | 性别                                                                                                                                                       |      |
+| wechat.country    | `string` | 国家                                                                                                                                                       |      |
+| wechat.province   | `string` | 省份                                                                                                                                                       |      |
+| wechat.city       | `string` | 城市                                                                                                                                                       |      |
+| wechat.language   | `string` | 语言                                                                                                                                                       |      |
 
 ### 修改登陆密码
 

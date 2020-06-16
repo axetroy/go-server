@@ -1,7 +1,10 @@
 // Copyright 2019-2020 Axetroy. All rights reserved. MIT license.
 package authentication
 
-import "time"
+import (
+	"os"
+	"time"
+)
 
 // 该模块定义了 如何生成/解析 token
 
@@ -11,14 +14,31 @@ type Authentication interface {
 	Remove(token string) error                                      // 移除某个 token
 }
 
-var JwtUser Authentication      // JWT 的认证方式
-var JwtAdmin Authentication     // JWT 的认证方式
-var SessionUser Authentication  // JWT 的认证方式
-var SessionAdmin Authentication // JWT 的认证方式
+var jwtUser Authentication = NewJwt(false)         // JWT 的认证方式
+var jwtAdmin Authentication = NewJwt(true)         // JWT 的认证方式
+var sessionUser Authentication = NewSession(false) // session 的认证方式
+var sessionAdmin Authentication = NewSession(true) // session 的认证方式
+
+var Gateway func(isAdmin bool) Authentication // 网关，所有的认证方式都通过这里
 
 func init() {
-	JwtUser = Jwt{}
-	JwtAdmin = Jwt{IsAdmin: true}
-	SessionUser = Session{}
-	SessionAdmin = Session{IsAdmin: true}
+	// 通过 JWT 环境变量
+	if len(os.Getenv("JWT")) > 0 {
+		Gateway = func(isAdmin bool) Authentication {
+			if isAdmin {
+				return jwtAdmin
+			} else {
+				return jwtUser
+			}
+		}
+	} else {
+		Gateway = func(isAdmin bool) Authentication {
+			if isAdmin {
+				return sessionAdmin
+			} else {
+				return sessionUser
+			}
+		}
+	}
+
 }

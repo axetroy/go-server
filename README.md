@@ -19,7 +19,7 @@
 - [x] Web 框架 [iris](https://github.com/kataras/iris)
 - [x] 数据库 Postgres
 - [x] 缓存 Redis
-- [x] 身份认证机制 [JWT](http://jwt.io)/[oAuth2](https://oauth.net/2/)
+- [x] 身份认证机制 Session/[JWT](http://jwt.io)/[oAuth2](https://oauth.net/2/)
 - [x] 数据库操作 [GORM](https://github.com/jinzhu/gorm)
 - [x] 消息队列 [nsq](https://github.com/nsqio/nsq)
 - [x] RBAC 的鉴权模型
