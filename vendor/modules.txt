@@ -13,8 +13,6 @@ github.com/Shopify/goreferrer
 github.com/StackExchange/wmi
 # github.com/ajg/form v1.5.1
 ## explicit
-# github.com/alexbrainman/sspi v0.0.0-20180613141037-e580b900e9f5
-## explicit
 # github.com/aliyun/alibaba-cloud-sdk-go v1.61.241
 ## explicit
 github.com/aliyun/alibaba-cloud-sdk-go/sdk
@@ -104,6 +102,7 @@ github.com/gorilla/mux
 # github.com/gorilla/securecookie v1.1.1
 github.com/gorilla/securecookie
 # github.com/gorilla/sessions v1.2.0
+## explicit
 github.com/gorilla/sessions
 # github.com/gorilla/websocket v1.4.2
 ## explicit
@@ -127,8 +126,6 @@ github.com/iris-contrib/schema
 # github.com/jasonlvhit/gocron v0.0.0-20200423141508-ab84337f7963
 ## explicit
 github.com/jasonlvhit/gocron
-# github.com/jcmturner/gokrb5/v8 v8.2.0
-## explicit
 # github.com/jinzhu/gorm v1.9.12
 ## explicit
 github.com/jinzhu/gorm
@@ -349,6 +346,9 @@ golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
+# golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1
+## explicit
+golang.org/x/time/rate
 # google.golang.org/appengine v1.6.5
 ## explicit
 google.golang.org/appengine
@@ -365,16 +365,6 @@ google.golang.org/appengine/urlfetch
 google.golang.org/grpc/codes
 # gopkg.in/ini.v1 v1.51.1
 gopkg.in/ini.v1
-# gopkg.in/jcmturner/aescts.v1 v1.0.1
-## explicit
-# gopkg.in/jcmturner/dnsutils.v1 v1.0.1
-## explicit
-# gopkg.in/jcmturner/goidentity.v3 v3.0.0
-## explicit
-# gopkg.in/jcmturner/gokrb5.v7 v7.5.0
-## explicit
-# gopkg.in/jcmturner/rpc.v1 v1.1.0
-## explicit
 # gopkg.in/yaml.v2 v2.2.8
 ## explicit
 # gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c

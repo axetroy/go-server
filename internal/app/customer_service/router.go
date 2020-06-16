@@ -37,6 +37,7 @@ func init() {
 		v1.Use(recover.New())
 		v1.Use(middleware.Common())
 		v1.Use(middleware.CORS())
+		v1.Use(middleware.RateLimit(30))
 
 		if config.Common.Mode != "production" {
 			v1.Use(logger.New())

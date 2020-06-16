@@ -49,15 +49,15 @@ func init() {
 		// 通用类
 		{
 			// 文件上传
-			v1.Post("/upload/file", uploader.File)      // 上传文件
-			v1.Post("/upload/image", uploader.Image)    // 上传图片
-			v1.Get("/upload/example", uploader.Example) // 上传文件的 example
+			v1.Post("/upload/file", middleware.RateLimit(10), uploader.File)      // 上传文件
+			v1.Post("/upload/image", middleware.RateLimit(10), uploader.Image)    // 上传图片
+			v1.Get("/upload/example", middleware.RateLimit(10), uploader.Example) // 上传文件的 example
 			//// 单纯获取资源文本
-			v1.Get("/resource/file/{filename}", resource.File)   // 获取文件纯文本
-			v1.Get("/resource/image/{filename}", resource.Image) // 获取图片纯文本
+			v1.Get("/resource/file/{filename}", middleware.RateLimit(50), resource.File)   // 获取文件纯文本
+			v1.Get("/resource/image/{filename}", middleware.RateLimit(50), resource.Image) // 获取图片纯文本
 			//// 下载资源
-			v1.Get("/download/file/{filename}", downloader.File)   // 下载文件
-			v1.Get("/download/image/{filename}", downloader.Image) // 下载图片
+			v1.Get("/download/file/{filename}", middleware.RateLimit(5), downloader.File)   // 下载文件
+			v1.Get("/download/image/{filename}", middleware.RateLimit(5), downloader.Image) // 下载图片
 		}
 
 	}
