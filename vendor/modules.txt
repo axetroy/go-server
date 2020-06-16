@@ -14,8 +14,7 @@ github.com/StackExchange/wmi
 # github.com/ajg/form v1.5.1
 ## explicit
 # github.com/alexbrainman/sspi v0.0.0-20180613141037-e580b900e9f5
-github.com/alexbrainman/sspi
-github.com/alexbrainman/sspi/negotiate
+## explicit
 # github.com/aliyun/alibaba-cloud-sdk-go v1.61.241
 ## explicit
 github.com/aliyun/alibaba-cloud-sdk-go/sdk
@@ -109,8 +108,6 @@ github.com/gorilla/sessions
 # github.com/gorilla/websocket v1.4.2
 ## explicit
 github.com/gorilla/websocket
-# github.com/hashicorp/go-uuid v1.0.2
-github.com/hashicorp/go-uuid
 # github.com/holdno/snowFlakeByGo v0.0.0-20180510033652-d23f8a8cadd7
 ## explicit
 github.com/holdno/snowFlakeByGo
@@ -130,51 +127,8 @@ github.com/iris-contrib/schema
 # github.com/jasonlvhit/gocron v0.0.0-20200423141508-ab84337f7963
 ## explicit
 github.com/jasonlvhit/gocron
-# github.com/jcmturner/aescts/v2 v2.0.0
-github.com/jcmturner/aescts/v2
-# github.com/jcmturner/dnsutils/v2 v2.0.0
-github.com/jcmturner/dnsutils/v2
-# github.com/jcmturner/gofork v1.0.0
-github.com/jcmturner/gofork/encoding/asn1
-github.com/jcmturner/gofork/x/crypto/pbkdf2
-# github.com/jcmturner/goidentity/v6 v6.0.1
-github.com/jcmturner/goidentity/v6
 # github.com/jcmturner/gokrb5/v8 v8.2.0
-github.com/jcmturner/gokrb5/v8/asn1tools
-github.com/jcmturner/gokrb5/v8/client
-github.com/jcmturner/gokrb5/v8/config
-github.com/jcmturner/gokrb5/v8/credentials
-github.com/jcmturner/gokrb5/v8/crypto
-github.com/jcmturner/gokrb5/v8/crypto/common
-github.com/jcmturner/gokrb5/v8/crypto/etype
-github.com/jcmturner/gokrb5/v8/crypto/rfc3961
-github.com/jcmturner/gokrb5/v8/crypto/rfc3962
-github.com/jcmturner/gokrb5/v8/crypto/rfc4757
-github.com/jcmturner/gokrb5/v8/crypto/rfc8009
-github.com/jcmturner/gokrb5/v8/gssapi
-github.com/jcmturner/gokrb5/v8/iana
-github.com/jcmturner/gokrb5/v8/iana/addrtype
-github.com/jcmturner/gokrb5/v8/iana/adtype
-github.com/jcmturner/gokrb5/v8/iana/asnAppTag
-github.com/jcmturner/gokrb5/v8/iana/chksumtype
-github.com/jcmturner/gokrb5/v8/iana/errorcode
-github.com/jcmturner/gokrb5/v8/iana/etypeID
-github.com/jcmturner/gokrb5/v8/iana/flags
-github.com/jcmturner/gokrb5/v8/iana/keyusage
-github.com/jcmturner/gokrb5/v8/iana/msgtype
-github.com/jcmturner/gokrb5/v8/iana/nametype
-github.com/jcmturner/gokrb5/v8/iana/patype
-github.com/jcmturner/gokrb5/v8/kadmin
-github.com/jcmturner/gokrb5/v8/keytab
-github.com/jcmturner/gokrb5/v8/krberror
-github.com/jcmturner/gokrb5/v8/messages
-github.com/jcmturner/gokrb5/v8/pac
-github.com/jcmturner/gokrb5/v8/service
-github.com/jcmturner/gokrb5/v8/spnego
-github.com/jcmturner/gokrb5/v8/types
-# github.com/jcmturner/rpc/v2 v2.0.2
-github.com/jcmturner/rpc/v2/mstypes
-github.com/jcmturner/rpc/v2/ndr
+## explicit
 # github.com/jinzhu/gorm v1.9.12
 ## explicit
 github.com/jinzhu/gorm
@@ -233,7 +187,7 @@ github.com/klauspost/compress/gzip
 github.com/konsorten/go-windows-terminal-sequences
 # github.com/leodido/go-urn v1.2.0
 github.com/leodido/go-urn
-# github.com/lib/pq v1.6.0
+# github.com/lib/pq v1.7.0
 ## explicit
 github.com/lib/pq
 github.com/lib/pq/oid
@@ -352,16 +306,15 @@ go.opentelemetry.io/otel/api/propagation
 go.opentelemetry.io/otel/api/trace
 go.opentelemetry.io/otel/api/unit
 # golang.org/x/crypto v0.0.0-20200311171314-f7b00557c8c4
+## explicit
 golang.org/x/crypto/acme
 golang.org/x/crypto/acme/autocert
 golang.org/x/crypto/blake2b
 golang.org/x/crypto/curve25519
 golang.org/x/crypto/hkdf
 golang.org/x/crypto/internal/subtle
-golang.org/x/crypto/md4
 golang.org/x/crypto/nacl/box
 golang.org/x/crypto/nacl/secretbox
-golang.org/x/crypto/pbkdf2
 golang.org/x/crypto/poly1305
 golang.org/x/crypto/salsa20/salsa
 # golang.org/x/image v0.0.0-20200430140353-33d19683fad8
@@ -373,7 +326,6 @@ golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
 golang.org/x/net/html
 golang.org/x/net/html/atom
-golang.org/x/net/http2/hpack
 golang.org/x/net/idna
 golang.org/x/net/publicsuffix
 # golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
@@ -413,6 +365,16 @@ google.golang.org/appengine/urlfetch
 google.golang.org/grpc/codes
 # gopkg.in/ini.v1 v1.51.1
 gopkg.in/ini.v1
+# gopkg.in/jcmturner/aescts.v1 v1.0.1
+## explicit
+# gopkg.in/jcmturner/dnsutils.v1 v1.0.1
+## explicit
+# gopkg.in/jcmturner/goidentity.v3 v3.0.0
+## explicit
+# gopkg.in/jcmturner/gokrb5.v7 v7.5.0
+## explicit
+# gopkg.in/jcmturner/rpc.v1 v1.1.0
+## explicit
 # gopkg.in/yaml.v2 v2.2.8
 ## explicit
 # gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
