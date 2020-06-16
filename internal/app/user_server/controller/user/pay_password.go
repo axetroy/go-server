@@ -2,6 +2,7 @@
 package user
 
 import (
+	"context"
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
@@ -241,7 +242,7 @@ func SendResetPayPassword(c helper.Context) (res schema.Response) {
 	var resetCode = GenerateResetPayPasswordCode(userInfo.Id)
 
 	// redis缓存重置码
-	if err = redis.ClientResetCode.Set(resetCode, userInfo.Id, time.Minute*10).Err(); err != nil {
+	if err = redis.ClientResetCode.Set(context.Background(), resetCode, userInfo.Id, time.Minute*10).Err(); err != nil {
 		return
 	}
 
@@ -256,7 +257,7 @@ func SendResetPayPassword(c helper.Context) (res schema.Response) {
 		go func() {
 			if err = telephone.GetClient().SendResetPasswordCode(*userInfo.Phone, resetCode); err != nil {
 				// 如果发送失败，则删除
-				_ = redis.ClientAuthPhoneCode.Del(resetCode).Err()
+				_ = redis.ClientAuthPhoneCode.Del(context.Background(), resetCode).Err()
 				return
 			}
 		}()
@@ -326,7 +327,7 @@ func ResetPayPassword(c helper.Context, input ResetPayPasswordParams) (res schem
 		return
 	}
 
-	if uid, err = redis.ClientResetCode.Get(input.Code).Result(); err != nil {
+	if uid, err = redis.ClientResetCode.Get(context.Background(), input.Code).Result(); err != nil {
 		err = exception.InvalidResetCode
 		return
 	}
@@ -343,7 +344,7 @@ func ResetPayPassword(c helper.Context, input ResetPayPasswordParams) (res schem
 	}
 
 	// 重置密码之后，删除重置码
-	if _, err = redis.ClientResetCode.Del(input.Code).Result(); err != nil {
+	if _, err = redis.ClientResetCode.Del(context.Background(), input.Code).Result(); err != nil {
 		return
 	}
 

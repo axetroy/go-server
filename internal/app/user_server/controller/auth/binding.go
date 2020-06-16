@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"context"
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
@@ -100,7 +101,7 @@ func BindingEmail(c helper.Context, input BindingEmailParams) (res schema.Respon
 	}
 
 	// 校验验证码正确不正确
-	email, err := redis.ClientAuthEmailCode.Get(input.Code).Result()
+	email, err := redis.ClientAuthEmailCode.Get(context.Background(), input.Code).Result()
 
 	if err != nil {
 		return
@@ -191,7 +192,7 @@ func BindingPhone(c helper.Context, input BindingPhoneParams) (res schema.Respon
 	}
 
 	// 校验验证码正确不正确
-	phone, err := redis.ClientAuthPhoneCode.Get(input.Code).Result()
+	phone, err := redis.ClientAuthPhoneCode.Get(context.Background(), input.Code).Result()
 
 	if err != nil {
 		return

@@ -2,11 +2,12 @@
 package authentication
 
 import (
+	"context"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/axetroy/go-server/internal/service/redis"
 	"github.com/axetroy/go-server/internal/service/token"
-	nativeRedis "github.com/go-redis/redis"
+	nativeRedis "github.com/go-redis/redis/v8"
 	"strings"
 	"time"
 )
@@ -65,12 +66,12 @@ func (c Session) Generate(uid string, durations ...time.Duration) (string, error
 	}
 
 	// 以 token 为 key
-	if err := c.client.Set(tokenStr, uid, duration).Err(); err != nil {
+	if err := c.client.Set(context.Background(), tokenStr, uid, duration).Err(); err != nil {
 		return "", err
 	}
 
 	// 以 user_id 为 key
-	if err := c.client.Set("id-"+uid+util.RandomString(6), tokenStr, duration).Err(); err != nil {
+	if err := c.client.Set(context.Background(), "id-"+uid+util.RandomString(6), tokenStr, duration).Err(); err != nil {
 		return "", err
 	}
 
@@ -78,9 +79,12 @@ func (c Session) Generate(uid string, durations ...time.Duration) (string, error
 }
 
 func (c Session) Parse(tokenString string) (string, error) {
+	if !strings.HasPrefix(tokenString, token.Prefix+" ") {
+		return "", exception.InvalidAuth
+	}
 	tokenString = strings.TrimPrefix(tokenString, token.Prefix+" ")
 
-	uid, err := c.client.Get(tokenString).Result()
+	uid, err := c.client.Get(context.Background(), tokenString).Result()
 
 	if err != nil {
 		return "", exception.InvalidToken
@@ -90,5 +94,5 @@ func (c Session) Parse(tokenString string) (string, error) {
 }
 
 func (c Session) Remove(tokenString string) error {
-	return c.client.Del(tokenString).Err()
+	return c.client.Del(context.Background(), tokenString).Err()
 }

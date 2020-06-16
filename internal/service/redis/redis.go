@@ -4,7 +4,7 @@ package redis
 import (
 	"github.com/axetroy/go-server/internal/library/config"
 	"github.com/axetroy/go-server/internal/service/dotenv"
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 )
 
 var (

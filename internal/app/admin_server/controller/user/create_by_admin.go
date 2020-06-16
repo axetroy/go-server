@@ -2,6 +2,7 @@
 package user
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"github.com/axetroy/go-server/internal/app/admin_server/controller/wallet"
@@ -179,7 +180,7 @@ func CreateUser(input CreateUserParams) (res schema.Response) {
 		activationCode := "activation-" + userInfo.Id
 
 		// 把激活码存到 redis
-		if err = redis.ClientActivationCode.Set(activationCode, userInfo.Id, time.Minute*30).Err(); err != nil {
+		if err = redis.ClientActivationCode.Set(context.Background(), activationCode, userInfo.Id, time.Minute*30).Err(); err != nil {
 			return
 		}
 

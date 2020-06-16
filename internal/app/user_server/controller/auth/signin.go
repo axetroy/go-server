@@ -2,6 +2,7 @@
 package auth
 
 import (
+	"context"
 	"errors"
 	"github.com/axetroy/go-server/internal/app/user_server/controller/wallet"
 	"github.com/axetroy/go-server/internal/library/exception"
@@ -210,7 +211,7 @@ func SignInWithEmail(c helper.Context, input SignInWithEmailParams) (res schema.
 		return
 	}
 
-	email, err := redis.ClientAuthEmailCode.Get(input.Code).Result()
+	email, err := redis.ClientAuthEmailCode.Get(context.Background(), input.Code).Result()
 
 	// 校验验证码是否正确
 	if err != nil || email != input.Email {
@@ -316,7 +317,7 @@ func SignInWithPhone(c helper.Context, input SignInWithPhoneParams) (res schema.
 		return
 	}
 
-	phone, err := redis.ClientAuthPhoneCode.Get(input.Code).Result()
+	phone, err := redis.ClientAuthPhoneCode.Get(context.Background(), input.Code).Result()
 
 	// 校验验证码是否正确
 	if err != nil || phone != input.Phone {
@@ -583,7 +584,7 @@ func SignInWithOAuth(c helper.Context, input SignInWithOAuthParams) (res schema.
 		return
 	}
 
-	uid, err := redis.ClientOAuthCode.Get(input.Code).Result()
+	uid, err := redis.ClientOAuthCode.Get(context.Background(), input.Code).Result()
 
 	if err != nil {
 		return

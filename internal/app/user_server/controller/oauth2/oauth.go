@@ -2,6 +2,7 @@
 package oauth2
 
 import (
+	"context"
 	"errors"
 	"github.com/axetroy/go-server/internal/app/user_server/controller/auth"
 	"github.com/axetroy/go-server/internal/library/exception"
@@ -168,7 +169,7 @@ func redirectToClient(c *router.Context, user *goth.User) {
 
 	hash := util.MD5(user.UserID)
 
-	if err := redis.ClientOAuthCode.Set(hash, userInfo.Id, time.Minute*5).Err(); err != nil {
+	if err := redis.ClientOAuthCode.Set(context.Background(), hash, userInfo.Id, time.Minute*5).Err(); err != nil {
 		c.StatusCode(http.StatusBadRequest)
 		c.Response(nil, schema.Response{
 			Message: "Invalid callback url",

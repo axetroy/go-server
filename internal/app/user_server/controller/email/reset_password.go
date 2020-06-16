@@ -2,6 +2,7 @@
 package email
 
 import (
+	"context"
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
@@ -66,7 +67,7 @@ func SendResetPasswordEmail(input SendResetPasswordEmailParams) (res schema.Resp
 	var code = captcha.GenerateResetCode(userInfo.Id)
 
 	// set activationCode to redis
-	if err = redis.ClientResetCode.Set(code, userInfo.Id, time.Minute*30).Err(); err != nil {
+	if err = redis.ClientResetCode.Set(context.Background(), code, userInfo.Id, time.Minute*30).Err(); err != nil {
 		return
 	}
 
@@ -79,7 +80,7 @@ func SendResetPasswordEmail(input SendResetPasswordEmailParams) (res schema.Resp
 	// send email
 	if err = e.SendForgotPasswordEmail(input.Email, code); err != nil {
 		// 邮件没发出去的话，删除redis的key
-		_ = redis.ClientResetCode.Del(code).Err()
+		_ = redis.ClientResetCode.Del(context.Background(), code).Err()
 		return
 	}
 

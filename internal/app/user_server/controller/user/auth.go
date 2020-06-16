@@ -1,6 +1,7 @@
 package user
 
 import (
+	"context"
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
@@ -64,7 +65,7 @@ func SendAuthEmail(c helper.Context) (res schema.Response) {
 	activationCode := captcha.GenerateEmailCaptcha()
 
 	// 缓存验证码到 redis
-	if err = redis.ClientAuthEmailCode.Set(activationCode, *userInfo.Email, time.Minute*10).Err(); err != nil {
+	if err = redis.ClientAuthEmailCode.Set(context.Background(), activationCode, *userInfo.Email, time.Minute*10).Err(); err != nil {
 		return
 	}
 
@@ -77,7 +78,7 @@ func SendAuthEmail(c helper.Context) (res schema.Response) {
 	// send email
 	if err = e.SendAuthEmail(*userInfo.Email, activationCode); err != nil {
 		// 邮件没发出去的话，删除redis的key
-		_ = redis.ClientAuthEmailCode.Del(activationCode).Err()
+		_ = redis.ClientAuthEmailCode.Del(context.Background(), activationCode).Err()
 		return
 	}
 
@@ -132,13 +133,13 @@ func SendAuthPhone(c helper.Context) (res schema.Response) {
 	activationCode := captcha.GeneratePhoneCaptcha()
 
 	// 缓存验证码到 redis
-	if err = redis.ClientAuthPhoneCode.Set(activationCode, *userInfo.Phone, time.Minute*10).Err(); err != nil {
+	if err = redis.ClientAuthPhoneCode.Set(context.Background(), activationCode, *userInfo.Phone, time.Minute*10).Err(); err != nil {
 		return
 	}
 
 	if err = telephone.GetClient().SendAuthCode(*userInfo.Phone, activationCode); err != nil {
 		// 如果发送失败，则删除
-		_ = redis.ClientAuthPhoneCode.Del(activationCode).Err()
+		_ = redis.ClientAuthPhoneCode.Del(context.Background(), activationCode).Err()
 		return
 	}
 

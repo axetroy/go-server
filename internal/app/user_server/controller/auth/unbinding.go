@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"context"
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
@@ -77,7 +78,7 @@ func UnbindingEmail(c helper.Context, input UnbindingEmailParams) (res schema.Re
 	}
 
 	// 校验验证码正确不正确
-	email, err := redis.ClientAuthEmailCode.Get(input.Code).Result()
+	email, err := redis.ClientAuthEmailCode.Get(context.Background(), input.Code).Result()
 
 	if err != nil {
 		return
@@ -147,7 +148,7 @@ func UnbindingPhone(c helper.Context, input UnbindingPhoneParams) (res schema.Re
 	}
 
 	// 校验验证码正确不正确
-	phone, err := redis.ClientAuthPhoneCode.Get(input.Code).Result()
+	phone, err := redis.ClientAuthPhoneCode.Get(context.Background(), input.Code).Result()
 
 	if err != nil {
 		return
@@ -215,7 +216,7 @@ func UnbindingWechat(c helper.Context, input UnbindingWechatParams) (res schema.
 		// 如果用户已有手机号，则用手机号作为验证码
 
 		// 校验验证码正确不正确
-		phone, err := redis.ClientAuthPhoneCode.Get(input.Code).Result()
+		phone, err := redis.ClientAuthPhoneCode.Get(context.Background(), input.Code).Result()
 
 		if err != nil {
 			return
@@ -232,7 +233,7 @@ func UnbindingWechat(c helper.Context, input UnbindingWechatParams) (res schema.
 		// 	如果用户已有邮箱，则用邮箱作为验证码
 
 		// 校验验证码正确不正确
-		email, err := redis.ClientAuthEmailCode.Get(input.Code).Result()
+		email, err := redis.ClientAuthEmailCode.Get(context.Background(), input.Code).Result()
 
 		if err != nil {
 			return

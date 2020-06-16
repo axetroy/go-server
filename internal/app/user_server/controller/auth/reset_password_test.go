@@ -2,6 +2,7 @@
 package auth_test
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/axetroy/go-server/internal/app/user_server/controller/auth"
 	"github.com/axetroy/go-server/internal/library/exception"
@@ -84,7 +85,7 @@ func TestResetPasswordSuccess(t *testing.T) {
 
 	// set to redis
 	// set activationCode to redis
-	if err := redis.ClientResetCode.Set(resetCode, uid, time.Minute*30).Err(); err != nil {
+	if err := redis.ClientResetCode.Set(context.Background(), resetCode, uid, time.Minute*30).Err(); err != nil {
 		t.Error(err)
 		return
 	}

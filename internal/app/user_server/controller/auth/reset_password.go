@@ -2,6 +2,7 @@
 package auth
 
 import (
+	"context"
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
@@ -55,7 +56,7 @@ func ResetPassword(input ResetPasswordParams) (res schema.Response) {
 		return
 	}
 
-	if uid, err = redis.ClientResetCode.Get(input.Code).Result(); err != nil {
+	if uid, err = redis.ClientResetCode.Get(context.Background(), input.Code).Result(); err != nil {
 		err = exception.InvalidResetCode
 		return
 	}
@@ -75,7 +76,7 @@ func ResetPassword(input ResetPasswordParams) (res schema.Response) {
 	tx.Model(&userInfo).Update("password", util.GeneratePassword(input.NewPassword))
 
 	// delete reset code from redis
-	if err = redis.ClientResetCode.Del(input.Code).Err(); err != nil {
+	if err = redis.ClientResetCode.Del(context.Background(), input.Code).Err(); err != nil {
 		return
 	}
 
