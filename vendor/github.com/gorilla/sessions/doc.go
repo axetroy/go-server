@@ -26,11 +26,7 @@ Let's start with an example that shows the sessions API in a nutshell:
 		"github.com/gorilla/sessions"
 	)
 
-	// Note: Don't store your key in your source code. Pass it via an
-	// environmental variable, or flag (or both), and don't accidentally commit it
-	// alongside your code. Ensure your key is sufficiently random - i.e. use Go's
-	// crypto/rand or securecookie.GenerateRandomKey(32) and persist the result.
-	var store = sessions.NewCookieStore(os.Getenv("SESSION_KEY"))
+	var store = sessions.NewCookieStore([]byte("something-very-secret"))
 
 	func MyHandler(w http.ResponseWriter, r *http.Request) {
 		// Get a session. Get() always returns a session, even if empty.
@@ -58,6 +54,14 @@ session.Save(r, w), and either display an error message or otherwise handle it.
 
 Save must be called before writing to the response, otherwise the session
 cookie will not be sent to the client.
+
+Important Note: If you aren't using gorilla/mux, you need to wrap your handlers
+with context.ClearHandler as or else you will leak memory! An easy way to do this
+is to wrap the top-level mux when calling http.ListenAndServe:
+
+    http.ListenAndServe(":8080", context.ClearHandler(http.DefaultServeMux))
+
+The ClearHandler function is provided by the gorilla/context package.
 
 That's all you need to know for the basic usage. Let's take a look at other
 options, starting with flash messages.

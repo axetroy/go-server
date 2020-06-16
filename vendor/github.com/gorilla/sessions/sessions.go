@@ -5,15 +5,33 @@
 package sessions
 
 import (
-	"context"
 	"encoding/gob"
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/gorilla/context"
 )
 
 // Default flashes key.
 const flashesKey = "_flash"
+
+// Options --------------------------------------------------------------------
+
+// Options stores configuration for a session or session store.
+//
+// Fields are a subset of http.Cookie fields.
+type Options struct {
+	Path   string
+	Domain string
+	// MaxAge=0 means no Max-Age attribute specified and the cookie will be
+	// deleted after the browser session ends.
+	// MaxAge<0 means delete cookie immediately.
+	// MaxAge>0 means Max-Age attribute present and given in seconds.
+	MaxAge   int
+	Secure   bool
+	HttpOnly bool
+}
 
 // Session --------------------------------------------------------------------
 
@@ -107,8 +125,7 @@ const registryKey contextKey = 0
 
 // GetRegistry returns a registry instance for the current request.
 func GetRegistry(r *http.Request) *Registry {
-	var ctx = r.Context()
-	registry := ctx.Value(registryKey)
+	registry := context.Get(r, registryKey)
 	if registry != nil {
 		return registry.(*Registry)
 	}
@@ -116,7 +133,7 @@ func GetRegistry(r *http.Request) *Registry {
 		request:  r,
 		sessions: make(map[string]sessionInfo),
 	}
-	*r = *r.WithContext(context.WithValue(ctx, registryKey, newRegistry))
+	context.Set(r, registryKey, newRegistry)
 	return newRegistry
 }
 
@@ -178,7 +195,15 @@ func Save(r *http.Request, w http.ResponseWriter) error {
 // the Expires field calculated based on the MaxAge value, for Internet
 // Explorer compatibility.
 func NewCookie(name, value string, options *Options) *http.Cookie {
-	cookie := newCookieFromOptions(name, value, options)
+	cookie := &http.Cookie{
+		Name:     name,
+		Value:    value,
+		Path:     options.Path,
+		Domain:   options.Domain,
+		MaxAge:   options.MaxAge,
+		Secure:   options.Secure,
+		HttpOnly: options.HttpOnly,
+	}
 	if options.MaxAge > 0 {
 		d := time.Duration(options.MaxAge) * time.Second
 		cookie.Expires = time.Now().Add(d)
