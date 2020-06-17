@@ -8,7 +8,7 @@ import (
 )
 
 func RateLimit(maxConcurrencyPerMs uint) iris.Handler {
-	limiter := ip_rate_limit.NewIPRateLimiter(1, int(maxConcurrencyPerMs))
+	limiter := ip_rate_limit.NewIPRateLimiter(5, int(maxConcurrencyPerMs))
 
 	return func(c iris.Context) {
 		limiter := limiter.GetLimiter(c.RemoteAddr())
