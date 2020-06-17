@@ -7,8 +7,8 @@ import (
 	"github.com/axetroy/go-server/internal/library/validator"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
+	"github.com/axetroy/go-server/internal/service/authentication"
 	"github.com/axetroy/go-server/internal/service/database"
-	"github.com/axetroy/go-server/internal/service/token"
 	"time"
 )
 
@@ -23,14 +23,14 @@ func waiterTypeAuthHandler(waiterClient *ws.Client, msg ws.Message) (err error) 
 		return err
 	}
 
-	c, err := token.Parse(body.Token, token.StateUser)
+	uid, err := authentication.Gateway(false).Parse(body.Token)
 
 	if err != nil {
-		return err
+		return
 	}
 
 	userInfo := model.User{
-		Id: c.Uid,
+		Id: uid,
 	}
 
 	if err = database.Db.Model(&userInfo).Where(&userInfo).Where("role @> ARRAY[?::varchar]", "waiter").First(&userInfo).Error; err != nil {

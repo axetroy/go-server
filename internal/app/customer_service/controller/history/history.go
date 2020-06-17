@@ -30,8 +30,12 @@ type Session struct {
 	CreatedAt string               `json:"created_at"` // 创建会话的时间
 }
 
-func SessionItemToMap(sessionItems []model.CustomerSessionItem) (result []History, err error) {
-	result = make([]History, 0)
+func SessionItemToMap(sessionItems []model.CustomerSessionItem) ([]History, error) {
+	var (
+		result = make([]History, 0)
+		err    error
+	)
+
 	for _, item := range sessionItems {
 		target := History{
 			ID: item.Id,
@@ -57,23 +61,37 @@ func SessionItemToMap(sessionItems []model.CustomerSessionItem) (result []Histor
 
 			var payload ws.MessageTextPayload
 
-			if err := json.Unmarshal([]byte(item.Payload), &payload); err != nil {
+			if err = json.Unmarshal([]byte(item.Payload), &payload); err != nil {
 				return nil, err
 			}
 
 			target.Payload = payload
 		case model.SessionTypeImage:
+			target.Type = ws.TypeResponseUserMessageImage
+
+			var payload ws.MessageImagePayload
+
+			if err = json.Unmarshal([]byte(item.Payload), &payload); err != nil {
+				return nil, err
+			}
+
+			target.Payload = payload
 		}
 
 		result = append(result, target)
 	}
 
-	return
+	return result, nil
 }
 
 // 获取某个用户的聊天记录
-func GetHistory(userID string, txs ...*gorm.DB) (result []History, err error) {
-	var tx *gorm.DB
+func GetHistory(userID string, txs ...*gorm.DB) ([]History, error) {
+	var (
+		result = make([]History, 0)
+		tx     *gorm.DB
+		err    error
+	)
+
 	if len(txs) > 0 {
 		tx = txs[0]
 	}
@@ -95,7 +113,7 @@ func GetHistory(userID string, txs ...*gorm.DB) (result []History, err error) {
 	query := tx.Model(model.CustomerSessionItem{}).Where("sender_id = ?", userID).Or("receiver_id = ?", userID).Order("created_at DESC").Preload("Sender").Preload("Receiver").Limit(100)
 
 	if err = query.Find(&list).Error; err != nil {
-		return
+		return nil, err
 	}
 
 	for _, info := range list {
@@ -124,17 +142,26 @@ func GetHistory(userID string, txs ...*gorm.DB) (result []History, err error) {
 			var payload ws.MessageTextPayload
 
 			if err = json.Unmarshal([]byte(info.Payload), &payload); err != nil {
-				return
+				return nil, err
 			}
 
 			target.Payload = payload
 		case model.SessionTypeImage:
+			target.Type = ws.TypeResponseUserMessageImage
+
+			var payload ws.MessageImagePayload
+
+			if err := json.Unmarshal([]byte(info.Payload), &payload); err != nil {
+				return nil, err
+			}
+
+			target.Payload = payload
 		}
 
 		result = append(result, target)
 	}
 
-	return
+	return result, nil
 }
 
 type sessionMap map[string][]Session
