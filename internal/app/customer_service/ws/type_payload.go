@@ -16,3 +16,7 @@ type QueuePayload struct {
 type AuthPayload struct {
 	Token string `json:"token" validate:"required,min=0" comment:"身份令牌"`
 }
+
+type RatePayload struct {
+	Rate uint `json:"rate" validate:"required,int,min=1,max=5" comment:"评分"`
+}

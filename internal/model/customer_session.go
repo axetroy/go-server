@@ -29,6 +29,7 @@ type CustomerSession struct {
 	Waiter    User                  `gorm:"foreignkey:WaiterID" json:"waiter"`                            //  **外键**
 	Items     []CustomerSessionItem `gorm:"foreignkey:SessionID" json:"items"`                            //  **外键**
 	ClosedAt  *time.Time            `gorm:"null;index;" json:"closed_at"`                                 // 会话关闭时间
+	Rate      *uint                 `gorm:"null;index;" json:"rate"`                                      // 用户对于本次会话的评分
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt *time.Time `sql:"index"`
@@ -41,6 +42,13 @@ func (c *CustomerSession) TableName() string {
 func (c *CustomerSession) BeforeCreate(scope *gorm.Scope) error {
 	// 不用自动生成，而是根据 md5(from + to) 生成
 	//return scope.SetColumn("id", util.GenerateId())
+
+	if c.Rate != nil {
+		if *c.Rate < 0 || *c.Rate > 5 {
+			return exception.InvalidParams.New("评分需在 1-5 之间")
+		}
+	}
+
 	return nil
 }
 

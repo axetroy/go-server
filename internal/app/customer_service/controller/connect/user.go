@@ -205,6 +205,11 @@ var UserRouter = router.Handler(func(c router.Context) {
 				_ = client.WriteError(err, msg)
 			}
 			break typeCondition
+		case ws.TypeRequestUserRate:
+			if err := userTypeRateHandler(client, msg); err != nil {
+				_ = client.WriteError(err, msg)
+			}
+			break typeCondition
 		default:
 			_ = client.WriteError(exception.InvalidParams.New("未知的消息类型"), msg)
 			break typeCondition
