@@ -76,13 +76,13 @@ func textMessageFromWaiterHandler(msg ws.Message) (err error) {
 
 	// 给客服端一个回执
 	_ = waiterClient.WriteJSON(ws.Message{
+		OpID:    msg.OpID,
 		Id:      sessionItem.Id,
 		Type:    string(ws.TypeResponseWaiterMessageTextSuccess),
 		From:    waiterClient.UUID,
 		To:      userClient.UUID,
 		Payload: msg.Payload,
 		Date:    sessionItem.CreatedAt.Format(time.RFC3339Nano),
-		OpID:    msg.OpID,
 	})
 
 	return
@@ -154,13 +154,13 @@ func imageMessageFromWaiterHandler(msg ws.Message) (err error) {
 
 	// 给客服端一个回执
 	_ = waiterClient.WriteJSON(ws.Message{
+		OpID:    msg.OpID,
 		Id:      sessionItem.Id,
 		Type:    string(ws.TypeResponseWaiterMessageImageSuccess),
 		From:    waiterClient.UUID,
 		To:      userClient.UUID,
 		Payload: msg.Payload,
 		Date:    sessionItem.CreatedAt.Format(time.RFC3339Nano),
-		OpID:    msg.OpID,
 	})
 
 	return

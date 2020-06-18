@@ -31,6 +31,7 @@ func userTypeMessageImageHandler(userClient *ws.Client, msg ws.Message) (err err
 	if waiterId != nil {
 		// 把收到的消息广播到客服池
 		ws.WaiterPoll.Broadcast <- ws.Message{
+			OpID:    msg.OpID,
 			From:    userClient.UUID,
 			Type:    msg.Type,
 			To:      *waiterId,

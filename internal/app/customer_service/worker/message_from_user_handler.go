@@ -73,13 +73,13 @@ func textMessageFromUserHandler(msg ws.Message) (err error) {
 
 	// 给用户端一个回执
 	_ = userClient.WriteJSON(ws.Message{
+		OpID:    msg.OpID,
 		Id:      sessionItem.Id,
 		Type:    string(ws.TypeResponseUserMessageTextSuccess),
 		From:    userClient.UUID,
 		To:      waiterClient.UUID,
 		Payload: msg.Payload,
 		Date:    sessionItem.CreatedAt.Format(time.RFC3339Nano),
-		OpID:    msg.OpID,
 	})
 
 	return
@@ -148,13 +148,13 @@ func imageMessageFromUserHandler(msg ws.Message) (err error) {
 
 	// 给用户端一个回执
 	_ = userClient.WriteJSON(ws.Message{
+		OpID:    msg.OpID,
 		Id:      sessionItem.Id,
 		Type:    string(ws.TypeResponseUserMessageImageSuccess),
 		From:    userClient.UUID,
 		To:      waiterClient.UUID,
 		Payload: msg.Payload,
 		Date:    sessionItem.CreatedAt.Format(time.RFC3339Nano),
-		OpID:    msg.OpID,
 	})
 
 	return

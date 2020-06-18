@@ -33,6 +33,7 @@ func waiterTypeMessageImageHandler(waiterClient *ws.Client, msg ws.Message) (err
 
 	// 如果这个客户端没有连接客服，那么消息不会发送
 	ws.UserPoll.Broadcast <- ws.Message{
+		OpID:    msg.OpID,
 		Type:    msg.Type,
 		From:    waiterClient.UUID,
 		To:      msg.To,
