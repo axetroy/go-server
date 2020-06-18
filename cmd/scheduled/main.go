@@ -2,17 +2,24 @@
 package main
 
 import (
+	"fmt"
 	"github.com/axetroy/go-server/cmd/scheduled/migrate"
 	"github.com/axetroy/go-server/pkg/daemon"
-	"github.com/jasonlvhit/gocron"
+	"github.com/go-co-op/gocron"
 	"github.com/urfave/cli/v2"
 	"log"
 	"os"
+	"time"
 )
 
 func runJobs() error {
+	fmt.Println("启动定时任务...")
+	s1 := gocron.NewScheduler(time.UTC)
+
 	// 每天凌晨 3 点检查 login_log 表，并且进行切割数据
-	if err := gocron.Every(1).Day().At("03:00:01").Do(func() {
+	if _, err := s1.Every(1).Day().StartImmediately().At("03:00").Do(func() {
+		//if _, err := s1.Every(1).Minute().Do(func() {
+		log.Println("run LoginLogMigrate")
 		if err := migrate.LoginLogMigrate.Do(); err != nil {
 			log.Println(err)
 		}
@@ -21,7 +28,9 @@ func runJobs() error {
 	}
 
 	// 每天凌晨 4 点检查，把客服的聊天记录迁移到另一个表
-	if err := gocron.Every(1).Day().At("04:00:01").Do(func() {
+	if _, err := s1.Every(1).Day().StartImmediately().At("04:00").Do(func() {
+		//if _, err := s1.Every(1).Minute().Do(func() {
+		log.Println("run CustomerMigrate")
 		if err := migrate.CustomerMigrate.Do(); err != nil {
 			log.Println(err)
 		}
@@ -30,7 +39,7 @@ func runJobs() error {
 	}
 
 	// 启动定时任务
-	<-gocron.Start()
+	<-s1.StartAsync()
 
 	return nil
 }

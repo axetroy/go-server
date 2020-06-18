@@ -4,14 +4,6 @@
 // for configuration. Schedule lets you run Golang functions periodically
 // at pre-determined intervals using a simple, human-friendly syntax.
 //
-// Inspired by the Ruby module clockwork <https://github.com/tomykaira/clockwork>
-// and
-// Python package schedule <https://github.com/dbader/schedule>
-//
-// See also
-// http://adam.heroku.com/past/2010/4/13/rethinking_cron/
-// http://adam.heroku.com/past/2010/6/30/replace_cron_with_clockwork/
-//
 // Copyright 2014 Jason Lyu. jasonlvhit@gmail.com .
 // All rights reserved.
 // Use of this source code is governed by a BSD-style .
@@ -20,28 +12,26 @@ package gocron
 
 import (
 	"crypto/sha256"
+	"errors"
 	"fmt"
 	"reflect"
 	"runtime"
 	"strconv"
 	"strings"
-	"time"
 )
 
-// Locker provides a method to lock jobs from running
-// at the same time on multiple instances of gocron.
-// You can provide any locker implementation you wish.
-type Locker interface {
-	Lock(key string) (bool, error)
-	Unlock(key string) error
-}
+// Error declarations for gocron related errors
+var (
+	ErrTimeFormat          = errors.New("time format error")
+	ErrParamsNotAdapted    = errors.New("the number of params is not adapted")
+	ErrNotAFunction        = errors.New("only functions can be schedule into the job queue")
+	ErrPeriodNotSpecified  = errors.New("unspecified job period")
+	ErrNotScheduledWeekday = errors.New("job not scheduled weekly on a weekday")
+	ErrJobNotFoundWithTag  = errors.New("no jobs found with given tag")
+)
 
 type timeUnit int
 
-// MAXJOBNUM max number of jobs, hack it if you need.
-const MAXJOBNUM = 10000
-
-//go:generate stringer -type=timeUnit
 const (
 	seconds timeUnit = iota + 1
 	minutes
@@ -49,22 +39,6 @@ const (
 	days
 	weeks
 )
-
-var (
-	loc    = time.Local // Time location, default set by the time.Local (*time.Location)
-	locker Locker
-)
-
-// ChangeLoc change default the time location
-func ChangeLoc(newLocation *time.Location) {
-	loc = newLocation
-	defaultScheduler.ChangeLoc(newLocation)
-}
-
-// SetLocker sets a locker implementation
-func SetLocker(l Locker) {
-	locker = l
-}
 
 func callJobFuncWithParams(jobFunc interface{}, params []interface{}) ([]reflect.Value, error) {
 	f := reflect.ValueOf(jobFunc)
@@ -78,7 +52,6 @@ func callJobFuncWithParams(jobFunc interface{}, params []interface{}) ([]reflect
 	return f.Call(in), nil
 }
 
-// for given function fn, get the name of function.
 func getFunctionName(fn interface{}) string {
 	return runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name()
 }
@@ -87,11 +60,6 @@ func getFunctionKey(funcName string) string {
 	h := sha256.New()
 	h.Write([]byte(funcName))
 	return fmt.Sprintf("%x", h.Sum(nil))
-}
-
-// Jobs returns the list of Jobs from the defaultScheduler
-func Jobs() []*Job {
-	return defaultScheduler.Jobs()
 }
 
 func formatTime(t string) (hour, min, sec int, err error) {
@@ -117,10 +85,4 @@ func formatTime(t string) (hour, min, sec int, err error) {
 	}
 
 	return hour, min, sec, nil
-}
-
-// NextTick returns a pointer to a time that will run at the next tick
-func NextTick() *time.Time {
-	now := time.Now().Add(time.Second)
-	return &now
 }

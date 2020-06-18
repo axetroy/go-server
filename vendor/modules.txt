@@ -61,6 +61,9 @@ github.com/eknkc/amber/parser
 github.com/fatih/color
 # github.com/fatih/structs v1.1.0
 github.com/fatih/structs
+# github.com/go-co-op/gocron v0.2.0
+## explicit
+github.com/go-co-op/gocron
 # github.com/go-ole/go-ole v1.2.4
 ## explicit
 github.com/go-ole/go-ole
@@ -125,7 +128,6 @@ github.com/iris-contrib/pongo2
 github.com/iris-contrib/schema
 # github.com/jasonlvhit/gocron v0.0.0-20200423141508-ab84337f7963
 ## explicit
-github.com/jasonlvhit/gocron
 # github.com/jinzhu/gorm v1.9.12
 ## explicit
 github.com/jinzhu/gorm
