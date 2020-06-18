@@ -4,6 +4,8 @@ package main
 import (
 	"fmt"
 	"github.com/axetroy/go-server/cmd/scheduled/migrate"
+	"github.com/axetroy/go-server/internal/service/database"
+	"github.com/axetroy/go-server/internal/service/redis"
 	"github.com/axetroy/go-server/pkg/daemon"
 	"github.com/go-co-op/gocron"
 	"github.com/urfave/cli/v2"
@@ -13,6 +15,18 @@ import (
 )
 
 func runJobs() error {
+	redis.Connect()
+
+	defer func() {
+		redis.Dispose()
+	}()
+
+	database.Connect()
+
+	defer func() {
+		database.Dispose()
+	}()
+
 	fmt.Println("启动定时任务...")
 	s1 := gocron.NewScheduler(time.UTC)
 

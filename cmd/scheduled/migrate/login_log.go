@@ -21,15 +21,8 @@ func (c LoginLog) GetModel() interface{} {
 	return model.LoginLog{}
 }
 
-func (c LoginLog) GetTimeInterval(now time.Time) time.Duration {
-	currentDate := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
-
-	currentDate = currentDate.AddDate(0, 1, 0)
-
-	// 在下一个月的第一天，减去 24 小时，那么就是当月的最后一天
-	currentDate = currentDate.Add(-time.Hour * 24)
-
-	return time.Hour * 24 * time.Duration(currentDate.Day())
+func (c LoginLog) GetTimeInterval(_ time.Time) time.Duration {
+	return time.Hour * 24 * 7
 }
 
 func (c LoginLog) getLatest(db *gorm.DB) (model.LoginLog, error) {
