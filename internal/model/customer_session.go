@@ -44,7 +44,7 @@ func (c *CustomerSession) BeforeCreate(scope *gorm.Scope) error {
 	//return scope.SetColumn("id", util.GenerateId())
 
 	if c.Rate != nil {
-		if *c.Rate < 0 || *c.Rate > 5 {
+		if *c.Rate > 5 {
 			return exception.InvalidParams.New("评分需在 1-5 之间")
 		}
 	}
