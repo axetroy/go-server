@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"github.com/axetroy/go-server/internal/library/exception"
@@ -164,7 +163,7 @@ type QRCodeEntry struct {
 	UserID  *string `json:"user_id,omitempty"` // 对应的 user ID
 }
 
-func QRCodeLogin(c helper.Context) (res schema.Response) {
+func QRCodeGenerateLoginLink(c helper.Context) (res schema.Response) {
 	var (
 		err  error
 		data string
@@ -230,22 +229,25 @@ func QRCodeLogin(c helper.Context) (res schema.Response) {
 	return
 }
 
-var QRCodeLoginRouter = router.Handler(func(c router.Context) {
+var QRCodeGenerateLoginLinkRouter = router.Handler(func(c router.Context) {
 	c.ResponseFunc(nil, func() schema.Response {
-		return QRCodeLogin(helper.NewContext(&c))
+		return QRCodeGenerateLoginLink(helper.NewContext(&c))
 	})
 })
 
 type QRCodeCheckParams struct {
 	Url      string `json:"url" validate:"required" comment:"URL"`
-	Duration *int64 `json:"duration" validate:"omitempty,int" comment:"持续时间"`
+	Duration *int64 `json:"duration" validate:"omitempty" comment:"持续时间"`
 }
 
 func QRCodeLoginCheck(c helper.Context, input QRCodeCheckParams) (res schema.Response) {
 	var (
 		err  error
-		data *schema.ProfileWithToken
+		data = &schema.ProfileWithToken{}
 		tx   *gorm.DB
+		u    *url.URL
+		p    *proto.Proto
+		b    []byte
 	)
 
 	defer func() {
@@ -268,6 +270,10 @@ func QRCodeLoginCheck(c helper.Context, input QRCodeCheckParams) (res schema.Res
 			}
 		}
 
+		if err != nil {
+			data = nil
+		}
+
 		helper.Response(&res, data, nil, err)
 	}()
 
@@ -278,92 +284,100 @@ func QRCodeLoginCheck(c helper.Context, input QRCodeCheckParams) (res schema.Res
 		return
 	}
 
-	u, err := url.Parse(input.Url)
+	u, err = url.Parse(input.Url)
 
 	if err != nil {
 		return
 	}
 
 	switch u.Scheme {
-	case string(proto.Auth):
+	case proto.Auth.String():
 		{
-			encodedStr := u.RawPath
+			p, err = proto.Parse(input.Url)
 
-			if b, err := base64.StdEncoding.DecodeString(encodedStr); err != nil {
+			if err != nil {
 				return
-			} else {
-				var payload QRCodeBody
+			}
 
-				if err := json.Unmarshal(b, &payload); err != nil {
-					return
-				}
+			b, err = p.Data()
 
-				val, err := redis.QRCodeLoginCode.Get(context.Background(), payload.SessionID).Result()
+			if err != nil {
+				return
+			}
 
+			var payload QRCodeBody
+
+			if err = json.Unmarshal(b, &payload); err != nil {
+				return
+			}
+
+			var val string
+
+			val, err = redis.QRCodeLoginCode.Get(context.Background(), payload.SessionID).Result()
+
+			if err != nil {
+				return
+			}
+
+			var entry QRCodeEntry
+
+			if err = json.Unmarshal([]byte(val), &entry); err != nil {
+				return
+			}
+
+			if entry.UserID == nil {
+				err = exception.NoData
 				if err != nil {
 					return
 				}
+				return
+			}
 
-				var entry QRCodeEntry
+			userInfo := model.User{}
 
-				if err := json.Unmarshal([]byte(val), &entry); err != nil {
-					return
-				}
+			if err = tx.Model(userInfo).Where("id = ?", entry.UserID).First(&userInfo).Error; err != nil {
+				return
+			}
 
-				if entry.UserID == nil {
-					err = exception.NoData
-					if err != nil {
-						return
-					}
-					return
-				}
+			if err = mapstructure.Decode(userInfo, &data.ProfilePure); err != nil {
+				return
+			}
 
-				userInfo := model.User{}
+			data.PayPassword = userInfo.PayPassword != nil && len(*userInfo.PayPassword) != 0
+			data.CreatedAt = userInfo.CreatedAt.Format(time.RFC3339Nano)
+			data.UpdatedAt = userInfo.UpdatedAt.Format(time.RFC3339Nano)
 
-				if err = tx.Model(userInfo).Where("id = ?", entry.UserID).First(&userInfo).Error; err != nil {
-					return
-				}
+			var duration time.Duration
 
-				if err = mapstructure.Decode(userInfo, &data.ProfilePure); err != nil {
-					return
-				}
+			if input.Duration != nil {
+				duration = time.Duration(*input.Duration * int64(time.Second))
+			} else {
+				duration = time.Hour * 6
+			}
 
-				data.PayPassword = userInfo.PayPassword != nil && len(*userInfo.PayPassword) != 0
-				data.CreatedAt = userInfo.CreatedAt.Format(time.RFC3339Nano)
-				data.UpdatedAt = userInfo.UpdatedAt.Format(time.RFC3339Nano)
+			// generate token
+			if t, err := authentication.Gateway(false).Generate(userInfo.Id, duration); err != nil {
+				return
+			} else {
+				data.Token = t
+			}
 
-				var duration time.Duration
+			// 写入登陆记录
+			loginLog := model.LoginLog{
+				Uid:     userInfo.Id,                       // 用户ID
+				Type:    model.LoginLogTypeQRCode,          // 默认用户名登陆
+				Command: model.LoginLogCommandLoginSuccess, // 登陆成功
+				Client:  c.UserAgent,                       // 用户的 userAgent
+				LastIp:  c.Ip,                              // 用户的IP
+			}
 
-				if input.Duration != nil {
-					duration = time.Duration(*input.Duration * int64(time.Second))
-				} else {
-					duration = time.Hour * 6
-				}
+			if err = tx.Create(&loginLog).Error; err != nil {
+				return
+			}
 
-				// generate token
-				if t, err := authentication.Gateway(false).Generate(userInfo.Id, duration); err != nil {
-					return
-				} else {
-					data.Token = t
-				}
-
-				// 写入登陆记录
-				loginLog := model.LoginLog{
-					Uid:     userInfo.Id,                       // 用户ID
-					Type:    model.LoginLogTypeQRCode,          // 默认用户名登陆
-					Command: model.LoginLogCommandLoginSuccess, // 登陆成功
-					Client:  c.UserAgent,                       // 用户的 userAgent
-					LastIp:  c.Ip,                              // 用户的IP
-				}
-
-				if err = tx.Create(&loginLog).Error; err != nil {
-					return
-				}
-
-				// 删除 redis
-				if err = redis.QRCodeLoginCode.Del(context.Background(), payload.SessionID).Err(); err != nil {
-					return
-				}
+			// 删除 redis
+			if err = redis.QRCodeLoginCode.Del(context.Background(), payload.SessionID).Err(); err != nil {
+				return
 			}
 		}
 	default:

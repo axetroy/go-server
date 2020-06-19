@@ -185,7 +185,7 @@ curl -X POST \
 
 web 端在扫码登录之前，请求这个接口
 
-返回一个 link，例如 `auth://eyJzZXNzaW9uX2lkIjoiMDZiNjY2NzAtYWFjYS00ZmRkLTg1NDctMTM2YTY1N2ExNTYxIiwiZXhwaXJlZF9hdCI6IjIwMjAtMDYtMTlUMDY6MzQ6MTcuOTQ2WiJ`
+返回一个 link，例如 `auth://eyJzZXNzaW9uX2lkIjoiOTk4Zjk4ODgtMTY5OC00NDQyLTljNTEtYzA0OTZjNzM2NzYyIiwiZXhwaXJlZF9hdCI6IjIwMjAtMDYtMTlUMTY6MTQ6NDguNDM4NzQ5NDI5KzA4OjAwIn0=`
 
 web 端 拿到这个码之后，渲染成二维码，供给 App 端扫描登录
 
@@ -194,11 +194,11 @@ web 端 拿到这个码之后，渲染成二维码，供给 App 端扫描登录
 转译之后得到
 
 ```js
-btoa(
-  'eyJzZXNzaW9uX2lkIjoiMDZiNjY2NzAtYWFjYS00ZmRkLTg1NDctMTM2YTY1N2ExNTYxIiwiZXhwaXJlZF9hdCI6IjIwMjAtMDYtMTlUMDY6MzQ6MTcuOTQ2WiJ',
+atob(
+  'eyJzZXNzaW9uX2lkIjoiOTk4Zjk4ODgtMTY5OC00NDQyLTljNTEtYzA0OTZjNzM2NzYyIiwiZXhwaXJlZF9hdCI6IjIwMjAtMDYtMTlUMTY6MTQ6NDguNDM4NzQ5NDI5KzA4OjAwIn0=',
 )
 
-// {"session_id":"06b66670-aaca-4fdd-8547-136a657a1561","expired_at":"2020-06-19T06:34:17.946Z"}
+// {"session_id":"998f9888-1698-4442-9c51-c0496c736762","expired_at":"2020-06-19T16:14:48.438749429+08:00"}
 ```
 
 里面标记了会话 ID 和 这个会话的过期时间

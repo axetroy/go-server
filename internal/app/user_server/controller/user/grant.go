@@ -24,6 +24,9 @@ type QRCodeAuthParams struct {
 func QRCodeAuthGrant(c helper.Context, input QRCodeAuthParams) (res schema.Response) {
 	var (
 		err error
+		u   *url.URL
+		p   *proto.Proto
+		b   []byte
 	)
 
 	defer func() {
@@ -46,7 +49,7 @@ func QRCodeAuthGrant(c helper.Context, input QRCodeAuthParams) (res schema.Respo
 		return
 	}
 
-	u, err := url.Parse(input.Url)
+	u, err = url.Parse(input.Url)
 
 	if err != nil {
 		return
@@ -55,41 +58,47 @@ func QRCodeAuthGrant(c helper.Context, input QRCodeAuthParams) (res schema.Respo
 	switch u.Scheme {
 	case string(proto.Auth):
 		{
-			encodedStr := u.RawPath
+			p, err = proto.Parse(input.Url)
 
-			if b, err := base64.StdEncoding.DecodeString(encodedStr); err != nil {
+			if err != nil {
 				return
-			} else {
-				var payload auth.QRCodeBody
+			}
 
-				if err := json.Unmarshal(b, &payload); err != nil {
-					return
-				}
+			b, err = p.Data()
 
-				val, err := redis.QRCodeLoginCode.Get(context.Background(), payload.SessionID).Result()
+			if err != nil {
+				return
+			}
 
-				if err != nil {
-					return
-				}
+			var payload auth.QRCodeBody
 
-				var entry auth.QRCodeEntry
+			if err := json.Unmarshal(b, &payload); err != nil {
+				return
+			}
 
-				if err := json.Unmarshal([]byte(val), &entry); err != nil {
-					return
-				}
+			val, err := redis.QRCodeLoginCode.Get(context.Background(), payload.SessionID).Result()
 
-				entry.UserID = &c.Uid
+			if err != nil {
+				return
+			}
 
-				b, err := json.Marshal(entry)
+			var entry auth.QRCodeEntry
 
-				if err != nil {
-					return
-				}
+			if err := json.Unmarshal([]byte(val), &entry); err != nil {
+				return
+			}
 
-				// 更新 redis
-				if err = redis.QRCodeLoginCode.Set(context.Background(), payload.SessionID, string(b), time.Minute*2).Err(); err != nil {
-					return
-				}
+			entry.UserID = &c.Uid
+
+			b, err := json.Marshal(entry)
+
+			if err != nil {
+				return
+			}
+
+			// 更新 redis
+			if err = redis.QRCodeLoginCode.Set(context.Background(), payload.SessionID, string(b), time.Minute*2).Err(); err != nil {
+				return
 			}
 		}
 	default:

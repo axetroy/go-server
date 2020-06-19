@@ -67,19 +67,19 @@ func init() {
 		// 认证类
 		{
 			authRouter := v1.Party("/auth")
-			authRouter.Post("/signup/email", auth.SignUpWithEmailRouter)   // 注册账号，通过邮箱+验证码
-			authRouter.Post("/signup/phone", auth.SignUpWithPhoneRouter)   // 注册账号，通过手机+验证码
-			authRouter.Post("/signup", auth.SignUpWithUsernameRouter)      // 注册账号, 通过用户名+密码
-			authRouter.Post("/signin/email", auth.SignInWithEmailRouter)   // 邮箱+验证码 登陆
-			authRouter.Post("/signin/phone", auth.SignInWithPhoneRouter)   // 手机+验证码 登陆
-			authRouter.Post("/signin/wechat", auth.SignInWithWechatRouter) // 微信帐号登陆
-			authRouter.Post("/signin/oauth2", auth.SignInWithOAuthRouter)  // oAuth 码登陆
-			authRouter.Post("/signin", auth.SignInRouter)                  // 登陆账号
-			authRouter.Put("/password/reset", auth.ResetPasswordRouter)    // 密码重置
-			authRouter.Post("/code/email", auth.SendEmailAuthCodeRouter)   // 发送邮箱验证码，验证邮箱是否为用户所有 TODO: 缺少测试用例
-			authRouter.Post("/code/phone", auth.SendPhoneAuthCodeRouter)   // 发送手机验证码，验证手机是否为用户所有 TODO: 缺少测试用例
-			authRouter.Get("/qrcode/signin", auth.QRCodeLoginRouter)       // 请求使用二维码登录
-			authRouter.Get("/qrcode/check", auth.QRCodeLoginCheckRouter)   // 检查是否可以登录
+			authRouter.Post("/signup/email", auth.SignUpWithEmailRouter)         // 注册账号，通过邮箱+验证码
+			authRouter.Post("/signup/phone", auth.SignUpWithPhoneRouter)         // 注册账号，通过手机+验证码
+			authRouter.Post("/signup", auth.SignUpWithUsernameRouter)            // 注册账号, 通过用户名+密码
+			authRouter.Post("/signin/email", auth.SignInWithEmailRouter)         // 邮箱+验证码 登陆
+			authRouter.Post("/signin/phone", auth.SignInWithPhoneRouter)         // 手机+验证码 登陆
+			authRouter.Post("/signin/wechat", auth.SignInWithWechatRouter)       // 微信帐号登陆
+			authRouter.Post("/signin/oauth2", auth.SignInWithOAuthRouter)        // oAuth 码登陆
+			authRouter.Post("/signin", auth.SignInRouter)                        // 登陆账号
+			authRouter.Put("/password/reset", auth.ResetPasswordRouter)          // 密码重置
+			authRouter.Post("/code/email", auth.SendEmailAuthCodeRouter)         // 发送邮箱验证码，验证邮箱是否为用户所有 TODO: 缺少测试用例
+			authRouter.Post("/code/phone", auth.SendPhoneAuthCodeRouter)         // 发送手机验证码，验证手机是否为用户所有 TODO: 缺少测试用例
+			authRouter.Get("/qrcode/signin", auth.QRCodeGenerateLoginLinkRouter) // 请求使用二维码登录
+			authRouter.Get("/qrcode/check", auth.QRCodeLoginCheckRouter)         // 检查是否可以登录
 		}
 
 		// oAuth2 认证
