@@ -15,6 +15,7 @@ import (
 	"github.com/axetroy/go-server/internal/app/user_server/controller/news"
 	"github.com/axetroy/go-server/internal/app/user_server/controller/notification"
 	"github.com/axetroy/go-server/internal/app/user_server/controller/oauth2"
+	"github.com/axetroy/go-server/internal/app/user_server/controller/phone"
 	"github.com/axetroy/go-server/internal/app/user_server/controller/report"
 	"github.com/axetroy/go-server/internal/app/user_server/controller/signature"
 	"github.com/axetroy/go-server/internal/app/user_server/controller/transfer"
@@ -76,8 +77,6 @@ func init() {
 			authRouter.Post("/signin/oauth2", auth.SignInWithOAuthRouter)        // oAuth 码登陆
 			authRouter.Post("/signin", auth.SignInRouter)                        // 登陆账号
 			authRouter.Put("/password/reset", auth.ResetPasswordRouter)          // 密码重置
-			authRouter.Post("/code/email", auth.SendEmailAuthCodeRouter)         // 发送邮箱验证码，验证邮箱是否为用户所有 TODO: 缺少测试用例
-			authRouter.Post("/code/phone", auth.SendPhoneAuthCodeRouter)         // 发送手机验证码，验证手机是否为用户所有 TODO: 缺少测试用例
 			authRouter.Get("/qrcode/signin", auth.QRCodeGenerateLoginLinkRouter) // 请求使用二维码登录
 			authRouter.Get("/qrcode/check", auth.QRCodeLoginCheckRouter)         // 检查是否可以登录
 		}
@@ -235,8 +234,19 @@ func init() {
 		// 通用类
 		{
 			// 邮件服务
-			v1.Post("/email/send/register", auth.SignUpWithEmailActionRouter)         // 发送注册邮件
-			v1.Post("/email/send/password/reset", email.SendResetPasswordEmailRouter) // 发送密码重置邮件
+			{
+				emailRouter := v1.Party("/email")
+				emailRouter.Post("/send/register", email.SendEmailCodeForRegistryRouter)     // 发送注册邮件
+				emailRouter.Post("/send/auth", email.SendEmailCodeForRegistryRouter)         // 邮箱认证
+				emailRouter.Post("/send/password/reset", email.SendResetPasswordEmailRouter) // 发送密码重置邮件
+			}
+
+			// 短信服务
+			{
+				emailRouter := v1.Party("/phone")
+				emailRouter.Post("/send/register", phone.SendPhoneCodeForRegistryRouter) // 发送注册短信
+				emailRouter.Post("/send/auth", phone.SendPhoneCodeForLoginRouter)        // 手机认证
+			}
 
 			// 数据签名
 			v1.Post("/signature", signature.EncryptionRouter)

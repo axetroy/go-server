@@ -7,15 +7,12 @@ import (
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
 	"github.com/axetroy/go-server/internal/library/router"
-	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/axetroy/go-server/internal/library/validator"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/authentication"
 	"github.com/axetroy/go-server/internal/service/database"
-	"github.com/axetroy/go-server/internal/service/email"
 	"github.com/axetroy/go-server/internal/service/redis"
-	"github.com/axetroy/go-server/internal/service/telephone"
 	"github.com/axetroy/go-server/pkg/proto"
 	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
@@ -24,150 +21,6 @@ import (
 	"net/url"
 	"time"
 )
-
-type SendEmailAuthCodeParams struct {
-	Email string `json:"email" validate:"required,email" comment:"邮箱"`
-}
-
-type SendPhoneAuthCodeType string
-
-const (
-	SendPhoneAuthCodeTypeRegistry SendPhoneAuthCodeType = "registry"
-	SendPhoneAuthCodeTypeSignIn   SendPhoneAuthCodeType = "login"
-)
-
-type SendPhoneAuthCodeParams struct {
-	Phone string                `json:"phone" validate:"required,numeric,len=11" comment:"手机号"`
-	Type  SendPhoneAuthCodeType `json:"type" validate:"required" comment:"类型"`
-}
-
-func GenerateAuthCode() string {
-	return util.RandomString(6)
-}
-
-// 发送邮箱验证码 (不需要登陆)
-func SendEmailAuthCode(c helper.Context, input SendEmailAuthCodeParams) (res schema.Response) {
-	var (
-		err error
-	)
-
-	defer func() {
-		if r := recover(); r != nil {
-			switch t := r.(type) {
-			case string:
-				err = errors.New(t)
-			case error:
-				err = t
-			default:
-				err = exception.Unknown
-			}
-		}
-
-		helper.Response(&res, nil, nil, err)
-	}()
-
-	// 参数校验
-	if err = validator.ValidateStruct(input); err != nil {
-		return
-	}
-
-	// 生成验证码
-	activationCode := GenerateAuthCode()
-
-	// 缓存验证码到 redis
-	if err = redis.ClientAuthEmailCode.Set(context.Background(), activationCode, input.Email, time.Minute*10).Err(); err != nil {
-		return
-	}
-
-	e, err := email.NewMailer()
-
-	if err != nil {
-		return
-	}
-
-	// send email
-	if err = e.SendAuthEmail(input.Email, activationCode); err != nil {
-		// 邮件没发出去的话，删除redis的key
-		_ = redis.ClientAuthEmailCode.Del(context.Background(), activationCode).Err()
-		return
-	}
-
-	return
-}
-
-// 发送手机验证码 (不需要登陆)
-func SendPhoneAuthCode(c helper.Context, input SendPhoneAuthCodeParams) (res schema.Response) {
-	var (
-		err error
-	)
-
-	defer func() {
-		if r := recover(); r != nil {
-			switch t := r.(type) {
-			case string:
-				err = errors.New(t)
-			case error:
-				err = t
-			default:
-				err = exception.Unknown
-			}
-		}
-
-		helper.Response(&res, nil, nil, err)
-	}()
-
-	// 参数校验
-	if err = validator.ValidateStruct(input); err != nil {
-		return
-	}
-
-	// 生成验证码
-	activationCode := GenerateAuthCode()
-
-	// 缓存验证码到 redis
-	if err = redis.ClientAuthPhoneCode.Set(context.Background(), activationCode, input.Phone, time.Minute*10).Err(); err != nil {
-		return
-	}
-
-	switch input.Type {
-	case SendPhoneAuthCodeTypeRegistry:
-		if err = telephone.GetClient().SendRegisterCode(input.Phone, activationCode); err != nil {
-			// 如果发送失败，则删除
-			_ = redis.ClientAuthPhoneCode.Del(context.Background(), activationCode).Err()
-			return
-		}
-	case SendPhoneAuthCodeTypeSignIn:
-		if err = telephone.GetClient().SendAuthCode(input.Phone, activationCode); err != nil {
-			// 如果发送失败，则删除
-			_ = redis.ClientAuthPhoneCode.Del(context.Background(), activationCode).Err()
-			return
-		}
-	default:
-		err = exception.InvalidParams
-	}
-
-	return
-}
-
-var SendEmailAuthCodeRouter = router.Handler(func(c router.Context) {
-	var (
-		input SendEmailAuthCodeParams
-	)
-
-	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
-		return SendEmailAuthCode(helper.NewContext(&c), input)
-	})
-})
-
-var SendPhoneAuthCodeRouter = router.Handler(func(c router.Context) {
-	var (
-		input SendPhoneAuthCodeParams
-	)
-
-	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
-		return SendPhoneAuthCode(helper.NewContext(&c), input)
-	})
-})
 
 type QRCodeBody struct {
 	SessionID string `json:"session_id"` // 会话 ID
