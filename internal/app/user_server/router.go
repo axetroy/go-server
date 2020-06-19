@@ -78,6 +78,8 @@ func init() {
 			authRouter.Put("/password/reset", auth.ResetPasswordRouter)    // 密码重置
 			authRouter.Post("/code/email", auth.SendEmailAuthCodeRouter)   // 发送邮箱验证码，验证邮箱是否为用户所有 TODO: 缺少测试用例
 			authRouter.Post("/code/phone", auth.SendPhoneAuthCodeRouter)   // 发送手机验证码，验证手机是否为用户所有 TODO: 缺少测试用例
+			authRouter.Get("/qrcode/signin", auth.QRCodeLoginRouter)       // 请求使用二维码登录
+			authRouter.Get("/qrcode/check", auth.QRCodeLoginCheckRouter)   // 检查是否可以登录
 		}
 
 		// oAuth2 认证
@@ -98,7 +100,9 @@ func init() {
 			userRouter.Post("/password2", middleware.Permission(*accession.Password2Set), user.SetPayPasswordRouter)              // 设置交易密码
 			userRouter.Put("/password2", middleware.Permission(*accession.Password2Update), user.UpdatePayPasswordRouter)         // 更新交易密码
 			userRouter.Put("/password2/reset", middleware.Permission(*accession.Password2Reset), user.ResetPayPasswordRouter)     // 重置交易密码
-			userRouter.Get("/password2/reset", middleware.Permission(*accession.Password2Reset), user.SendResetPayPasswordRouter) // 发送重置交易密码的邮件/短信 			// 上传用户头像
+			userRouter.Get("/password2/reset", middleware.Permission(*accession.Password2Reset), user.SendResetPayPasswordRouter) // 发送重置交易密码的邮件/短信
+			userRouter.Get("/qrcode/{link}", user.QRCodeAuthQueryRouter)                                                          // 查询信息
+			userRouter.Post("/qrcode/grant", user.QRCodeAuthGrantRouter)                                                          // 授权许可二维码登录
 
 			// 验证码类
 			{

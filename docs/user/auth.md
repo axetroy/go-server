@@ -178,3 +178,40 @@ curl -X POST \
 | 参数  | 类型     | 说明   | 必选 |
 | ----- | -------- | ------ | ---- |
 | phone | `string` | 手机号 | \*   |
+
+### 请求扫码登录
+
+[GET] /v1/auth/qrcode/signin
+
+web 端在扫码登录之前，请求这个接口
+
+返回一个 link，例如 `auth://eyJzZXNzaW9uX2lkIjoiMDZiNjY2NzAtYWFjYS00ZmRkLTg1NDctMTM2YTY1N2ExNTYxIiwiZXhwaXJlZF9hdCI6IjIwMjAtMDYtMTlUMDY6MzQ6MTcuOTQ2WiJ`
+
+web 端 拿到这个码之后，渲染成二维码，供给 App 端扫描登录
+
+`auth` 代表登录协议，后面的一长串的为 `base64` 编码的 JSON 字符串
+
+转译之后得到
+
+```js
+btoa(
+  'eyJzZXNzaW9uX2lkIjoiMDZiNjY2NzAtYWFjYS00ZmRkLTg1NDctMTM2YTY1N2ExNTYxIiwiZXhwaXJlZF9hdCI6IjIwMjAtMDYtMTlUMDY6MzQ6MTcuOTQ2WiJ',
+)
+
+// {"session_id":"06b66670-aaca-4fdd-8547-136a657a1561","expired_at":"2020-06-19T06:34:17.946Z"}
+```
+
+里面标记了会话 ID 和 这个会话的过期时间
+
+### 检查扫码登录的状态
+
+[GET] /v1/auth/qrcode/check
+
+检车 App 是否已经扫码登录
+
+| 参数     | 类型     | 说明                                | 必选 |
+| -------- | -------- | ----------------------------------- | ---- |
+| url      | `string` | `/v1/auth/qrcode/signin` 返回的 URL | \*   |
+| duration | `int`    | 如果登录成功，那么 token 的有效时间 |      |
+
+如果 App 已经扫码登录，那么返回的结构于登录接口一致

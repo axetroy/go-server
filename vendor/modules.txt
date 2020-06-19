@@ -229,6 +229,9 @@ github.com/modern-go/reflect2
 ## explicit
 # github.com/mrjones/oauth v0.0.0-20180629183705-f4e24b6d100c
 github.com/mrjones/oauth
+# github.com/mssola/user_agent v0.5.2
+## explicit
+github.com/mssola/user_agent
 # github.com/nsqio/go-nsq v1.0.8
 ## explicit
 github.com/nsqio/go-nsq

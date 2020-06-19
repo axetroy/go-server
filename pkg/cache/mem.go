@@ -39,7 +39,7 @@ func (m Mem) RemoveItem(key string) error {
 func (m Mem) Clear() error {
 	items := m.c.Items()
 
-	for key, _ := range items {
+	for key := range items {
 		m.c.Delete(key)
 	}
 

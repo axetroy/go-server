@@ -4,6 +4,7 @@ package migrate
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/axetroy/go-server/internal/app/customer_service/ws"
 	"github.com/axetroy/go-server/internal/library/util"
 	"github.com/axetroy/go-server/internal/model"
 	"github.com/axetroy/go-server/internal/service/database"
@@ -63,11 +64,9 @@ func createTestData() (err error) {
 				break children
 			}
 
-			payload := map[string]interface{}{
-				"message": fmt.Sprintf("Hello world %d", i),
-			}
-
-			b, _ := json.Marshal(payload)
+			b, _ := json.Marshal(ws.MessageTextPayload{
+				Text: fmt.Sprintf("Hello world %d", i),
+			})
 
 			sessionItem := model.CustomerSessionItem{
 				SessionID:  session.Id,

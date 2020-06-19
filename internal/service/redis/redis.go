@@ -16,6 +16,7 @@ var (
 	ClientAuthPhoneCode  *redis.Client // 存储手机验证码，存储结构 key: 验证码, value: 手机号
 	ClientResetCode      *redis.Client // 存储重置密码的
 	ClientOAuthCode      *redis.Client // 存储 oAuth2 对应的激活码
+	QRCodeLoginCode      *redis.Client // 扫码登录的临时码
 	Config               = config.Redis
 )
 
@@ -49,6 +50,9 @@ func Dispose() {
 	}
 	if ClientTokenAdmin != nil {
 		_ = ClientTokenAdmin.Close()
+	}
+	if QRCodeLoginCode != nil {
+		_ = QRCodeLoginCode.Close()
 	}
 }
 
@@ -105,6 +109,12 @@ func Connect() {
 		Addr:     addr,
 		Password: password,
 		DB:       11,
+	})
+
+	QRCodeLoginCode = redis.NewClient(&redis.Options{
+		Addr:     addr,
+		Password: password,
+		DB:       12,
 	})
 
 }

@@ -178,3 +178,34 @@ curl -H "Authorization: Bearer 你的身份令牌" \
 | 参数 | 类型     | 说明                                                                                                                                                                        | 必选 |
 | ---- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
 | code | `string` | 验证码，如果帐号已绑定手机，则为手机号收到的验证码（`/v1/user/auth/phone`），如果有为邮箱，则用邮箱收到的验证码（`/v1/user/auth/email`），否则使用 `wx.login()` 返回的 code | \*   |
+
+### 获取扫码登录的二维码信息
+
+[GET] /v1/user/qrcode/{:link}
+
+参数 `link` 为 Web 端二维码的信息, 格式为 `auth://eyJzZXNzaW9uX2lkIjoiMDZiNjY2NzAtYWFjYS00ZmRkLTg1NDctMTM2YTY1N2ExNTYxIiwiZXhwaXJlZF9hdCI6IjIwMjAtMDYtMTlUMDY6MzQ6MTcuOTQ2WiJ`
+
+返回扫码的基本信息，在哪里登录，IP 多什么，什么设备 等信息
+
+```json
+{
+  "message": "",
+  "data": {
+    "os": "Linux",
+    "browser": "Chrome",
+    "version": "70.0.133123",
+    "ip": "192.168.0.1"
+  },
+  "status": 1
+}
+```
+
+### 准许扫码登录
+
+[POST] /v1/user/qrcode/grant
+
+准许二维码登录，这个 web 端在循环调用 `/v1/auth/qrcode/check` 时将会成功，并且返回当前帐号的信息
+
+| 参数 | 类型     | 说明         | 必选 |
+| ---- | -------- | ------------ | ---- |
+| url  | `string` | 二维码的 URL | \*   |
