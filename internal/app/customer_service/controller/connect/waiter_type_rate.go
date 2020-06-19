@@ -5,8 +5,6 @@ import (
 	"errors"
 	"github.com/axetroy/go-server/internal/app/customer_service/ws"
 	"github.com/axetroy/go-server/internal/library/exception"
-	"github.com/axetroy/go-server/internal/library/util"
-	"github.com/axetroy/go-server/internal/library/validator"
 	"time"
 )
 
@@ -14,16 +12,6 @@ func waiterTypeRateHandler(waiterClient *ws.Client, msg ws.Message) (err error) 
 	// 如果还没有认证
 	if waiterClient.GetProfile() == nil {
 		return exception.UserNotLogin
-	}
-
-	var body ws.RatePayload
-
-	if err = util.Decode(&body, msg.Payload); err != nil {
-		return err
-	}
-
-	if err = validator.ValidateStruct(&body); err != nil {
-		return err
 	}
 
 	// 如果没有指定发送给谁
@@ -51,7 +39,7 @@ func waiterTypeRateHandler(waiterClient *ws.Client, msg ws.Message) (err error) 
 			From:    userClient.UUID,
 			To:      waiterClient.UUID,
 			Type:    ws.TypeResponseWaiterRateSuccess.String(),
-			Payload: body,
+			Payload: nil,
 			Date:    now,
 		})
 	} else {

@@ -120,7 +120,7 @@
 | message_history       | 系统推送过来的聊天记录               | `[...]`                                                                         |
 | session_history       | 系统推送过来的客服会话记录           | `[...]`                                                                         |
 | error                 | 操作错误                             | `{"message": "这是错误信息"}`                                                   |
-| rate_success          | 客服发起评分之后的回执               | `{"rate": 5}`                                                                   |
+| rate_success          | 客服发起评分之后的回执               | `null`                                                                          |
 | rate_user_success     | 用户评分之后的回执                   | `{"rate": 5}`                                                                   |
 
 对应的 type 源码: [https://github.com/axetroy/go-server/blob/master/internal/app/customer_service/ws/type.go](https://github.com/axetroy/go-server/blob/master/internal/app/customer_service/ws/type.go)
