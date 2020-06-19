@@ -29,8 +29,16 @@ type SendEmailAuthCodeParams struct {
 	Email string `json:"email" validate:"required,email" comment:"邮箱"`
 }
 
+type SendPhoneAuthCodeType string
+
+const (
+	SendPhoneAuthCodeTypeRegistry SendPhoneAuthCodeType = "registry"
+	SendPhoneAuthCodeTypeSignIn   SendPhoneAuthCodeType = "login"
+)
+
 type SendPhoneAuthCodeParams struct {
-	Phone string `json:"phone" validate:"required,numeric,len=11" comment:"手机号"`
+	Phone string                `json:"phone" validate:"required,numeric,len=11" comment:"手机号"`
+	Type  SendPhoneAuthCodeType `json:"type" validate:"required" comment:"类型"`
 }
 
 func GenerateAuthCode() string {
@@ -121,10 +129,21 @@ func SendPhoneAuthCode(c helper.Context, input SendPhoneAuthCodeParams) (res sch
 		return
 	}
 
-	if err = telephone.GetClient().SendAuthCode(input.Phone, activationCode); err != nil {
-		// 如果发送失败，则删除
-		_ = redis.ClientAuthPhoneCode.Del(context.Background(), activationCode).Err()
-		return
+	switch input.Type {
+	case SendPhoneAuthCodeTypeRegistry:
+		if err = telephone.GetClient().SendRegisterCode(input.Phone, activationCode); err != nil {
+			// 如果发送失败，则删除
+			_ = redis.ClientAuthPhoneCode.Del(context.Background(), activationCode).Err()
+			return
+		}
+	case SendPhoneAuthCodeTypeSignIn:
+		if err = telephone.GetClient().SendAuthCode(input.Phone, activationCode); err != nil {
+			// 如果发送失败，则删除
+			_ = redis.ClientAuthPhoneCode.Del(context.Background(), activationCode).Err()
+			return
+		}
+	default:
+		err = exception.InvalidParams
 	}
 
 	return

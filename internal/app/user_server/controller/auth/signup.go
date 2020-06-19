@@ -431,10 +431,6 @@ func SignUpWithPhone(input SignUpWithPhoneParams) (res schema.Response) {
 		UsernameRenameRemaining: 1, // 允许重命名 username 一次
 	}
 
-	if err = tx.Create(&userInfo).Error; err != nil {
-		return
-	}
-
 	if err = CreateUserTx(tx, &userInfo, input.InviteCode); err != nil {
 		return
 	}

@@ -4,21 +4,21 @@ package config
 import "github.com/axetroy/go-server/internal/service/dotenv"
 
 type aliyunCloud struct {
-	AccessKeyId               string `json:"access_key_id"`                // access key
-	AccessSecret              string `json:"access_secret"`                // access secret
-	SignName                  string `json:"sign_name"`                    // 短信签名名字
-	TemplateCodeAuth          string `json:"template_code_auth"`           // 短信模版代码 - 身份验证
-	TemplateCodeResetPassword string `json:"template_code_reset_password"` // 短信模版代码 - 重置密码
-	TemplateCodeRegister      string `json:"template_code_register"`       // 短信模版代码 - 注册帐号
+	AccessKeyId               string // access key
+	AccessSecret              string // access secret
+	SignName                  string // 短信签名名字
+	TemplateCodeAuth          string // 短信模版代码 - 身份验证
+	TemplateCodeResetPassword string // 短信模版代码 - 重置密码
+	TemplateCodeRegister      string // 短信模版代码 - 注册帐号
 }
 
 type tencentCloud struct {
-	AppId                     string `json:"app_id"`                       // sdkappid请填写您在 短信控制台 添加应用后生成的实际 SDK AppID
-	AppKey                    string `json:"app_key"`                      // sdkappid 对应的 appkey，需要业务方高度保密
-	Sign                      string `json:"sign"`                         // 短信签名内容，使用 UTF-8 编码，必须填写已审核通过的签名。签名信息可登录 短信控制台 查看
-	TemplateCodeAuth          string `json:"template_code_auth"`           // 短信模版代码 - 身份验证
-	TemplateCodeResetPassword string `json:"template_code_reset_password"` // 短信模版代码 - 重置密码
-	TemplateCodeRegister      string `json:"template_code_register"`       // 短信模版代码 - 注册帐号
+	AppId                     string // sdkappid请填写您在 短信控制台 添加应用后生成的实际 SDK AppID
+	AppKey                    string // sdkappid 对应的 appkey，需要业务方高度保密
+	Sign                      string // 短信签名内容，使用 UTF-8 编码，必须填写已审核通过的签名。签名信息可登录 短信控制台 查看
+	TemplateCodeAuth          string // 短信模版代码 - 身份验证
+	TemplateCodeResetPassword string // 短信模版代码 - 重置密码
+	TemplateCodeRegister      string // 短信模版代码 - 注册帐号
 }
 
 type telephone struct {

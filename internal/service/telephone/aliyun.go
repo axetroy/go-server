@@ -53,8 +53,12 @@ func (c *Aliyun) send(phone string, templateID string, templateMap map[string]st
 
 	res, err := aliClient.SendSms(request)
 
-	if err != nil || !res.IsSuccess() {
-		return exception.SendMsgFail
+	if err != nil {
+		return exception.SendMsgFail.New(err.Error())
+	}
+
+	if !res.IsSuccess() {
+		return exception.SendMsgFail.New(res.Message)
 	}
 
 	return nil

@@ -325,7 +325,7 @@ func SignInWithPhone(c helper.Context, input SignInWithPhoneParams) (res schema.
 	}
 
 	userInfo := model.User{
-		Email: &input.Phone,
+		Phone: &input.Phone,
 	}
 
 	tx = database.Db.Begin()

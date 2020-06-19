@@ -62,6 +62,12 @@ curl -X POST \
 | code        | `string` | 手机号收到的验证码, 通过 `/v1/auth/code/phone` 发送 | \*   |
 | invite_code | `string` | 邀请码                                              |      |
 
+```bash
+curl -X POST \
+     -d '{"phone": "test1", "code": "nSJ3n5"}' \
+     http://localhost:9001/v1/auth/signup/phone
+```
+
 ### 用户登陆
 
 [POST] /v1/auth/signin
@@ -175,9 +181,10 @@ curl -X POST \
 
 用户验证该手机号是这个用户所有
 
-| 参数  | 类型     | 说明   | 必选 |
-| ----- | -------- | ------ | ---- |
-| phone | `string` | 手机号 | \*   |
+| 参数  | 类型     | 说明                                      | 必选 |
+| ----- | -------- | ----------------------------------------- | ---- |
+| phone | `string` | 手机号                                    | \*   |
+| type  | `string` | 验证码用作类型, 可选 `registry` / `login` | \*   |
 
 ### 请求扫码登录
 
