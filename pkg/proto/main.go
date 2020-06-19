@@ -50,7 +50,7 @@ func (p Proto) String() (string, error) {
 }
 
 func Parse(link string) (*Proto, error) {
-	reg := regexp.MustCompile("^([\\w_]+)://(.*)$")
+	reg := regexp.MustCompile(`^([\w_]+)://(.*)$`)
 
 	if !reg.MatchString(link) {
 		return nil, fmt.Errorf("invalid link '%s'", link)
