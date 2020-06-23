@@ -181,9 +181,16 @@ curl -H "Authorization: Bearer 你的身份令牌" \
 
 ### 获取扫码登录的二维码信息
 
-[GET] /v1/user/qrcode/{:link}
+[GET] /v1/user/qrcode
 
-参数 `link` 为 Web 端二维码的信息, 格式为 `auth://eyJzZXNzaW9uX2lkIjoiMDZiNjY2NzAtYWFjYS00ZmRkLTg1NDctMTM2YTY1N2ExNTYxIiwiZXhwaXJlZF9hdCI6IjIwMjAtMDYtMTlUMDY6MzQ6MTcuOTQ2WiJ`
+> 注意，参数为 HTTP Request Body
+> 因为二维码中包含了 `//` 字符，导致路由匹配 404，所以才把它放入在 body 中
+
+| 参数 | 类型     | 说明         | 必选 |
+| ---- | -------- | ------------ | ---- |
+| url  | `string` | 二维码的 URL | \*   |
+
+参数 `url` 为 Web 端二维码的信息, 格式为 `auth://eyJzZXNzaW9uX2lkIjoiMDZiNjY2NzAtYWFjYS00ZmRkLTg1NDctMTM2YTY1N2ExNTYxIiwiZXhwaXJlZF9hdCI6IjIwMjAtMDYtMTlUMDY6MzQ6MTcuOTQ2WiJ`
 
 返回扫码的基本信息，在哪里登录，IP 多什么，什么设备 等信息
 

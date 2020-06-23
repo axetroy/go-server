@@ -119,7 +119,7 @@ var QRCodeAuthGrantRouter = router.Handler(func(c router.Context) {
 	})
 })
 
-func QRCodeAuthQuery(c helper.Context, link string) (res schema.Response) {
+func QRCodeAuthQuery(c helper.Context, input QRCodeAuthParams) (res schema.Response) {
 	var (
 		err  error
 		data auth.QRCodeEntry
@@ -140,7 +140,11 @@ func QRCodeAuthQuery(c helper.Context, link string) (res schema.Response) {
 		helper.Response(&res, data, nil, err)
 	}()
 
-	u, err := url.Parse(link)
+	if err = validator.ValidateStruct(input); err != nil {
+		return
+	}
+
+	u, err := url.Parse(input.Url)
 
 	if err != nil {
 		return
@@ -185,6 +189,6 @@ var QRCodeAuthQueryRouter = router.Handler(func(c router.Context) {
 	)
 
 	c.ResponseFunc(c.ShouldBindJSON(&input), func() schema.Response {
-		return QRCodeAuthQuery(helper.NewContext(&c), c.Param("link"))
+		return QRCodeAuthQuery(helper.NewContext(&c), input)
 	})
 })
