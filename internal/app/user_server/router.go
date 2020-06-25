@@ -3,6 +3,8 @@ package user_server
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/axetroy/go-server/internal/app/user_server/controller/address"
 	"github.com/axetroy/go-server/internal/app/user_server/controller/area"
 	"github.com/axetroy/go-server/internal/app/user_server/controller/auth"
@@ -28,7 +30,6 @@ import (
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/middleware/logger"
 	"github.com/kataras/iris/v12/middleware/recover"
-	"net/http"
 )
 
 var UserRouter *iris.Application
@@ -78,7 +79,7 @@ func init() {
 			authRouter.Post("/signin", auth.SignInRouter)                        // 登陆账号
 			authRouter.Put("/password/reset", auth.ResetPasswordRouter)          // 密码重置
 			authRouter.Get("/qrcode/signin", auth.QRCodeGenerateLoginLinkRouter) // 请求使用二维码登录
-			authRouter.Get("/qrcode/check", auth.QRCodeLoginCheckRouter)         // 检查是否可以登录
+			authRouter.Post("/qrcode/check", auth.QRCodeLoginCheckRouter)        // 检查是否可以登录
 		}
 
 		// oAuth2 认证
@@ -100,7 +101,7 @@ func init() {
 			userRouter.Put("/password2", middleware.Permission(*accession.Password2Update), user.UpdatePayPasswordRouter)         // 更新交易密码
 			userRouter.Put("/password2/reset", middleware.Permission(*accession.Password2Reset), user.ResetPayPasswordRouter)     // 重置交易密码
 			userRouter.Get("/password2/reset", middleware.Permission(*accession.Password2Reset), user.SendResetPayPasswordRouter) // 发送重置交易密码的邮件/短信
-			userRouter.Get("/qrcode/{link}", user.QRCodeAuthQueryRouter)                                                          // 查询信息
+			userRouter.Post("/qrcode", user.QRCodeAuthQueryRouter)                                                                // 查询信息
 			userRouter.Post("/qrcode/grant", user.QRCodeAuthGrantRouter)                                                          // 授权许可二维码登录
 
 			// 验证码类

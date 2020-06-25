@@ -3,6 +3,8 @@ package admin_server
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/axetroy/go-server/internal/app/admin_server/controller/admin"
 	"github.com/axetroy/go-server/internal/app/admin_server/controller/area"
 	"github.com/axetroy/go-server/internal/app/admin_server/controller/banner"
@@ -24,7 +26,6 @@ import (
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/middleware/logger"
 	"github.com/kataras/iris/v12/middleware/recover"
-	"net/http"
 )
 
 var AdminRouter *iris.Application

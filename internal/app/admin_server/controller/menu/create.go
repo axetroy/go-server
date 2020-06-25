@@ -3,6 +3,8 @@ package menu
 
 import (
 	"errors"
+	"time"
+
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
 	"github.com/axetroy/go-server/internal/library/router"
@@ -12,7 +14,6 @@ import (
 	"github.com/axetroy/go-server/internal/service/database"
 	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
-	"time"
 )
 
 type CreateMenuParams struct {

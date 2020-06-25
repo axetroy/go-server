@@ -2,9 +2,11 @@ package user
 
 import (
 	"context"
-	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"net/url"
+	"time"
+
 	"github.com/axetroy/go-server/internal/app/user_server/controller/auth"
 	"github.com/axetroy/go-server/internal/library/exception"
 	"github.com/axetroy/go-server/internal/library/helper"
@@ -13,8 +15,6 @@ import (
 	"github.com/axetroy/go-server/internal/schema"
 	"github.com/axetroy/go-server/internal/service/redis"
 	"github.com/axetroy/go-server/pkg/proto"
-	"net/url"
-	"time"
 )
 
 type QRCodeAuthParams struct {
@@ -123,6 +123,8 @@ func QRCodeAuthQuery(c helper.Context, input QRCodeAuthParams) (res schema.Respo
 	var (
 		err  error
 		data auth.QRCodeEntry
+		p    *proto.Proto
+		b    []byte
 	)
 
 	defer func() {
@@ -153,26 +155,32 @@ func QRCodeAuthQuery(c helper.Context, input QRCodeAuthParams) (res schema.Respo
 	switch u.Scheme {
 	case string(proto.Auth):
 		{
-			encodedStr := u.RawPath
+			p, err = proto.Parse(input.Url)
 
-			if b, err := base64.StdEncoding.DecodeString(encodedStr); err != nil {
+			if err != nil {
 				return
-			} else {
-				var payload auth.QRCodeBody
+			}
 
-				if err := json.Unmarshal(b, &payload); err != nil {
-					return
-				}
+			b, err = p.Data()
 
-				val, err := redis.QRCodeLoginCode.Get(context.Background(), payload.SessionID).Result()
+			if err != nil {
+				return
+			}
 
-				if err != nil {
-					return
-				}
+			var payload auth.QRCodeBody
 
-				if err := json.Unmarshal([]byte(val), &data); err != nil {
-					return
-				}
+			if err := json.Unmarshal(b, &payload); err != nil {
+				return
+			}
+
+			val, err := redis.QRCodeLoginCode.Get(context.Background(), payload.SessionID).Result()
+
+			if err != nil {
+				return
+			}
+
+			if err := json.Unmarshal([]byte(val), &data); err != nil {
+				return
 			}
 		}
 	default:
