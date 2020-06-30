@@ -104,14 +104,6 @@ func init() {
 			userRouter.Post("/qrcode", user.QRCodeAuthQueryRouter)                                                                // 查询信息
 			userRouter.Post("/qrcode/grant", user.QRCodeAuthGrantRouter)                                                          // 授权许可二维码登录
 
-			// 验证码类
-			{
-				authRouter := userRouter.Party("/auth")
-
-				authRouter.Post("/email", user.SendAuthEmailRouter) // 发送邮箱验证码到用户绑定的邮箱 TODO: 缺少测试用例
-				authRouter.Post("/phone", user.SendAuthPhoneRouter) // 发送手机验证码 TODO: 缺少测试用例
-			}
-
 			// 绑定类
 			{
 				bindRouter := userRouter.Party("/bind")
@@ -240,13 +232,25 @@ func init() {
 				emailRouter.Post("/send/register", email.SendEmailCodeForRegistryRouter)     // 发送注册邮件
 				emailRouter.Post("/send/auth", email.SendEmailCodeForRegistryRouter)         // 邮箱认证
 				emailRouter.Post("/send/password/reset", email.SendResetPasswordEmailRouter) // 发送密码重置邮件
+
+				// 需要登录
+				{
+					authRouter := emailRouter.Party("/auth", userAuthMiddleware)
+					authRouter.Post("/email", user.SendAuthEmailRouter) // 发送邮箱验证码到用户绑定的邮箱 TODO: 缺少测试用例
+				}
 			}
 
 			// 短信服务
 			{
-				emailRouter := v1.Party("/phone")
-				emailRouter.Post("/send/register", phone.SendPhoneCodeForRegistryRouter) // 发送注册短信
-				emailRouter.Post("/send/auth", phone.SendPhoneCodeForLoginRouter)        // 手机认证
+				phoneRouter := v1.Party("/phone")
+				phoneRouter.Post("/send/register", phone.SendPhoneCodeForRegistryRouter) // 发送注册短信
+				phoneRouter.Post("/send/auth", phone.SendPhoneCodeForLoginRouter)        // 手机认证
+
+				// 需要登录
+				{
+					authRouter := phoneRouter.Party("/auth", userAuthMiddleware)
+					authRouter.Post("/phone", user.SendAuthPhoneRouter) // 发送手机验证码 TODO: 缺少测试用例
+				}
 			}
 
 			// 数据签名

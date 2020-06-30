@@ -14,6 +14,7 @@
   - [个人消息](user/message)
   - [新闻资讯](user/news)
   - [邮件服务](user/email)
+  - [短信服务](user/phone)
   - [静态文件服务](user/static)
   - [Banner 管理](user/banner)
   - [用户反馈](user/report)
