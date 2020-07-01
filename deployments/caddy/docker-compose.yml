@@ -1,7 +1,7 @@
 version: '3'
 services:
   caddy:
-    image: caddy:2.1.0-alpine
+    image: caddy:2.1.1-alpine
     restart: always
     volumes:
       - /etc/localtime:/etc/localtime # Linux 下, 保持容器和宿主的时间和时区一致
