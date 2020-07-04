@@ -5,7 +5,6 @@ import (
 	"crypto/tls"
 	"fmt"
 	"math"
-	"math/rand"
 	"net"
 	"runtime"
 	"sort"
@@ -17,6 +16,7 @@ import (
 	"github.com/go-redis/redis/v8/internal/hashtag"
 	"github.com/go-redis/redis/v8/internal/pool"
 	"github.com/go-redis/redis/v8/internal/proto"
+	"golang.org/x/exp/rand"
 )
 
 var errClusterNoNodes = fmt.Errorf("redis: cluster has no nodes")
@@ -622,7 +622,7 @@ func (c *clusterStateHolder) LazyReload(ctx context.Context) {
 		if err != nil {
 			return
 		}
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(250 * time.Millisecond)
 	}()
 }
 
@@ -630,7 +630,7 @@ func (c *clusterStateHolder) Get(ctx context.Context) (*clusterState, error) {
 	v := c.state.Load()
 	if v != nil {
 		state := v.(*clusterState)
-		if time.Since(state.createdAt) > time.Minute {
+		if time.Since(state.createdAt) > 10*time.Second {
 			c.LazyReload(ctx)
 		}
 		return state, nil
@@ -780,10 +780,10 @@ func (c *ClusterClient) _process(ctx context.Context, cmd Cmder) error {
 		if lastErr == nil {
 			return nil
 		}
-		if lastErr != Nil {
-			c.state.LazyReload(ctx)
-		}
-		if lastErr == pool.ErrClosed || isReadOnlyError(lastErr) {
+		if isReadOnly := isReadOnlyError(lastErr); isReadOnly || lastErr == pool.ErrClosed {
+			if isReadOnly {
+				c.state.LazyReload(ctx)
+			}
 			node = nil
 			continue
 		}
@@ -993,7 +993,9 @@ func (c *ClusterClient) loadState(ctx context.Context) (*clusterState, error) {
 	}
 
 	var firstErr error
-	for _, addr := range addrs {
+	for _, idx := range rand.Perm(len(addrs)) {
+		addr := addrs[idx]
+
 		node, err := c.nodes.Get(addr)
 		if err != nil {
 			if firstErr == nil {
@@ -1429,9 +1431,6 @@ func (c *ClusterClient) Watch(ctx context.Context, fn func(*Tx) error, keys ...s
 		if err == nil {
 			break
 		}
-		if err != Nil {
-			c.state.LazyReload(ctx)
-		}
 
 		moved, ask, addr := isMovedError(err)
 		if moved || ask {
@@ -1442,7 +1441,10 @@ func (c *ClusterClient) Watch(ctx context.Context, fn func(*Tx) error, keys ...s
 			continue
 		}
 
-		if err == pool.ErrClosed || isReadOnlyError(err) {
+		if isReadOnly := isReadOnlyError(err); isReadOnly || err == pool.ErrClosed {
+			if isReadOnly {
+				c.state.LazyReload(ctx)
+			}
 			node, err = c.slotMasterNode(ctx, slot)
 			if err != nil {
 				return err
