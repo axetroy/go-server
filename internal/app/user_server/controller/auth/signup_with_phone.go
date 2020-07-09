@@ -21,6 +21,7 @@ import (
 type SignUpWithPhoneParams struct {
 	Phone      string  `json:"phone" validate:"required,numeric,len=11" comment:"手机号"` // 手机号
 	Code       string  `json:"code" validate:"required" comment:"验证码"`                 // 短信验证码
+	Password   *string `json:"password" validate:"omitempty" comment:"密码"`             // 密码
 	InviteCode *string `json:"invite_code" validate:"omitempty,len=8" comment:"邀请码"`   // 邀请码
 }
 
@@ -88,7 +89,14 @@ func SignUpWithPhone(input SignUpWithPhoneParams) (res schema.Response) {
 	}
 
 	username := "u" + util.GenerateId()
-	pwd := util.RandomString(6)
+
+	var pwd string
+
+	if input.Password != nil {
+		pwd = *input.Password
+	} else {
+		pwd = util.RandomString(6)
+	}
 
 	userInfo := model.User{
 		Username:                username,

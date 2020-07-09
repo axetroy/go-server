@@ -56,11 +56,12 @@ curl -X POST \
 
 [POST] /v1/auth/signup/phone
 
-| 参数        | 类型     | 说明                                                    | 必选 |
-| ----------- | -------- | ------------------------------------------------------- | ---- |
-| phone       | `string` | 手机号                                                  | \*   |
-| code        | `string` | 手机号收到的验证码, 通过 `/v1/phone/send/register` 发送 | \*   |
-| invite_code | `string` | 邀请码                                                  |      |
+| 参数        | 类型     | 说明                                                     | 必选 |
+| ----------- | -------- | -------------------------------------------------------- | ---- |
+| phone       | `string` | 手机号                                                   | \*   |
+| code        | `string` | 手机号收到的验证码, 通过 `/v1/phone/send/register` 发送  | \*   |
+| password    | `string` | 帐号密码，如果传入，则直接设置帐号密码，否则使用随机密码 |      |
+| invite_code | `string` | 邀请码                                                   |      |
 
 ```bash
 curl -X POST \
@@ -181,8 +182,8 @@ web 端 拿到这个码之后，渲染成二维码，供给 App 端扫描登录
 
 ```js
 atob(
-  'eyJzZXNzaW9uX2lkIjoiOTk4Zjk4ODgtMTY5OC00NDQyLTljNTEtYzA0OTZjNzM2NzYyIiwiZXhwaXJlZF9hdCI6IjIwMjAtMDYtMTlUMTY6MTQ6NDguNDM4NzQ5NDI5KzA4OjAwIn0=',
-)
+  "eyJzZXNzaW9uX2lkIjoiOTk4Zjk4ODgtMTY5OC00NDQyLTljNTEtYzA0OTZjNzM2NzYyIiwiZXhwaXJlZF9hdCI6IjIwMjAtMDYtMTlUMTY6MTQ6NDguNDM4NzQ5NDI5KzA4OjAwIn0="
+);
 
 // {"session_id":"998f9888-1698-4442-9c51-c0496c736762","expired_at":"2020-06-19T16:14:48.438749429+08:00"}
 ```
