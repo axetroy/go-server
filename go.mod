@@ -32,7 +32,7 @@ require (
 	github.com/jordan-wright/email v0.0.0-20200602115436-fd8a7622303e
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/kataras/iris/v12 v12.1.8
-	github.com/lib/pq v1.7.0
+	github.com/lib/pq v1.7.1
 	github.com/markbates/goth v1.64.1
 	github.com/markbates/pkger v0.17.0
 	github.com/mattn/go-isatty v0.0.12 // indirect
