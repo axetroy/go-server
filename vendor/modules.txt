@@ -191,7 +191,7 @@ github.com/leodido/go-urn
 github.com/lib/pq
 github.com/lib/pq/oid
 github.com/lib/pq/scram
-# github.com/markbates/goth v1.64.1
+# github.com/markbates/goth v1.64.2
 ## explicit
 github.com/markbates/goth
 github.com/markbates/goth/gothic
