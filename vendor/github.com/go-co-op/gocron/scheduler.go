@@ -102,6 +102,11 @@ func (s *Scheduler) scheduleNextRun(j *Job) error {
 			j.nextRun = j.nextRun.Add(time.Duration(dayDiff) * 24 * time.Hour)
 		}
 		j.nextRun = j.nextRun.Add(j.atTime)
+	case months:
+		increment := j.lastRun.Month() + time.Month(j.interval)
+		nextMonth := increment % 12
+		year := j.lastRun.Year() + int(increment/12)
+		j.nextRun = time.Date(year, nextMonth, j.dayOfTheMonth, 0, 0, 0, 0, s.loc).Add(j.atTime)
 	}
 
 	// advance to next possible Schedule
@@ -213,11 +218,13 @@ func (s *Scheduler) RemoveByReference(j *Job) {
 }
 
 func (s *Scheduler) removeByCondition(shouldRemove func(*Job) bool) {
-	for i, job := range s.jobs {
-		if shouldRemove(job) {
-			s.jobs = removeAtIndex(s.jobs, i)
+	retainedJobs := make([]*Job, 0)
+	for _, job := range s.jobs {
+		if !shouldRemove(job) {
+			retainedJobs = append(retainedJobs, job)
 		}
 	}
+	s.jobs = retainedJobs
 }
 
 // RemoveJobByTag will Remove Jobs by Tag
@@ -320,7 +327,7 @@ func (s *Scheduler) Do(jobFun interface{}, params ...interface{}) (*Job, error) 
 // At schedules the Job at a specific time of day in the form "HH:MM:SS" or "HH:MM"
 func (s *Scheduler) At(t string) *Scheduler {
 	j := s.getCurrentJob()
-	hour, min, sec, err := formatTime(t)
+	hour, min, sec, err := parseTime(t)
 	if err != nil {
 		j.err = ErrTimeFormat
 		return s
@@ -418,6 +425,23 @@ func (s *Scheduler) Weeks() *Scheduler {
 	s.setUnit(weeks)
 	return s
 }
+
+// Month sets the unit with months
+func (s *Scheduler) Month(dayOfTheMonth int) *Scheduler {
+	return s.Months(dayOfTheMonth)
+}
+
+// Months sets the unit with months
+func (s *Scheduler) Months(dayOfTheMonth int) *Scheduler {
+	s.getCurrentJob().dayOfTheMonth = dayOfTheMonth
+	s.setUnit(months)
+	return s
+}
+
+// NOTE: If the dayOfTheMonth for the above two functions is
+// more than the number of days in that month, the extra day(s)
+// spill over to the next month. Similarly, if it's less than 0,
+// it will go back to the month before
 
 // Weekday sets the start with a specific weekday weekday
 func (s *Scheduler) Weekday(startDay time.Weekday) *Scheduler {
