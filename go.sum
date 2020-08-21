@@ -35,6 +35,8 @@ github.com/aliyun/alibaba-cloud-sdk-go v1.61.431 h1:hbshAcQdooS8kO+DDXiBi7x0rgJ+
 github.com/aliyun/alibaba-cloud-sdk-go v1.61.431/go.mod h1:pUKYbK5JQ+1Dfxk80P0qxGqe5dkxDoabbZS7zOcouyA=
 github.com/aliyun/alibaba-cloud-sdk-go v1.61.432 h1:EMkMkRHzI9A3R01xkptieXkfKAWxlveB8EsuuRnVPHQ=
 github.com/aliyun/alibaba-cloud-sdk-go v1.61.432/go.mod h1:pUKYbK5JQ+1Dfxk80P0qxGqe5dkxDoabbZS7zOcouyA=
+github.com/aliyun/alibaba-cloud-sdk-go v1.61.433 h1:70IGawPlqpIGI4vxv86EDgFdHsyj+k7Du6qJoUL4RgY=
+github.com/aliyun/alibaba-cloud-sdk-go v1.61.433/go.mod h1:pUKYbK5JQ+1Dfxk80P0qxGqe5dkxDoabbZS7zOcouyA=
 github.com/andybalholm/cascadia v1.1.0/go.mod h1:GsXiBklL0woXo1j/WYWtSYYC4ouU9PqHO0sqidkEA4Y=
 github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6/go.mod h1:grANhF5doyWs3UAsr3K4I6qtAmlQcZDesFNEHPZAzj8=
 github.com/axetroy/go-fs v1.0.0 h1:un0mpbpYjOQirgdlKlZlzTjF30DZwYwK+ObWMxubAXA=
