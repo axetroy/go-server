@@ -24,7 +24,7 @@ do
 
     echo building ${target} ${os_arch}
 
-    CGO_ENABLED=0 GOOS=${goos} GOARCH=${goarch} go build -mod=vendor -gcflags=-trimpath=$GOPATH -asmflags=-trimpath=$GOPATH -ldflags "-w -s" -o ./bin/${filename} ./cmd/${target}/main.go
+    CGO_ENABLED=0 GOOS=${goos} GOARCH=${goarch} go build -mod=vendor -trimpath -ldflags "-w -s" -o ./bin/${filename} ./cmd/${target}/main.go
 
     # if build success
     if [[ $? == 0 ]];then
