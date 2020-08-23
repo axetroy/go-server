@@ -10,7 +10,7 @@ jobs:
       matrix:
         target: ['admin', 'user', 'resource', 'message_queue', 'scheduled', 'customer_service']
         kind: ['build']
-        go: ['^1.14.2']
+        go: ['^1.15.0']
         os: [ubuntu-latest, macOS-latest, windows-latest]
     name: Go ${{ matrix.go }} ${{ matrix.kind }} ${{ matrix.target }} in ${{ matrix.os }}
 
@@ -50,7 +50,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        go: ['^1.14.2']
+        go: ['^1.15.0']
         os: [ubuntu-latest]
     name: Go ${{ matrix.go }} lint in ${{ matrix.os }}
 
@@ -77,7 +77,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        go: ['^1.14.2']
+        go: ['^1.15.0']
         os: [ubuntu-latest]
 
     name: Go ${{ matrix.go }} test in ${{ matrix.os }}
