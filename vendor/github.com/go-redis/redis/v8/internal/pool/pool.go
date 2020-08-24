@@ -11,8 +11,10 @@ import (
 	"github.com/go-redis/redis/v8/internal"
 )
 
-var ErrClosed = errors.New("redis: client is closed")
-var ErrPoolTimeout = errors.New("redis: connection pool timeout")
+var (
+	ErrClosed      = errors.New("redis: client is closed")
+	ErrPoolTimeout = errors.New("redis: connection pool timeout")
+)
 
 var timers = sync.Pool{
 	New: func() interface{} {
@@ -38,8 +40,8 @@ type Pooler interface {
 	CloseConn(*Conn) error
 
 	Get(context.Context) (*Conn, error)
-	Put(*Conn)
-	Remove(*Conn, error)
+	Put(context.Context, *Conn)
+	Remove(context.Context, *Conn, error)
 
 	Len() int
 	IdleLen() int
@@ -60,13 +62,16 @@ type Options struct {
 	IdleCheckFrequency time.Duration
 }
 
+type lastDialErrorWrap struct {
+	err error
+}
+
 type ConnPool struct {
 	opt *Options
 
 	dialErrorsNum uint32 // atomic
 
-	lastDialErrorMu sync.RWMutex
-	lastDialError   error
+	lastDialError atomic.Value
 
 	queue chan struct{}
 
@@ -179,6 +184,7 @@ func (p *ConnPool) dialConn(ctx context.Context, pooled bool) (*Conn, error) {
 		return nil, err
 	}
 
+	internal.NewConnectionsCounter.Add(ctx, 1)
 	cn := NewConn(netConn)
 	cn.pooled = pooled
 	return cn, nil
@@ -204,16 +210,15 @@ func (p *ConnPool) tryDial() {
 }
 
 func (p *ConnPool) setLastDialError(err error) {
-	p.lastDialErrorMu.Lock()
-	p.lastDialError = err
-	p.lastDialErrorMu.Unlock()
+	p.lastDialError.Store(&lastDialErrorWrap{err: err})
 }
 
 func (p *ConnPool) getLastDialError() error {
-	p.lastDialErrorMu.RLock()
-	err := p.lastDialError
-	p.lastDialErrorMu.RUnlock()
-	return err
+	err, _ := p.lastDialError.Load().(*lastDialErrorWrap)
+	if err != nil {
+		return err.err
+	}
+	return nil
 }
 
 // Get returns existed connection from the pool or creates a new one.
@@ -313,15 +318,15 @@ func (p *ConnPool) popIdle() *Conn {
 	return cn
 }
 
-func (p *ConnPool) Put(cn *Conn) {
+func (p *ConnPool) Put(ctx context.Context, cn *Conn) {
 	if cn.rd.Buffered() > 0 {
-		internal.Logger.Printf("Conn has unread data")
-		p.Remove(cn, BadConnError{})
+		internal.Logger.Printf(ctx, "Conn has unread data")
+		p.Remove(ctx, cn, BadConnError{})
 		return
 	}
 
 	if !cn.pooled {
-		p.Remove(cn, nil)
+		p.Remove(ctx, cn, nil)
 		return
 	}
 
@@ -332,7 +337,7 @@ func (p *ConnPool) Put(cn *Conn) {
 	p.freeTurn()
 }
 
-func (p *ConnPool) Remove(cn *Conn, reason error) {
+func (p *ConnPool) Remove(ctx context.Context, cn *Conn, reason error) {
 	p.removeConnWithLock(cn)
 	p.freeTurn()
 	_ = p.closeConn(cn)
@@ -453,7 +458,7 @@ func (p *ConnPool) reaper(frequency time.Duration) {
 			}
 			_, err := p.ReapStaleConns()
 			if err != nil {
-				internal.Logger.Printf("ReapStaleConns failed: %s", err)
+				internal.Logger.Printf(context.Background(), "ReapStaleConns failed: %s", err)
 				continue
 			}
 		case <-p.closedCh:
