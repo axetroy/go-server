@@ -10,7 +10,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/cespare/xxhash"
+	"github.com/cespare/xxhash/v2"
 	"github.com/dgryski/go-rendezvous"
 	"golang.org/x/exp/rand"
 
@@ -304,7 +304,7 @@ func (c *ringShards) Heartbeat(frequency time.Duration) {
 			err := shard.Client.Ping(ctx).Err()
 			isUp := err == nil || err == pool.ErrPoolTimeout
 			if shard.Vote(isUp) {
-				internal.Logger.Printf("ring shard state changed: %s", shard)
+				internal.Logger.Printf(context.Background(), "ring shard state changed: %s", shard)
 				rebalance = true
 			}
 		}
@@ -477,7 +477,7 @@ func (c *Ring) Subscribe(ctx context.Context, channels ...string) *PubSub {
 
 	shard, err := c.shards.GetByKey(channels[0])
 	if err != nil {
-		//TODO: return PubSub with sticky error
+		// TODO: return PubSub with sticky error
 		panic(err)
 	}
 	return shard.Client.Subscribe(ctx, channels...)
@@ -491,7 +491,7 @@ func (c *Ring) PSubscribe(ctx context.Context, channels ...string) *PubSub {
 
 	shard, err := c.shards.GetByKey(channels[0])
 	if err != nil {
-		//TODO: return PubSub with sticky error
+		// TODO: return PubSub with sticky error
 		panic(err)
 	}
 	return shard.Client.PSubscribe(ctx, channels...)
@@ -558,7 +558,7 @@ func (c *Ring) cmdInfo(name string) *CommandInfo {
 	}
 	info := cmdsInfo[name]
 	if info == nil {
-		internal.Logger.Printf("info for cmd=%s not found", name)
+		internal.Logger.Printf(c.Context(), "info for cmd=%s not found", name)
 	}
 	return info
 }
@@ -597,7 +597,7 @@ func (c *Ring) _process(ctx context.Context, cmd Cmder) error {
 		}
 
 		lastErr = shard.Client.Process(ctx, cmd)
-		if lastErr == nil || !isRetryableError(lastErr, cmd.readTimeout() == nil) {
+		if lastErr == nil || !shouldRetry(lastErr, cmd.readTimeout() == nil) {
 			return lastErr
 		}
 	}
@@ -672,7 +672,7 @@ func (c *Ring) generalProcessPipeline(
 func (c *Ring) processShardPipeline(
 	ctx context.Context, hash string, cmds []Cmder, tx bool,
 ) error {
-	//TODO: retry?
+	// TODO: retry?
 	shard, err := c.shards.GetByName(hash)
 	if err != nil {
 		setCmdsErr(cmds, err)

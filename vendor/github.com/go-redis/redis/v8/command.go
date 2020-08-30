@@ -66,7 +66,13 @@ func cmdFirstKeyPos(cmd Cmder, info *CommandInfo) int {
 		return 0
 	case "publish":
 		return 1
+	case "memory":
+		// https://github.com/redis/redis/issues/7493
+		if cmd.stringArg(1) == "usage" {
+			return 2
+		}
 	}
+
 	if info == nil {
 		return 0
 	}
@@ -298,7 +304,7 @@ func (cmd *Cmd) readReply(rd *proto.Reader) error {
 	return cmd.err
 }
 
-// Implements proto.MultiBulkParse
+// sliceParser implements proto.MultiBulkParse.
 func sliceParser(rd *proto.Reader, n int64) (interface{}, error) {
 	vals := make([]interface{}, n)
 	for i := 0; i < len(vals); i++ {
@@ -1066,7 +1072,7 @@ func (cmd *XMessageSliceCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-// Implements proto.MultiBulkParse
+// xMessageSliceParser implements proto.MultiBulkParse.
 func xMessageSliceParser(rd *proto.Reader, n int64) (interface{}, error) {
 	msgs := make([]XMessage, n)
 	for i := 0; i < len(msgs); i++ {
@@ -1101,7 +1107,7 @@ func xMessageSliceParser(rd *proto.Reader, n int64) (interface{}, error) {
 	return msgs, nil
 }
 
-// Implements proto.MultiBulkParse
+// stringInterfaceMapParser implements proto.MultiBulkParse.
 func stringInterfaceMapParser(rd *proto.Reader, n int64) (interface{}, error) {
 	m := make(map[string]interface{}, n/2)
 	for i := int64(0); i < n; i += 2 {
@@ -1851,7 +1857,7 @@ func newGeoLocationSliceParser(q *GeoRadiusQuery) proto.MultiBulkParse {
 					Name: vv,
 				})
 			case *GeoLocation:
-				//TODO: avoid copying
+				// TODO: avoid copying
 				locs = append(locs, *vv)
 			default:
 				return nil, fmt.Errorf("got %T, expected string or *GeoLocation", v)
