@@ -186,7 +186,7 @@ github.com/klauspost/compress/gzip
 github.com/konsorten/go-windows-terminal-sequences
 # github.com/leodido/go-urn v1.2.0
 github.com/leodido/go-urn
-# github.com/lib/pq v1.7.1
+# github.com/lib/pq v1.8.0
 ## explicit
 github.com/lib/pq
 github.com/lib/pq/oid
