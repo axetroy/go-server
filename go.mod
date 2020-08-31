@@ -5,7 +5,7 @@ go 1.14
 require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/ajg/form v1.5.1 // indirect
-	github.com/aliyun/alibaba-cloud-sdk-go v1.61.450
+	github.com/aliyun/alibaba-cloud-sdk-go v1.61.451
 	github.com/axetroy/go-fs v1.0.0
 	github.com/axetroy/mocker v1.2.0
 	github.com/denisbrodbeck/machineid v1.0.1
