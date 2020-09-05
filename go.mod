@@ -17,7 +17,7 @@ require (
 	github.com/go-playground/locales v0.13.0
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator/v10 v10.3.0
-	github.com/go-redis/redis/v8 v8.0.0-beta.9
+	github.com/go-redis/redis/v8 v8.0.0-beta.10
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/google/uuid v1.1.2
 	github.com/gorilla/mux v1.7.4
@@ -62,5 +62,4 @@ require (
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45 // indirect
 	golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1
 	google.golang.org/appengine v1.6.5 // indirect
-	gopkg.in/yaml.v2 v2.2.8 // indirect
 )
