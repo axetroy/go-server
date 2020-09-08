@@ -1,6 +1,6 @@
 # goCron: A Golang Job Scheduling Package.
 
-[![CI State](https://github.com/go-co-op/gocron/workflows/Go%20Test/badge.svg)](https://github.com/go-co-op/gocron/actions?query=workflow%3A"Go+Test") ![Go Report Card](https://goreportcard.com/badge/github.com/go-co-op/gocron)
+[![CI State](https://github.com/go-co-op/gocron/workflows/Go%20Test/badge.svg)](https://github.com/go-co-op/gocron/actions?query=workflow%3A"Go+Test") ![Go Report Card](https://goreportcard.com/badge/github.com/go-co-op/gocron) [![Go Doc](https://godoc.org/github.com/go-co-op/gocron?status.svg)](https://godoc.org/github.com/go-co-op/gocron)
 
 goCron is a Golang job scheduling package which lets you run Go functions periodically at pre-determined interval using a simple, human-friendly syntax.
 
@@ -57,6 +57,12 @@ func main() {
     s2.Every(1).Month(time.Now().Day()).Do(task)
     s2.Every(2).Months(15).Do(task)
 
+    // check for errors
+    _, err := s2.Every(1).Day().At("bad-time").Do(task)
+    if err != nil {
+        log.Fatalf("error creating job: %v", err)
+    }
+
     // Do jobs with params
     s2.Every(1).Second().Do(taskWithParams, 1, "hello")
 
@@ -80,6 +86,7 @@ func main() {
     s2.Every(1).Day().At("10:30").Do(task)
     s2.Every(1).Monday().At("18:30").Do(task)
     s2.Every(1).Tuesday().At("18:30:59").Do(task)
+    s2.Every(1).Wednesday().At("1:01").Do(task)
 
     // Begin job at a specific date/time. 
     // Attention: scheduler timezone has precedence over job's timezone!
