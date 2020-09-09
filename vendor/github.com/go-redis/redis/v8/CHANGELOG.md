@@ -1,14 +1,20 @@
 # Changelog
 
+> :heart: [**Uptrace.dev** - distributed traces, logs, and errors in one place](https://uptrace.dev)
+
 ## v8 (unreleased)
 
 - All commands require `context.Context` as a first argument, e.g. `rdb.Ping(ctx)`. If you are not
-  using `context.Context` yet, the simplest option is to define package variable
-  `var ctx = context.TODO()` and use it when `ctx` is expected.
-- Ring uses Rendezvous Hashing by default which provides better distribution. This means that
-  existing keys must be moved to a new location or key will be inaccessible / lost. To use old
-  hashing scheme:
-- `Cluster.ForEachNode` is renamed to `ForEachShard` for consistency with `Ring`.
+  using `context.Context` yet, the simplest option is to define global package variable
+  `var ctx = context.TODO()` and use it when `ctx` is required.
+
+- Added `redisext.OpenTemetryHook` that adds
+  [Redis OpenTelemetry instrumentation](https://redis.uptrace.dev/tracing/).
+
+- Redis slow log support.
+
+- Ring uses Rendezvous Hashing by default which provides better distribution. You need to move
+  existing keys to a new location or keys will be inaccessible / lost. To use old hashing scheme:
 
 ```go
 import "github.com/golang/groupcache/consistenthash"
@@ -20,8 +26,7 @@ ring := redis.NewRing(&redis.RingOptions{
 })
 ```
 
-- Added `redisext.OpenTemetryHook` that adds
-  [Redis OpenTelemetry instrumentation](https://redis.uptrace.dev/tracing/).
+- `Cluster.ForEachNode` is renamed to `ForEachShard` for consistency with `Ring`.
 
 ## v7.3
 
