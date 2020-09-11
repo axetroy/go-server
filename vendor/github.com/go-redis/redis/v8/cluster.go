@@ -32,7 +32,7 @@ type ClusterOptions struct {
 
 	// The maximum number of retries before giving up. Command is retried
 	// on network errors and MOVED/ASK redirects.
-	// Default is 8 retries.
+	// Default is 3 retries.
 	MaxRedirects int
 
 	// Enables read-only commands on slave nodes.
@@ -83,7 +83,7 @@ func (opt *ClusterOptions) init() {
 	if opt.MaxRedirects == -1 {
 		opt.MaxRedirects = 0
 	} else if opt.MaxRedirects == 0 {
-		opt.MaxRedirects = 8
+		opt.MaxRedirects = 3
 	}
 
 	if (opt.RouteByLatency || opt.RouteRandomly) && opt.ClusterSlots == nil {
@@ -107,6 +107,9 @@ func (opt *ClusterOptions) init() {
 		opt.WriteTimeout = opt.ReadTimeout
 	}
 
+	if opt.MaxRetries == 0 {
+		opt.MaxRetries = -1
+	}
 	switch opt.MinRetryBackoff {
 	case -1:
 		opt.MinRetryBackoff = 0
@@ -132,12 +135,12 @@ func (opt *ClusterOptions) clientOptions() *Options {
 		Dialer:    opt.Dialer,
 		OnConnect: opt.OnConnect,
 
+		Username: opt.Username,
+		Password: opt.Password,
+
 		MaxRetries:      opt.MaxRetries,
 		MinRetryBackoff: opt.MinRetryBackoff,
 		MaxRetryBackoff: opt.MaxRetryBackoff,
-		Username:        opt.Username,
-		Password:        opt.Password,
-		readOnly:        opt.ReadOnly,
 
 		DialTimeout:  opt.DialTimeout,
 		ReadTimeout:  opt.ReadTimeout,
@@ -149,6 +152,8 @@ func (opt *ClusterOptions) clientOptions() *Options {
 		PoolTimeout:        opt.PoolTimeout,
 		IdleTimeout:        opt.IdleTimeout,
 		IdleCheckFrequency: disableIdleCheck,
+
+		readOnly: opt.ReadOnly,
 
 		TLSConfig: opt.TLSConfig,
 	}
@@ -188,16 +193,19 @@ func (n *clusterNode) Close() error {
 }
 
 func (n *clusterNode) updateLatency() {
-	const probes = 10
+	const numProbe = 10
+	var dur uint64
 
-	var latency uint32
-	for i := 0; i < probes; i++ {
+	for i := 0; i < numProbe; i++ {
+		time.Sleep(time.Duration(10+rand.Intn(10)) * time.Millisecond)
+
 		start := time.Now()
 		n.Client.Ping(context.TODO())
-		probe := uint32(time.Since(start) / time.Microsecond)
-		latency = (latency + probe) / 2
+		dur += uint64(time.Since(start) / time.Microsecond)
 	}
-	atomic.StoreUint32(&n.latency, latency)
+
+	latency := float64(dur) / float64(numProbe)
+	atomic.StoreUint32(&n.latency, uint32(latency+0.5))
 }
 
 func (n *clusterNode) Latency() time.Duration {
@@ -318,6 +326,9 @@ func (c *clusterNodes) GC(generation uint32) {
 	for addr, node := range c.nodes {
 		if node.Generation() >= generation {
 			c.activeAddrs = append(c.activeAddrs, addr)
+			if c.opt.RouteByLatency {
+				go node.updateLatency()
+			}
 			continue
 		}
 
@@ -548,8 +559,6 @@ func (c *clusterState) slotSlaveNode(slot int) (*clusterNode, error) {
 }
 
 func (c *clusterState) slotClosestNode(slot int) (*clusterNode, error) {
-	const threshold = time.Millisecond
-
 	nodes := c.slotNodes(slot)
 	if len(nodes) == 0 {
 		return c.nodes.Random()
@@ -560,13 +569,14 @@ func (c *clusterState) slotClosestNode(slot int) (*clusterNode, error) {
 		if n.Failing() {
 			continue
 		}
-		if node == nil || node.Latency()-n.Latency() > threshold {
+		if node == nil || n.Latency() < node.Latency() {
 			node = n
 		}
 	}
 	if node != nil {
 		return node, nil
 	}
+
 	// If all nodes are failing - return random node
 	return c.nodes.Random()
 }
@@ -717,9 +727,8 @@ func (c *ClusterClient) Options() *ClusterOptions {
 
 // ReloadState reloads cluster state. If available it calls ClusterSlots func
 // to get cluster slots information.
-func (c *ClusterClient) ReloadState(ctx context.Context) error {
-	_, err := c.state.Reload(ctx)
-	return err
+func (c *ClusterClient) ReloadState(ctx context.Context) {
+	c.state.LazyReload(ctx)
 }
 
 // Close closes the cluster client, releasing any open resources.
@@ -1628,7 +1637,7 @@ func (c *ClusterClient) cmdNode(
 		return nil, err
 	}
 
-	if c.opt.ReadOnly && cmdInfo != nil && cmdInfo.ReadOnly {
+	if (c.opt.RouteByLatency || c.opt.RouteRandomly) && cmdInfo != nil && cmdInfo.ReadOnly {
 		return c.slotReadOnlyNode(state, slot)
 	}
 	return state.slotMasterNode(slot)
