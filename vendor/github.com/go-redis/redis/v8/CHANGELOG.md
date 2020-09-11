@@ -4,9 +4,13 @@
 
 ## v8 (unreleased)
 
+- Documentation at https://redis.uptrace.dev/
+
 - All commands require `context.Context` as a first argument, e.g. `rdb.Ping(ctx)`. If you are not
   using `context.Context` yet, the simplest option is to define global package variable
   `var ctx = context.TODO()` and use it when `ctx` is required.
+
+- Added `redis.NewFailoverClusterClient` that supports routing read-only commands to a slave node.
 
 - Added `redisext.OpenTemetryHook` that adds
   [Redis OpenTelemetry instrumentation](https://redis.uptrace.dev/tracing/).
@@ -25,6 +29,9 @@ ring := redis.NewRing(&redis.RingOptions{
     },
 })
 ```
+
+- `ClusterOptions.MaxRedirects` default value is changed from 8 to 3.
+- `Options.MaxRetries` default value is changed from 0 to 3.
 
 - `Cluster.ForEachNode` is renamed to `ForEachShard` for consistency with `Ring`.
 
