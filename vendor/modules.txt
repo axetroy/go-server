@@ -126,7 +126,7 @@ github.com/iris-contrib/middleware/cors
 github.com/iris-contrib/pongo2
 # github.com/iris-contrib/schema v0.0.1
 github.com/iris-contrib/schema
-# github.com/jinzhu/gorm v1.9.15
+# github.com/jinzhu/gorm v1.9.16
 ## explicit
 github.com/jinzhu/gorm
 # github.com/jinzhu/inflection v1.0.0

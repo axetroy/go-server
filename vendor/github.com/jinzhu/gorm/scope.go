@@ -590,7 +590,7 @@ func (scope *Scope) buildCondition(clause map[string]interface{}, include bool) 
 		}
 		scopeQuotedTableName := newScope.QuotedTableName()
 		for _, field := range newScope.Fields() {
-			if !field.IsIgnored && !field.IsBlank {
+			if !field.IsIgnored && !field.IsBlank && field.Relationship == nil {
 				sqls = append(sqls, fmt.Sprintf("(%v.%v %s %v)", scopeQuotedTableName, scope.Quote(field.DBName), equalSQL, scope.AddToVars(field.Field.Interface())))
 			}
 		}
