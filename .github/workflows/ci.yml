@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 30
+    timeout-minutes: 60
     strategy:
       matrix:
         target: ['admin', 'user', 'resource', 'message_queue', 'scheduled', 'customer_service']
