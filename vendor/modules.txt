@@ -321,7 +321,7 @@ golang.org/x/crypto/poly1305
 golang.org/x/crypto/salsa20/salsa
 # golang.org/x/exp v0.0.0-20200908183739-ae8ad444f925
 golang.org/x/exp/rand
-# golang.org/x/image v0.0.0-20200801110659-972c09e46d76
+# golang.org/x/image v0.0.0-20200921011436-3a743ba83854
 ## explicit
 golang.org/x/image/draw
 golang.org/x/image/math/f64
