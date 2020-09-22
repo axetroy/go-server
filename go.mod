@@ -20,7 +20,7 @@ require (
 	github.com/go-redis/redis/v8 v8.0.0
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/google/uuid v1.1.2
-	github.com/gorilla/mux v1.7.4
+	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/sessions v1.2.0 // indirect
 	github.com/gorilla/websocket v1.4.2
 	github.com/holdno/snowFlakeByGo v0.0.0-20180510033652-d23f8a8cadd7
