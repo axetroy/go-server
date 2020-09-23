@@ -13,7 +13,7 @@ github.com/Shopify/goreferrer
 github.com/StackExchange/wmi
 # github.com/ajg/form v1.5.1
 ## explicit
-# github.com/aliyun/alibaba-cloud-sdk-go v1.61.514
+# github.com/aliyun/alibaba-cloud-sdk-go v1.61.517
 ## explicit
 github.com/aliyun/alibaba-cloud-sdk-go/sdk
 github.com/aliyun/alibaba-cloud-sdk-go/sdk/auth
