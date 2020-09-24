@@ -80,7 +80,7 @@ github.com/go-playground/universal-translator
 ## explicit
 github.com/go-playground/validator/v10
 github.com/go-playground/validator/v10/translations/zh
-# github.com/go-redis/redis/v8 v8.2.0
+# github.com/go-redis/redis/v8 v8.2.1
 ## explicit
 github.com/go-redis/redis/v8
 github.com/go-redis/redis/v8/internal
