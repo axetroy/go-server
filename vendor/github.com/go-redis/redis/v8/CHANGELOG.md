@@ -10,6 +10,8 @@
   using `context.Context` yet, the simplest option is to define global package variable
   `var ctx = context.TODO()` and use it when `ctx` is required.
 
+- Full support for `context.Context` canceling.
+
 - Added `redis.NewFailoverClusterClient` that supports routing read-only commands to a slave node.
 
 - Added `redisext.OpenTemetryHook` that adds

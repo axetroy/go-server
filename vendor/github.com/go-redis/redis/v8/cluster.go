@@ -16,7 +16,7 @@ import (
 	"github.com/go-redis/redis/v8/internal/hashtag"
 	"github.com/go-redis/redis/v8/internal/pool"
 	"github.com/go-redis/redis/v8/internal/proto"
-	"golang.org/x/exp/rand"
+	"github.com/go-redis/redis/v8/internal/rand"
 )
 
 var errClusterNoNodes = fmt.Errorf("redis: cluster has no nodes")
@@ -751,15 +751,6 @@ func (c *ClusterClient) Process(ctx context.Context, cmd Cmder) error {
 }
 
 func (c *ClusterClient) process(ctx context.Context, cmd Cmder) error {
-	err := c._process(ctx, cmd)
-	if err != nil {
-		cmd.SetErr(err)
-		return err
-	}
-	return nil
-}
-
-func (c *ClusterClient) _process(ctx context.Context, cmd Cmder) error {
 	cmdInfo := c.cmdInfo(cmd.Name())
 	slot := c.cmdSlot(cmd)
 
@@ -1197,9 +1188,12 @@ func (c *ClusterClient) pipelineReadCmds(
 ) error {
 	for _, cmd := range cmds {
 		err := cmd.readReply(rd)
+		cmd.SetErr(err)
+
 		if err == nil {
 			continue
 		}
+
 		if c.checkMovedErr(ctx, cmd, err, failedCmds) {
 			continue
 		}
@@ -1554,7 +1548,7 @@ func (c *ClusterClient) retryBackoff(attempt int) time.Duration {
 	return internal.RetryBackoff(attempt, c.opt.MinRetryBackoff, c.opt.MaxRetryBackoff)
 }
 
-func (c *ClusterClient) cmdsInfo() (map[string]*CommandInfo, error) {
+func (c *ClusterClient) cmdsInfo(ctx context.Context) (map[string]*CommandInfo, error) {
 	// Try 3 random nodes.
 	const nodeLimit = 3
 
@@ -1581,7 +1575,7 @@ func (c *ClusterClient) cmdsInfo() (map[string]*CommandInfo, error) {
 			continue
 		}
 
-		info, err := node.Client.Command(c.ctx).Result()
+		info, err := node.Client.Command(ctx).Result()
 		if err == nil {
 			return info, nil
 		}
@@ -1597,7 +1591,7 @@ func (c *ClusterClient) cmdsInfo() (map[string]*CommandInfo, error) {
 }
 
 func (c *ClusterClient) cmdInfo(name string) *CommandInfo {
-	cmdsInfo, err := c.cmdsInfoCache.Get()
+	cmdsInfo, err := c.cmdsInfoCache.Get(c.ctx)
 	if err != nil {
 		return nil
 	}

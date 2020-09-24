@@ -2,7 +2,8 @@
 
 [![Build Status](https://travis-ci.org/go-redis/redis.png?branch=master)](https://travis-ci.org/go-redis/redis)
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/go-redis/redis/v8)](https://pkg.go.dev/github.com/go-redis/redis/v8?tab=doc)
-[![Documentation](https://img.shields.io/badge/pg-documentation-informational)](https://redis.uptrace.dev/)
+[![Documentation](https://img.shields.io/badge/redis-documentation-informational)](https://redis.uptrace.dev/)
+[![Chat](https://discordapp.com/api/guilds/756530933771010068/widget.png)](https://discord.gg/ZQJDR3R)
 
 > :heart: [**Uptrace.dev** - distributed traces, logs, and errors in one place](https://uptrace.dev)
 
@@ -10,6 +11,8 @@
 - [Reference](https://pkg.go.dev/github.com/go-redis/redis/v8?tab=doc)
 - [Examples](https://pkg.go.dev/github.com/go-redis/redis/v8?tab=doc#pkg-examples)
 - [RealWorld example app](https://github.com/uptrace/go-realworld-example-app)
+- Use [Discord](https://discord.gg/ZQJDR3R) or [stackoverflow](https://stackoverflow.com/) to ask
+  questions.
 
 ## Ecosystem
 
@@ -119,6 +122,9 @@ Some corner cases:
 ```go
 // SET key value EX 10 NX
 set, err := rdb.SetNX(ctx, "key", "value", 10*time.Second).Result()
+
+// SET key value keepttl NX
+set, err := rdb.SetNX(ctx, "key", "value", redis.KeepTTL).Result()
 
 // SORT list LIMIT 0 2 ASC
 vals, err := rdb.Sort(ctx, "list", &redis.Sort{Offset: 0, Count: 2, Order: "ASC"}).Result()
