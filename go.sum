@@ -396,6 +396,8 @@ golang.org/x/image v0.0.0-20200921011436-3a743ba83854 h1:WyfjSOFJHv2I4b1WmVYS8Rb
 golang.org/x/image v0.0.0-20200921011436-3a743ba83854/go.mod h1:FeLwcggjj3mMvU+oOTbSwawSJRM1uh48EjtB4UJZlP0=
 golang.org/x/image v0.0.0-20200922025426-e59bae62ef32 h1:E+SEVulmY8U4+i6vSB88YSc2OKAFfvbHPU/uDTdQu7M=
 golang.org/x/image v0.0.0-20200922025426-e59bae62ef32/go.mod h1:FeLwcggjj3mMvU+oOTbSwawSJRM1uh48EjtB4UJZlP0=
+golang.org/x/image v0.0.0-20200924062109-4578eab98f00 h1:9VSII+GM7HSMYSWsMcnMnDHKcDv2agce+07ISbE3llQ=
+golang.org/x/image v0.0.0-20200924062109-4578eab98f00/go.mod h1:FeLwcggjj3mMvU+oOTbSwawSJRM1uh48EjtB4UJZlP0=
 golang.org/x/mobile v0.0.0-20190719004257-d2bd2a29d028/go.mod h1:E/iHnbuqvinMTCcRqshq8CkpyQDoeVncDDYHnLhea+o=
 golang.org/x/mod v0.1.1-0.20191105210325-c90efee705ee/go.mod h1:QqPTAvyqsEbceGzBzNggFXnrqF1CaUcvgkdR5Ot7KZg=
 golang.org/x/mod v0.3.1-0.20200828183125-ce943fd02449/go.mod h1:s0Qsj1ACt9ePp/hMypM3fl4fZqREWJwdYDEqhRiZZUA=
