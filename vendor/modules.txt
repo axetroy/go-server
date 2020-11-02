@@ -280,7 +280,7 @@ github.com/sirupsen/logrus
 # github.com/stretchr/testify v1.6.1
 ## explicit
 github.com/stretchr/testify/assert
-# github.com/urfave/cli/v2 v2.2.0
+# github.com/urfave/cli/v2 v2.3.0
 ## explicit
 github.com/urfave/cli/v2
 # github.com/valyala/fasthttp v1.12.0
