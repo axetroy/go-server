@@ -332,6 +332,8 @@ github.com/markbates/goth v1.64.2 h1:HDFwyuB6/ATU1USTvd/Rb3C9XE0VAxeuciSz+aUZHHA
 github.com/markbates/goth v1.64.2/go.mod h1:hSFJFfH56BfFCX4+hBIxyd3o5VzuH5rNwKVRsFr/JPk=
 github.com/markbates/goth v1.65.0 h1:IbXpMneUhqbxgJ8JP1Ghl8ghlAaVX66jWDAapU1KxqU=
 github.com/markbates/goth v1.65.0/go.mod h1:65frybxoeSCfORin51KOKqAKbIh7wREIDvdCkdWj//4=
+github.com/markbates/goth v1.66.0 h1:f+Ve7Nne53pe35asSOspZTr3Z5uElDL8r80bz5cGphs=
+github.com/markbates/goth v1.66.0/go.mod h1:57wf4mNb/fy/Cizm8xe4komsQRKPuelTMrm/wGcw3v8=
 github.com/markbates/pkger v0.17.0 h1:RFfyBPufP2V6cddUyyEVSHBpaAnM1WzaMNyqomeT+iY=
 github.com/markbates/pkger v0.17.0/go.mod h1:0JoVlrol20BSywW79rN3kdFFsE5xYM+rSCQDXbLhiuI=
 github.com/markbates/pkger v0.17.1 h1:/MKEtWqtc0mZvu9OinB9UzVN9iYCwLWuyUv4Bw+PCno=
