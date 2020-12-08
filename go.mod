@@ -57,5 +57,5 @@ require (
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 	github.com/yudai/pp v2.0.1+incompatible // indirect
 	golang.org/x/image v0.0.0-20200926103441-2fd4ef34c9a9
-	golang.org/x/time v0.0.0-20200630173020-3af7569d3a1e
+	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324
 )

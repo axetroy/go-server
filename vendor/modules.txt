@@ -351,7 +351,7 @@ golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
-# golang.org/x/time v0.0.0-20200630173020-3af7569d3a1e
+# golang.org/x/time v0.0.0-20201208040808-7e3f01d25324
 ## explicit
 golang.org/x/time/rate
 # google.golang.org/appengine v1.6.6
