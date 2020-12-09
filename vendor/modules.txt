@@ -76,7 +76,7 @@ github.com/go-playground/locales/zh
 # github.com/go-playground/universal-translator v0.17.0
 ## explicit
 github.com/go-playground/universal-translator
-# github.com/go-playground/validator/v10 v10.3.0
+# github.com/go-playground/validator/v10 v10.4.1
 ## explicit
 github.com/go-playground/validator/v10
 github.com/go-playground/validator/v10/translations/zh
@@ -319,6 +319,7 @@ golang.org/x/crypto/nacl/box
 golang.org/x/crypto/nacl/secretbox
 golang.org/x/crypto/poly1305
 golang.org/x/crypto/salsa20/salsa
+golang.org/x/crypto/sha3
 # golang.org/x/image v0.0.0-20201208152932-35266b937fa6
 ## explicit
 golang.org/x/image/draw
