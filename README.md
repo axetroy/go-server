@@ -142,6 +142,16 @@ $ make build
 make test
 ```
 
+## 鸣谢
+
+特别感谢 [JetBrains](https://www.jetbrains.com/?from=go-server) 为本开源项目提供免费的 [IntelliJ GoLand](https://www.jetbrains.com/go/?from=go-server) 授权
+
+<p>
+ <a href="https://www.jetbrains.com/?from=ferry">
+   <img height="200" src="https://www.fdevops.com/wp-content/uploads/2020/09/1599213857-jetbrains-variant-4.png">
+ </a>
+</p>
+
 ## License
 
 The [MIT License](LICENSE)
