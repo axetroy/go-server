@@ -56,6 +56,6 @@ require (
 	github.com/yudai/gojsondiff v1.0.0 // indirect
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 	github.com/yudai/pp v2.0.1+incompatible // indirect
-	golang.org/x/image v0.0.0-20201208152932-35266b937fa6
+	golang.org/x/image v0.0.0-20210215062227-55ae14f3ebb2
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324
 )
