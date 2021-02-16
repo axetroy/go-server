@@ -320,7 +320,7 @@ golang.org/x/crypto/nacl/secretbox
 golang.org/x/crypto/poly1305
 golang.org/x/crypto/salsa20/salsa
 golang.org/x/crypto/sha3
-# golang.org/x/image v0.0.0-20210215062227-55ae14f3ebb2
+# golang.org/x/image v0.0.0-20210216034530-4410531fe030
 ## explicit
 golang.org/x/image/draw
 golang.org/x/image/math/f64
