@@ -275,7 +275,7 @@ github.com/shirou/gopsutil/net
 github.com/shirou/gopsutil/process
 # github.com/shurcooL/sanitized_anchor_name v1.0.0
 github.com/shurcooL/sanitized_anchor_name
-# github.com/sirupsen/logrus v1.7.1
+# github.com/sirupsen/logrus v1.8.0
 ## explicit
 github.com/sirupsen/logrus
 # github.com/stretchr/testify v1.7.0
