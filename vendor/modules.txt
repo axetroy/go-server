@@ -191,7 +191,7 @@ github.com/lib/pq/scram
 # github.com/magefile/mage v1.10.0
 github.com/magefile/mage/mg
 github.com/magefile/mage/sh
-# github.com/markbates/goth v1.66.1
+# github.com/markbates/goth v1.67.1
 ## explicit
 github.com/markbates/goth
 github.com/markbates/goth/gothic
