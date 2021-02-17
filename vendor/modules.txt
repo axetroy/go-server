@@ -181,8 +181,6 @@ github.com/kataras/sitemap
 # github.com/klauspost/compress v1.10.4
 github.com/klauspost/compress/flate
 github.com/klauspost/compress/gzip
-# github.com/konsorten/go-windows-terminal-sequences v1.0.3
-github.com/konsorten/go-windows-terminal-sequences
 # github.com/leodido/go-urn v1.2.0
 github.com/leodido/go-urn
 # github.com/lib/pq v1.9.0
@@ -190,6 +188,9 @@ github.com/leodido/go-urn
 github.com/lib/pq
 github.com/lib/pq/oid
 github.com/lib/pq/scram
+# github.com/magefile/mage v1.10.0
+github.com/magefile/mage/mg
+github.com/magefile/mage/sh
 # github.com/markbates/goth v1.66.1
 ## explicit
 github.com/markbates/goth
@@ -274,7 +275,7 @@ github.com/shirou/gopsutil/net
 github.com/shirou/gopsutil/process
 # github.com/shurcooL/sanitized_anchor_name v1.0.0
 github.com/shurcooL/sanitized_anchor_name
-# github.com/sirupsen/logrus v1.6.0
+# github.com/sirupsen/logrus v1.7.1
 ## explicit
 github.com/sirupsen/logrus
 # github.com/stretchr/testify v1.6.1
