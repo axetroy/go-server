@@ -2,12 +2,16 @@ package redis
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"sync/atomic"
 	"time"
 
 	"github.com/go-redis/redis/v8/internal"
 	"github.com/go-redis/redis/v8/internal/pool"
 	"github.com/go-redis/redis/v8/internal/proto"
+	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/trace"
 )
 
 // Nil reply returned by Redis when key does not exist.
@@ -127,20 +131,7 @@ func (hs hooks) processTxPipeline(
 }
 
 func (hs hooks) withContext(ctx context.Context, fn func() error) error {
-	done := ctx.Done()
-	if done == nil {
-		return fn()
-	}
-
-	errc := make(chan error, 1)
-	go func() { errc <- fn() }()
-
-	select {
-	case <-done:
-		return ctx.Err()
-	case err := <-errc:
-		return err
-	}
+	return fn()
 }
 
 //------------------------------------------------------------------------------
@@ -223,12 +214,12 @@ func (c *baseClient) _getConn(ctx context.Context) (*pool.Conn, error) {
 		return cn, nil
 	}
 
-	err = internal.WithSpan(ctx, "init_conn", func(ctx context.Context) error {
+	err = internal.WithSpan(ctx, "redis.init_conn", func(ctx context.Context, span trace.Span) error {
 		return c.initConn(ctx, cn)
 	})
 	if err != nil {
 		c.connPool.Remove(ctx, cn, err)
-		if err := internal.Unwrap(err); err != nil {
+		if err := errors.Unwrap(err); err != nil {
 			return nil, err
 		}
 		return nil, err
@@ -297,17 +288,42 @@ func (c *baseClient) releaseConn(ctx context.Context, cn *pool.Conn, err error) 
 func (c *baseClient) withConn(
 	ctx context.Context, fn func(context.Context, *pool.Conn) error,
 ) error {
-	return internal.WithSpan(ctx, "with_conn", func(ctx context.Context) error {
+	return internal.WithSpan(ctx, "redis.with_conn", func(ctx context.Context, span trace.Span) error {
 		cn, err := c.getConn(ctx)
 		if err != nil {
 			return err
 		}
+
+		if span.IsRecording() {
+			if remoteAddr := cn.RemoteAddr(); remoteAddr != nil {
+				span.SetAttributes(label.String("net.peer.ip", remoteAddr.String()))
+			}
+		}
+
 		defer func() {
 			c.releaseConn(ctx, cn, err)
 		}()
 
-		err = fn(ctx, cn)
-		return err
+		done := ctx.Done()
+		if done == nil {
+			err = fn(ctx, cn)
+			return err
+		}
+
+		errc := make(chan error, 1)
+		go func() { errc <- fn(ctx, cn) }()
+
+		select {
+		case <-done:
+			_ = cn.Close()
+			// Wait for the goroutine to finish and send something.
+			<-errc
+
+			err = ctx.Err()
+			return err
+		case err = <-errc:
+			return err
+		}
 	})
 }
 
@@ -317,14 +333,14 @@ func (c *baseClient) process(ctx context.Context, cmd Cmder) error {
 		attempt := attempt
 
 		var retry bool
-		err := internal.WithSpan(ctx, "process", func(ctx context.Context) error {
+		err := internal.WithSpan(ctx, "redis.process", func(ctx context.Context, span trace.Span) error {
 			if attempt > 0 {
 				if err := internal.Sleep(ctx, c.retryBackoff(attempt)); err != nil {
 					return err
 				}
 			}
 
-			retryTimeout := true
+			retryTimeout := uint32(1)
 			err := c.withConn(ctx, func(ctx context.Context, cn *pool.Conn) error {
 				err := cn.WithWriter(ctx, c.opt.WriteTimeout, func(wr *proto.Writer) error {
 					return writeCmd(wr, cmd)
@@ -335,7 +351,9 @@ func (c *baseClient) process(ctx context.Context, cmd Cmder) error {
 
 				err = cn.WithReader(ctx, c.cmdTimeout(cmd), cmd.readReply)
 				if err != nil {
-					retryTimeout = cmd.readTimeout() == nil
+					if cmd.readTimeout() == nil {
+						atomic.StoreUint32(&retryTimeout, 1)
+					}
 					return err
 				}
 
@@ -344,7 +362,7 @@ func (c *baseClient) process(ctx context.Context, cmd Cmder) error {
 			if err == nil {
 				return nil
 			}
-			retry = shouldRetry(err, retryTimeout)
+			retry = shouldRetry(err, atomic.LoadUint32(&retryTimeout) == 1)
 			return err
 		})
 		if err == nil || !retry {
@@ -710,6 +728,7 @@ type conn struct {
 	baseClient
 	cmdable
 	statefulCmdable
+	hooks // TODO: inherit hooks
 }
 
 // Conn is like Client, but its pool contains single connection.
@@ -734,7 +753,15 @@ func newConn(ctx context.Context, opt *Options, connPool pool.Pooler) *Conn {
 }
 
 func (c *Conn) Process(ctx context.Context, cmd Cmder) error {
-	return c.baseClient.process(ctx, cmd)
+	return c.hooks.process(ctx, cmd, c.baseClient.process)
+}
+
+func (c *Conn) processPipeline(ctx context.Context, cmds []Cmder) error {
+	return c.hooks.processPipeline(ctx, cmds, c.baseClient.processPipeline)
+}
+
+func (c *Conn) processTxPipeline(ctx context.Context, cmds []Cmder) error {
+	return c.hooks.processTxPipeline(ctx, cmds, c.baseClient.processTxPipeline)
 }
 
 func (c *Conn) Pipelined(ctx context.Context, fn func(Pipeliner) error) ([]Cmder, error) {

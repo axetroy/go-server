@@ -124,6 +124,7 @@ type Cmdable interface {
 	MSet(ctx context.Context, values ...interface{}) *StatusCmd
 	MSetNX(ctx context.Context, values ...interface{}) *BoolCmd
 	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) *StatusCmd
+	SetEX(ctx context.Context, key string, value interface{}, expiration time.Duration) *StatusCmd
 	SetNX(ctx context.Context, key string, value interface{}, expiration time.Duration) *BoolCmd
 	SetXX(ctx context.Context, key string, value interface{}, expiration time.Duration) *BoolCmd
 	SetRange(ctx context.Context, key string, offset int64, value string) *IntCmd
@@ -140,6 +141,7 @@ type Cmdable interface {
 	BitField(ctx context.Context, key string, args ...interface{}) *IntSliceCmd
 
 	Scan(ctx context.Context, cursor uint64, match string, count int64) *ScanCmd
+	ScanType(ctx context.Context, cursor uint64, match string, count int64, keyType string) *ScanCmd
 	SScan(ctx context.Context, key string, cursor uint64, match string, count int64) *ScanCmd
 	HScan(ctx context.Context, key string, cursor uint64, match string, count int64) *ScanCmd
 	ZScan(ctx context.Context, key string, cursor uint64, match string, count int64) *ScanCmd
@@ -167,6 +169,8 @@ type Cmdable interface {
 	LInsertAfter(ctx context.Context, key string, pivot, value interface{}) *IntCmd
 	LLen(ctx context.Context, key string) *IntCmd
 	LPop(ctx context.Context, key string) *StringCmd
+	LPos(ctx context.Context, key string, value string, args LPosArgs) *IntCmd
+	LPosCount(ctx context.Context, key string, value string, count int64, args LPosArgs) *IntSliceCmd
 	LPush(ctx context.Context, key string, values ...interface{}) *IntCmd
 	LPushX(ctx context.Context, key string, values ...interface{}) *IntCmd
 	LRange(ctx context.Context, key string, start, stop int64) *StringSliceCmd
@@ -784,6 +788,63 @@ func (c cmdable) Set(ctx context.Context, key string, value interface{}, expirat
 	return cmd
 }
 
+// SetArgs provides arguments for the SetArgs function.
+type SetArgs struct {
+	// Mode can be `NX` or `XX` or empty.
+	Mode string
+
+	// Zero `TTL` or `Expiration` means that the key has no expiration time.
+	TTL      time.Duration
+	ExpireAt time.Time
+
+	// When Get is true, the command returns the old value stored at key, or nil when key did not exist.
+	Get bool
+
+	// KeepTTL is a Redis KEEPTTL option to keep existing TTL.
+	KeepTTL bool
+}
+
+// SetArgs supports all the options that the SET command supports.
+// It is the alternative to the Set function when you want
+// to have more control over the options.
+func (c cmdable) SetArgs(ctx context.Context, key string, value interface{}, a SetArgs) *StatusCmd {
+	args := []interface{}{"set", key, value}
+
+	if a.KeepTTL {
+		args = append(args, "keepttl")
+	}
+
+	if !a.ExpireAt.IsZero() {
+		args = append(args, "exat", a.ExpireAt.Unix())
+	}
+	if a.TTL > 0 {
+		if usePrecise(a.TTL) {
+			args = append(args, "px", formatMs(ctx, a.TTL))
+		} else {
+			args = append(args, "ex", formatSec(ctx, a.TTL))
+		}
+	}
+
+	if a.Mode != "" {
+		args = append(args, a.Mode)
+	}
+
+	if a.Get {
+		args = append(args, "get")
+	}
+
+	cmd := NewStatusCmd(ctx, args...)
+	_ = c(ctx, cmd)
+	return cmd
+}
+
+// Redis `SETEX key expiration value` command.
+func (c cmdable) SetEX(ctx context.Context, key string, value interface{}, expiration time.Duration) *StatusCmd {
+	cmd := NewStatusCmd(ctx, "setex", key, formatSec(ctx, expiration), value)
+	_ = c(ctx, cmd)
+	return cmd
+}
+
 // Redis `SET key value [expiration] NX` command.
 //
 // Zero expiration means the key has no expiration time.
@@ -949,6 +1010,22 @@ func (c cmdable) Scan(ctx context.Context, cursor uint64, match string, count in
 	}
 	if count > 0 {
 		args = append(args, "count", count)
+	}
+	cmd := NewScanCmd(ctx, c, args...)
+	_ = c(ctx, cmd)
+	return cmd
+}
+
+func (c cmdable) ScanType(ctx context.Context, cursor uint64, match string, count int64, keyType string) *ScanCmd {
+	args := []interface{}{"scan", cursor}
+	if match != "" {
+		args = append(args, "match", match)
+	}
+	if count > 0 {
+		args = append(args, "count", count)
+	}
+	if keyType != "" {
+		args = append(args, "type", keyType)
 	}
 	cmd := NewScanCmd(ctx, c, args...)
 	_ = c(ctx, cmd)
@@ -1176,6 +1253,37 @@ func (c cmdable) LLen(ctx context.Context, key string) *IntCmd {
 
 func (c cmdable) LPop(ctx context.Context, key string) *StringCmd {
 	cmd := NewStringCmd(ctx, "lpop", key)
+	_ = c(ctx, cmd)
+	return cmd
+}
+
+type LPosArgs struct {
+	Rank, MaxLen int64
+}
+
+func (c cmdable) LPos(ctx context.Context, key string, value string, a LPosArgs) *IntCmd {
+	args := []interface{}{"lpos", key, value}
+	if a.Rank != 0 {
+		args = append(args, "rank", a.Rank)
+	}
+	if a.MaxLen != 0 {
+		args = append(args, "maxlen", a.MaxLen)
+	}
+
+	cmd := NewIntCmd(ctx, args...)
+	_ = c(ctx, cmd)
+	return cmd
+}
+
+func (c cmdable) LPosCount(ctx context.Context, key string, value string, count int64, a LPosArgs) *IntSliceCmd {
+	args := []interface{}{"lpos", key, value, "count", count}
+	if a.Rank != 0 {
+		args = append(args, "rank", a.Rank)
+	}
+	if a.MaxLen != 0 {
+		args = append(args, "maxlen", a.MaxLen)
+	}
+	cmd := NewIntSliceCmd(ctx, args...)
 	_ = c(ctx, cmd)
 	return cmd
 }
@@ -1690,6 +1798,12 @@ func (c cmdable) XTrim(ctx context.Context, key string, maxLen int64) *IntCmd {
 
 func (c cmdable) XTrimApprox(ctx context.Context, key string, maxLen int64) *IntCmd {
 	cmd := NewIntCmd(ctx, "xtrim", key, "maxlen", "~", maxLen)
+	_ = c(ctx, cmd)
+	return cmd
+}
+
+func (c cmdable) XInfoConsumers(ctx context.Context, key string, group string) *XInfoConsumersCmd {
+	cmd := NewXInfoConsumersCmd(ctx, key, group)
 	_ = c(ctx, cmd)
 	return cmd
 }
