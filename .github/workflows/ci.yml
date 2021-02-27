@@ -84,7 +84,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:12.3-alpine
+        image: postgres:12.6-alpine
         env:
           POSTGRES_USER: gotest
           POSTGRES_PASSWORD: gotest
