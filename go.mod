@@ -47,7 +47,7 @@ require (
 	github.com/sec51/twofactor v1.0.1-0.20180911112802-cd97c894b2cc
 	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/shirou/gopsutil v2.20.6+incompatible
-	github.com/sirupsen/logrus v1.7.1
+	github.com/sirupsen/logrus v1.8.1
 	github.com/stretchr/testify v1.7.0
 	github.com/urfave/cli/v2 v2.3.0
 	github.com/valyala/fasthttp v1.12.0 // indirect
