@@ -37,7 +37,7 @@ require (
 	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/mitchellh/mapstructure v1.4.1
 	github.com/moul/http2curl v1.0.0 // indirect
-	github.com/mssola/user_agent v0.5.2
+	github.com/mssola/user_agent v0.5.3
 	github.com/nsqio/go-nsq v1.0.8
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/sec51/convert v0.0.0-20190309075348-ebe586d87951 // indirect
