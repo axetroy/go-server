@@ -61,7 +61,7 @@ github.com/eknkc/amber/parser
 github.com/fatih/color
 # github.com/fatih/structs v1.1.0
 github.com/fatih/structs
-# github.com/go-co-op/gocron v0.3.3
+# github.com/go-co-op/gocron v1.6.2
 ## explicit
 github.com/go-co-op/gocron
 # github.com/go-ole/go-ole v1.2.4
@@ -236,6 +236,8 @@ github.com/nsqio/go-nsq
 github.com/patrickmn/go-cache
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
+# github.com/robfig/cron/v3 v3.0.1
+github.com/robfig/cron/v3
 # github.com/russross/blackfriday/v2 v2.0.1
 github.com/russross/blackfriday/v2
 # github.com/ryanuber/columnize v2.1.0+incompatible
@@ -328,6 +330,9 @@ golang.org/x/oauth2/google
 golang.org/x/oauth2/internal
 golang.org/x/oauth2/jws
 golang.org/x/oauth2/jwt
+# golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
+golang.org/x/sync/semaphore
+golang.org/x/sync/singleflight
 # golang.org/x/sys v0.0.0-20210316164454-77fc1eacc6aa
 golang.org/x/sys/cpu
 golang.org/x/sys/internal/unsafeheader
@@ -386,5 +391,5 @@ google.golang.org/protobuf/runtime/protoiface
 google.golang.org/protobuf/runtime/protoimpl
 # gopkg.in/ini.v1 v1.51.1
 gopkg.in/ini.v1
-# gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
+# gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 gopkg.in/yaml.v3
