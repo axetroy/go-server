@@ -14,7 +14,7 @@ require (
 	github.com/fatih/color v1.9.0
 	github.com/go-co-op/gocron v0.3.3
 	github.com/go-ole/go-ole v1.2.4 // indirect
-	github.com/go-playground/locales v0.13.0
+	github.com/go-playground/locales v0.14.0
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator/v10 v10.8.0
 	github.com/go-redis/redis/v8 v8.11.0
