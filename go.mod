@@ -35,7 +35,7 @@ require (
 	github.com/markbates/goth v1.68.0
 	github.com/markbates/pkger v0.17.1
 	github.com/mattn/go-isatty v0.0.12 // indirect
-	github.com/mitchellh/mapstructure v1.4.1
+	github.com/mitchellh/mapstructure v1.4.2
 	github.com/moul/http2curl v1.0.0 // indirect
 	github.com/mssola/user_agent v0.5.3
 	github.com/nsqio/go-nsq v1.0.8
