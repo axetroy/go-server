@@ -4,6 +4,9 @@ import (
 	"io"
 )
 
+// Version is the current PIO version.
+const Version = "0.0.10"
+
 // NewLine is a slice of bytes which controls the
 // how a new line should be presented.
 //

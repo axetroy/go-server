@@ -19,7 +19,7 @@ func newCache() *cache {
 	c := cache{
 		m:       make(map[reflect.Type]*structInfo),
 		regconv: make(map[reflect.Type]Converter),
-		tags:    []string{"form", "url", "schema"},
+		tags:    []string{"form", "url", "header", "param", "schema"},
 	}
 	return &c
 }

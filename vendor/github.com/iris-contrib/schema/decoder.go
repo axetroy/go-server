@@ -26,13 +26,15 @@ type Decoder struct {
 
 // AddAliasTag adds a tag used to locate custom field aliases.
 // Defaults are "schema", "form" and "url".
-func (d *Decoder) AddAliasTag(tag ...string) {
+func (d *Decoder) AddAliasTag(tag ...string) *Decoder {
 	d.cache.tags = append(d.cache.tags, tag...)
+	return d
 }
 
 // SetAliasTag overrides the tags.
-func (d *Decoder) SetAliasTag(tag ...string) {
+func (d *Decoder) SetAliasTag(tag ...string) *Decoder {
 	d.cache.tags = tag
+	return d
 }
 
 // ZeroEmpty controls the behaviour when the decoder encounters empty values
@@ -43,8 +45,9 @@ func (d *Decoder) SetAliasTag(tag ...string) {
 //
 // The default value is false, that is empty values do not change
 // the value of the struct field.
-func (d *Decoder) ZeroEmpty(z bool) {
+func (d *Decoder) ZeroEmpty(z bool) *Decoder {
 	d.zeroEmpty = z
+	return d
 }
 
 // IgnoreUnknownKeys controls the behaviour when the decoder encounters unknown
@@ -55,13 +58,15 @@ func (d *Decoder) ZeroEmpty(z bool) {
 // will still be decoded in to the target struct.
 //
 // To preserve backwards compatibility, the default value is false.
-func (d *Decoder) IgnoreUnknownKeys(i bool) {
+func (d *Decoder) IgnoreUnknownKeys(i bool) *Decoder {
 	d.ignoreUnknownKeys = i
+	return d
 }
 
 // RegisterConverter registers a converter function for a custom type.
-func (d *Decoder) RegisterConverter(value interface{}, converterFunc Converter) {
+func (d *Decoder) RegisterConverter(value interface{}, converterFunc Converter) *Decoder {
 	d.cache.registerConverter(value, converterFunc)
+	return d
 }
 
 // Decode decodes a map[string][]string to a struct.
@@ -187,6 +192,17 @@ func (d *Decoder) decode(v reflect.Value, path string, parts []pathPart, values 
 			}
 			v = v.Elem()
 		}
+
+		// alloc embedded structs
+		if v.Type().Kind() == reflect.Struct {
+			for i := 0; i < v.NumField(); i++ {
+				field := v.Field(i)
+				if field.Type().Kind() == reflect.Ptr && field.IsNil() && v.Type().Field(i).Anonymous == true {
+					field.Set(reflect.New(field.Type().Elem()))
+				}
+			}
+		}
+
 		v = v.FieldByName(name)
 	}
 	// Don't even bother for unexported fields.

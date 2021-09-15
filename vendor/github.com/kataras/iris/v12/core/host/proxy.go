@@ -5,23 +5,11 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"strings"
+	"path"
 	"time"
 
 	"github.com/kataras/iris/v12/core/netutil"
 )
-
-func singleJoiningSlash(a, b string) string {
-	aslash := strings.HasSuffix(a, "/")
-	bslash := strings.HasPrefix(b, "/")
-	switch {
-	case aslash && bslash:
-		return a + b[1:]
-	case !aslash && !bslash:
-		return a + "/" + b
-	}
-	return a + b
-}
 
 // ProxyHandler returns a new ReverseProxy that rewrites
 // URLs to the scheme, host, and base path provided in target. If the
@@ -35,7 +23,9 @@ func ProxyHandler(target *url.URL) *httputil.ReverseProxy {
 		req.URL.Scheme = target.Scheme
 		req.URL.Host = target.Host
 		req.Host = target.Host
-		req.URL.Path = singleJoiningSlash(target.Path, req.URL.Path)
+
+		req.URL.Path = path.Join(target.Path, req.URL.Path)
+
 		if targetQuery == "" || req.URL.RawQuery == "" {
 			req.URL.RawQuery = targetQuery + req.URL.RawQuery
 		} else {
@@ -51,7 +41,7 @@ func ProxyHandler(target *url.URL) *httputil.ReverseProxy {
 
 	if netutil.IsLoopbackHost(target.Host) {
 		transport := &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, // lint:ignore
 		}
 		p.Transport = transport
 	}
@@ -84,6 +74,19 @@ func NewProxy(hostAddr string, target *url.URL) *Supervisor {
 // r := NewRedirection(":80", target, 307)
 // r.ListenAndServe() // use of `r.Shutdown` to close this server.
 func NewRedirection(hostAddr string, target *url.URL, redirectStatus int) *Supervisor {
+	redirectSrv := &http.Server{
+		ReadTimeout:  30 * time.Second,
+		WriteTimeout: 60 * time.Second,
+		Addr:         hostAddr,
+		Handler:      RedirectHandler(target, redirectStatus),
+	}
+
+	return New(redirectSrv)
+}
+
+// RedirectHandler returns a simple redirect handler.
+// See `NewProxy` or `ProxyHandler` for more features.
+func RedirectHandler(target *url.URL, redirectStatus int) http.Handler {
 	targetURI := target.String()
 	if redirectStatus <= 300 {
 		// here we should use StatusPermanentRedirect but
@@ -96,18 +99,11 @@ func NewRedirection(hostAddr string, target *url.URL, redirectStatus int) *Super
 		redirectStatus = http.StatusTemporaryRedirect
 	}
 
-	redirectSrv := &http.Server{
-		ReadTimeout:  30 * time.Second,
-		WriteTimeout: 60 * time.Second,
-		Addr:         hostAddr,
-		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			redirectTo := singleJoiningSlash(targetURI, r.URL.Path)
-			if len(r.URL.RawQuery) > 0 {
-				redirectTo += "?" + r.URL.RawQuery
-			}
-			http.Redirect(w, r, redirectTo, redirectStatus)
-		}),
-	}
-
-	return New(redirectSrv)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		redirectTo := path.Join(targetURI, r.URL.Path)
+		if len(r.URL.RawQuery) > 0 {
+			redirectTo += "?" + r.URL.RawQuery
+		}
+		http.Redirect(w, r, redirectTo, redirectStatus)
+	})
 }

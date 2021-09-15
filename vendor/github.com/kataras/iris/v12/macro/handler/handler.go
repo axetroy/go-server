@@ -4,6 +4,7 @@ package handler
 
 import (
 	"github.com/kataras/iris/v12/context"
+	"github.com/kataras/iris/v12/core/memstore"
 	"github.com/kataras/iris/v12/macro"
 )
 
@@ -36,13 +37,19 @@ func CanMakeHandler(tmpl macro.Template) (needsMacroHandler bool) {
 func MakeHandler(tmpl macro.Template) context.Handler {
 	filter := MakeFilter(tmpl)
 
-	return func(ctx context.Context) {
+	return func(ctx *context.Context) {
 		if !filter(ctx) {
-			ctx.StopExecution()
+			if ctx.GetCurrentRoute().StatusErrorCode() == ctx.GetStatusCode() {
+				ctx.Next()
+			} else {
+				ctx.StopExecution()
+			}
+
 			return
 		}
 
-		// if all passed, just continue.
+		// if all passed or the next is the registered error handler to handle this status code,
+		// just continue.
 		ctx.Next()
 	}
 }
@@ -54,7 +61,7 @@ func MakeFilter(tmpl macro.Template) context.Filter {
 		return nil
 	}
 
-	return func(ctx context.Context) bool {
+	return func(ctx *context.Context) bool {
 		for _, p := range tmpl.Params {
 			if !p.CanEval() {
 				continue // allow.
@@ -76,10 +83,33 @@ func MakeFilter(tmpl macro.Template) context.Filter {
 				return false
 			}
 
-			if !p.Eval(entry.String(), &ctx.Params().Store) {
+			value := p.Eval(entry.String())
+			if value == nil {
 				ctx.StatusCode(p.ErrCode)
 				return false
 			}
+
+			// Fixes binding different path parameters names,
+			//
+			// app.Get("/{fullname:string}", strHandler)
+			// app.Get("/{id:int}", idHandler)
+			//
+			// before that user didn't see anything
+			// but under the hoods the set-ed value was a type of string instead of type of int,
+			// because store contained both "fullname" (which set-ed by the router itself on its string representation)
+			// and "id" by the param evaluator (see core/router/handler.go and bindMultiParamTypesHandler->MakeFilter)
+			// and the MVC get by index (e.g. 0) therefore
+			// it got the "fullname" of type string instead of "id" int if /{int} requested.
+			// which is critical for faster type assertion in the upcoming, new iris dependency injection (20 Feb 2020).
+			ctx.Params().Store[p.Index] = memstore.Entry{
+				Key:      p.Name,
+				ValueRaw: value,
+			}
+
+			// for i, v := range ctx.Params().Store {
+			// 	fmt.Printf("[%d:%s] macro/handler/handler.go: param passed: %s(%v of type: %T)\n", i, v.Key,
+			// 		p.Src, v.ValueRaw, v.ValueRaw)
+			// }
 		}
 
 		return true
