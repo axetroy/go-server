@@ -29,14 +29,27 @@ type Printer struct {
 	// if Chained is true then the parent `Registry#Print`
 	// will continue to search for a compatible printer
 	// even if this printer succeed to print the contents.
-	Chained  bool
-	Output   io.Writer
+	Chained bool
+	Output  io.Writer
+
+	// The "outputs" field holds the total writers,
+	// the "Output" and any writer added by an `AddOutput` call.
+	// The `AddOutput` method sets the Output to a new `io.MultiWriter`
+	// but the underline struct is unexported therefore we don't have access to
+	// to the total writers. However sometimes, we need those writers.
+	// E.g. for the `WriteRich` feature;
+	// in order to write color symbols in the writers that support 256-bit colors
+	// and write raw text to those that do not (e.g. files).
+	// Note: we could implementing our own multi writer and skip the use
+	// of the std package, but let's don't do that unless is requested.
+	outputs []*outputWriter
+
 	mu       sync.Mutex
 	marshal  MarshalerFunc
 	hijack   Hijacker
 	handlers []Handler
 
-	// these three will complete the interface of the:
+	// These three will complete the interface of the:
 	// https://golang.org/pkg/io/#ReadWriteCloser
 	// in order to make possible to use everything inside the `io` package.
 	// i.e
@@ -49,6 +62,7 @@ type Printer struct {
 	// without storing them to the buffer to complete the `ReadWriteCloser` std interface.
 	// Enable this if you need performance and you don't use the standard functions like `TeeReader`.
 	DirectOutput bool
+	sync         bool // See `SetSync`.
 }
 
 var (
@@ -84,11 +98,12 @@ func NewPrinter(name string, output io.Writer) *Printer {
 
 	buf := &bytes.Buffer{}
 
-	isOuputTerminal := isTerminal(output)
+	isOuputTerminal := SupportColors(output)
 
 	p := &Printer{
 		Name:       name,
 		Output:     output,
+		outputs:    wrapWriters(output),
 		Writer:     buf,
 		Reader:     buf,
 		Closer:     NopCloser(),
@@ -140,25 +155,6 @@ func (p *Printer) Priority(prio int) *Printer {
 	p.mu.Unlock()
 	return p
 }
-
-// EnableNewLine adds a new line when needed, defaults to false
-// you should turn it to on if you use a custom marshaler in a printer
-// which prints to a terminal.
-// var EnableNewLine = false
-
-// func (p *Printer) addNewLineInneed(b []byte) []byte {
-// 	if !EnableNewLine {
-// 		return b
-// 	}
-
-// 	if l := len(b); l > 2 {
-// 		// if is terminal add new line and hasn't \n already
-// 		if p.IsTerminal && !bytes.Equal(b[l-1:], newLine) {
-// 			b = append(b, newLine...)
-// 		}
-// 	}
-// 	return b
-// }
 
 // Marshal adds a "marshaler" to the printer.
 // Returns itself.
@@ -233,25 +229,12 @@ func (p *Printer) AddOutput(writers ...io.Writer) *Printer {
 		}
 	}
 
+	p.outputs = append(p.outputs, wrapWriters(writers...)...)
+
 	w := io.MultiWriter(append(writers, p.Output)...)
+
 	p.Output = w
 	return p
-
-	// p.mu.Lock()
-	// oldW := p.Output
-	// newW := io.MultiWriter(writers...)
-	// p.Output = writerFunc(func(p []byte) (n int, err error) {
-	// 	n, err = oldW.Write(p)
-	// 	if err != nil {
-	// 		return
-	// 	}
-	// 	if n != len(p) {
-	// 		err = io.ErrShortWrite
-	// 		return
-	// 	}
-	// 	return newW.Write(p)
-	// })
-	// p.mu.Unlock()
 }
 
 // SetOutput sets accepts one or more io.Writer
@@ -270,6 +253,7 @@ func (p *Printer) SetOutput(writers ...io.Writer) *Printer {
 	}
 
 	p.mu.Lock()
+	p.outputs = wrapWriters(writers...)
 	p.Output = w
 	p.IsTerminal = terminal.IsTerminal(w)
 	p.mu.Unlock()
@@ -285,6 +269,26 @@ func (p *Printer) EnableDirectOutput() *Printer {
 	p.DirectOutput = true
 	p.mu.Unlock()
 	return p
+}
+
+// SetSync protects the output writer(s) with a lock.
+func (p *Printer) SetSync(useLocks bool) *Printer {
+	p.mu.Lock()
+	p.sync = true
+	p.mu.Unlock()
+	return p
+}
+
+func (p *Printer) lock() {
+	if p.sync {
+		p.mu.Lock()
+	}
+}
+
+func (p *Printer) unlock() {
+	if p.sync {
+		p.mu.Unlock()
+	}
 }
 
 // Print of a Printer accepts a value of "v",
@@ -314,13 +318,15 @@ func (p *Printer) print(v interface{}, appendNewLine bool) (int, error) {
 		b   []byte
 		err error
 	)
+
 	if p.DirectOutput {
 		b, err = p.WriteTo(v, p.Output, appendNewLine)
 	} else {
-		err = p.Store(v, appendNewLine) // write to the buffer
+		_, err = p.WriteTo(v, p.Writer, appendNewLine)
 		if err != nil {
 			return -1, err
 		}
+
 		b, err = p.Flush()
 	}
 
@@ -350,10 +356,10 @@ func (p *Printer) readAndConsume() ([]byte, error) {
 
 // Flush will consume and flush the Printer's current contents.
 func (p *Printer) Flush() ([]byte, error) {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-	b, err := p.readAndConsume()
+	p.lock()
+	defer p.unlock()
 
+	b, err := p.readAndConsume()
 	if err != nil {
 		return nil, err
 	}
@@ -374,34 +380,25 @@ func (p *Printer) Flush() ([]byte, error) {
 // of the implementation like custom hijackers and handlers.
 func (p *Printer) Store(v interface{}, appendNewLine bool) error {
 	_, err := p.WriteTo(v, p.Writer, appendNewLine)
-
 	return err
+}
+
+// Write implements the io.Writer for the `Printer`.
+func (p *Printer) Write(b []byte) (n int, err error) {
+	p.lock()
+	if p.DirectOutput {
+		n, err = p.Output.Write(b)
+	} else {
+		n, err = p.Writer.Write(b)
+	}
+	p.unlock()
+	return
 }
 
 // WriteTo marshals and writes the "v" to the "w" writer.
 //
 // Returns this WriteTo's result information such as error, written.
 func (p *Printer) WriteTo(v interface{}, w io.Writer, appendNewLine bool) ([]byte, error) {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-
-	var marshaler Marshaler
-
-	// check if implements the Marshaled
-	if m, ok := v.(Marshaled); ok {
-		marshaler = fromMarshaled(m)
-		// check if implements the Marshaler
-	} else if m, ok := v.(Marshaler); ok {
-		marshaler = m
-		// otherwise make check if printer has a marshaler
-		// if not skip this WriteTo operation,
-		// else set the marshaler to that (most common).
-	} else {
-		if p.marshal != nil {
-			marshaler = p.marshal
-		}
-	}
-
 	var (
 		b   []byte
 		err error
@@ -418,14 +415,34 @@ func (p *Printer) WriteTo(v interface{}, w io.Writer, appendNewLine bool) ([]byt
 		}
 
 		b, err = ctx.marshalResult.b, ctx.marshalResult.err
-
 		if err != nil {
+			if err == ErrHandled {
+				return b, nil
+			}
+
 			return b, err
 		}
 	}
 
 	// needs marshal
 	if len(b) == 0 {
+		var marshaler Marshaler
+
+		// check if implements the Marshaled
+		if m, ok := v.(Marshaled); ok {
+			marshaler = fromMarshaled(m)
+			// check if implements the Marshaler
+		} else if m, ok := v.(Marshaler); ok {
+			marshaler = m
+			// otherwise make check if printer has a marshaler
+			// if not skip this WriteTo operation,
+			// else set the marshaler to that (most common).
+		} else {
+			if p.marshal != nil {
+				marshaler = p.marshal
+			}
+		}
+
 		if marshaler == nil {
 			return nil, ErrSkipped
 		}
@@ -436,10 +453,12 @@ func (p *Printer) WriteTo(v interface{}, w io.Writer, appendNewLine bool) ([]byt
 		}
 	}
 
+	p.lock()
 	_, err = w.Write(b)
 	if appendNewLine && err == nil {
 		w.Write(NewLine) // we don't care about this error.
 	}
+	p.unlock()
 	return b, err
 }
 

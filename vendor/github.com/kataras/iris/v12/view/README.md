@@ -1,36 +1,27 @@
 # View
 
-Iris supports 6 template engines out-of-the-box, developers can still use any external golang template engine,
-as `context/context#ResponseWriter()` is an `io.Writer`.
+Iris supports 8 template engines out-of-the-box, developers can still use any external golang template engine,
+as `Context.ResponseWriter()` is an `io.Writer`.
 
-All of these six template engines have common features with common API,
-like Layout, Template Funcs, Party-specific layout, partial rendering and more.
+All template engines share a common API i.e.
+Parse using embedded assets, Layouts and Party-specific layout, Template Funcs, Partial Render and more.
 
-- The standard html, its template parser is the [golang.org/pkg/html/template/](https://golang.org/pkg/html/template/)
-- Django, its template parser is the [github.com/iris-contrib/pongo2](https://github.com/iris-contrib/pongo2)
-- Pug(Jade), its template parser is the [github.com/Joker/jade](https://github.com/Joker/jade)
-- Handlebars, its template parser is the [github.com/aymerick/raymond](https://github.com/aymerick/raymond)
-- Amber, its template parser is the [github.com/eknkc/amber](https://github.com/eknkc/amber)
-- Jet, its template parser is the [github.com/CloudyKit/jet](https://github.com/CloudyKit/jet)
+| #  | Name       | Parser   |
+|:---|:-----------|----------|
+| 1 | HTML       | [html/template](https://pkg.go.dev/html/template) |
+| 2 | Blocks     | [kataras/blocks](https://github.com/kataras/blocks) |
+| 3 | Django     | [flosch/pongo2](https://github.com/flosch/pongo2) |
+| 4 | Pug        | [Joker/jade](https://github.com/Joker/jade) |
+| 5 | Handlebars | [aymerick/raymond](https://github.com/aymerick/raymond) |
+| 6 | Amber      | [eknkc/amber](https://github.com/eknkc/amber) |
+| 7 | Jet        | [CloudyKit/jet](https://github.com/CloudyKit/jet) |
+| 8 | Ace        | [yosssi/ace](https://github.com/yosssi/ace) |
 
-## Examples
+[List of Examples](https://github.com/kataras/iris/tree/master/_examples/view).
 
-- [Overview](https://github.com/kataras/iris/blob/master/_examples/view/overview/main.go)
-- [Hi](https://github.com/kataras/iris/blob/master/_examples/view/template_html_0/main.go)
-- [A simple Layout](https://github.com/kataras/iris/blob/master/_examples/view/template_html_1/main.go)
-- [Layouts: `yield` and `render` tmpl funcs](https://github.com/kataras/iris/blob/master/_examples/view/template_html_2/main.go)
-- [The `urlpath` tmpl func](https://github.com/kataras/iris/blob/master/_examples/view/template_html_3/main.go)
-- [The `url` tmpl func](https://github.com/kataras/iris/blob/master/_examples/view/template_html_4/main.go)
-- [Inject Data Between Handlers](https://github.com/kataras/iris/blob/master/_examples/view/context-view-data/main.go)
-- [Embedding Templates Into App Executable File](https://github.com/kataras/iris/blob/master/_examples/view/embedding-templates-into-app/main.go)
-- [Greeting with Pug (Jade)`](view/template_pug_0)
-- [Pug (Jade) Actions`](https://github.com/kataras/iris/blob/master/_examples/view/template_pug_1)
-- [Pug (Jade) Includes`](https://github.com/kataras/iris/blob/master/_examples/view/template_pug_2)
-- [Pug (Jade) Extends`](https://github.com/kataras/iris/blob/master/_examples/view/template_pug_3)
-- [Jet](https://github.com/kataras/iris/blob/master/_examples/view/template_jet_0) **NEW**
-- [Jet Embedded](https://github.com/kataras/iris/blob/master/_examples/view/template_jet_1_embedded) **NEW**
+[Benchmarks](https://github.com/kataras/iris/tree/master/_benchmarks/view).
 
-You can serve [quicktemplate](https://github.com/valyala/quicktemplate) files too, simply by using the `context#ResponseWriter`, take a look at the [iris/_examples/http_responsewriter/quicktemplate](https://github.com/kataras/iris/tree/master/_examples/http_responsewriter/quicktemplate) example.
+You can serve [quicktemplate](https://github.com/valyala/quicktemplate) files too, simply by using the `Context.ResponseWriter`, take a look at the [iris/_examples/view/quicktemplate](https://github.com/kataras/iris/tree/master/_examples/view/quicktemplate) example.
 
 ## Overview
 
@@ -58,13 +49,13 @@ func main() {
 
     // Method:    GET
     // Resource:  http://localhost:8080/user/42
-    app.Get("/user/{id:long}", func(ctx iris.Context) {
+    app.Get("/user/{id:int64}", func(ctx iris.Context) {
         userID, _ := ctx.Params().GetInt64("id")
         ctx.Writef("User ID: %d", userID)
     })
 
     // Start the server using a network address.
-    app.Run(iris.Addr(":8080"))
+    app.Listen(":8080")
 }
 ```
 
@@ -110,7 +101,7 @@ func main() {
     app.Get("/", hi)
 
     // http://localhost:8080
-    app.Run(iris.Addr(":8080"))
+    app.Listen(":8080")
 }
 
 func hi(ctx iris.Context) {
@@ -126,11 +117,19 @@ func hi(ctx iris.Context) {
 
 ## Embedded
 
-View engine supports bundled(https://github.com/go-bindata/go-bindata) template files too.
-`go-bindata` gives you two functions, `Assset` and `AssetNames`,
-these can be set to each of the template engines using the `.Binary` function.
+View engine supports bundled(https://github.com/go-bindata/go-bindata) template files too. Latest
+`go-bindata` release gives you a compatible `http.FileSystem` that can be provided as the first argument of a view engine's initialization, e.g. `HTML(AssetFile(), ".html")`.
 
-Example code:
+
+```sh
+$ go get -u github.com/go-bindata/go-bindata/...
+# OR: go get -u github.com/go-bindata/go-bindata/v3/go-bindata
+# to save it to your go.mod file
+$ go-bindata -fs -prefix "templates" ./templates/...
+$ go run .
+```
+
+Example Code:
 
 ```go
 package main
@@ -139,16 +138,11 @@ import "github.com/kataras/iris/v12"
 
 func main() {
     app := iris.New()
-    // $ go get -u github.com/go-bindata/go-bindata/...
-    // $ go-bindata ./templates/...
-    // $ go build
-    // $ ./embedding-templates-into-app
-    // html files are not used, you can delete the folder and run the example
-    app.RegisterView(iris.HTML("./templates", ".html").Binary(Asset, AssetNames))
+    app.RegisterView(iris.HTML(AssetFile(), ".html"))
     app.Get("/", hi)
 
     // http://localhost:8080
-    app.Run(iris.Addr(":8080"))
+    app.Listen(":8080")
 }
 
 type page struct {

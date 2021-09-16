@@ -1,57 +1,102 @@
 package view
 
 import (
+	"bytes"
 	"fmt"
 	"html/template"
 	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
+	"sync/atomic"
 
 	"github.com/eknkc/amber"
 )
 
 // AmberEngine contains the amber view engine structure.
 type AmberEngine struct {
+	fs http.FileSystem
 	// files configuration
-	directory string
+	rootDir   string
 	extension string
-	assetFn   func(name string) ([]byte, error) // for embedded, in combination with directory & extension
-	namesFn   func() []string                   // for embedded, in combination with directory & extension
 	reload    bool
 	//
 	rmu           sync.RWMutex // locks for `ExecuteWiter` when `reload` is true.
-	funcs         map[string]interface{}
 	templateCache map[string]*template.Template
+	bufPool       *sync.Pool
+
+	Options amber.Options
 }
 
-var _ Engine = (*AmberEngine)(nil)
+var (
+	_ Engine       = (*AmberEngine)(nil)
+	_ EngineFuncer = (*AmberEngine)(nil)
+)
+
+var amberOnce = new(uint32)
 
 // Amber creates and returns a new amber view engine.
-func Amber(directory, extension string) *AmberEngine {
+// The given "extension" MUST begin with a dot.
+//
+// Usage:
+// Amber("./views", ".amber") or
+// Amber(iris.Dir("./views"), ".amber") or
+// Amber(AssetFile(), ".amber") for embedded data.
+func Amber(fs interface{}, extension string) *AmberEngine {
+	if atomic.LoadUint32(amberOnce) > 0 {
+		panic("Amber: cannot be registered twice as its internal implementation share the same template functions across instances.")
+	} else {
+		atomic.StoreUint32(amberOnce, 1)
+	}
+
+	fileSystem := getFS(fs)
 	s := &AmberEngine{
-		directory:     directory,
+		fs:            fileSystem,
+		rootDir:       "/",
 		extension:     extension,
 		templateCache: make(map[string]*template.Template),
-		funcs:         make(map[string]interface{}),
+		Options: amber.Options{
+			PrettyPrint:       false,
+			LineNumbers:       false,
+			VirtualFilesystem: fileSystem,
+		},
+		bufPool: &sync.Pool{New: func() interface{} {
+			return new(bytes.Buffer)
+		}},
+	}
+
+	builtinFuncs := template.FuncMap{
+		"render": func(name string, binding interface{}) (template.HTML, error) {
+			result, err := s.executeTemplateBuf(name, binding)
+			return template.HTML(result), err
+		},
+	}
+
+	for k, v := range builtinFuncs {
+		amber.FuncMap[k] = v
 	}
 
 	return s
 }
 
-// Ext returns the file extension which this view engine is responsible to render.
-func (s *AmberEngine) Ext() string {
-	return s.extension
+// RootDir sets the directory to be used as a starting point
+// to load templates from the provided file system.
+func (s *AmberEngine) RootDir(root string) *AmberEngine {
+	s.rootDir = filepath.ToSlash(root)
+	return s
 }
 
-// Binary optionally, use it when template files are distributed
-// inside the app executable (.go generated files).
-//
-// The assetFn and namesFn can come from the go-bindata library.
-func (s *AmberEngine) Binary(assetFn func(name string) ([]byte, error), namesFn func() []string) *AmberEngine {
-	s.assetFn, s.namesFn = assetFn, namesFn
-	return s
+// Name returns the amber engine's name.
+func (s *AmberEngine) Name() string {
+	return "Amber"
+}
+
+// Ext returns the file extension which this view engine is responsible to render.
+// If the filename extension on ExecuteWriter is empty then this is appended.
+func (s *AmberEngine) Ext() string {
+	return s.extension
 }
 
 // Reload if set to true the templates are reloading on each render,
@@ -66,14 +111,29 @@ func (s *AmberEngine) Reload(developmentMode bool) *AmberEngine {
 	return s
 }
 
+// SetPrettyPrint if pretty printing is enabled.
+// Pretty printing ensures that the output html is properly indented and in human readable form.
+// Defaults to false, response is minified.
+func (s *AmberEngine) SetPrettyPrint(pretty bool) *AmberEngine {
+	s.Options.PrettyPrint = true
+	return s
+}
+
 // AddFunc adds the function to the template's function map.
 // It is legal to overwrite elements of the default actions:
 // - url func(routeName string, args ...string) string
 // - urlpath func(routeName string, args ...string) string
 // - render func(fullPartialName string) (template.HTML, error).
+//
+// Note that, Amber does not support functions per template,
+// instead it's using the "call" directive so any template-specific
+// functions should be passed using `Context.View/ViewData` binding data.
+// This method will modify the global amber's FuncMap which considers
+// as the "builtin" as this is the only way to actually add a function.
+// Note that, if you use more than one amber engine, the functions are shared.
 func (s *AmberEngine) AddFunc(funcName string, funcBody interface{}) {
 	s.rmu.Lock()
-	s.funcs[funcName] = funcBody
+	amber.FuncMap[funcName] = funcBody
 	s.rmu.Unlock()
 }
 
@@ -82,123 +142,100 @@ func (s *AmberEngine) AddFunc(funcName string, funcBody interface{}) {
 //
 // Returns an error if something bad happens, user is responsible to catch it.
 func (s *AmberEngine) Load() error {
-	if s.assetFn != nil && s.namesFn != nil {
-		// embedded
-		return s.loadAssets()
-	}
+	return walk(s.fs, s.rootDir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
 
-	// load from directory, make the dir absolute here too.
-	dir, err := filepath.Abs(s.directory)
+		if info == nil || info.IsDir() {
+			return nil
+		}
+
+		if s.extension != "" {
+			if !strings.HasSuffix(path, s.extension) {
+				return nil
+			}
+		}
+
+		contents, err := asset(s.fs, path)
+		if err != nil {
+			return fmt.Errorf("%s: %w", path, err)
+		}
+
+		err = s.ParseTemplate(path, contents)
+		if err != nil {
+			return fmt.Errorf("%s: %v", path, err)
+		}
+		return nil
+	})
+}
+
+// ParseTemplate adds a custom template from text.
+// This template parser does not support funcs per template directly.
+// Two ways to add a function:
+// Globally: Use `AddFunc` or pass them on `View` instead.
+// Per Template: Use `Context.ViewData/View`.
+func (s *AmberEngine) ParseTemplate(name string, contents []byte) error {
+	s.rmu.Lock()
+	defer s.rmu.Unlock()
+
+	comp := amber.New()
+	comp.Options = s.Options
+
+	err := comp.ParseData(contents, name)
 	if err != nil {
 		return err
 	}
 
-	if _, err := os.Stat(dir); os.IsNotExist(err) {
+	data, err := comp.CompileString()
+	if err != nil {
 		return err
 	}
 
-	// change the directory field configuration, load happens after directory has been set, so we will not have any problems here.
-	s.directory = dir
-	return s.loadDirectory()
-}
+	name = strings.TrimPrefix(name, "/")
 
-// loadDirectory loads the amber templates from directory.
-func (s *AmberEngine) loadDirectory() error {
-	dir, extension := s.directory, s.extension
+	/*
+		New(...).Funcs(s.builtinFuncs):
+		This won't work on amber, it loads only amber.FuncMap which is global.
+		Relative code:
+		https://github.com/eknkc/amber/blob/cdade1c073850f4ffc70a829e31235ea6892853b/compiler.go#L771-L794
+	*/
 
-	opt := amber.DirOptions{}
-	opt.Recursive = true
-
-	// prepare the global amber funcs
-	funcs := template.FuncMap{}
-
-	for k, v := range amber.FuncMap { // add the amber's default funcs
-		funcs[k] = v
-	}
-
-	for k, v := range s.funcs {
-		funcs[k] = v
-	}
-
-	amber.FuncMap = funcs // set the funcs
-	opt.Ext = extension
-
-	templates, err := amber.CompileDir(dir, opt, amber.DefaultOptions) // this returns the map with stripped extension, we want extension so we copy the map
+	tmpl := template.New(name).Funcs(amber.FuncMap)
+	_, err = tmpl.Parse(data)
 	if err == nil {
-		s.templateCache = make(map[string]*template.Template)
-		for k, v := range templates {
-			name := filepath.ToSlash(k + opt.Ext)
-			s.templateCache[name] = v
-			delete(templates, k)
-		}
-
+		s.templateCache[name] = tmpl
 	}
+
 	return err
 }
 
-// loadAssets builds the templates by binary, embedded.
-func (s *AmberEngine) loadAssets() error {
-	virtualDirectory, virtualExtension := s.directory, s.extension
-	assetFn, namesFn := s.assetFn, s.namesFn
+func (s *AmberEngine) executeTemplateBuf(name string, binding interface{}) (string, error) {
+	buf := s.bufPool.Get().(*bytes.Buffer)
+	buf.Reset()
 
-	// prepare the global amber funcs
-	funcs := template.FuncMap{}
-
-	for k, v := range amber.FuncMap { // add the amber's default funcs
-		funcs[k] = v
+	tmpl := s.fromCache(name)
+	if tmpl == nil {
+		s.bufPool.Put(buf)
+		return "", ErrNotExist{name, false}
 	}
 
-	for k, v := range s.funcs {
-		funcs[k] = v
-	}
-
-	if len(virtualDirectory) > 0 {
-		if virtualDirectory[0] == '.' { // first check for .wrong
-			virtualDirectory = virtualDirectory[1:]
-		}
-		if virtualDirectory[0] == '/' || virtualDirectory[0] == filepath.Separator { // second check for /something, (or ./something if we had dot on 0 it will be removed
-			virtualDirectory = virtualDirectory[1:]
-		}
-	}
-	amber.FuncMap = funcs // set the funcs
-
-	names := namesFn()
-
-	for _, path := range names {
-		if !strings.HasPrefix(path, virtualDirectory) {
-			continue
-		}
-		ext := filepath.Ext(path)
-		if ext == virtualExtension {
-
-			rel, err := filepath.Rel(virtualDirectory, path)
-			if err != nil {
-				return err
-			}
-
-			buf, err := assetFn(path)
-			if err != nil {
-				return err
-			}
-
-			name := filepath.ToSlash(rel)
-			tmpl, err := amber.CompileData(buf, name, amber.DefaultOptions)
-			if err != nil {
-				return err
-			}
-
-			s.templateCache[name] = tmpl
-		}
-	}
-
-	return nil
+	err := tmpl.ExecuteTemplate(buf, name, binding)
+	result := strings.TrimSuffix(buf.String(), "\n") // on amber it adds a new line.
+	s.bufPool.Put(buf)
+	return result, err
 }
 
 func (s *AmberEngine) fromCache(relativeName string) *template.Template {
-	tmpl, ok := s.templateCache[relativeName]
-	if ok {
+	if s.reload {
+		s.rmu.RLock()
+		defer s.rmu.RUnlock()
+	}
+
+	if tmpl, ok := s.templateCache[relativeName]; ok {
 		return tmpl
 	}
+
 	return nil
 }
 
@@ -207,10 +244,6 @@ func (s *AmberEngine) fromCache(relativeName string) *template.Template {
 func (s *AmberEngine) ExecuteWriter(w io.Writer, filename string, layout string, bindingData interface{}) error {
 	// re-parse the templates if reload is enabled.
 	if s.reload {
-		// locks to fix #872, it's the simplest solution and the most correct,
-		// to execute writers with "wait list", one at a time.
-		s.rmu.Lock()
-		defer s.rmu.Unlock()
 		if err := s.Load(); err != nil {
 			return err
 		}
@@ -220,5 +253,5 @@ func (s *AmberEngine) ExecuteWriter(w io.Writer, filename string, layout string,
 		return tmpl.Execute(w, bindingData)
 	}
 
-	return fmt.Errorf("Template with name %s doesn't exists in the dir", filename)
+	return ErrNotExist{filename, false}
 }

@@ -1,6 +1,7 @@
 package client
 
 import (
+	"strings"
 	"sync"
 	"time"
 
@@ -8,6 +9,10 @@ import (
 	"github.com/kataras/iris/v12/cache/entry"
 	"github.com/kataras/iris/v12/context"
 )
+
+func init() {
+	context.SetHandlerName("iris/cache/client.(*Handler).ServeHTTP-fm", "iris.cache")
+}
 
 // Handler the local cache service handler contains
 // the original response, the memory cache entry and
@@ -59,19 +64,59 @@ func (h *Handler) AddRule(r rule.Rule) *Handler {
 	return h
 }
 
-var emptyHandler = func(ctx context.Context) {
-	ctx.StatusCode(500)
-	ctx.WriteString("cache: empty body handler")
-	ctx.StopExecution()
+var emptyHandler = func(ctx *context.Context) {
+	ctx.StopWithText(500, "cache: empty body handler")
 }
 
-func parseLifeChanger(ctx context.Context) entry.LifeChanger {
+func parseLifeChanger(ctx *context.Context) entry.LifeChanger {
 	return func() time.Duration {
 		return time.Duration(ctx.MaxAge()) * time.Second
 	}
 }
 
-func (h *Handler) ServeHTTP(ctx context.Context) {
+const entryKeyContextKey = "iris.cache.server.entry.key"
+
+// SetKey sets a custom entry key for cached pages.
+// See root package-level `WithKey` instead.
+func SetKey(ctx *context.Context, key string) {
+	ctx.Values().Set(entryKeyContextKey, key)
+}
+
+// GetKey returns the entry key for the current page.
+func GetKey(ctx *context.Context) string {
+	return ctx.Values().GetString(entryKeyContextKey)
+}
+
+func getOrSetKey(ctx *context.Context) string {
+	if key := GetKey(ctx); key != "" {
+		return key
+	}
+
+	// Note: by-default the rules(ruleset pkg)
+	// explicitly ignores the cache handler
+	// execution on authenticated requests
+	// and immediately runs the next handler:
+	// if !h.rule.Claim(ctx) ...see `Handler` method.
+	// So the below two lines are useless,
+	// however we add it for cases
+	// that the end-developer messedup with the rules
+	// and by accident allow authenticated cached results.
+	username, password, _ := ctx.Request().BasicAuth()
+	authPart := username + strings.Repeat("*", len(password))
+
+	key := ctx.Method() + authPart
+
+	u := ctx.Request().URL
+	if !u.IsAbs() {
+		key += ctx.Scheme() + ctx.Host()
+	}
+	key += u.String()
+
+	SetKey(ctx, key)
+	return key
+}
+
+func (h *Handler) ServeHTTP(ctx *context.Context) {
 	// check for pre-cache validators, if at least one of them return false
 	// for this specific request, then skip the whole cache
 	bodyHandler := ctx.NextHandler()
@@ -88,16 +133,11 @@ func (h *Handler) ServeHTTP(ctx context.Context) {
 		return
 	}
 
-	scheme := "http"
-	if ctx.Request().TLS != nil {
-		scheme = "https"
-	}
-
 	var (
 		response *entry.Response
 		valid    = false
 		// unique per subdomains and paths with different url query.
-		key = scheme + ctx.Host() + ctx.Request().URL.RequestURI()
+		key = getOrSetKey(ctx)
 	)
 
 	h.mu.RLock()

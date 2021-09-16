@@ -16,11 +16,48 @@ type RequestParams struct {
 	memstore.Store
 }
 
-// Set inserts a value to the key-value storage.
-//
-// See `SetImmutable` and `Get` too.
+// RequestParamsReadOnly is the read-only access type of RequestParams.
+type RequestParamsReadOnly interface {
+	Get(key string) string
+	GetEntryAt(index int) memstore.Entry
+	Visit(visitor func(key string, value string))
+	GetTrim(key string) string
+	GetEscape(key string) string
+	GetDecoded(key string) string
+} // Note: currently unused.
+
+var _ RequestParamsReadOnly = (*RequestParams)(nil)
+
+// Set inserts a parameter value.
+// See `Get` too.
 func (r *RequestParams) Set(key, value string) {
-	r.Store.Set(key, value)
+	if ln := len(r.Store); cap(r.Store) > ln {
+		r.Store = r.Store[:ln+1]
+		p := &r.Store[ln]
+		p.Key = key
+		p.ValueRaw = value
+		return
+	}
+
+	r.Store = append(r.Store, memstore.Entry{
+		Key:      key,
+		ValueRaw: value,
+	})
+}
+
+// Get returns a path parameter's value based on its route's dynamic path key.
+func (r *RequestParams) Get(key string) string {
+	for i := 0; i < len(r.Store); i++ {
+		if kv := r.Store[i]; kv.Key == key {
+			if v, ok := kv.ValueRaw.(string); ok {
+				return v // it should always be string here on :string parameter.
+			}
+
+			return fmt.Sprintf("%s", kv.ValueRaw)
+		}
+	}
+
+	return ""
 }
 
 // GetEntryAt will return the parameter's internal store's `Entry` based on the index.
@@ -45,24 +82,19 @@ func (r *RequestParams) Visit(visitor func(key string, value string)) {
 	})
 }
 
-// Get returns a path parameter's value based on its route's dynamic path key.
-func (r RequestParams) Get(key string) string {
-	return r.GetString(key)
-}
-
 // GetTrim returns a path parameter's value without trailing spaces based on its route's dynamic path key.
-func (r RequestParams) GetTrim(key string) string {
+func (r *RequestParams) GetTrim(key string) string {
 	return strings.TrimSpace(r.Get(key))
 }
 
 // GetEscape returns a path parameter's double-url-query-escaped value based on its route's dynamic path key.
-func (r RequestParams) GetEscape(key string) string {
+func (r *RequestParams) GetEscape(key string) string {
 	return DecodeQuery(DecodeQuery(r.Get(key)))
 }
 
 // GetDecoded returns a path parameter's double-url-query-escaped value based on its route's dynamic path key.
 // same as `GetEscape`.
-func (r RequestParams) GetDecoded(key string) string {
+func (r *RequestParams) GetDecoded(key string) string {
 	return r.GetEscape(key)
 }
 
@@ -70,7 +102,7 @@ func (r RequestParams) GetDecoded(key string) string {
 // Usage: Get an id from a wildcard path.
 //
 // Returns -1 and false if not path parameter with that "key" found.
-func (r RequestParams) GetIntUnslashed(key string) (int, bool) {
+func (r *RequestParams) GetIntUnslashed(key string) (int, bool) {
 	v := r.Get(key)
 	if v != "" {
 		if len(v) > 1 {
@@ -95,7 +127,7 @@ func (r RequestParams) GetIntUnslashed(key string) (int, bool) {
 // The value is a function which accepts the parameter index
 // and it should return the value as the parameter type evaluator expects it.
 // i.e [reflect.TypeOf("string")] = func(paramIndex int) interface{} {
-//     return func(ctx Context) <T> {
+//     return func(ctx *Context) <T> {
 //         return ctx.Params().GetEntryAt(paramIndex).ValueRaw.(<T>)
 //     }
 // }
@@ -107,7 +139,7 @@ func (r RequestParams) GetIntUnslashed(key string) (int, bool) {
 // when on the second requested path, the 'pssecond' should be empty.
 var ParamResolvers = map[reflect.Type]func(paramIndex int) interface{}{
 	reflect.TypeOf(""): func(paramIndex int) interface{} {
-		return func(ctx Context) string {
+		return func(ctx *Context) string {
 			if ctx.Params().Len() <= paramIndex {
 				return ""
 			}
@@ -115,7 +147,7 @@ var ParamResolvers = map[reflect.Type]func(paramIndex int) interface{}{
 		}
 	},
 	reflect.TypeOf(int(1)): func(paramIndex int) interface{} {
-		return func(ctx Context) int {
+		return func(ctx *Context) int {
 			if ctx.Params().Len() <= paramIndex {
 				return 0
 			}
@@ -125,7 +157,7 @@ var ParamResolvers = map[reflect.Type]func(paramIndex int) interface{}{
 		}
 	},
 	reflect.TypeOf(int8(1)): func(paramIndex int) interface{} {
-		return func(ctx Context) int8 {
+		return func(ctx *Context) int8 {
 			if ctx.Params().Len() <= paramIndex {
 				return 0
 			}
@@ -133,7 +165,7 @@ var ParamResolvers = map[reflect.Type]func(paramIndex int) interface{}{
 		}
 	},
 	reflect.TypeOf(int16(1)): func(paramIndex int) interface{} {
-		return func(ctx Context) int16 {
+		return func(ctx *Context) int16 {
 			if ctx.Params().Len() <= paramIndex {
 				return 0
 			}
@@ -141,7 +173,7 @@ var ParamResolvers = map[reflect.Type]func(paramIndex int) interface{}{
 		}
 	},
 	reflect.TypeOf(int32(1)): func(paramIndex int) interface{} {
-		return func(ctx Context) int32 {
+		return func(ctx *Context) int32 {
 			if ctx.Params().Len() <= paramIndex {
 				return 0
 			}
@@ -149,7 +181,7 @@ var ParamResolvers = map[reflect.Type]func(paramIndex int) interface{}{
 		}
 	},
 	reflect.TypeOf(int64(1)): func(paramIndex int) interface{} {
-		return func(ctx Context) int64 {
+		return func(ctx *Context) int64 {
 			if ctx.Params().Len() <= paramIndex {
 				return 0
 			}
@@ -157,7 +189,7 @@ var ParamResolvers = map[reflect.Type]func(paramIndex int) interface{}{
 		}
 	},
 	reflect.TypeOf(uint(1)): func(paramIndex int) interface{} {
-		return func(ctx Context) uint {
+		return func(ctx *Context) uint {
 			if ctx.Params().Len() <= paramIndex {
 				return 0
 			}
@@ -165,7 +197,7 @@ var ParamResolvers = map[reflect.Type]func(paramIndex int) interface{}{
 		}
 	},
 	reflect.TypeOf(uint8(1)): func(paramIndex int) interface{} {
-		return func(ctx Context) uint8 {
+		return func(ctx *Context) uint8 {
 			if ctx.Params().Len() <= paramIndex {
 				return 0
 			}
@@ -173,7 +205,7 @@ var ParamResolvers = map[reflect.Type]func(paramIndex int) interface{}{
 		}
 	},
 	reflect.TypeOf(uint16(1)): func(paramIndex int) interface{} {
-		return func(ctx Context) uint16 {
+		return func(ctx *Context) uint16 {
 			if ctx.Params().Len() <= paramIndex {
 				return 0
 			}
@@ -181,7 +213,7 @@ var ParamResolvers = map[reflect.Type]func(paramIndex int) interface{}{
 		}
 	},
 	reflect.TypeOf(uint32(1)): func(paramIndex int) interface{} {
-		return func(ctx Context) uint32 {
+		return func(ctx *Context) uint32 {
 			if ctx.Params().Len() <= paramIndex {
 				return 0
 			}
@@ -189,7 +221,7 @@ var ParamResolvers = map[reflect.Type]func(paramIndex int) interface{}{
 		}
 	},
 	reflect.TypeOf(uint64(1)): func(paramIndex int) interface{} {
-		return func(ctx Context) uint64 {
+		return func(ctx *Context) uint64 {
 			if ctx.Params().Len() <= paramIndex {
 				return 0
 			}
@@ -197,7 +229,7 @@ var ParamResolvers = map[reflect.Type]func(paramIndex int) interface{}{
 		}
 	},
 	reflect.TypeOf(true): func(paramIndex int) interface{} {
-		return func(ctx Context) bool {
+		return func(ctx *Context) bool {
 			if ctx.Params().Len() <= paramIndex {
 				return false
 			}
@@ -219,7 +251,7 @@ func ParamResolverByTypeAndIndex(typ reflect.Type, paramIndex int) (reflect.Valu
 	/* NO:
 	// This could work but its result is not exact type, so direct binding is not possible.
 	resolver := m.ParamResolver
-	fn := func(ctx context.Context) interface{} {
+	fn := func(ctx *context.Context) interface{} {
 		entry, _ := ctx.Params().GetEntry(paramName)
 		return resolver(entry)
 	}
@@ -227,10 +259,10 @@ func ParamResolverByTypeAndIndex(typ reflect.Type, paramIndex int) (reflect.Valu
 
 	// This works but it is slower on serve-time.
 	paramNameValue := []reflect.Value{reflect.ValueOf(paramName)}
-	var fnSignature func(context.Context) string
+	var fnSignature func(*context.Context) string
 	return reflect.MakeFunc(reflect.ValueOf(&fnSignature).Elem().Type(), func(in []reflect.Value) []reflect.Value {
 		return in[0].MethodByName("Params").Call(emptyIn)[0].MethodByName("Get").Call(paramNameValue)
-		// return []reflect.Value{reflect.ValueOf(in[0].Interface().(context.Context).Params().Get(paramName))}
+		// return []reflect.Value{reflect.ValueOf(in[0].Interface().(*context.Context).Params().Get(paramName))}
 	})
 	//
 	*/

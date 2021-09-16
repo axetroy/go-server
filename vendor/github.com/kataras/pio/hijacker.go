@@ -17,6 +17,10 @@ var (
 	// ErrSkipped it returned from marshaler or hijacker
 	// when the content should be skipped and printer should avoid printing it.
 	ErrSkipped = errors.New("skipped")
+	// ErrHandled can be returned from a hijacker to specify
+	// that the hijacker handled the write operation itself,
+	// therefore pio does not need to do anything else.
+	ErrHandled = errors.New("handled")
 )
 
 var cPool = sync.Pool{New: func() interface{} { return &Ctx{} }}
