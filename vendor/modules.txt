@@ -70,7 +70,7 @@ github.com/eknkc/amber/parser
 ## explicit
 # github.com/fasthttp-contrib/websocket v0.0.0-20160511215533-1f3b11f56072
 ## explicit
-# github.com/fatih/color v1.9.0
+# github.com/fatih/color v1.13.0
 ## explicit
 github.com/fatih/color
 # github.com/fatih/structs v1.1.0
@@ -245,10 +245,9 @@ github.com/markbates/pkger/pkging
 github.com/markbates/pkger/pkging/embed
 github.com/markbates/pkger/pkging/mem
 github.com/markbates/pkger/pkging/stdos
-# github.com/mattn/go-colorable v0.1.4
+# github.com/mattn/go-colorable v0.1.9
 github.com/mattn/go-colorable
-# github.com/mattn/go-isatty v0.0.12
-## explicit
+# github.com/mattn/go-isatty v0.0.14
 github.com/mattn/go-isatty
 # github.com/microcosm-cc/bluemonday v1.0.4
 github.com/microcosm-cc/bluemonday
