@@ -1,4 +1,4 @@
-# CSS [![GoDoc](http://godoc.org/github.com/tdewolff/parse/css?status.svg)](http://godoc.org/github.com/tdewolff/parse/css)
+# CSS [![API reference](https://img.shields.io/badge/godoc-reference-5272B4)](https://pkg.go.dev/github.com/tdewolff/parse/v2/css?tab=doc)
 
 This package is a CSS3 lexer and parser written in [Go][1]. Both follow the specification at [CSS Syntax Module Level 3](http://www.w3.org/TR/css-syntax-3/). The lexer takes an io.Reader and converts it into tokens until the EOF. The parser returns a parse tree of the full io.Reader input stream, but the low-level `Next` function can be used for stream parsing to returns grammar units until the EOF.
 
@@ -15,7 +15,7 @@ or add the following import and run project with `go get`
 ### Usage
 The following initializes a new Lexer with io.Reader `r`:
 ``` go
-l := css.NewLexer(r)
+l := css.NewLexer(parse.NewInput(r))
 ```
 
 To tokenize until EOF an error, use:
@@ -75,7 +75,7 @@ import (
 
 // Tokenize CSS3 from stdin.
 func main() {
-	l := css.NewLexer(os.Stdin)
+	l := css.NewLexer(parse.NewInput(os.Stdin))
 	for {
 		tt, text := l.Next()
 		switch tt {
@@ -99,7 +99,7 @@ func main() {
 The following creates a new Parser.
 ``` go
 // true because this is the content of an inline style attribute
-p := css.NewParser(bytes.NewBufferString("color: red;"), true)
+p := css.NewParser(parse.NewInput(bytes.NewBufferString("color: red;")), true)
 ```
 
 To iterate over the stylesheet, use:
@@ -137,7 +137,7 @@ import (
 
 func main() {
 	// true because this is the content of an inline style attribute
-	p := css.NewParser(bytes.NewBufferString("color: red;"), true)
+	p := css.NewParser(parse.NewInput(bytes.NewBufferString("color: red;")), true)
 	out := ""
 	for {
 		gt, _, data := p.Next()
@@ -162,7 +162,6 @@ func main() {
 	}
 	fmt.Println(out)
 }
-
 ```
 
 ## License

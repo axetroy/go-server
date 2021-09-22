@@ -19,14 +19,97 @@
 
 Developers are not forced to upgrade if they don't really need it. Upgrade whenever you feel ready.
 
-**How to upgrade**: Open your command-line and execute this command: `go get github.com/kataras/iris/v12@latest`.
+**How to upgrade**: Open your command-line and execute this command: `go get github.com/kataras/iris/v12@master`.
 
-# Next
+# Next (currently v12.2.0-alpha3)
 
 This release introduces new features and some breaking changes.
 The codebase for Dependency Injection, Internationalization and localization and more have been simplified a lot (fewer LOCs and easier to read and follow up).
 
 ## Fixes and Improvements
+
+- Replace json-iterator with go-json as requested at [#1818](https://github.com/kataras/iris/issues/1818).
+
+- New `iris.IsErrEmptyJSON(err) bool` which reports whether the given "err" is caused by a
+`Context.ReadJSON` call when the request body didn't start with { (or it was totally empty). 
+
+Example Code:
+
+```go
+func handler(ctx iris.Context) {
+    var opts SearchOptions
+    if err := ctx.ReadJSON(&opts); err != nil && !iris.IsErrEmptyJSON(err) {
+        ctx.StopWithJSON(iris.StatusBadRequest, iris.Map{"message": "unable to parse body"})
+        return
+    }
+
+    // [...continue with default values of "opts" struct if the client didn't provide some]
+}
+```
+
+That means that the client can optionally set a JSON body.
+	
+- New `APIContainer.EnableStrictMode(bool)` to disable automatic payload binding and panic on missing dependencies for exported struct'sfields or function's input parameters on MVC controller or hero function or PartyConfigurator.
+
+- New `Party.PartyConfigure(relativePath string, partyReg ...PartyConfigurator) Party` helper, registers a children Party like `Party` and `PartyFunc` but instead it accepts a structure value which may contain one or more of the dependencies registered by `RegisterDependency` or `ConfigureContainer().RegisterDependency` methods and fills the unset/zero exported struct's fields respectfully (useful when the api's dependencies amount are too much to pass on a function).
+
+- **New feature:** add the ability to set custom error handlers on path type parameters errors (existing or custom ones). Example Code:
+
+```go
+app.Macros().Get("uuid").HandleError(func(ctx iris.Context, paramIndex int, err error) {
+    ctx.StatusCode(iris.StatusBadRequest)
+
+    param := ctx.Params().GetEntryAt(paramIndex)
+    ctx.JSON(iris.Map{
+        "error":     err.Error(),
+        "message":   "invalid path parameter",
+        "parameter": param.Key,
+        "value":     param.ValueRaw,
+    })
+})
+
+app.Get("/users/{id:uuid}", getUser)
+```
+
+- Improve the performance and fix `:int, :int8, :int16, :int32, :int64, :uint, :uint8, :uint16, :uint32, :uint64` path type parameters couldn't accept a positive number written with the plus symbol or with a leading zeroes, e.g. `+42` and `021`.
+
+- The `iris.WithEmptyFormError` option is respected on `context.ReadQuery` method too, as requested at [#1727](https://github.com/kataras/iris/issues/1727). [Example comments](https://github.com/kataras/iris/blob/master/_examples/request-body/read-query/main.go) were updated.
+
+- New `httptest.Strict` option setter to enable the `httpexpect.RequireReporter` instead of the default `httpexpect.AssetReporter. Use that to enable complete test failure on the first error. As requested at: [#1722](https://github.com/kataras/iris/issues/1722).
+
+- New `uuid` builtin path parameter type. Example:
+
+```go
+// +------------------------+
+// | {param:uuid}           |
+// +------------------------+
+// UUIDv4 (and v1) path parameter validation.
+
+// http://localhost:8080/user/bb4f33e4-dc08-40d8-9f2b-e8b2bb615c0e -> OK
+// http://localhost:8080/user/dsadsa-invalid-uuid                  -> NOT FOUND
+app.Get("/user/{id:uuid}", func(ctx iris.Context) {
+    id := ctx.Params().Get("id")
+    ctx.WriteString(id)
+})
+```
+
+- New `Configuration.KeepAlive` and `iris.WithKeepAlive(time.Duration) Configurator` added as helpers to start the server using a tcp listener featured with keep-alive.
+
+- New `DirOptions.ShowHidden bool` is added by [@tuhao1020](https://github.com/tuhao1020) at [PR #1717](https://github.com/kataras/iris/pull/1717) to show or hide the hidden files when `ShowList` is set to true.
+
+- New `Context.ReadJSONStream` method and `JSONReader` options for `Context.ReadJSON` and `Context.ReadJSONStream`, see the [example](_examples/request-body/read-json-stream/main.go).
+
+- New `FallbackView` feature, per-party or per handler chain. Example can be found at: [_examples/view/fallback](_examples/view/fallback).
+
+```go
+    app.FallbackView(iris.FallbackViewFunc(func(ctx iris.Context, err iris.ErrViewNotExist) error {
+        // err.Name is the previous template name.
+        // err.IsLayout reports whether the failure came from the layout template.
+        // err.Data is the template data provided to the previous View call.
+        // [...custom logic e.g. ctx.View("fallback.html", err.Data)]
+        return err
+    }))
+```
 
 - New `versioning.Aliases` middleware and up to 80% faster version resolve. Example Code:
 
@@ -334,6 +417,7 @@ var dirOpts = iris.DirOptions{
 
 ## New Context Methods
 
+- `Context.FormFiles(key string, before ...func(*Context, *multipart.FileHeader) bool) (files []multipart.File, headers []*multipart.FileHeader, err error)` method.
 - `Context.ReadURL(ptr interface{}) error` shortcut of `ReadParams` and `ReadQuery`. Binds URL dynamic path parameters and URL query parameters to the given "ptr" pointer of a struct value.
 - `Context.SetUser(User)` and `Context.User() User` to store and retrieve an authenticated client. Read more [here](https://github.com/iris-contrib/middleware/issues/63).
 - `Context.SetLogoutFunc(fn interface{}, persistenceArgs ...interface{})` and `Logout(args ...interface{}) error` methods to allow different kind of auth middlewares to be able to set a "logout" a user/client feature with a single function, the route handler may not be aware of the implementation of the authentication used.

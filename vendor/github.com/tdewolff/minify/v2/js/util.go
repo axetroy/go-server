@@ -25,7 +25,6 @@ var (
 	openBracketBytes           = []byte("[")
 	closeBracketBytes          = []byte("]")
 	openParenBracketBytes      = []byte("({")
-	closeBracketParenBytes     = []byte("})")
 	closeParenOpenBracketBytes = []byte("){")
 	notBytes                   = []byte("!")
 	questionBytes              = []byte("?")
@@ -34,7 +33,6 @@ var (
 	andBytes                   = []byte("&&")
 	orBytes                    = []byte("||")
 	optChainBytes              = []byte("?.")
-	nullishBytes               = []byte("??")
 	arrowBytes                 = []byte("=>")
 	zeroBytes                  = []byte("0")
 	oneBytes                   = []byte("1")
@@ -72,8 +70,6 @@ var (
 	openNewBytes               = []byte("(new")
 	newTargetBytes             = []byte("new.target")
 	importMetaBytes            = []byte("import.meta")
-	varBytes                   = []byte("var")
-	varSpaceBytes              = []byte("var ")
 	nanBytes                   = []byte("NaN")
 	undefinedBytes             = []byte("undefined")
 	infinityBytes              = []byte("Infinity")
@@ -85,7 +81,8 @@ var (
 	groupedNotZeroBytes        = []byte("(!0)")
 	notOneBytes                = []byte("!1")
 	groupedNotOneBytes         = []byte("(!1)")
-	useStrictBytes             = []byte(`"use strict"`)
+	debuggerBytes              = []byte("debugger")
+	regExpScriptBytes          = []byte("/script>")
 )
 
 // precedence maps for the precedence inside the operation
@@ -283,7 +280,7 @@ func exprPrec(i js.IExpr) js.OpPrec {
 // TODO: use in more cases
 func groupExpr(i js.IExpr, prec js.OpPrec) js.IExpr {
 	precInside := exprPrec(i)
-	if precInside < prec && (precInside != js.OpCoalesce || prec != js.OpBitOr) {
+	if _, ok := i.(*js.GroupExpr); !ok && precInside < prec && (precInside != js.OpCoalesce || prec != js.OpBitOr) {
 		return &js.GroupExpr{X: i}
 	}
 	return i
@@ -319,6 +316,19 @@ func (m *jsMinifier) isEmptyStmt(stmt js.IStmt) bool {
 		return true
 	}
 	return false
+}
+
+func finalExpr(expr js.IExpr) js.IExpr {
+	if group, ok := expr.(*js.GroupExpr); ok {
+		expr = group.X
+	}
+	if binary, ok := expr.(*js.BinaryExpr); ok && binary.Op == js.CommaToken {
+		expr = binary.Y
+	}
+	if binary, ok := expr.(*js.BinaryExpr); ok && binary.Op == js.EqToken {
+		expr = binary.X
+	}
+	return expr
 }
 
 func isFlowStmt(stmt js.IStmt) bool {
@@ -512,11 +522,11 @@ func endsInIf(istmt js.IStmt) bool {
 	case *js.WhileStmt:
 		return endsInIf(stmt.Body)
 	case *js.ForStmt:
-		return endsInIf(&stmt.Body)
+		return endsInIf(stmt.Body)
 	case *js.ForInStmt:
-		return endsInIf(&stmt.Body)
+		return endsInIf(stmt.Body)
 	case *js.ForOfStmt:
-		return endsInIf(&stmt.Body)
+		return endsInIf(stmt.Body)
 	}
 	return false
 }
@@ -592,12 +602,12 @@ func minifyString(b []byte) []byte {
 				}
 			} else if '0' <= c && c <= '7' {
 				// octal escapes (legacy), \0 already handled
-				num := byte(c - '0')
+				num := c - '0'
 				if i+2 < len(b)-1 && '0' <= b[i+2] && b[i+2] <= '7' {
-					num = num*8 + byte(b[i+2]-'0')
+					num = num*8 + b[i+2] - '0'
 					n++
 					if num < 32 && i+3 < len(b)-1 && '0' <= b[i+3] && b[i+3] <= '7' {
-						num = num*8 + byte(b[i+3]-'0')
+						num = num*8 + b[i+3] - '0'
 						n++
 					}
 				}
@@ -642,6 +652,23 @@ func minifyString(b []byte) []byte {
 				b = append(append(b[:i], '\\'), b[i:]...)
 				i++
 				b[i] = quote // was overwritten above
+			}
+		} else if c == '<' && 9 <= len(b)-1-i {
+			if b[i+1] == '\\' && 10 <= len(b)-1-i && bytes.Equal(b[i+2:i+10], []byte("/script>")) {
+				i += 9
+			} else if bytes.Equal(b[i+1:i+9], []byte("/script>")) {
+				i++
+				if j < start {
+					// avoid append
+					j += copy(b[j:], b[start:i])
+					b[j] = '\\'
+					j++
+					start = i
+				} else {
+					b = append(append(b[:i], '\\'), b[i:]...)
+					i++
+					b[i] = '/' // was overwritten above
+				}
 			}
 		}
 	}
