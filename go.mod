@@ -15,7 +15,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/etcd-io/bbolt v1.3.3 // indirect
 	github.com/fasthttp-contrib/websocket v0.0.0-20160511215533-1f3b11f56072 // indirect
-	github.com/fatih/color v1.9.0
+	github.com/fatih/color v1.13.0
 	github.com/gavv/httpexpect v2.0.0+incompatible // indirect
 	github.com/go-co-op/gocron v0.3.3
 	github.com/go-ole/go-ole v1.2.4 // indirect
@@ -43,7 +43,6 @@ require (
 	github.com/lib/pq v1.10.3
 	github.com/markbates/goth v1.68.0
 	github.com/markbates/pkger v0.17.1
-	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/mitchellh/mapstructure v1.4.2
 	github.com/moul/http2curl v1.0.0 // indirect
 	github.com/mssola/user_agent v0.5.3
