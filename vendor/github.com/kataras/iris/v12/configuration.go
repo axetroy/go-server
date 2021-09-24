@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/kataras/golog"
 	"github.com/kataras/iris/v12/context"
@@ -198,6 +199,13 @@ func WithSocketSharding(app *Application) {
 	// Note(@kataras): It could be a host Configurator but it's an application setting in order
 	// to configure it through yaml/toml files as well.
 	app.config.SocketSharding = true
+}
+
+// WithKeepAlive sets the `Configuration.KeepAlive` field to the given duration.
+func WithKeepAlive(keepAliveDur time.Duration) Configurator {
+	return func(app *Application) {
+		app.config.KeepAlive = keepAliveDur
+	}
 }
 
 // WithoutServerError will cause to ignore the matched "errors"
@@ -613,6 +621,12 @@ type Configuration struct {
 	//
 	// Defaults to false.
 	SocketSharding bool `ini:"socket_sharding" json:"socketSharding" yaml:"SocketSharding" toml:"SocketSharding" env:"SOCKET_SHARDING"`
+	// KeepAlive sets the TCP connection's keep-alive duration.
+	// If set to greater than zero then a tcp listener featured keep alive
+	// will be used instead of the simple tcp one.
+	//
+	// Defaults to 0.
+	KeepAlive time.Duration `ini:"keepalive" json:"keepAlive" yaml:"KeepAlive" toml:"KeepAlive" env:"KEEP_ALIVE"`
 	// Tunneling can be optionally set to enable ngrok http(s) tunneling for this Iris app instance.
 	// See the `WithTunneling` Configurator too.
 	Tunneling TunnelingConfiguration `ini:"tunneling" json:"tunneling,omitempty" yaml:"Tunneling" toml:"Tunneling"`
@@ -717,7 +731,7 @@ type Configuration struct {
 	//
 	// See `Context.RecordRequestBody` method for the same feature, per-request.
 	DisableBodyConsumptionOnUnmarshal bool `ini:"disable_body_consumption" json:"disableBodyConsumptionOnUnmarshal,omitempty" yaml:"DisableBodyConsumptionOnUnmarshal" toml:"DisableBodyConsumptionOnUnmarshal"`
-	// FireEmptyFormError returns if set to tue true then the `context.ReadBody/ReadForm`
+	// FireEmptyFormError returns if set to tue true then the `context.ReadForm/ReadQuery/ReadBody`
 	// will return an `iris.ErrEmptyForm` on empty request form data.
 	FireEmptyFormError bool `ini:"fire_empty_form_error" json:"fireEmptyFormError,omitempty" yaml:"FireEmptyFormError" toml:"FireEmptyFormError"`
 
@@ -797,6 +811,11 @@ type Configuration struct {
 	//
 	// Defaults to "iris.view.data".
 	ViewDataContextKey string `ini:"view_data_context_key" json:"viewDataContextKey,omitempty" yaml:"ViewDataContextKey" toml:"ViewDataContextKey"`
+	// FallbackViewContextKey is the context's values key
+	// responsible to store the view fallback information.
+	//
+	// Defaults to "iris.view.fallback".
+	FallbackViewContextKey string `ini:"fallback_view_context_key" json:"fallbackViewContextKey,omitempty" yaml:"FallbackViewContextKey" toml:"FallbackViewContextKey"`
 	// RemoteAddrHeaders are the allowed request headers names
 	// that can be valid to parse the client's IP based on.
 	// By-default no "X-" header is consired safe to be used for retrieving the
@@ -887,6 +906,11 @@ func (c Configuration) GetLogLevel() string {
 // GetSocketSharding returns the SocketSharding field.
 func (c Configuration) GetSocketSharding() bool {
 	return c.SocketSharding
+}
+
+// GetKeepAlive returns the KeepAlive field.
+func (c Configuration) GetKeepAlive() time.Duration {
+	return c.KeepAlive
 }
 
 // GetDisablePathCorrection returns the DisablePathCorrection field.
@@ -999,6 +1023,11 @@ func (c Configuration) GetViewDataContextKey() string {
 	return c.ViewDataContextKey
 }
 
+// GetFallbackViewContextKey returns the FallbackViewContextKey field.
+func (c Configuration) GetFallbackViewContextKey() string {
+	return c.FallbackViewContextKey
+}
+
 // GetRemoteAddrHeaders returns the RemoteAddrHeaders field.
 func (c Configuration) GetRemoteAddrHeaders() []string {
 	return c.RemoteAddrHeaders
@@ -1052,6 +1081,10 @@ func WithConfiguration(c Configuration) Configurator {
 
 		if v := c.SocketSharding; v {
 			main.SocketSharding = v
+		}
+
+		if v := c.KeepAlive; v > 0 {
+			main.KeepAlive = v
 		}
 
 		if len(c.Tunneling.Tunnels) > 0 {
@@ -1155,6 +1188,9 @@ func WithConfiguration(c Configuration) Configurator {
 		if v := c.ViewDataContextKey; v != "" {
 			main.ViewDataContextKey = v
 		}
+		if v := c.FallbackViewContextKey; v != "" {
+			main.FallbackViewContextKey = v
+		}
 
 		if v := c.RemoteAddrHeaders; len(v) > 0 {
 			main.RemoteAddrHeaders = v
@@ -1202,6 +1238,7 @@ func DefaultConfiguration() Configuration {
 	return Configuration{
 		LogLevel:                          "info",
 		SocketSharding:                    false,
+		KeepAlive:                         0,
 		DisableStartupLog:                 false,
 		DisableInterruptHandler:           false,
 		DisablePathCorrection:             false,
@@ -1228,6 +1265,7 @@ func DefaultConfiguration() Configuration {
 		ViewEngineContextKey:     "iris.view.engine",
 		ViewLayoutContextKey:     "iris.view.layout",
 		ViewDataContextKey:       "iris.view.data",
+		FallbackViewContextKey:   "iris.view.fallback",
 		RemoteAddrHeaders:        nil,
 		RemoteAddrHeadersForce:   false,
 		RemoteAddrPrivateSubnets: []netutil.IPRange{

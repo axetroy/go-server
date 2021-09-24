@@ -1,4 +1,4 @@
-# JSON [![GoDoc](http://godoc.org/github.com/tdewolff/parse/json?status.svg)](http://godoc.org/github.com/tdewolff/parse/json)
+# JSON [![API reference](https://img.shields.io/badge/godoc-reference-5272B4)](https://pkg.go.dev/github.com/tdewolff/parse/v2/json?tab=doc)
 
 This package is a JSON lexer (ECMA-404) written in [Go][1]. It follows the specification at [JSON](http://json.org/). The lexer takes an io.Reader and converts it into tokens until the EOF.
 
@@ -15,7 +15,7 @@ or add the following import and run project with `go get`
 ### Usage
 The following initializes a new Parser with io.Reader `r`:
 ``` go
-p := json.NewParser(r)
+p := json.NewParser(parse.NewInput(r))
 ```
 
 To tokenize until EOF an error, use:
@@ -56,7 +56,7 @@ import (
 
 // Tokenize JSON from stdin.
 func main() {
-	p := json.NewParser(os.Stdin)
+	p := json.NewParser(parse.NewInput(os.Stdin))
 	for {
 		gt, text := p.Next()
 		switch gt {

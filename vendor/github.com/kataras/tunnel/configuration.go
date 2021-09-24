@@ -88,7 +88,6 @@ type (
 		// "jp" forJapan
 		// "in" for India
 		Region string `ini:"region" json:"region,omitempty" yaml:"Region" toml:"Region"`
-
 		// Tunnels the collection of the tunnels.
 		// Most of the times you only need one.
 		Tunnels []Tunnel `ini:"tunnels" json:"tunnels" yaml:"Tunnels" toml:"Tunnels"`
@@ -103,6 +102,10 @@ type (
 		Name string `ini:"name" json:"name" yaml:"Name" toml:"Name"`
 		// Addr should be set of form 'hostname:port'.
 		Addr string `ini:"addr" json:"addr,omitempty" yaml:"Addr" toml:"Addr"`
+
+		// Hostname is a static subdomain that can be used instead of random URLs
+		// when paid account.
+		Hostname string `ini:"hostname" json:"hostname,omitempty" yaml:"Hostname" toml:"Hostname"`
 	}
 )
 
@@ -144,11 +147,12 @@ func (tc Configuration) isNgrokRunning() bool {
 
 // https://ngrok.com/docs
 type ngrokTunnel struct {
-	Name    string `json:"name"`
-	Addr    string `json:"addr"`
-	Proto   string `json:"proto"`
-	Auth    string `json:"auth"`
-	BindTLS bool   `json:"bind_tls"`
+	Name     string `json:"name"`
+	Addr     string `json:"addr"`
+	Proto    string `json:"proto"`
+	Auth     string `json:"auth"`
+	BindTLS  bool   `json:"bind_tls"`
+	Hostname string `json:"hostname"`
 }
 
 // ErrExec returns when ngrok executable was not found in the PATH or NGROK environment variable.
@@ -159,10 +163,11 @@ var ErrExec = errors.New(`"ngrok" executable not found, please install it from: 
 // to the value of the ngrok's output public address.
 func (tc Configuration) StartTunnel(t Tunnel, publicAddr *string) error {
 	tunnelAPIRequest := ngrokTunnel{
-		Name:    t.Name,
-		Addr:    t.Addr,
-		Proto:   "http",
-		BindTLS: true,
+		Name:     t.Name,
+		Addr:     t.Addr,
+		Hostname: t.Hostname,
+		Proto:    "http",
+		BindTLS:  true,
 	}
 
 	if !tc.isNgrokRunning() {
@@ -201,12 +206,20 @@ func (tc Configuration) StartTunnel(t Tunnel, publicAddr *string) error {
 			cmd.Args = append(cmd.Args, []string{"-region", tc.Region}...)
 		}
 
+		// cmd.Stdout = os.Stdout
+		// cmd.Stderr = os.Stderr
+
 		stdout, err := cmd.StdoutPipe()
 		if err != nil {
 			return err
 		}
 
-		if err = cmd.Start(); err != nil {
+		// stderr, err := cmd.StderrPipe()
+		// if err != nil {
+		// 	return err
+		// }
+
+		if err := cmd.Start(); err != nil {
 			return err
 		}
 
@@ -215,6 +228,9 @@ func (tc Configuration) StartTunnel(t Tunnel, publicAddr *string) error {
 		for {
 			n, err := stdout.Read(p)
 			if err != nil {
+				// if errors.Is(err, io.EOF) {
+				// 	return nil
+				// }
 				return err
 			}
 

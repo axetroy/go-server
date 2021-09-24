@@ -7,6 +7,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"strings"
 	"time"
@@ -42,7 +43,7 @@ var AllMethods = []string{
 // all the routes.
 type repository struct {
 	routes []*Route
-	pos    map[string]int
+	paths  map[string]*Route // only the fullname path part, required at CreateRoutes for registering index page.
 }
 
 func (repo *repository) get(routeName string) *Route {
@@ -69,12 +70,8 @@ func (repo *repository) getRelative(r *Route) *Route {
 }
 
 func (repo *repository) getByPath(tmplPath string) *Route {
-	if repo.pos != nil {
-		if idx, ok := repo.pos[tmplPath]; ok {
-			if len(repo.routes) > idx {
-				return repo.routes[idx]
-			}
-		}
+	if r, ok := repo.paths[tmplPath]; ok {
+		return r
 	}
 
 	return nil
@@ -82,6 +79,25 @@ func (repo *repository) getByPath(tmplPath string) *Route {
 
 func (repo *repository) getAll() []*Route {
 	return repo.routes
+}
+
+func (repo *repository) remove(routeName string) bool {
+	for i, r := range repo.routes {
+		if r.Name == routeName {
+			lastIdx := len(repo.routes) - 1
+			if lastIdx == i {
+				repo.routes = repo.routes[0:lastIdx]
+			} else {
+				cp := make([]*Route, 0, lastIdx)
+				cp = append(cp, repo.routes[:i]...)
+				repo.routes = append(cp, repo.routes[i+1:]...)
+			}
+
+			delete(repo.paths, r.tmpl.Src)
+			return true
+		}
+	}
+	return false
 }
 
 func (repo *repository) register(route *Route, rule RouteRegisterRule) (*Route, error) {
@@ -109,10 +125,10 @@ func (repo *repository) register(route *Route, rule RouteRegisterRule) (*Route, 
 	repo.routes = append(repo.routes, route)
 
 	if route.StatusCode == 0 { // a common resource route, not a status code error handler.
-		if repo.pos == nil {
-			repo.pos = make(map[string]int)
+		if repo.paths == nil {
+			repo.paths = make(map[string]*Route)
 		}
-		repo.pos[route.tmpl.Src] = len(repo.routes) - 1
+		repo.paths[route.tmpl.Src] = route
 	}
 
 	return route, nil
@@ -321,6 +337,102 @@ func (api *APIBuilder) ConfigureContainer(builder ...func(*APIContainer)) *APICo
 	}
 
 	return api.apiBuilderDI
+}
+
+// RegisterDependency calls the `ConfigureContainer.RegisterDependency` method
+// with the provided value(s). See `HandleFunc` and `PartyConfigure` methods too.
+func (api *APIBuilder) RegisterDependency(dependencies ...interface{}) {
+	diContainer := api.ConfigureContainer()
+	for i, dependency := range dependencies {
+		if dependency == nil {
+			api.logger.Warnf("Party: %s: nil dependency on position: %d", api.relativePath, i)
+			continue
+		}
+
+		diContainer.RegisterDependency(dependency)
+	}
+}
+
+// HandleFunc registers a route on HTTP verb "method" and relative, to this Party, path.
+// It is like the `Handle` method but it accepts one or more "handlersFn" functions
+// that each one of them can accept any input arguments as the HTTP request and
+// output a result as the HTTP response. Specifically,
+// the input of the "handlersFn" can be any registered dependency
+// (see ConfigureContainer().RegisterDependency)
+// or leave the framework to parse the request and fill the values accordingly.
+// The output of the "handlersFn" can be any output result:
+//  custom structs <T>, string, []byte, int, error,
+//  a combination of the above, hero.Result(hero.View | hero.Response) and more.
+//
+// If more than one handler function is registered
+// then the execution happens without the nessecity of the `Context.Next` method,
+// simply, to stop the execution and not continue to the next "handlersFn" in chain
+// you should return an `iris.ErrStopExecution`.
+//
+// Example Code:
+//
+// The client's request body and server's response body Go types.
+// Could be any data structure.
+//
+// 	type (
+// 		request struct {
+// 			Firstname string `json:"firstname"`
+// 			Lastname string `json:"lastname"`
+// 		}
+//
+// 		response struct {
+// 			ID uint64 `json:"id"`
+// 			Message string `json:"message"`
+// 		}
+// 	)
+//
+// Register the route hander.
+//
+//              HTTP VERB    ROUTE PATH       ROUTE HANDLER
+//  app.HandleFunc("PUT", "/users/{id:uint64}", updateUser)
+//
+// Code the route handler function.
+// Path parameters and request body are binded
+// automatically.
+// The "id" uint64 binds to "{id:uint64}" route path parameter and
+// the "input" binds to client request data such as JSON.
+//
+// 	func updateUser(id uint64, input request) response {
+// 		// [custom logic...]
+//
+// 		return response{
+// 			ID:id,
+// 			Message: "User updated successfully",
+// 		}
+// 	}
+//
+// Simulate a client request which sends data
+// to the server and prints out the response.
+//
+// 	curl --request PUT -d '{"firstname":"John","lastname":"Doe"}' \
+// 	-H "Content-Type: application/json" \
+// 	http://localhost:8080/users/42
+//
+// 	{
+// 		"id": 42,
+// 		"message": "User updated successfully"
+// 	}
+//
+// See the `ConfigureContainer` for more features regrading
+// the dependency injection, mvc and function handlers.
+//
+// This method is just a shortcut of the `ConfigureContainer().Handle`.
+func (api *APIBuilder) HandleFunc(method, relativePath string, handlersFn ...interface{}) *Route {
+	return api.ConfigureContainer().Handle(method, relativePath, handlersFn...)
+}
+
+// UseFunc registers a function which can accept one or more
+// dependencies (see RegisterDependency) and returns an iris.Handler
+// or a result of <T> and/or an error.
+//
+// This method is just a shortcut of the `ConfigureContainer().Use`.
+func (api *APIBuilder) UseFunc(handlersFn ...interface{}) {
+	api.ConfigureContainer().Use(handlersFn...)
 }
 
 // GetRelPath returns the current party's relative path.
@@ -553,6 +665,17 @@ func (api *APIBuilder) CreateRoutes(methods []string, relativePath string, handl
 	return api.createRoutes(0, methods, relativePath, handlers...)
 }
 
+// RemoveRoute deletes a registered route by its name before `Application.Listen`.
+// The default naming for newly created routes is: method + subdomain + path.
+// Reports whether a route with that name was found and removed successfully.
+//
+// Note that this method applies to all Parties (sub routers)
+// even if each of the Parties have access to this method,
+// as the route name is unique per Iris Application.
+func (api *APIBuilder) RemoveRoute(routeName string) bool {
+	return api.routes.remove(routeName)
+}
+
 func (api *APIBuilder) createRoutes(errorCode int, methods []string, relativePath string, handlers ...context.Handler) []*Route {
 	if statusCodeSuccessful(errorCode) {
 		errorCode = 0
@@ -720,7 +843,7 @@ func (api *APIBuilder) Party(relativePath string, handlers ...context.Handler) P
 	copy(allowMethods, api.allowMethods)
 
 	// make a copy of the parent properties.
-	var properties context.Map
+	properties := make(context.Map, len(api.properties))
 	for k, v := range api.properties {
 		properties[k] = v
 	}
@@ -777,6 +900,73 @@ func (api *APIBuilder) PartyFunc(relativePath string, partyBuilderFunc func(p Pa
 	p := api.Party(relativePath)
 	partyBuilderFunc(p)
 	return p
+}
+
+type (
+	// PartyConfigurator is an interface which all child parties that are registered
+	// through `PartyConfigure` should implement.
+	PartyConfigurator interface {
+		Configure(parent Party)
+	}
+
+	// StrictlyPartyConfigurator is an optional interface which a `PartyConfigurator`
+	// can implement to make sure that all exported fields having a not-nin, non-zero
+	// value before server starts.
+	// StrictlyPartyConfigurator interface {
+	// 	Strict() bool
+	// }
+	// Good idea but a `mvc or bind:"required"` is a better one I think.
+)
+
+// PartyConfigure like `Party` and `PartyFunc` registers a new children Party
+// but instead it accepts a struct value which should implement the PartyConfigurator interface.
+//
+// PartyConfigure accepts the relative path of the child party
+// (As an exception, if it's empty then all configurators are applied to the current Party)
+// and one or more Party configurators and
+// executes the PartyConfigurator's Configure method.
+//
+// If the end-developer registered one or more dependencies upfront through
+// RegisterDependencies or ConfigureContainer.RegisterDependency methods
+// and "p" is a pointer to a struct then try to bind the unset/zero exported fields
+// to the registered dependencies, just like we do with Controllers.
+// Useful when the api's dependencies amount are too much to pass on a function.
+//
+// Usage:
+//  app.PartyConfigure("/users", &api.UsersAPI{UserRepository: ..., ...})
+// Where UsersAPI looks like:
+//  type UsersAPI struct { [...] }
+//  func(api *UsersAPI) Configure(router iris.Party) {
+//   router.Get("/{id:uuid}", api.getUser)
+//   [...]
+//  }
+// Usage with (static) dependencies:
+//  app.RegisterDependency(userRepo, ...)
+//  app.PartyConfigure("/users", new(api.UsersAPI))
+func (api *APIBuilder) PartyConfigure(relativePath string, partyReg ...PartyConfigurator) Party {
+	var child Party
+
+	if relativePath == "" {
+		child = api
+	} else {
+		child = api.Party(relativePath)
+	}
+
+	for _, p := range partyReg {
+		if p == nil {
+			continue
+		}
+
+		if len(api.apiBuilderDI.Container.Dependencies) > 0 {
+			if typ := reflect.TypeOf(p); typ.Kind() == reflect.Ptr && typ.Elem().Kind() == reflect.Struct {
+				api.apiBuilderDI.Container.Struct(p, -1)
+			}
+		}
+
+		p.Configure(child)
+	}
+
+	return child
 }
 
 // Subdomain returns a new party which is responsible to register routes to
@@ -1137,7 +1327,7 @@ func (api *APIBuilder) RemoveHandler(namesOrHandlers ...interface{}) Party {
 		switch h := nameOrHandler.(type) {
 		case string:
 			handlerName = h
-		case context.Handler:
+		case context.Handler, func(*context.Context):
 			handlerName = context.HandlerName(h)
 		case *int:
 			counter = h
@@ -1416,6 +1606,26 @@ func (api *APIBuilder) RegisterView(viewEngine context.ViewEngine) {
 	api.UseError(handler)
 	// Note (@kataras): It does not return the Party in order
 	// to keep the iris.Application a compatible Party.
+}
+
+// FallbackView registers one or more fallback views for a template or a template layout.
+// Usage:
+//  FallbackView(iris.FallbackView("fallback.html"))
+//  FallbackView(iris.FallbackViewLayout("layouts/fallback.html"))
+//  OR
+//  FallbackView(iris.FallbackViewFunc(ctx iris.Context, err iris.ErrViewNotExist) error {
+//    err.Name is the previous template name.
+//    err.IsLayout reports whether the failure came from the layout template.
+//    err.Data is the template data provided to the previous View call.
+//    [...custom logic e.g. ctx.View("fallback", err.Data)]
+//  })
+func (api *APIBuilder) FallbackView(provider context.FallbackViewProvider) {
+	handler := func(ctx *context.Context) {
+		ctx.FallbackView(provider)
+		ctx.Next()
+	}
+	api.Use(handler)
+	api.UseError(handler)
 }
 
 // Layout overrides the parent template layout with a more specific layout for this Party.

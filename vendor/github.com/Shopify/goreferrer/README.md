@@ -3,8 +3,6 @@ goreferrer
 
 A Go package that analyzes and classifies different kinds of referrer URLs (search, social, ...).
 
-![Build Status](https://travis-ci.org/Shopify/goreferrer.png)
-
 ## Example
 
 ```go
