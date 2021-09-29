@@ -17,7 +17,7 @@ github.com/Shopify/goreferrer
 github.com/StackExchange/wmi
 # github.com/ajg/form v1.5.1
 ## explicit
-# github.com/aliyun/alibaba-cloud-sdk-go v1.61.518
+# github.com/aliyun/alibaba-cloud-sdk-go v1.61.1280
 ## explicit
 github.com/aliyun/alibaba-cloud-sdk-go/sdk
 github.com/aliyun/alibaba-cloud-sdk-go/sdk/auth
@@ -256,7 +256,7 @@ github.com/microcosm-cc/bluemonday
 github.com/mitchellh/mapstructure
 # github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd
 github.com/modern-go/concurrent
-# github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742
+# github.com/modern-go/reflect2 v1.0.1
 github.com/modern-go/reflect2
 # github.com/moul/http2curl v1.0.0
 ## explicit
@@ -460,5 +460,5 @@ google.golang.org/protobuf/runtime/protoiface
 google.golang.org/protobuf/runtime/protoimpl
 # gopkg.in/ini.v1 v1.62.0
 gopkg.in/ini.v1
-# gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776
+# gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 gopkg.in/yaml.v3
