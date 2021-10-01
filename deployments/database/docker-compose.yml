@@ -2,7 +2,7 @@ version: '3'
 services:
   # 数据库
   pg:
-    image: postgres:13.3-alpine
+    image: postgres:14.0-alpine
     restart: always
     volumes:
       - './volumes/pg:/var/lib/postgresql/data'
