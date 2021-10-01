@@ -299,7 +299,7 @@ github.com/sec51/qrcode/coding
 github.com/sec51/twofactor
 # github.com/sergi/go-diff v1.1.0
 ## explicit
-# github.com/shirou/gopsutil v3.21.7+incompatible
+# github.com/shirou/gopsutil v3.21.9+incompatible
 ## explicit
 github.com/shirou/gopsutil/cpu
 github.com/shirou/gopsutil/host
