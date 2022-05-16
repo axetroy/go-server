@@ -46,6 +46,7 @@ var DefaultMinifier = &Minifier{}
 
 // Minifier is an HTML minifier.
 type Minifier struct {
+	KeepComments            bool
 	KeepConditionalComments bool
 	KeepDefaultAttrVals     bool
 	KeepDocumentTags        bool
@@ -74,7 +75,7 @@ func (o *Minifier) Minify(m *minify.M, w io.Writer, r io.Reader, _ map[string]st
 	defer z.Restore()
 
 	l := html.NewLexer(z)
-	tb := NewTokenBuffer(l)
+	tb := NewTokenBuffer(z, l)
 	for {
 		t := *tb.Shift()
 		switch t.TokenType {
@@ -89,7 +90,9 @@ func (o *Minifier) Minify(m *minify.M, w io.Writer, r io.Reader, _ map[string]st
 		case html.DoctypeToken:
 			w.Write(doctypeBytes)
 		case html.CommentToken:
-			if o.KeepConditionalComments && len(t.Text) > 6 && (bytes.HasPrefix(t.Text, []byte("[if ")) || bytes.HasSuffix(t.Text, []byte("[endif]")) || bytes.HasSuffix(t.Text, []byte("[endif]--"))) {
+			if o.KeepComments {
+				w.Write(t.Data)
+			} else if o.KeepConditionalComments && 6 < len(t.Text) && (bytes.HasPrefix(t.Text, []byte("[if ")) || bytes.HasSuffix(t.Text, []byte("[endif]")) || bytes.HasSuffix(t.Text, []byte("[endif]--"))) {
 				// [if ...] is always 7 or more characters, [endif] is only encountered for downlevel-revealed
 				// see https://msdn.microsoft.com/en-us/library/ms537512(v=vs.85).aspx#syntax
 				if bytes.HasPrefix(t.Data, []byte("<!--[if ")) && bytes.HasSuffix(t.Data, []byte("<![endif]-->")) { // downlevel-hidden
@@ -97,24 +100,27 @@ func (o *Minifier) Minify(m *minify.M, w io.Writer, r io.Reader, _ map[string]st
 					end := len(t.Data) - len("<![endif]-->")
 					w.Write(t.Data[:begin])
 					if err := o.Minify(m, w, buffer.NewReader(t.Data[begin:end]), nil); err != nil {
-						return err
+						return minify.UpdateErrorPosition(err, z, t.Offset)
 					}
 					w.Write(t.Data[end:])
 				} else {
 					w.Write(t.Data) // downlevel-revealed or short downlevel-hidden
 				}
+			} else if 1 < len(t.Text) && t.Text[0] == '#' {
+				// SSI tags
+				w.Write(t.Data)
 			}
 		case html.SvgToken:
 			if err := m.MinifyMimetype(svgMimeBytes, w, buffer.NewReader(t.Data), nil); err != nil {
 				if err != minify.ErrNotExist {
-					return err
+					return minify.UpdateErrorPosition(err, z, t.Offset)
 				}
 				w.Write(t.Data)
 			}
 		case html.MathToken:
 			if err := m.MinifyMimetype(mathMimeBytes, w, buffer.NewReader(t.Data), nil); err != nil {
 				if err != minify.ErrNotExist {
-					return err
+					return minify.UpdateErrorPosition(err, z, t.Offset)
 				}
 				w.Write(t.Data)
 			}
@@ -135,7 +141,7 @@ func (o *Minifier) Minify(m *minify.M, w io.Writer, r io.Reader, _ map[string]st
 					}
 					if err := m.MinifyMimetype(mimetype, w, buffer.NewReader(t.Data), params); err != nil {
 						if err != minify.ErrNotExist {
-							return err
+							return minify.UpdateErrorPosition(err, z, t.Offset)
 						}
 						w.Write(t.Data)
 					}
@@ -268,10 +274,10 @@ func (o *Minifier) Minify(m *minify.M, w io.Writer, r io.Reader, _ map[string]st
 					}
 				}
 
-				if o.KeepWhitespace || t.Traits&objectTag != 0 {
-					omitSpace = false
-				} else if t.Traits&nonPhrasingTag != 0 {
+				if t.Traits&nonPhrasingTag != 0 {
 					omitSpace = true // omit spaces after block elements
+				} else if o.KeepWhitespace || t.Traits&objectTag != 0 {
+					omitSpace = false
 				}
 
 				if !omitEndTag {
@@ -304,6 +310,7 @@ func (o *Minifier) Minify(m *minify.M, w io.Writer, r io.Reader, _ map[string]st
 					attrs := tb.Attributes(Content, Http_Equiv, Charset, Name)
 					if content := attrs[0]; content != nil {
 						if httpEquiv := attrs[1]; httpEquiv != nil {
+							httpEquiv.AttrVal = parse.TrimWhitespace(httpEquiv.AttrVal)
 							if charset := attrs[2]; charset == nil && parse.EqualFold(httpEquiv.AttrVal, []byte("content-type")) {
 								content.AttrVal = minify.Mediatype(content.AttrVal)
 								if bytes.Equal(content.AttrVal, []byte("text/html;charset=utf-8")) {
@@ -315,10 +322,11 @@ func (o *Minifier) Minify(m *minify.M, w io.Writer, r io.Reader, _ map[string]st
 							}
 						}
 						if name := attrs[3]; name != nil {
+							name.AttrVal = parse.TrimWhitespace(name.AttrVal)
 							if parse.EqualFold(name.AttrVal, []byte("keywords")) {
-								content.AttrVal = bytes.Replace(content.AttrVal, []byte(", "), []byte(","), -1)
+								content.AttrVal = bytes.ReplaceAll(content.AttrVal, []byte(", "), []byte(","))
 							} else if parse.EqualFold(name.AttrVal, []byte("viewport")) {
-								content.AttrVal = bytes.Replace(content.AttrVal, []byte(" "), []byte(""), -1)
+								content.AttrVal = bytes.ReplaceAll(content.AttrVal, []byte(" "), []byte(""))
 								for i := 0; i < len(content.AttrVal); i++ {
 									if content.AttrVal[i] == '=' && i+2 < len(content.AttrVal) {
 										i++
@@ -373,6 +381,7 @@ func (o *Minifier) Minify(m *minify.M, w io.Writer, r io.Reader, _ map[string]st
 					val := attr.AttrVal
 					if attr.Traits&trimAttr != 0 {
 						val = parse.ReplaceMultipleWhitespaceAndEntities(val, EntitiesMap, nil)
+						val = parse.TrimWhitespace(val)
 					} else {
 						val = parse.ReplaceEntities(val, EntitiesMap, nil)
 					}
@@ -422,7 +431,7 @@ func (o *Minifier) Minify(m *minify.M, w io.Writer, r io.Reader, _ map[string]st
 							if err := m.MinifyMimetype(cssMimeBytes, attrMinifyBuffer, buffer.NewReader(val), inlineParams); err == nil {
 								val = attrMinifyBuffer.Bytes()
 							} else if err != minify.ErrNotExist {
-								return err
+								return minify.UpdateErrorPosition(err, z, attr.Offset)
 							}
 							if len(val) == 0 {
 								continue
@@ -437,7 +446,7 @@ func (o *Minifier) Minify(m *minify.M, w io.Writer, r io.Reader, _ map[string]st
 							if err := m.MinifyMimetype(jsMimeBytes, attrMinifyBuffer, buffer.NewReader(val), nil); err == nil {
 								val = attrMinifyBuffer.Bytes()
 							} else if err != minify.ErrNotExist {
-								return err
+								return minify.UpdateErrorPosition(err, z, attr.Offset)
 							}
 							if len(val) == 0 {
 								continue
@@ -488,6 +497,13 @@ func (o *Minifier) Minify(m *minify.M, w io.Writer, r io.Reader, _ map[string]st
 			if t.Hash == Select || t.Hash == Optgroup {
 				if next := tb.Peek(0); next.TokenType == html.TextToken {
 					tb.Shift()
+				}
+			}
+
+			// keep space after phrasing tags (<i>, <span>, ...) FontAwesome etc.
+			if t.TokenType == html.StartTagToken && t.Traits&nonPhrasingTag == 0 {
+				if next := tb.Peek(0); next.Hash == t.Hash && next.TokenType == html.EndTagToken {
+					omitSpace = false
 				}
 			}
 		}

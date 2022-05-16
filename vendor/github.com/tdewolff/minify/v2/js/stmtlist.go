@@ -37,9 +37,6 @@ func (m *jsMinifier) optimizeStmt(i js.IStmt) js.IStmt {
 			}
 		} else if hasIf && hasElse {
 			ifStmt.Body = m.optimizeStmt(ifStmt.Body)
-			if endsInIf(ifStmt.Body) {
-				ifStmt.Body = &js.BlockStmt{List: []js.IStmt{ifStmt.Body}, Scope: js.Scope{}}
-			}
 			ifStmt.Else = m.optimizeStmt(ifStmt.Else)
 			XExpr, isExprBody := ifStmt.Body.(*js.ExprStmt)
 			YExpr, isExprElse := ifStmt.Else.(*js.ExprStmt)
@@ -50,15 +47,10 @@ func (m *jsMinifier) optimizeStmt(i js.IStmt) js.IStmt {
 			YReturn, isReturnElse := ifStmt.Else.(*js.ReturnStmt)
 			if isReturnBody && isReturnElse {
 				if XReturn.Value == nil && YReturn.Value == nil {
-					return &js.ReturnStmt{Value: &js.BinaryExpr{
-						Op: js.CommaToken,
-						X:  ifStmt.Cond,
-						Y: &js.UnaryExpr{
-							Op: js.VoidToken,
-							X:  &js.LiteralExpr{TokenType: js.NumericToken, Data: zeroBytes},
-						},
-					}}
-
+					return &js.ReturnStmt{Value: commaExpr(ifStmt.Cond, &js.UnaryExpr{
+						Op: js.VoidToken,
+						X:  &js.LiteralExpr{TokenType: js.NumericToken, Data: zeroBytes},
+					})}
 				} else if XReturn.Value != nil && YReturn.Value != nil {
 					return &js.ReturnStmt{Value: condExpr(ifStmt.Cond, XReturn.Value, YReturn.Value)}
 				}
@@ -71,7 +63,7 @@ func (m *jsMinifier) optimizeStmt(i js.IStmt) js.IStmt {
 			}
 		}
 	} else if decl, ok := i.(*js.VarDecl); ok {
-		if decl.TokenType == js.VarToken && m.varsHoisted != nil && decl != m.varsHoisted {
+		if decl.TokenType == js.ErrorToken {
 			// convert hoisted var declaration to expression or empty (if there are no defines) statement
 			for _, item := range decl.List {
 				if item.Default != nil {
@@ -100,6 +92,7 @@ func (m *jsMinifier) optimizeStmt(i js.IStmt) js.IStmt {
 			if !isClassDecl && (!isVarDecl || varDecl.TokenType == js.VarToken) {
 				return m.optimizeStmt(blockStmt.List[0])
 			}
+			return &js.EmptyStmt{}
 		} else if len(blockStmt.List) == 0 {
 			return &js.EmptyStmt{}
 		}
@@ -115,18 +108,27 @@ func (m *jsMinifier) optimizeStmtList(list []js.IStmt, blockType blockType) []js
 	}
 	j := 0                           // write index
 	for i := 0; i < len(list); i++ { // read index
-		list[i] = m.optimizeStmt(list[i])
-
 		if ifStmt, ok := list[i].(*js.IfStmt); ok && !m.isEmptyStmt(ifStmt.Else) && isFlowStmt(lastStmt(ifStmt.Body)) {
 			// if body ends in flow statement (return, throw, break, continue), so we can remove the else statement and put its body in the current scope
 			if blockStmt, ok := ifStmt.Else.(*js.BlockStmt); ok {
+				blockStmt.Scope.Unscope()
 				list = append(list[:i+1], append(blockStmt.List, list[i+1:]...)...)
 			} else {
 				list = append(list[:i+1], append([]js.IStmt{ifStmt.Else}, list[i+1:]...)...)
 			}
 			ifStmt.Else = nil
-		} else if _, ok := list[i].(*js.EmptyStmt); ok {
-			list = append(list[:i], list[i+1:]...)
+		}
+
+		list[i] = m.optimizeStmt(list[i])
+
+		if _, ok := list[i].(*js.EmptyStmt); ok {
+			k := i + 1
+			for ; k < len(list); k++ {
+				if _, ok := list[k].(*js.EmptyStmt); !ok {
+					break
+				}
+			}
+			list = append(list[:i], list[k:]...)
 			i--
 			continue
 		}
@@ -135,87 +137,86 @@ func (m *jsMinifier) optimizeStmtList(list []js.IStmt, blockType blockType) []js
 			// merge expression statements with expression, return, and throw statements
 			if left, ok := list[i-1].(*js.ExprStmt); ok {
 				if right, ok := list[i].(*js.ExprStmt); ok {
-					right.Value = &js.BinaryExpr{Op: js.CommaToken, X: left.Value, Y: right.Value}
+					right.Value = commaExpr(left.Value, right.Value)
 					j--
 				} else if returnStmt, ok := list[i].(*js.ReturnStmt); ok && returnStmt.Value != nil {
-					returnStmt.Value = &js.BinaryExpr{Op: js.CommaToken, X: left.Value, Y: returnStmt.Value}
+					returnStmt.Value = commaExpr(left.Value, returnStmt.Value)
 					j--
 				} else if throwStmt, ok := list[i].(*js.ThrowStmt); ok {
-					throwStmt.Value = &js.BinaryExpr{Op: js.CommaToken, X: left.Value, Y: throwStmt.Value}
+					throwStmt.Value = commaExpr(left.Value, throwStmt.Value)
 					j--
-				} else if forStmt, ok := list[i].(*js.ForStmt); ok && forStmt.Init == nil {
-					// TODO: only merge statements that don't have 'in' or 'of' keywords (slow to check?)
-					forStmt.Init = left.Value
-					j--
+				} else if forStmt, ok := list[i].(*js.ForStmt); ok {
+					if varDecl, ok := forStmt.Init.(*js.VarDecl); ok && len(varDecl.List) == 0 || forStmt.Init == nil {
+						// TODO: only merge statements that don't have 'in' or 'of' keywords (slow to check?)
+						forStmt.Init = left.Value
+						j--
+					}
 				} else if whileStmt, ok := list[i].(*js.WhileStmt); ok {
 					// TODO: only merge statements that don't have 'in' or 'of' keywords (slow to check?)
-					var body js.BlockStmt
+					var body *js.BlockStmt
 					if blockStmt, ok := whileStmt.Body.(*js.BlockStmt); ok {
-						body = *blockStmt
+						body = blockStmt
 					} else {
+						body = &js.BlockStmt{}
 						body.List = []js.IStmt{whileStmt.Body}
 					}
 					list[i] = &js.ForStmt{Init: left.Value, Cond: whileStmt.Cond, Post: nil, Body: body}
 					j--
 				} else if switchStmt, ok := list[i].(*js.SwitchStmt); ok {
-					switchStmt.Init = &js.BinaryExpr{Op: js.CommaToken, X: left.Value, Y: switchStmt.Init}
+					switchStmt.Init = commaExpr(left.Value, switchStmt.Init)
 					j--
 				} else if withStmt, ok := list[i].(*js.WithStmt); ok {
-					withStmt.Cond = &js.BinaryExpr{Op: js.CommaToken, X: left.Value, Y: withStmt.Cond}
+					withStmt.Cond = commaExpr(left.Value, withStmt.Cond)
 					j--
 				} else if ifStmt, ok := list[i].(*js.IfStmt); ok {
-					ifStmt.Cond = &js.BinaryExpr{Op: js.CommaToken, X: left.Value, Y: ifStmt.Cond}
+					ifStmt.Cond = commaExpr(left.Value, ifStmt.Cond)
 					j--
+				} else if varDecl, ok := list[i].(*js.VarDecl); ok {
+					if merge := mergeVarDeclExprStmt(varDecl, left, true); merge {
+						j--
+					}
 				}
 			} else if left, ok := list[i-1].(*js.VarDecl); ok {
 				if right, ok := list[i].(*js.VarDecl); ok && left.TokenType == right.TokenType {
 					// merge const and let declarations
 					right.List = append(left.List, right.List...)
 					j--
-				} else if forStmt, ok := list[i].(*js.ForStmt); ok && left.TokenType == js.VarToken {
-					// TODO: only merge statements that don't have 'in' or 'of' keywords (slow to check?)
-					if forStmt.Init == nil {
-						forStmt.Init = left
-						j--
-					} else if decl, ok := forStmt.Init.(*js.VarDecl); ok && decl.TokenType == js.VarToken {
-						// this is the second VarDecl, so we are hoisting var declarations, which means the forInit variables are already in 'left'
-						iDefines := len(left.List)
-						for i, item := range left.List {
-							if item.Default == nil {
-								iDefines = i
-								break
-							}
+				} else if left.TokenType == js.VarToken {
+					if exprStmt, ok := list[i].(*js.ExprStmt); ok {
+						// pull in assignments to variables into the declaration, e.g. var a;a=5  =>  var a=5
+						if merge := mergeVarDeclExprStmt(left, exprStmt, false); merge {
+							list[i] = list[i-1]
+							j--
 						}
-						merge := true
-						for j := 0; j < len(decl.List); j++ {
-							if decl.List[j].Default != nil {
-								if addDefinition(left, iDefines, decl.List[j].Binding, decl.List[j].Default) {
-									iDefines++
-									decl.List = append(decl.List[:j], decl.List[j+1:]...)
-									j--
-								} else {
-									merge = false
-								}
-							} else {
-								decl.List = append(decl.List[:j], decl.List[j+1:]...)
+					} else if forStmt, ok := list[i].(*js.ForStmt); ok {
+						// TODO: only merge statements that don't have 'in' or 'of' keywords (slow to check?)
+						if forStmt.Init == nil {
+							forStmt.Init = left
+							j--
+						} else if decl, ok := forStmt.Init.(*js.VarDecl); ok && decl.TokenType == js.ErrorToken && !hasDefines(decl) {
+							forStmt.Init = left
+							j--
+						} else if ok && (decl.TokenType == js.VarToken || decl.TokenType == js.ErrorToken) {
+							// this is the second VarDecl, so we are hoisting var declarations, which means the forInit variables are already in 'left'
+							merge := mergeVarDecls(left, decl)
+							if merge {
+								decl.TokenType = js.VarToken
+								forStmt.Init = left
 								j--
 							}
 						}
-						if merge {
-							forStmt.Init = left
-							j--
+					} else if whileStmt, ok := list[i].(*js.WhileStmt); ok {
+						// TODO: only merge statements that don't have 'in' or 'of' keywords (slow to check?)
+						var body *js.BlockStmt
+						if blockStmt, ok := whileStmt.Body.(*js.BlockStmt); ok {
+							body = blockStmt
+						} else {
+							body = &js.BlockStmt{}
+							body.List = []js.IStmt{whileStmt.Body}
 						}
+						list[i] = &js.ForStmt{Init: left, Cond: whileStmt.Cond, Post: nil, Body: body}
+						j--
 					}
-				} else if whileStmt, ok := list[i].(*js.WhileStmt); ok && left.TokenType == js.VarToken {
-					// TODO: only merge statements that don't have 'in' or 'of' keywords (slow to check?)
-					var body js.BlockStmt
-					if blockStmt, ok := whileStmt.Body.(*js.BlockStmt); ok {
-						body = *blockStmt
-					} else {
-						body.List = []js.IStmt{whileStmt.Body}
-					}
-					list[i] = &js.ForStmt{Init: left, Cond: whileStmt.Cond, Post: nil, Body: body}
-					j--
 				}
 			}
 		}
@@ -271,9 +272,13 @@ func (m *jsMinifier) optimizeStmtList(list []js.IStmt, blockType blockType) []js
 			if returnStmt, ok := list[j-1].(*js.ReturnStmt); ok {
 				if returnStmt.Value == nil || m.isUndefined(returnStmt.Value) {
 					j--
-				} else if binaryExpr, ok := returnStmt.Value.(*js.BinaryExpr); ok && binaryExpr.Op == js.CommaToken && m.isUndefined(binaryExpr.Y) {
+				} else if commaExpr, ok := returnStmt.Value.(*js.CommaExpr); ok && m.isUndefined(commaExpr.List[len(commaExpr.List)-1]) {
 					// rewrite function f(){return a,void 0} => function f(){a}
-					list[j-1] = &js.ExprStmt{Value: binaryExpr.X}
+					if len(commaExpr.List) == 2 {
+						list[j-1] = &js.ExprStmt{Value: commaExpr.List[0]}
+					} else {
+						commaExpr.List = commaExpr.List[:len(commaExpr.List)-1]
+					}
 				}
 			}
 		} else if blockType == iterationBlock {

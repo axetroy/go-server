@@ -113,8 +113,9 @@ var (
 	// It's slice instead of map because if IRIS_APP_NAME env var exists,
 	// by-default all applications running on the same machine
 	// will have the same name unless `Application.SetName` is called.
-	registeredApps []Application
-	mu             sync.RWMutex
+	registeredApps                   []Application
+	onApplicationRegisteredListeners []func(Application)
+	mu                               sync.RWMutex
 )
 
 // RegisterApplication registers an application to the global shared storage.
@@ -126,6 +127,20 @@ func RegisterApplication(app Application) {
 	mu.Lock()
 	registeredApps = append(registeredApps, app)
 	mu.Unlock()
+
+	mu.RLock()
+	for _, listener := range onApplicationRegisteredListeners {
+		listener(app)
+	}
+	mu.RUnlock()
+}
+
+// OnApplicationRegistered adds a function which fires when a new application
+// is registered.
+func OnApplicationRegistered(listeners ...func(app Application)) {
+	mu.Lock()
+	onApplicationRegisteredListeners = append(onApplicationRegisteredListeners, listeners...)
+	mu.Unlock()
 }
 
 // GetApplications returns a slice of all the registered Applications.
@@ -135,7 +150,7 @@ func GetApplications() []Application {
 	// the return value is read-only but it can be casted to *iris.Application.
 	apps := make([]Application, 0, len(registeredApps))
 	copy(apps, registeredApps)
-	mu.RLock()
+	mu.RUnlock()
 
 	return apps
 }

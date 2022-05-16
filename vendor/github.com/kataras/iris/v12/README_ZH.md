@@ -10,7 +10,7 @@
 
 # Iris Web Framework <a href="README_GR.md"><img width="20px" src="https://iris-go.com/images/flag-greece.svg" /></a> <a href="README_FR.md"><img width="20px" src="https://iris-go.com/images/flag-france.svg" /></a> <a href="README_ZH.md"><img width="20px" src="https://iris-go.com/images/flag-china.svg" /></a> <a href="README_ES.md"><img width="20px" src="https://iris-go.com/images/flag-spain.png" /></a> <a href="README_FA.md"><img width="20px" src="https://iris-go.com/images/flag-iran.svg" /></a> <a href="README_RU.md"><img width="20px" src="https://iris-go.com/images/flag-russia.svg" /></a> <a href="README_KO.md"><img width="20px" src="https://iris-go.com/images/flag-south-korea.svg?v=12" /></a>
 
-[![build status](https://img.shields.io/travis/kataras/iris/master.svg?style=for-the-badge&logo=travis)](https://travis-ci.org/kataras/iris) [![view examples](https://img.shields.io/badge/examples%20-253-a83adf.svg?style=for-the-badge&logo=go)](https://github.com/kataras/iris/tree/master/_examples) [![chat](https://img.shields.io/gitter/room/iris_go/community.svg?color=cc2b5e&logo=gitter&style=for-the-badge)](https://gitter.im/iris_go/community) <!--[![FOSSA Status](https://img.shields.io/badge/LICENSE%20SCAN-PASSING❤️-CD2956?style=for-the-badge&logo=fossa)](https://app.fossa.io/projects/git%2Bgithub.com%2Fkataras%2Firis?ref=badge_shield)--> [![donate](https://img.shields.io/badge/support-Iris-blue.svg?style=for-the-badge&logo=paypal)](https://iris-go.com/donate) <!--[![report card](https://img.shields.io/badge/report%20card-a%2B-ff3333.svg?style=for-the-badge)](https://goreportcard.com/report/github.com/kataras/iris)--><!--[![godocs](https://img.shields.io/badge/go-%20docs-488AC7.svg?style=for-the-badge)](https://pkg.go.dev/github.com/kataras/iris/v12@v12.2.0)--> <!-- [![release](https://img.shields.io/badge/release%20-v12.0-0077b3.svg?style=for-the-badge)](https://github.com/kataras/iris/releases) -->
+[![build status](https://img.shields.io/github/workflow/status/kataras/iris/CI/master?style=for-the-badge)](https://github.com/kataras/iris/actions) [![view examples](https://img.shields.io/badge/examples%20-253-a83adf.svg?style=for-the-badge&logo=go)](https://github.com/kataras/iris/tree/master/_examples) [![chat](https://img.shields.io/gitter/room/iris_go/community.svg?color=cc2b5e&logo=gitter&style=for-the-badge)](https://gitter.im/iris_go/community) <!--[![FOSSA Status](https://img.shields.io/badge/LICENSE%20SCAN-PASSING❤️-CD2956?style=for-the-badge&logo=fossa)](https://app.fossa.io/projects/git%2Bgithub.com%2Fkataras%2Firis?ref=badge_shield)--> [![donate](https://img.shields.io/badge/support-Iris-blue.svg?style=for-the-badge&logo=paypal)](https://iris-go.com/donate) <!--[![report card](https://img.shields.io/badge/report%20card-a%2B-ff3333.svg?style=for-the-badge)](https://goreportcard.com/report/github.com/kataras/iris)--><!--[![godocs](https://img.shields.io/badge/go-%20docs-488AC7.svg?style=for-the-badge)](https://pkg.go.dev/github.com/kataras/iris/v12@v12.2.0)--> <!-- [![release](https://img.shields.io/badge/release%20-v12.0-0077b3.svg?style=for-the-badge)](https://github.com/kataras/iris/releases) -->
 
 <!-- <a href="https://iris-go.com"> <img align="right" src="https://iris-go.com/images/logo-w169.png"></a> -->
 
@@ -185,7 +185,7 @@ Iris 有完整且详尽的 **[使用文档](https://github.com/kataras/iris/wiki
 
 <!-- ![](https://media.giphy.com/media/Ur8iqy9FQfmPuyQpgy/giphy.gif) -->
 
-要了解更详细的技术文档，请访问我们的 [godocs](https://godoc.org/github.com/kataras/iris)。如果想要寻找代码示例，您可以到仓库的 [./_examples](_examples) 子目录下获取。
+要了解更详细的技术文档，请访问我们的 [godocs](https://pkg.go.dev/github.com/kataras/iris/v12@master)。如果想要寻找代码示例，您可以到仓库的 [./_examples](_examples) 子目录下获取。
 
 ### 你喜欢在旅行时阅读吗？
 
@@ -197,7 +197,7 @@ Iris 有完整且详尽的 **[使用文档](https://github.com/kataras/iris/wiki
 
 ## 🙌 贡献
 
-我们欢迎您为Iris框架做出贡献！想要知道如何为Iris项目做贡献，请查看[CONTRIBUTING.md]（CONTRIBUTING.md）。
+我们欢迎您为Iris框架做出贡献！想要知道如何为Iris项目做贡献，请查看[CONTRIBUTING.md](CONTRIBUTING.md)。
 
 [贡献者名单](https://github.com/kataras/iris/graphs/contributors)
 

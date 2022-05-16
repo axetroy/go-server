@@ -185,13 +185,21 @@ func (l *Lexer) Next() (TokenType, []byte) {
 	case '`':
 		l.templateLevels = append(l.templateLevels, l.level)
 		return l.consumeTemplateToken(), l.r.Shift()
+	case '#':
+		l.r.Move(1)
+		if l.consumeIdentifierToken() {
+			return PrivateIdentifierToken, l.r.Shift()
+		}
+		return ErrorToken, nil
 	default:
-		if tt := l.consumeIdentifierToken(); tt != ErrorToken {
+		if l.consumeIdentifierToken() {
 			if prevNumericLiteral {
 				l.err = parse.NewErrorLexer(l.r, "unexpected identifier after number")
 				return ErrorToken, nil
+			} else if keyword, ok := Keywords[string(l.r.Lexeme())]; ok {
+				return keyword, l.r.Shift()
 			}
-			return tt, l.r.Shift()
+			return IdentifierToken, l.r.Shift()
 		}
 		if 0xC0 <= c {
 			if l.consumeWhitespace() {
@@ -416,12 +424,21 @@ var opEqTokens = map[byte]TokenType{
 }
 
 var opOpTokens = map[byte]TokenType{
+	'<': LtLtToken,
 	'+': IncrToken,
 	'-': DecrToken,
 	'*': ExpToken,
 	'&': AndToken,
 	'|': OrToken,
 	'?': NullishToken,
+}
+
+var opOpEqTokens = map[byte]TokenType{
+	'<': LtLtEqToken,
+	'*': ExpEqToken,
+	'&': AndEqToken,
+	'|': OrEqToken,
+	'?': NullishEqToken,
 }
 
 func (l *Lexer) consumeOperatorToken() TokenType {
@@ -437,11 +454,11 @@ func (l *Lexer) consumeOperatorToken() TokenType {
 			return EqEqEqToken
 		}
 		return opEqTokens[c]
-	} else if l.r.Peek(0) == c && (c == '+' || c == '-' || c == '*' || c == '&' || c == '|' || c == '?') {
+	} else if l.r.Peek(0) == c && (c == '+' || c == '-' || c == '*' || c == '&' || c == '|' || c == '?' || c == '<') {
 		l.r.Move(1)
-		if c == '*' && l.r.Peek(0) == '=' {
+		if l.r.Peek(0) == '=' && c != '+' && c != '-' {
 			l.r.Move(1)
-			return ExpEqToken
+			return opOpEqTokens[c]
 		}
 		return opOpTokens[c]
 	} else if c == '?' && l.r.Peek(0) == '.' && (l.r.Peek(1) < '0' || l.r.Peek(1) > '9') {
@@ -450,13 +467,6 @@ func (l *Lexer) consumeOperatorToken() TokenType {
 	} else if c == '=' && l.r.Peek(0) == '>' {
 		l.r.Move(1)
 		return ArrowToken
-	} else if c == '<' && l.r.Peek(0) == '<' {
-		l.r.Move(1)
-		if l.r.Peek(0) == '=' {
-			l.r.Move(1)
-			return LtLtEqToken
-		}
-		return LtLtToken
 	} else if c == '>' && l.r.Peek(0) == '>' {
 		l.r.Move(1)
 		if l.r.Peek(0) == '>' {
@@ -475,7 +485,7 @@ func (l *Lexer) consumeOperatorToken() TokenType {
 	return opTokens[c]
 }
 
-func (l *Lexer) consumeIdentifierToken() TokenType {
+func (l *Lexer) consumeIdentifierToken() bool {
 	c := l.r.Peek(0)
 	if identifierStartTable[c] {
 		l.r.Move(1)
@@ -483,10 +493,10 @@ func (l *Lexer) consumeIdentifierToken() TokenType {
 		if r, n := l.r.PeekRune(0); unicode.IsOneOf(identifierStart, r) {
 			l.r.Move(n)
 		} else {
-			return ErrorToken
+			return false
 		}
 	} else if !l.consumeUnicodeEscape() {
-		return ErrorToken
+		return false
 	}
 	for {
 		c := l.r.Peek(0)
@@ -498,14 +508,11 @@ func (l *Lexer) consumeIdentifierToken() TokenType {
 			} else {
 				break
 			}
-		} else {
+		} else if !l.consumeUnicodeEscape() {
 			break
 		}
 	}
-	if keyword, ok := Keywords[string(l.r.Lexeme())]; ok {
-		return keyword
-	}
-	return IdentifierToken
+	return true
 }
 
 func (l *Lexer) consumeNumericToken() TokenType {
@@ -604,7 +611,7 @@ func (l *Lexer) consumeStringToken() bool {
 				}
 			}
 			continue
-		} else if l.consumeLineTerminator() || c == 0 && l.r.Err() != nil {
+		} else if c == '\n' || c == '\r' || c == 0 && l.r.Err() != nil {
 			l.r.Rewind(mark)
 			return false
 		}
