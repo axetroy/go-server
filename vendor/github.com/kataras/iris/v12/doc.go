@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020 The Iris Authors. All rights reserved.
+// Copyright (c) 2017-2022 The Iris Authors. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -42,9 +42,9 @@ Current Version
 
 Installation
 
-The only requirement is the Go Programming Language, at least version 1.13.
+The only requirement is the Go Programming Language, at least version 1.17.
 
-    $ go get github.com/kataras/iris/v12@latest
+    $ go get github.com/kataras/iris/v12@master
 
 Wiki:
 

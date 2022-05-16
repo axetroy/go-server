@@ -18,6 +18,7 @@ const (
 	TemplateMiddleToken
 	TemplateEndToken
 	RegExpToken
+	PrivateIdentifierToken
 )
 
 // Numeric token values.
@@ -50,48 +51,51 @@ const (
 
 // Operator token values.
 const (
-	OperatorToken TokenType = 0x0600 + iota
-	EqToken                 // =
-	EqEqToken               // ==
-	EqEqEqToken             // ===
-	NotToken                // !
-	NotEqToken              // !=
-	NotEqEqToken            // !==
-	LtToken                 // <
-	LtEqToken               // <=
-	LtLtToken               // <<
-	LtLtEqToken             // <<=
-	GtToken                 // >
-	GtEqToken               // >=
-	GtGtToken               // >>
-	GtGtEqToken             // >>=
-	GtGtGtToken             // >>>
-	GtGtGtEqToken           // >>>=
-	AddToken                // +
-	AddEqToken              // +=
-	IncrToken               // ++
-	SubToken                // -
-	SubEqToken              // -=
-	DecrToken               // --
-	MulToken                // *
-	MulEqToken              // *=
-	ExpToken                // **
-	ExpEqToken              // **=
-	DivToken                // /
-	DivEqToken              // /=
-	ModToken                // %
-	ModEqToken              // %=
-	BitAndToken             // &
-	BitOrToken              // |
-	BitXorToken             // ^
-	BitNotToken             // ~
-	BitAndEqToken           // &=
-	BitOrEqToken            // |=
-	BitXorEqToken           // ^=
-	AndToken                // &&
-	OrToken                 // ||
-	NullishToken            // ??
-	OptChainToken           // ?.
+	OperatorToken  TokenType = 0x0600 + iota
+	EqToken                  // =
+	EqEqToken                // ==
+	EqEqEqToken              // ===
+	NotToken                 // !
+	NotEqToken               // !=
+	NotEqEqToken             // !==
+	LtToken                  // <
+	LtEqToken                // <=
+	LtLtToken                // <<
+	LtLtEqToken              // <<=
+	GtToken                  // >
+	GtEqToken                // >=
+	GtGtToken                // >>
+	GtGtEqToken              // >>=
+	GtGtGtToken              // >>>
+	GtGtGtEqToken            // >>>=
+	AddToken                 // +
+	AddEqToken               // +=
+	IncrToken                // ++
+	SubToken                 // -
+	SubEqToken               // -=
+	DecrToken                // --
+	MulToken                 // *
+	MulEqToken               // *=
+	ExpToken                 // **
+	ExpEqToken               // **=
+	DivToken                 // /
+	DivEqToken               // /=
+	ModToken                 // %
+	ModEqToken               // %=
+	BitAndToken              // &
+	BitOrToken               // |
+	BitXorToken              // ^
+	BitNotToken              // ~
+	BitAndEqToken            // &=
+	BitOrEqToken             // |=
+	BitXorEqToken            // ^=
+	AndToken                 // &&
+	OrToken                  // ||
+	NullishToken             // ??
+	AndEqToken               // &&=
+	OrEqToken                // ||=
+	NullishEqToken           // ??=
+	OptChainToken            // ?.
 
 	// unused in lexer
 	PosToken      // +a
@@ -246,6 +250,9 @@ var operatorBytes = [][]byte{
 	[]byte("&&"),
 	[]byte("||"),
 	[]byte("??"),
+	[]byte("&&="),
+	[]byte("||="),
+	[]byte("??="),
 	[]byte("?."),
 	[]byte("+"),
 	[]byte("-"),
@@ -350,6 +357,8 @@ func (tt TokenType) Bytes() []byte {
 		return []byte("TemplateEnd")
 	case RegExpToken:
 		return []byte("RegExp")
+	case PrivateIdentifierToken:
+		return []byte("PrivateIdentifier")
 	case NumericToken:
 		return []byte("Numeric")
 	case DecimalToken:

@@ -61,7 +61,7 @@ fmt.Printf("• Public Address: %s\n", publicAddrs)
 Example output:
 
 ```sh
-• Public Address: [https://ef02b1377b65.ngrok.io]
+• Public Address: https://ef02b1377b65.ngrok.io
 ```
 
 > The [Web Interface](https://ngrok.com/docs#inspect) is also available.

@@ -100,6 +100,48 @@ func EncodeBetter(dst, src []byte) []byte {
 	return dst[:d]
 }
 
+// EncodeBest returns the encoded form of src. The returned slice may be a sub-
+// slice of dst if dst was large enough to hold the entire encoded block.
+// Otherwise, a newly allocated slice will be returned.
+//
+// EncodeBest compresses as good as reasonably possible but with a
+// big speed decrease.
+//
+// The dst and src must not overlap. It is valid to pass a nil dst.
+//
+// The blocks will require the same amount of memory to decode as encoding,
+// and does not make for concurrent decoding.
+// Also note that blocks do not contain CRC information, so corruption may be undetected.
+//
+// If you need to encode larger amounts of data, consider using
+// the streaming interface which gives all of these features.
+func EncodeBest(dst, src []byte) []byte {
+	if n := MaxEncodedLen(len(src)); n < 0 {
+		panic(ErrTooLarge)
+	} else if len(dst) < n {
+		dst = make([]byte, n)
+	}
+
+	// The block starts with the varint-encoded length of the decompressed bytes.
+	d := binary.PutUvarint(dst, uint64(len(src)))
+
+	if len(src) == 0 {
+		return dst[:d]
+	}
+	if len(src) < minNonLiteralBlockSize {
+		d += emitLiteral(dst[d:], src)
+		return dst[:d]
+	}
+	n := encodeBlockBest(dst[d:], src)
+	if n > 0 {
+		d += n
+		return dst[:d]
+	}
+	// Not compressible
+	d += emitLiteral(dst[d:], src)
+	return dst[:d]
+}
+
 // EncodeSnappy returns the encoded form of src. The returned slice may be a sub-
 // slice of dst if dst was large enough to hold the entire encoded block.
 // Otherwise, a newly allocated slice will be returned.
@@ -135,6 +177,94 @@ func EncodeSnappy(dst, src []byte) []byte {
 	}
 
 	n := encodeBlockSnappy(dst[d:], src)
+	if n > 0 {
+		d += n
+		return dst[:d]
+	}
+	// Not compressible
+	d += emitLiteral(dst[d:], src)
+	return dst[:d]
+}
+
+// EncodeSnappyBetter returns the encoded form of src. The returned slice may be a sub-
+// slice of dst if dst was large enough to hold the entire encoded block.
+// Otherwise, a newly allocated slice will be returned.
+//
+// The output is Snappy compatible and will likely decompress faster.
+//
+// The dst and src must not overlap. It is valid to pass a nil dst.
+//
+// The blocks will require the same amount of memory to decode as encoding,
+// and does not make for concurrent decoding.
+// Also note that blocks do not contain CRC information, so corruption may be undetected.
+//
+// If you need to encode larger amounts of data, consider using
+// the streaming interface which gives all of these features.
+func EncodeSnappyBetter(dst, src []byte) []byte {
+	if n := MaxEncodedLen(len(src)); n < 0 {
+		panic(ErrTooLarge)
+	} else if cap(dst) < n {
+		dst = make([]byte, n)
+	} else {
+		dst = dst[:n]
+	}
+
+	// The block starts with the varint-encoded length of the decompressed bytes.
+	d := binary.PutUvarint(dst, uint64(len(src)))
+
+	if len(src) == 0 {
+		return dst[:d]
+	}
+	if len(src) < minNonLiteralBlockSize {
+		d += emitLiteral(dst[d:], src)
+		return dst[:d]
+	}
+
+	n := encodeBlockBetterSnappy(dst[d:], src)
+	if n > 0 {
+		d += n
+		return dst[:d]
+	}
+	// Not compressible
+	d += emitLiteral(dst[d:], src)
+	return dst[:d]
+}
+
+// EncodeSnappyBest returns the encoded form of src. The returned slice may be a sub-
+// slice of dst if dst was large enough to hold the entire encoded block.
+// Otherwise, a newly allocated slice will be returned.
+//
+// The output is Snappy compatible and will likely decompress faster.
+//
+// The dst and src must not overlap. It is valid to pass a nil dst.
+//
+// The blocks will require the same amount of memory to decode as encoding,
+// and does not make for concurrent decoding.
+// Also note that blocks do not contain CRC information, so corruption may be undetected.
+//
+// If you need to encode larger amounts of data, consider using
+// the streaming interface which gives all of these features.
+func EncodeSnappyBest(dst, src []byte) []byte {
+	if n := MaxEncodedLen(len(src)); n < 0 {
+		panic(ErrTooLarge)
+	} else if cap(dst) < n {
+		dst = make([]byte, n)
+	} else {
+		dst = dst[:n]
+	}
+
+	// The block starts with the varint-encoded length of the decompressed bytes.
+	d := binary.PutUvarint(dst, uint64(len(src)))
+
+	if len(src) == 0 {
+		return dst[:d]
+	}
+	if len(src) < minNonLiteralBlockSize {
+		d += emitLiteral(dst[d:], src)
+		return dst[:d]
+	}
+
+	n := encodeBlockBestSnappy(dst[d:], src)
 	if n > 0 {
 		d += n
 		return dst[:d]
@@ -238,6 +368,8 @@ func NewWriter(w io.Writer, opts ...WriterOption) *Writer {
 	w2 := Writer{
 		blockSize:   defaultBlockSize,
 		concurrency: runtime.GOMAXPROCS(0),
+		randSrc:     rand.Reader,
+		level:       levelFast,
 	}
 	for _, opt := range opts {
 		if err := opt(&w2); err != nil {
@@ -263,24 +395,41 @@ type Writer struct {
 	// ibuf is a buffer for the incoming (uncompressed) bytes.
 	ibuf []byte
 
-	blockSize   int
-	obufLen     int
-	concurrency int
-	written     int64
-	output      chan chan result
-	buffers     sync.Pool
-	pad         int
+	blockSize     int
+	obufLen       int
+	concurrency   int
+	written       int64
+	uncompWritten int64 // Bytes sent to compression
+	output        chan chan result
+	buffers       sync.Pool
+	pad           int
 
 	writer   io.Writer
+	randSrc  io.Reader
 	writerWg sync.WaitGroup
+	index    Index
 
 	// wroteStreamHeader is whether we have written the stream header.
 	wroteStreamHeader bool
 	paramsOK          bool
-	better            bool
+	snappy            bool
+	flushOnWrite      bool
+	appendIndex       bool
+	level             uint8
 }
 
-type result []byte
+const (
+	levelUncompressed = iota + 1
+	levelFast
+	levelBetter
+	levelBest
+)
+
+type result struct {
+	b []byte
+	// Uncompressed start offset
+	startOffset int64
+}
 
 // err returns the previously set error.
 // If no error has been set it is set to err if not nil.
@@ -312,6 +461,9 @@ func (w *Writer) Reset(writer io.Writer) {
 	w.wroteStreamHeader = false
 	w.written = 0
 	w.writer = writer
+	w.uncompWritten = 0
+	w.index.reset(w.blockSize)
+
 	// If we didn't get a writer, stop here.
 	if writer == nil {
 		return
@@ -332,7 +484,8 @@ func (w *Writer) Reset(writer io.Writer) {
 		// Get a queued write.
 		for write := range toWrite {
 			// Wait for the data to be available.
-			in := <-write
+			input := <-write
+			in := input.b
 			if len(in) > 0 {
 				if w.err(nil) == nil {
 					// Don't expose data from previous buffers.
@@ -343,11 +496,12 @@ func (w *Writer) Reset(writer io.Writer) {
 						err = io.ErrShortBuffer
 					}
 					_ = w.err(err)
+					w.err(w.index.add(w.written, input.startOffset))
 					w.written += int64(n)
 				}
 			}
 			if cap(in) >= w.obufLen {
-				w.buffers.Put([]byte(in))
+				w.buffers.Put(in)
 			}
 			// close the incoming write request.
 			// This can be used for synchronizing flushes.
@@ -358,6 +512,12 @@ func (w *Writer) Reset(writer io.Writer) {
 
 // Write satisfies the io.Writer interface.
 func (w *Writer) Write(p []byte) (nRet int, errRet error) {
+	if err := w.err(nil); err != nil {
+		return 0, err
+	}
+	if w.flushOnWrite {
+		return w.write(p)
+	}
 	// If we exceed the input buffer size, start writing
 	for len(p) > (cap(w.ibuf)-len(w.ibuf)) && w.err(nil) == nil {
 		var n int
@@ -390,11 +550,21 @@ func (w *Writer) Write(p []byte) (nRet int, errRet error) {
 // The return value n is the number of bytes read.
 // Any error except io.EOF encountered during the read is also returned.
 func (w *Writer) ReadFrom(r io.Reader) (n int64, err error) {
+	if err := w.err(nil); err != nil {
+		return 0, err
+	}
 	if len(w.ibuf) > 0 {
 		err := w.Flush()
 		if err != nil {
 			return 0, err
 		}
+	}
+	if br, ok := r.(byter); ok {
+		buf := br.Bytes()
+		if err := w.EncodeBuffer(buf); err != nil {
+			return 0, err
+		}
+		return int64(len(buf)), w.Flush()
 	}
 	for {
 		inbuf := w.buffers.Get().([]byte)[:w.blockSize+obufHeaderLen]
@@ -425,10 +595,91 @@ func (w *Writer) ReadFrom(r io.Reader) (n int64, err error) {
 	return n, w.err(nil)
 }
 
+// AddSkippableBlock will add a skippable block to the stream.
+// The ID must be 0x80-0xfe (inclusive).
+// Length of the skippable block must be <= 16777215 bytes.
+func (w *Writer) AddSkippableBlock(id uint8, data []byte) (err error) {
+	if err := w.err(nil); err != nil {
+		return err
+	}
+	if len(data) == 0 {
+		return nil
+	}
+	if id < 0x80 || id > chunkTypePadding {
+		return fmt.Errorf("invalid skippable block id %x", id)
+	}
+	if len(data) > maxChunkSize {
+		return fmt.Errorf("skippable block excessed maximum size")
+	}
+	var header [4]byte
+	chunkLen := 4 + len(data)
+	header[0] = id
+	header[1] = uint8(chunkLen >> 0)
+	header[2] = uint8(chunkLen >> 8)
+	header[3] = uint8(chunkLen >> 16)
+	if w.concurrency == 1 {
+		write := func(b []byte) error {
+			n, err := w.writer.Write(b)
+			if err = w.err(err); err != nil {
+				return err
+			}
+			if n != len(data) {
+				return w.err(io.ErrShortWrite)
+			}
+			w.written += int64(n)
+			return w.err(nil)
+		}
+		if !w.wroteStreamHeader {
+			w.wroteStreamHeader = true
+			if w.snappy {
+				if err := write([]byte(magicChunkSnappy)); err != nil {
+					return err
+				}
+			} else {
+				if err := write([]byte(magicChunk)); err != nil {
+					return err
+				}
+			}
+		}
+		if err := write(header[:]); err != nil {
+			return err
+		}
+		if err := write(data); err != nil {
+			return err
+		}
+	}
+
+	// Create output...
+	if !w.wroteStreamHeader {
+		w.wroteStreamHeader = true
+		hWriter := make(chan result)
+		w.output <- hWriter
+		if w.snappy {
+			hWriter <- result{startOffset: w.uncompWritten, b: []byte(magicChunkSnappy)}
+		} else {
+			hWriter <- result{startOffset: w.uncompWritten, b: []byte(magicChunk)}
+		}
+	}
+
+	// Copy input.
+	inbuf := w.buffers.Get().([]byte)[:4]
+	copy(inbuf, header[:])
+	inbuf = append(inbuf, data...)
+
+	output := make(chan result, 1)
+	// Queue output.
+	w.output <- output
+	output <- result{startOffset: w.uncompWritten, b: inbuf}
+
+	return nil
+}
+
 // EncodeBuffer will add a buffer to the stream.
 // This is the fastest way to encode a stream,
 // but the input buffer cannot be written to by the caller
-// until this function, Flush or Close has been called.
+// until Flush or Close has been called when concurrency != 1.
+//
+// If you cannot control that, use the regular Write function.
 //
 // Note that input is not buffered.
 // This means that each write will result in discrete blocks being created.
@@ -438,6 +689,10 @@ func (w *Writer) EncodeBuffer(buf []byte) (err error) {
 		return err
 	}
 
+	if w.flushOnWrite {
+		_, err := w.write(buf)
+		return err
+	}
 	// Flush queued data first.
 	if len(w.ibuf) > 0 {
 		err := w.Flush()
@@ -455,7 +710,11 @@ func (w *Writer) EncodeBuffer(buf []byte) (err error) {
 		w.wroteStreamHeader = true
 		hWriter := make(chan result)
 		w.output <- hWriter
-		hWriter <- []byte(magicChunk)
+		if w.snappy {
+			hWriter <- result{startOffset: w.uncompWritten, b: []byte(magicChunkSnappy)}
+		} else {
+			hWriter <- result{startOffset: w.uncompWritten, b: []byte(magicChunk)}
+		}
 	}
 
 	for len(buf) > 0 {
@@ -470,6 +729,10 @@ func (w *Writer) EncodeBuffer(buf []byte) (err error) {
 		output := make(chan result)
 		// Queue output now, so we keep order.
 		w.output <- output
+		res := result{
+			startOffset: w.uncompWritten,
+		}
+		w.uncompWritten += int64(len(uncompressed))
 		go func() {
 			checksum := crc(uncompressed)
 
@@ -479,12 +742,7 @@ func (w *Writer) EncodeBuffer(buf []byte) (err error) {
 
 			// Attempt compressing.
 			n := binary.PutUvarint(obuf[obufHeaderLen:], uint64(len(uncompressed)))
-			var n2 int
-			if w.better {
-				n2 = encodeBlockBetter(obuf[obufHeaderLen+n:], uncompressed)
-			} else {
-				n2 = encodeBlock(obuf[obufHeaderLen+n:], uncompressed)
-			}
+			n2 := w.encodeBlock(obuf[obufHeaderLen+n:], uncompressed)
 
 			// Check if we should use this, or store as uncompressed instead.
 			if n2 > 0 {
@@ -507,10 +765,34 @@ func (w *Writer) EncodeBuffer(buf []byte) (err error) {
 			obuf[7] = uint8(checksum >> 24)
 
 			// Queue final output.
-			output <- obuf
+			res.b = obuf
+			output <- res
 		}()
 	}
 	return nil
+}
+
+func (w *Writer) encodeBlock(obuf, uncompressed []byte) int {
+	if w.snappy {
+		switch w.level {
+		case levelFast:
+			return encodeBlockSnappy(obuf, uncompressed)
+		case levelBetter:
+			return encodeBlockBetterSnappy(obuf, uncompressed)
+		case levelBest:
+			return encodeBlockBestSnappy(obuf, uncompressed)
+		}
+		return 0
+	}
+	switch w.level {
+	case levelFast:
+		return encodeBlock(obuf, uncompressed)
+	case levelBetter:
+		return encodeBlockBetter(obuf, uncompressed)
+	case levelBest:
+		return encodeBlockBest(obuf, uncompressed)
+	}
+	return 0
 }
 
 func (w *Writer) write(p []byte) (nRet int, errRet error) {
@@ -527,7 +809,11 @@ func (w *Writer) write(p []byte) (nRet int, errRet error) {
 			w.wroteStreamHeader = true
 			hWriter := make(chan result)
 			w.output <- hWriter
-			hWriter <- []byte(magicChunk)
+			if w.snappy {
+				hWriter <- result{startOffset: w.uncompWritten, b: []byte(magicChunkSnappy)}
+			} else {
+				hWriter <- result{startOffset: w.uncompWritten, b: []byte(magicChunk)}
+			}
 		}
 
 		var uncompressed []byte
@@ -547,6 +833,11 @@ func (w *Writer) write(p []byte) (nRet int, errRet error) {
 		output := make(chan result)
 		// Queue output now, so we keep order.
 		w.output <- output
+		res := result{
+			startOffset: w.uncompWritten,
+		}
+		w.uncompWritten += int64(len(uncompressed))
+
 		go func() {
 			checksum := crc(uncompressed)
 
@@ -556,12 +847,7 @@ func (w *Writer) write(p []byte) (nRet int, errRet error) {
 
 			// Attempt compressing.
 			n := binary.PutUvarint(obuf[obufHeaderLen:], uint64(len(uncompressed)))
-			var n2 int
-			if w.better {
-				n2 = encodeBlockBetter(obuf[obufHeaderLen+n:], uncompressed)
-			} else {
-				n2 = encodeBlock(obuf[obufHeaderLen+n:], uncompressed)
-			}
+			n2 := w.encodeBlock(obuf[obufHeaderLen+n:], uncompressed)
 
 			// Check if we should use this, or store as uncompressed instead.
 			if n2 > 0 {
@@ -584,7 +870,8 @@ func (w *Writer) write(p []byte) (nRet int, errRet error) {
 			obuf[7] = uint8(checksum >> 24)
 
 			// Queue final output.
-			output <- obuf
+			res.b = obuf
+			output <- res
 
 			// Put unused buffer back in pool.
 			w.buffers.Put(inbuf)
@@ -613,7 +900,11 @@ func (w *Writer) writeFull(inbuf []byte) (errRet error) {
 		w.wroteStreamHeader = true
 		hWriter := make(chan result)
 		w.output <- hWriter
-		hWriter <- []byte(magicChunk)
+		if w.snappy {
+			hWriter <- result{startOffset: w.uncompWritten, b: []byte(magicChunkSnappy)}
+		} else {
+			hWriter <- result{startOffset: w.uncompWritten, b: []byte(magicChunk)}
+		}
 	}
 
 	// Get an output buffer.
@@ -623,6 +914,11 @@ func (w *Writer) writeFull(inbuf []byte) (errRet error) {
 	output := make(chan result)
 	// Queue output now, so we keep order.
 	w.output <- output
+	res := result{
+		startOffset: w.uncompWritten,
+	}
+	w.uncompWritten += int64(len(uncompressed))
+
 	go func() {
 		checksum := crc(uncompressed)
 
@@ -632,12 +928,7 @@ func (w *Writer) writeFull(inbuf []byte) (errRet error) {
 
 		// Attempt compressing.
 		n := binary.PutUvarint(obuf[obufHeaderLen:], uint64(len(uncompressed)))
-		var n2 int
-		if w.better {
-			n2 = encodeBlockBetter(obuf[obufHeaderLen+n:], uncompressed)
-		} else {
-			n2 = encodeBlock(obuf[obufHeaderLen+n:], uncompressed)
-		}
+		n2 := w.encodeBlock(obuf[obufHeaderLen+n:], uncompressed)
 
 		// Check if we should use this, or store as uncompressed instead.
 		if n2 > 0 {
@@ -660,7 +951,8 @@ func (w *Writer) writeFull(inbuf []byte) (errRet error) {
 		obuf[7] = uint8(checksum >> 24)
 
 		// Queue final output.
-		output <- obuf
+		res.b = obuf
+		output <- res
 
 		// Put unused buffer back in pool.
 		w.buffers.Put(inbuf)
@@ -674,7 +966,13 @@ func (w *Writer) writeSync(p []byte) (nRet int, errRet error) {
 	}
 	if !w.wroteStreamHeader {
 		w.wroteStreamHeader = true
-		n, err := w.writer.Write([]byte(magicChunk))
+		var n int
+		var err error
+		if w.snappy {
+			n, err = w.writer.Write([]byte(magicChunkSnappy))
+		} else {
+			n, err = w.writer.Write([]byte(magicChunk))
+		}
 		if err != nil {
 			return 0, w.err(err)
 		}
@@ -701,12 +999,7 @@ func (w *Writer) writeSync(p []byte) (nRet int, errRet error) {
 
 		// Attempt compressing.
 		n := binary.PutUvarint(obuf[obufHeaderLen:], uint64(len(uncompressed)))
-		var n2 int
-		if w.better {
-			n2 = encodeBlockBetter(obuf[obufHeaderLen+n:], uncompressed)
-		} else {
-			n2 = encodeBlock(obuf[obufHeaderLen+n:], uncompressed)
-		}
+		n2 := w.encodeBlock(obuf[obufHeaderLen+n:], uncompressed)
 
 		if n2 > 0 {
 			chunkType = uint8(chunkTypeCompressedData)
@@ -733,7 +1026,10 @@ func (w *Writer) writeSync(p []byte) (nRet int, errRet error) {
 		if n != len(obuf) {
 			return 0, w.err(io.ErrShortWrite)
 		}
+		w.err(w.index.add(w.written, w.uncompWritten))
 		w.written += int64(n)
+		w.uncompWritten += int64(len(uncompressed))
+
 		if chunkType == chunkTypeUncompressedData {
 			// Write uncompressed data.
 			n, err := w.writer.Write(uncompressed)
@@ -761,11 +1057,17 @@ func (w *Writer) Flush() error {
 
 	// Queue any data still in input buffer.
 	if len(w.ibuf) != 0 {
-		_, err := w.write(w.ibuf)
-		w.ibuf = w.ibuf[:0]
-		err = w.err(err)
-		if err != nil {
-			return err
+		if !w.wroteStreamHeader {
+			_, err := w.writeSync(w.ibuf)
+			w.ibuf = w.ibuf[:0]
+			return w.err(err)
+		} else {
+			_, err := w.write(w.ibuf)
+			w.ibuf = w.ibuf[:0]
+			err = w.err(err)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	if w.output == nil {
@@ -776,38 +1078,87 @@ func (w *Writer) Flush() error {
 	res := make(chan result)
 	w.output <- res
 	// Block until this has been picked up.
-	res <- nil
+	res <- result{b: nil, startOffset: w.uncompWritten}
 	// When it is closed, we have flushed.
 	<-res
 	return w.err(nil)
 }
 
 // Close calls Flush and then closes the Writer.
-// Calling Close multiple times is ok.
+// Calling Close multiple times is ok,
+// but calling CloseIndex after this will make it not return the index.
 func (w *Writer) Close() error {
+	_, err := w.closeIndex(w.appendIndex)
+	return err
+}
+
+// CloseIndex calls Close and returns an index on first call.
+// This is not required if you are only adding index to a stream.
+func (w *Writer) CloseIndex() ([]byte, error) {
+	return w.closeIndex(true)
+}
+
+func (w *Writer) closeIndex(idx bool) ([]byte, error) {
 	err := w.Flush()
 	if w.output != nil {
 		close(w.output)
 		w.writerWg.Wait()
 		w.output = nil
 	}
-	if w.err(nil) == nil && w.writer != nil && w.pad > 0 {
-		add := calcSkippableFrame(w.written, int64(w.pad))
-		frame, err := skippableFrame(w.ibuf[:0], add, rand.Reader)
-		if err = w.err(err); err != nil {
-			return err
-		}
-		_, err2 := w.writer.Write(frame)
-		_ = w.err(err2)
-	}
-	_ = w.err(errClosed)
-	if err == errClosed {
-		return nil
-	}
-	return err
-}
 
-const skippableFrameHeader = 4
+	var index []byte
+	if w.err(nil) == nil && w.writer != nil {
+		// Create index.
+		if idx {
+			compSize := int64(-1)
+			if w.pad <= 1 {
+				compSize = w.written
+			}
+			index = w.index.appendTo(w.ibuf[:0], w.uncompWritten, compSize)
+			// Count as written for padding.
+			if w.appendIndex {
+				w.written += int64(len(index))
+			}
+			if true {
+				_, err := w.index.Load(index)
+				if err != nil {
+					panic(err)
+				}
+			}
+		}
+
+		if w.pad > 1 {
+			tmp := w.ibuf[:0]
+			if len(index) > 0 {
+				// Allocate another buffer.
+				tmp = w.buffers.Get().([]byte)[:0]
+				defer w.buffers.Put(tmp)
+			}
+			add := calcSkippableFrame(w.written, int64(w.pad))
+			frame, err := skippableFrame(tmp, add, w.randSrc)
+			if err = w.err(err); err != nil {
+				return nil, err
+			}
+			n, err2 := w.writer.Write(frame)
+			if err2 == nil && n != len(frame) {
+				err2 = io.ErrShortWrite
+			}
+			_ = w.err(err2)
+		}
+		if len(index) > 0 && w.appendIndex {
+			n, err2 := w.writer.Write(index)
+			if err2 == nil && n != len(index) {
+				err2 = io.ErrShortWrite
+			}
+			_ = w.err(err2)
+		}
+	}
+	err = w.err(errClosed)
+	if err == errClosed {
+		return index, nil
+	}
+	return nil, err
+}
 
 // calcSkippableFrame will return a total size to be added for written
 // to be divisible by multiple.
@@ -872,12 +1223,41 @@ func WriterConcurrency(n int) WriterOption {
 	}
 }
 
+// WriterAddIndex will append an index to the end of a stream
+// when it is closed.
+func WriterAddIndex() WriterOption {
+	return func(w *Writer) error {
+		w.appendIndex = true
+		return nil
+	}
+}
+
 // WriterBetterCompression will enable better compression.
 // EncodeBetter compresses better than Encode but typically with a
 // 10-40% speed decrease on both compression and decompression.
 func WriterBetterCompression() WriterOption {
 	return func(w *Writer) error {
-		w.better = true
+		w.level = levelBetter
+		return nil
+	}
+}
+
+// WriterBestCompression will enable better compression.
+// EncodeBetter compresses better than Encode but typically with a
+// big speed decrease on compression.
+func WriterBestCompression() WriterOption {
+	return func(w *Writer) error {
+		w.level = levelBest
+		return nil
+	}
+}
+
+// WriterUncompressed will bypass compression.
+// The stream will be written as uncompressed blocks only.
+// If concurrency is > 1 CRC and output will still be done async.
+func WriterUncompressed() WriterOption {
+	return func(w *Writer) error {
+		w.level = levelUncompressed
 		return nil
 	}
 }
@@ -890,9 +1270,15 @@ func WriterBetterCompression() WriterOption {
 // and will increase compression slightly, but it will limit the possible
 // concurrency for smaller payloads for both encoding and decoding.
 // Default block size is 1MB.
+//
+// When writing Snappy compatible output using WriterSnappyCompat,
+// the maximum block size is 64KB.
 func WriterBlockSize(n int) WriterOption {
 	return func(w *Writer) error {
-		if w.blockSize > maxBlockSize || w.blockSize < minBlockSize {
+		if w.snappy && n > maxSnappyBlockSize || n < minBlockSize {
+			return errors.New("s2: block size too large. Must be <= 64K and >=4KB on for snappy compatible output")
+		}
+		if n > maxBlockSize || n < minBlockSize {
 			return errors.New("s2: block size too large. Must be <= 4MB and >=4KB")
 		}
 		w.blockSize = n
@@ -919,6 +1305,43 @@ func WriterPadding(n int) WriterOption {
 			return fmt.Errorf("s2: padding must less than 4MB")
 		}
 		w.pad = n
+		return nil
+	}
+}
+
+// WriterPaddingSrc will get random data for padding from the supplied source.
+// By default crypto/rand is used.
+func WriterPaddingSrc(reader io.Reader) WriterOption {
+	return func(w *Writer) error {
+		w.randSrc = reader
+		return nil
+	}
+}
+
+// WriterSnappyCompat will write snappy compatible output.
+// The output can be decompressed using either snappy or s2.
+// If block size is more than 64KB it is set to that.
+func WriterSnappyCompat() WriterOption {
+	return func(w *Writer) error {
+		w.snappy = true
+		if w.blockSize > 64<<10 {
+			// We choose 8 bytes less than 64K, since that will make literal emits slightly more effective.
+			// And allows us to skip some size checks.
+			w.blockSize = (64 << 10) - 8
+		}
+		return nil
+	}
+}
+
+// WriterFlushOnWrite will compress blocks on each call to the Write function.
+//
+// This is quite inefficient as blocks size will depend on the write size.
+//
+// Use WriterConcurrency(1) to also make sure that output is flushed.
+// When Write calls return, otherwise they will be written when compression is done.
+func WriterFlushOnWrite() WriterOption {
+	return func(w *Writer) error {
+		w.flushOnWrite = true
 		return nil
 	}
 }

@@ -44,6 +44,14 @@ type (
 	//
 	// Example: https://github.com/kataras/iris/blob/master/_examples/request-body/read-custom-via-unmarshaler/main.go
 	UnmarshalerFunc = context.UnmarshalerFunc
+	// DecodeFunc is a generic type of decoder function.
+	// When the returned error is not nil the decode operation
+	// is terminated and the error is received by the ReadJSONStream method,
+	// otherwise it continues to read the next available object.
+	// Look the `Context.ReadJSONStream` method.
+	//
+	// Example: https://github.com/kataras/iris/blob/master/_examples/request-body/read-json-stream.
+	DecodeFunc = context.DecodeFunc
 	// A Handler responds to an HTTP request.
 	// It writes reply headers and data to the Context.ResponseWriter() and then return.
 	// Returning signals that the request is finished;
@@ -90,6 +98,10 @@ type (
 	//
 	// It is an alias of the `context#JSON` type.
 	JSON = context.JSON
+	// JSONReader holds the JSON decode options of the `Context.ReadJSON, ReadBody` methods.
+	//
+	// It is an alias of the `context#JSONReader` type.
+	JSONReader = context.JSONReader
 	// JSONP the optional settings for JSONP renderer.
 	//
 	// It is an alias of the `context#JSONP` type.
@@ -250,6 +262,24 @@ var (
 	// Ace view engine.
 	// Shortcut of the view.Ace.
 	Ace = view.Ace
+)
+
+type (
+	// ErrViewNotExist reports whether a template was not found in the parsed templates tree.
+	ErrViewNotExist = context.ErrViewNotExist
+	// FallbackViewFunc is a function that can be registered
+	// to handle view fallbacks. It accepts the Context and
+	// a special error which contains information about the previous template error.
+	// It implements the FallbackViewProvider interface.
+	//
+	// See `Context.View` method.
+	FallbackViewFunc = context.FallbackViewFunc
+	// FallbackView is a helper to register a single template filename as a fallback
+	// when the provided tempate filename was not found.
+	FallbackView = context.FallbackView
+	// FallbackViewLayout is a helper to register a single template filename as a fallback
+	// layout when the provided layout filename was not found.
+	FallbackViewLayout = context.FallbackViewLayout
 )
 
 // PrefixDir returns a new FileSystem that opens files
@@ -474,12 +504,20 @@ var (
 	// A shortcut for the `context#CookieEncoding`.
 	CookieEncoding = context.CookieEncoding
 
+	// IsErrEmptyJSON reports whether the given "err" is caused by a
+	// Context.ReadJSON call when the request body
+	// didn't start with { or it was totally empty.
+	IsErrEmptyJSON = context.IsErrEmptyJSON
 	// IsErrPath can be used at `context#ReadForm` and `context#ReadQuery`.
-	// It reports whether the incoming error is type of `formbinder.ErrPath`,
+	// It reports whether the incoming error is type of `schema.ErrPath`,
 	// which can be ignored when server allows unknown post values to be sent by the client.
 	//
 	// A shortcut for the `context#IsErrPath`.
 	IsErrPath = context.IsErrPath
+	// IsErrCanceled reports whether the "err" is caused by a cancellation or timeout.
+	//
+	// A shortcut for the `context#IsErrCanceled`.
+	IsErrCanceled = context.IsErrCanceled
 	// ErrEmptyForm is the type error which API users can make use of
 	// to check if a form was empty on `Context.ReadForm`.
 	//

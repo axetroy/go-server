@@ -2634,7 +2634,7 @@ const defaultRules = `
             "parameters": [
                 "q"
             ]
-        }, 
+        },
         "Info": {
             "domains": [
                 "info.com"
@@ -2642,7 +2642,7 @@ const defaultRules = `
             "parameters": [
                 "qkw"
             ]
-        }, 
+        },
         "Interia": {
             "domains": [
                 "www.google.interia.pl"
@@ -3976,6 +3976,11 @@ const defaultRules = `
                 "skyrock.com"
             ]
         },
+        "Snapchat": {
+            "domains": [
+                "snapchat.com"
+            ]
+        },
         "Sonico.com": {
             "domains": [
                 "sonico.com"
@@ -4009,6 +4014,12 @@ const defaultRules = `
         "Taringa!": {
             "domains": [
                 "taringa.net"
+            ]
+        },
+        "TikTok": {
+            "domains": [
+                "tiktok.com",
+                "tiktokcdn.com"
             ]
         },
         "Tuenti": {

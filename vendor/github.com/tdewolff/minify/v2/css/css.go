@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/tdewolff/minify/v2"
 	"github.com/tdewolff/parse/v2"
@@ -81,10 +83,10 @@ func (t Token) String() string {
 }
 
 // Equal returns true if both tokens are equal.
-func (a Token) Equal(b Token) bool {
-	if a.TokenType == b.TokenType && bytes.Equal(a.Data, b.Data) && len(a.Args) == len(b.Args) {
-		for i := 0; i < len(a.Args); i++ {
-			if a.Args[i].TokenType != b.Args[i].TokenType || !bytes.Equal(a.Args[i].Data, b.Args[i].Data) {
+func (t Token) Equal(t2 Token) bool {
+	if t.TokenType == t2.TokenType && bytes.Equal(t.Data, t2.Data) && len(t.Args) == len(t2.Args) {
+		for i := 0; i < len(t.Args); i++ {
+			if t.Args[i].TokenType != t2.Args[i].TokenType || !bytes.Equal(t.Args[i].Data, t2.Args[i].Data) {
 				return false
 			}
 		}
@@ -187,7 +189,7 @@ func (c *cssMinifier) minifyGrammar() {
 		case css.AtRuleGrammar:
 			c.w.Write(data)
 			values := c.p.Values()
-			if ToHash(data[1:]) == Import && len(values) == 2 && values[1].TokenType == css.URLToken {
+			if ToHash(data[1:]) == Import && len(values) == 2 && values[1].TokenType == css.URLToken && 4 < len(values[1].Data) && values[1].Data[len(values[1].Data)-1] == ')' {
 				url := values[1].Data
 				if url[4] != '"' && url[4] != '\'' {
 					a := 4
@@ -195,10 +197,14 @@ func (c *cssMinifier) minifyGrammar() {
 						a++
 					}
 					b := len(url) - 2
-					for parse.IsWhitespace(url[b]) || parse.IsNewline(url[b]) {
+					for a < b && (parse.IsWhitespace(url[b]) || parse.IsNewline(url[b])) {
 						b--
 					}
-					url = url[a-1 : b+2]
+					if a == b {
+						url = url[:2]
+					} else {
+						url = url[a-1 : b+2]
+					}
 					url[0] = '"'
 					url[len(url)-1] = '"'
 				} else {
@@ -396,7 +402,7 @@ func (c *cssMinifier) minifyDeclaration(property []byte, components []css.Token)
 		return
 	}
 
-	values = c.minifyTokens(prop, values)
+	values = c.minifyTokens(prop, 0, values)
 	if len(values) > 0 {
 		values = c.minifyProperty(prop, values)
 	}
@@ -438,7 +444,7 @@ func (c *cssMinifier) writeDeclaration(values []Token, important bool) {
 	}
 }
 
-func (c *cssMinifier) minifyTokens(prop Hash, values []Token) []Token {
+func (c *cssMinifier) minifyTokens(prop Hash, fun Hash, values []Token) []Token {
 	for i, value := range values {
 		tt := value.TokenType
 		switch tt {
@@ -462,7 +468,7 @@ func (c *cssMinifier) minifyTokens(prop Hash, values []Token) []Token {
 		case css.DimensionToken:
 			var dim []byte
 			values[i], dim = c.minifyDimension(values[i])
-			if 1 < len(values[i].Data) && values[i].Data[0] == '0' && optionalZeroDimension[string(dim)] && prop != Flex {
+			if 1 < len(values[i].Data) && values[i].Data[0] == '0' && optionalZeroDimension[string(dim)] && prop != Flex && fun == 0 {
 				// cut dimension for zero value, TODO: don't hardcode check for Flex and remove the dimension in minifyDimension
 				values[i].Data = values[i].Data[:1]
 			}
@@ -487,7 +493,7 @@ func (c *cssMinifier) minifyTokens(prop Hash, values []Token) []Token {
 				}
 			}
 		case css.FunctionToken:
-			values[i].Args = c.minifyTokens(prop, values[i].Args)
+			values[i].Args = c.minifyTokens(prop, values[i].Fun, values[i].Args)
 
 			fun := values[i].Fun
 			args := values[i].Args
@@ -610,6 +616,11 @@ func (c *cssMinifier) minifyTokens(prop Hash, values []Token) []Token {
 }
 
 func (c *cssMinifier) minifyProperty(prop Hash, values []Token) []Token {
+	// limit maximum to prevent slow recursions (e.g. for background's append)
+	if 100 < len(values) {
+		return values
+	}
+
 	switch prop {
 	case Font:
 		if len(values) > 1 { // must contain atleast font-size and font-family
@@ -854,19 +865,31 @@ func (c *cssMinifier) minifyProperty(prop Hash, values []Token) []Token {
 					positionValues := c.minifyProperty(Background_Position, values[i:j])
 					hasSize := j < len(values) && values[j].TokenType == css.DelimToken && values[j].Data[0] == '/'
 					if !hasSize && len(positionValues) == 2 && positionValues[0].IsZero() && positionValues[1].IsZero() {
-						values = append(values[:i], values[j:]...)
-						end -= j - i
-						i--
+						if end-start == 2 {
+							values[i] = Token{css.NumberToken, zeroBytes, nil, 0, 0}
+							values[i+1] = Token{css.NumberToken, zeroBytes, nil, 0, 0}
+							i++
+						} else {
+							values = append(values[:i], values[j:]...)
+							end -= j - i
+							i--
+						}
 					} else {
-						values = append(values[:i], append(positionValues, values[j:]...)...)
-						end -= j - i - len(positionValues)
+						if len(positionValues) == j-i {
+							for k, positionValue := range positionValues {
+								values[i+k] = positionValue
+							}
+						} else {
+							values = append(values[:i], append(positionValues, values[j:]...)...)
+							end -= j - i - len(positionValues)
+						}
 						i += len(positionValues) - 1
 					}
 				}
 			}
 
 			if end-start == 0 {
-				values = append(values[:start], append([]Token{{css.NumberToken, zeroBytes, nil, 0, 0}, Token{css.NumberToken, zeroBytes, nil, 0, 0}}, values[end:]...)...)
+				values = append(values[:start], append([]Token{{css.NumberToken, zeroBytes, nil, 0, 0}, {css.NumberToken, zeroBytes, nil, 0, 0}}, values[end:]...)...)
 				end += 2
 			}
 			start = end + 1
@@ -1077,9 +1100,11 @@ func (c *cssMinifier) minifyProperty(prop Hash, values []Token) []Token {
 		values[0] = minifyColor(values[0])
 	case Background_Color:
 		values[0] = minifyColor(values[0])
-		if values[0].Ident == Transparent {
-			values[0].Data = initialBytes
-			values[0].Ident = Initial
+		if !c.o.KeepCSS2 {
+			if values[0].Ident == Transparent {
+				values[0].Data = initialBytes
+				values[0].Ident = Initial
+			}
 		}
 	case Border_Color:
 		sameValues := true
@@ -1154,26 +1179,24 @@ func (c *cssMinifier) minifyProperty(prop Hash, values []Token) []Token {
 			}
 		} else if len(values) == 3 && values[0].TokenType == css.NumberToken && values[1].TokenType == css.NumberToken {
 			if len(values[0].Data) == 1 && len(values[1].Data) == 1 {
-				grow := values[0].Data[0] == '1'
-				shrink := values[1].Data[0] == '1'
 				if values[2].Ident == Auto {
-					if !grow && shrink {
+					if values[0].Data[0] == '0' && values[1].Data[0] == '1' {
 						values = values[:1]
 						values[0].TokenType = css.IdentToken
 						values[0].Data = initialBytes
 						values[0].Ident = Initial
-					} else if grow && shrink {
+					} else if values[0].Data[0] == '1' && values[1].Data[0] == '1' {
 						values = values[:1]
 						values[0].TokenType = css.IdentToken
 						values[0].Data = autoBytes
 						values[0].Ident = Auto
-					} else if !grow && !shrink {
+					} else if values[0].Data[0] == '0' && values[1].Data[0] == '0' {
 						values = values[:1]
 						values[0].TokenType = css.IdentToken
 						values[0].Data = noneBytes
 						values[0].Ident = None
 					}
-				} else if shrink && values[2].IsZero() {
+				} else if values[1].Data[0] == '1' && values[2].IsZero() {
 					values = values[:1] // remove <flex-shrink> and <flex-basis> if they are 1 and 0 respectively
 				} else if values[2].IsZero() {
 					values = values[:2] // remove auto to write 2-value syntax of <flex-grow> <flex-shrink>
@@ -1200,6 +1223,100 @@ func (c *cssMinifier) minifyProperty(prop Hash, values []Token) []Token {
 			values[0].TokenType = css.NumberToken
 			values[0].Data = oneBytes
 			values[0].Ident = 0
+		}
+	case Unicode_Range:
+		ranges := [][2]int{}
+		for _, value := range values {
+			if value.TokenType == css.CommaToken {
+				continue
+			} else if value.TokenType != css.UnicodeRangeToken {
+				return values
+			}
+
+			i := 2
+			iWildcard := 0
+			start := 0
+			for i < len(value.Data) && value.Data[i] != '-' {
+				start *= 16
+				if '0' <= value.Data[i] && value.Data[i] <= '9' {
+					start += int(value.Data[i] - '0')
+				} else if 'a' <= value.Data[i]|32 && value.Data[i]|32 <= 'f' {
+					start += int(value.Data[i]|32-'a') + 10
+				} else if iWildcard == 0 && value.Data[i] == '?' {
+					iWildcard = i
+				}
+				i++
+			}
+			end := start
+			if iWildcard != 0 {
+				end = start + int(math.Pow(16.0, float64(len(value.Data)-iWildcard))) - 1
+			} else if i < len(value.Data) && value.Data[i] == '-' {
+				i++
+				end = 0
+				for i < len(value.Data) {
+					end *= 16
+					if '0' <= value.Data[i] && value.Data[i] <= '9' {
+						end += int(value.Data[i] - '0')
+					} else if 'a' <= value.Data[i]|32 && value.Data[i]|32 <= 'f' {
+						end += int(value.Data[i]|32-'a') + 10
+					}
+					i++
+				}
+				if end <= start {
+					end = start
+				}
+			}
+			ranges = append(ranges, [2]int{start, end})
+		}
+
+		// sort and remove overlapping ranges
+		sort.Slice(ranges, func(i, j int) bool { return ranges[i][0] < ranges[j][0] })
+		for i := 0; i < len(ranges)-1; i++ {
+			if ranges[i+1][1] <= ranges[i][1] {
+				// next range is fully contained in the current range
+				ranges = append(ranges[:i+1], ranges[i+2:]...)
+			} else if ranges[i+1][0] <= ranges[i][1]+1 {
+				// next range is partially covering the current range
+				ranges[i][1] = ranges[i+1][1]
+				ranges = append(ranges[:i+1], ranges[i+2:]...)
+			}
+		}
+
+		values = values[:0]
+		for i, ran := range ranges {
+			if i != 0 {
+				values = append(values, Token{css.CommaToken, commaBytes, nil, 0, None})
+			}
+			if ran[0] == ran[1] {
+				urange := []byte(fmt.Sprintf("U+%X", ran[0]))
+				values = append(values, Token{css.UnicodeRangeToken, urange, nil, 0, None})
+			} else if ran[0] == 0 && ran[1] == 0x10FFFF {
+				values = append(values, Token{css.IdentToken, initialBytes, nil, 0, None})
+			} else {
+				k := 0
+				for k < 6 && (ran[0]>>(k*4))&0xF == 0 && (ran[1]>>(k*4))&0xF == 0xF {
+					k++
+				}
+				wildcards := k
+				for k < 6 {
+					if (ran[0]>>(k*4))&0xF != (ran[1]>>(k*4))&0xF {
+						wildcards = 0
+						break
+					}
+					k++
+				}
+				var urange []byte
+				if wildcards != 0 {
+					if ran[0]>>(wildcards*4) == 0 {
+						urange = []byte(fmt.Sprintf("U+%s", strings.Repeat("?", wildcards)))
+					} else {
+						urange = []byte(fmt.Sprintf("U+%X%s", ran[0]>>(wildcards*4), strings.Repeat("?", wildcards)))
+					}
+				} else {
+					urange = []byte(fmt.Sprintf("U+%X-%X", ran[0], ran[1]))
+				}
+				values = append(values, Token{css.UnicodeRangeToken, urange, nil, 0, None})
+			}
 		}
 	}
 	return values
@@ -1419,5 +1536,5 @@ func (c *cssMinifier) minifyDimension(value Token) (Token, []byte) {
 	//	}
 	//	value.Data = append(num, dim...)
 	//}
-	return value, dim
+	//return value, dim
 }

@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/kataras/golog"
 	"github.com/kataras/iris/v12/context"
@@ -198,6 +199,23 @@ func WithSocketSharding(app *Application) {
 	// Note(@kataras): It could be a host Configurator but it's an application setting in order
 	// to configure it through yaml/toml files as well.
 	app.config.SocketSharding = true
+}
+
+// WithKeepAlive sets the `Configuration.KeepAlive` field to the given duration.
+func WithKeepAlive(keepAliveDur time.Duration) Configurator {
+	return func(app *Application) {
+		app.config.KeepAlive = keepAliveDur
+	}
+}
+
+// WithTimeout sets the `Configuration.Timeout` field to the given duration.
+func WithTimeout(timeoutDur time.Duration, htmlBody ...string) Configurator {
+	return func(app *Application) {
+		app.config.Timeout = timeoutDur
+		if len(htmlBody) > 0 {
+			app.config.TimeoutMessage = htmlBody[0]
+		}
+	}
 }
 
 // WithoutServerError will cause to ignore the matched "errors"
@@ -490,7 +508,6 @@ func WithSitemap(startURL string) Configurator {
 					} else {
 						href = "/" + langPath + loc
 					}
-
 				} else if app.I18n.Subdomain {
 					// then use the subdomain.
 					// e.g. http://el.domain.com/path
@@ -613,6 +630,23 @@ type Configuration struct {
 	//
 	// Defaults to false.
 	SocketSharding bool `ini:"socket_sharding" json:"socketSharding" yaml:"SocketSharding" toml:"SocketSharding" env:"SOCKET_SHARDING"`
+	// KeepAlive sets the TCP connection's keep-alive duration.
+	// If set to greater than zero then a tcp listener featured keep alive
+	// will be used instead of the simple tcp one.
+	//
+	// Defaults to 0.
+	KeepAlive time.Duration `ini:"keepalive" json:"keepAlive" yaml:"KeepAlive" toml:"KeepAlive" env:"KEEP_ALIVE"`
+	// Timeout wraps the application's router with an http timeout handler
+	// if the value is greater than zero.
+	//
+	// The underline response writer supports the Pusher interface but does not support
+	// the Hijacker or Flusher interfaces when Timeout handler is registered.
+	//
+	// Read more at: https://pkg.go.dev/net/http#TimeoutHandler.
+	Timeout time.Duration `ini:"timeout" json:"timeout" yaml:"Timeout" toml:"Timeout"`
+	// TimeoutMessage specifies the HTML body when a handler hits its life time based
+	// on the Timeout configuration field.
+	TimeoutMessage string `ini:"timeout_message" json:"timeoutMessage" yaml:"TimeoutMessage" toml:"TimeoutMessage"`
 	// Tunneling can be optionally set to enable ngrok http(s) tunneling for this Iris app instance.
 	// See the `WithTunneling` Configurator too.
 	Tunneling TunnelingConfiguration `ini:"tunneling" json:"tunneling,omitempty" yaml:"Tunneling" toml:"Tunneling"`
@@ -717,7 +751,7 @@ type Configuration struct {
 	//
 	// See `Context.RecordRequestBody` method for the same feature, per-request.
 	DisableBodyConsumptionOnUnmarshal bool `ini:"disable_body_consumption" json:"disableBodyConsumptionOnUnmarshal,omitempty" yaml:"DisableBodyConsumptionOnUnmarshal" toml:"DisableBodyConsumptionOnUnmarshal"`
-	// FireEmptyFormError returns if set to tue true then the `context.ReadBody/ReadForm`
+	// FireEmptyFormError returns if set to tue true then the `context.ReadForm/ReadQuery/ReadBody`
 	// will return an `iris.ErrEmptyForm` on empty request form data.
 	FireEmptyFormError bool `ini:"fire_empty_form_error" json:"fireEmptyFormError,omitempty" yaml:"FireEmptyFormError" toml:"FireEmptyFormError"`
 
@@ -797,6 +831,11 @@ type Configuration struct {
 	//
 	// Defaults to "iris.view.data".
 	ViewDataContextKey string `ini:"view_data_context_key" json:"viewDataContextKey,omitempty" yaml:"ViewDataContextKey" toml:"ViewDataContextKey"`
+	// FallbackViewContextKey is the context's values key
+	// responsible to store the view fallback information.
+	//
+	// Defaults to "iris.view.fallback".
+	FallbackViewContextKey string `ini:"fallback_view_context_key" json:"fallbackViewContextKey,omitempty" yaml:"FallbackViewContextKey" toml:"FallbackViewContextKey"`
 	// RemoteAddrHeaders are the allowed request headers names
 	// that can be valid to parse the client's IP based on.
 	// By-default no "X-" header is consired safe to be used for retrieving the
@@ -813,6 +852,7 @@ type Configuration struct {
 	//    "X-Forwarded-For",
 	//    "CF-Connecting-IP",
 	//    "True-Client-Ip",
+	//    "X-Appengine-Remote-Addr",
 	//	}
 	//
 	// Look `context.RemoteAddr()` for more.
@@ -887,6 +927,21 @@ func (c Configuration) GetLogLevel() string {
 // GetSocketSharding returns the SocketSharding field.
 func (c Configuration) GetSocketSharding() bool {
 	return c.SocketSharding
+}
+
+// GetKeepAlive returns the KeepAlive field.
+func (c Configuration) GetKeepAlive() time.Duration {
+	return c.KeepAlive
+}
+
+// GetKeepAlive returns the Timeout field.
+func (c Configuration) GetTimeout() time.Duration {
+	return c.Timeout
+}
+
+// GetKeepAlive returns the TimeoutMessage field.
+func (c Configuration) GetTimeoutMessage() string {
+	return c.TimeoutMessage
 }
 
 // GetDisablePathCorrection returns the DisablePathCorrection field.
@@ -999,6 +1054,11 @@ func (c Configuration) GetViewDataContextKey() string {
 	return c.ViewDataContextKey
 }
 
+// GetFallbackViewContextKey returns the FallbackViewContextKey field.
+func (c Configuration) GetFallbackViewContextKey() string {
+	return c.FallbackViewContextKey
+}
+
 // GetRemoteAddrHeaders returns the RemoteAddrHeaders field.
 func (c Configuration) GetRemoteAddrHeaders() []string {
 	return c.RemoteAddrHeaders
@@ -1052,6 +1112,18 @@ func WithConfiguration(c Configuration) Configurator {
 
 		if v := c.SocketSharding; v {
 			main.SocketSharding = v
+		}
+
+		if v := c.KeepAlive; v > 0 {
+			main.KeepAlive = v
+		}
+
+		if v := c.Timeout; v > 0 {
+			main.Timeout = v
+		}
+
+		if v := c.TimeoutMessage; v != "" {
+			main.TimeoutMessage = v
 		}
 
 		if len(c.Tunneling.Tunnels) > 0 {
@@ -1155,6 +1227,9 @@ func WithConfiguration(c Configuration) Configurator {
 		if v := c.ViewDataContextKey; v != "" {
 			main.ViewDataContextKey = v
 		}
+		if v := c.FallbackViewContextKey; v != "" {
+			main.FallbackViewContextKey = v
+		}
 
 		if v := c.RemoteAddrHeaders; len(v) > 0 {
 			main.RemoteAddrHeaders = v
@@ -1197,11 +1272,18 @@ func WithConfiguration(c Configuration) Configurator {
 	}
 }
 
+// DefaultTimeoutMessage is the default timeout message which is rendered
+// on expired handlers when timeout handler is registered (see Timeout configuration field).
+var DefaultTimeoutMessage = `<html><head><title>Timeout</title></head><body><h1>Timeout</h1>Looks like the server is taking too long to respond, this can be caused by either poor connectivity or an error with our servers. Please try again in a while.</body></html>`
+
 // DefaultConfiguration returns the default configuration for an iris station, fills the main Configuration
 func DefaultConfiguration() Configuration {
 	return Configuration{
 		LogLevel:                          "info",
 		SocketSharding:                    false,
+		KeepAlive:                         0,
+		Timeout:                           0,
+		TimeoutMessage:                    DefaultTimeoutMessage,
 		DisableStartupLog:                 false,
 		DisableInterruptHandler:           false,
 		DisablePathCorrection:             false,
@@ -1228,6 +1310,7 @@ func DefaultConfiguration() Configuration {
 		ViewEngineContextKey:     "iris.view.engine",
 		ViewLayoutContextKey:     "iris.view.layout",
 		ViewDataContextKey:       "iris.view.data",
+		FallbackViewContextKey:   "iris.view.fallback",
 		RemoteAddrHeaders:        nil,
 		RemoteAddrHeadersForce:   false,
 		RemoteAddrPrivateSubnets: []netutil.IPRange{

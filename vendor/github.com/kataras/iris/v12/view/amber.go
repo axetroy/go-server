@@ -217,7 +217,7 @@ func (s *AmberEngine) executeTemplateBuf(name string, binding interface{}) (stri
 	tmpl := s.fromCache(name)
 	if tmpl == nil {
 		s.bufPool.Put(buf)
-		return "", ErrNotExist{name, false}
+		return "", ErrNotExist{Name: name, IsLayout: false, Data: binding}
 	}
 
 	err := tmpl.ExecuteTemplate(buf, name, binding)
@@ -253,5 +253,5 @@ func (s *AmberEngine) ExecuteWriter(w io.Writer, filename string, layout string,
 		return tmpl.Execute(w, bindingData)
 	}
 
-	return ErrNotExist{filename, false}
+	return ErrNotExist{Name: filename, IsLayout: false, Data: bindingData}
 }

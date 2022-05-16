@@ -1,4 +1,4 @@
-# JS [![GoDoc](http://godoc.org/github.com/tdewolff/parse/js?status.svg)](http://godoc.org/github.com/tdewolff/parse/js)
+# JS [![API reference](https://img.shields.io/badge/godoc-reference-5272B4)](https://pkg.go.dev/github.com/tdewolff/minify/v2/parse/js?tab=doc)
 
 This package is a JS lexer (ECMAScript 2020) written in [Go][1]. It follows the specification at [ECMAScript 2020 Language Specification](https://tc39.es/ecma262/). The lexer takes an io.Reader and converts it into tokens until the EOF.
 
@@ -15,7 +15,7 @@ or add the following import and run project with `go get`
 ### Usage
 The following initializes a new Lexer with io.Reader `r`:
 ``` go
-l := js.NewLexer(r)
+l := js.NewLexer(parse.NewInput(r))
 ```
 
 To tokenize until EOF an error, use:
@@ -46,7 +46,7 @@ import (
 
 // Tokenize JS from stdin.
 func main() {
-	l := js.NewLexer(os.Stdin)
+	l := js.NewLexer(parse.NewInput(os.Stdin))
 	for {
 		tt, text := l.Next()
 		switch tt {
@@ -64,6 +64,15 @@ func main() {
 	}
 }
 ```
+
+## Parser
+### Usage
+The following parses a file and returns an abstract syntax tree (AST).
+``` go
+ast, err := js.NewParser(parse.NewInputString("if (state == 5) { console.log('In state five'); }"))
+```
+
+See [ast.go](https://github.com/tdewolff/parse/blob/master/js/ast.go) for all available data structures that can represent the abstact syntax tree.
 
 ## License
 Released under the [MIT license](https://github.com/tdewolff/parse/blob/master/LICENSE.md).

@@ -123,6 +123,7 @@ func (l *Lexer) Next() (TokenType, []byte) {
 
 	if l.rawTag != 0 {
 		if rawText := l.shiftRawText(); len(rawText) > 0 {
+			l.text = rawText
 			l.rawTag = 0
 			return TextToken, rawText
 		}
@@ -326,7 +327,7 @@ func (l *Lexer) shiftStartTag() (TokenType, []byte) {
 	l.text = parse.ToLower(l.r.Lexeme()[1:])
 	if h := ToHash(l.text); h == Textarea || h == Title || h == Style || h == Xmp || h == Iframe || h == Script || h == Plaintext || h == Svg || h == Math {
 		if h == Svg || h == Math {
-			data := l.shiftXml(h)
+			data := l.shiftXML(h)
 			if l.err != nil {
 				return ErrorToken, nil
 			}
@@ -425,9 +426,9 @@ func (l *Lexer) shiftEndTag() []byte {
 	return parse.ToLower(l.r.Shift())
 }
 
-// shiftXml parses the content of a svg or math tag according to the XML 1.1 specifications, including the tag itself.
+// shiftXML parses the content of a svg or math tag according to the XML 1.1 specifications, including the tag itself.
 // So far we have already parsed `<svg` or `<math`.
-func (l *Lexer) shiftXml(rawTag Hash) []byte {
+func (l *Lexer) shiftXML(rawTag Hash) []byte {
 	inQuote := false
 	for {
 		c := l.r.Peek(0)

@@ -28,6 +28,147 @@ The codebase for Dependency Injection, Internationalization and localization and
 
 ## Fixes and Improvements
 
+- Fix a bug of `WithoutBodyConsumptionOnUnmarshal` configurator and a minor dependency injection issue caused by the previous alpha version between 20 and 26 February of 2022.
+
+- New basic [cors middleware](middleware/cors).
+- New `httptest.NewServer` helper.
+- New [x/errors](x/errors) sub-package, helps with HTTP Wire Errors. Example can be found [here](_examples/routing/http-wire-errors/main.go).
+
+- New [x/timex](x/timex) sub-package, helps working with weekdays.
+
+- Minor improvements to the [JSON Kitchen Time](x/jsonx/kitchen_time.go).
+- A session database can now implement the `EndRequest(ctx *context.Context, session *Session)` method which will be fired at the end of the request-response lifecycle. 
+- Improvements on JSON and ReadJSON when `Iris.Configuration.EnableOptimizations` is true. The request's Context is used whenever is necessary.
+- New [monitor](_examples/monitor/monitor-middleware/main.go) middleware.
+
+- New `RegisterRequestHandler` package-level and client methods to the new `x/client` package. Control or log the request-response lifecycle.
+- New `RateLimit` and `Debug` HTTP Client options to the new `x/client` package.
+
+- Push a security fix reported by [Kirill Efimov](https://github.com/kirill89) for older go runtimes.
+
+- New `Configuration.Timeout` and `Configuration.TimeoutMessage` fields. Use it to set HTTP timeouts. Note that your http server's (`Application.ConfigureHost`) Read/Write timeouts should be a bit higher than the `Configuration.Timeout` in order to give some time to http timeout handler to kick in and be able to send the `Configuration.TimeoutMessage` properly.
+
+- New `apps.OnApplicationRegistered` method which listens on new Iris applications hosted under the same binary. Use it on your `init` functions to configure Iris applications by any spot in your project's files.
+
+- `Context.JSON` respects any object implements the `easyjson.Marshaler` interface and renders the result using the [easyjon](https://github.com/mailru/easyjson)'s writer.
+
+- minor: `Context` structure implements the standard go Context interface now (includes: Deadline, Done, Err and Value methods). Handlers can now just pass the `ctx iris.Context` as a shortcut of `ctx.Request().Context()` when needed.
+
+- New [x/jsonx](x/jsonx) sub-package for JSON type helpers.
+
+- New [x/mathx](x/mathx) sub-package for math related functions.
+
+- New [/x/client](x/client) HTTP Client sub-package.
+
+- New `email` builtin path parameter type. Example:
+
+```go
+// +------------------------+
+// | {param:email}           |
+// +------------------------+
+// Email + mx look up path parameter validation. Use it on production.
+
+// http://localhost:8080/user/kataras2006@hotmail.com -> OK
+// http://localhost:8080/user/b-c@invalid_domain      -> NOT FOUND
+app.Get("/user/{user_email:email}", func(ctx iris.Context) {
+    email := ctx.Params().Get("user_email")
+    ctx.WriteString(email)
+})
+
+// +------------------------+
+// | {param:mail}           |
+// +------------------------+
+// Simple email path parameter validation.
+
+// http://localhost:8080/user/kataras2006@hotmail.com    -> OK
+// http://localhost:8080/user/b-c@invalid_domainxxx1.com -> NOT FOUND
+app.Get("/user/{local_email:mail}", func(ctx iris.Context) {
+    email := ctx.Params().Get("local_email")
+    ctx.WriteString(email)
+})
+```
+
+- New `iris.IsErrEmptyJSON(err) bool` which reports whether the given "err" is caused by a
+`Context.ReadJSON` call when the request body didn't start with { (or it was totally empty). 
+
+Example Code:
+
+```go
+func handler(ctx iris.Context) {
+    var opts SearchOptions
+    if err := ctx.ReadJSON(&opts); err != nil && !iris.IsErrEmptyJSON(err) {
+        ctx.StopWithJSON(iris.StatusBadRequest, iris.Map{"message": "unable to parse body"})
+        return
+    }
+
+    // [...continue with default values of "opts" struct if the client didn't provide some]
+}
+```
+
+That means that the client can optionally set a JSON body.
+	
+- New `APIContainer.EnableStrictMode(bool)` to disable automatic payload binding and panic on missing dependencies for exported struct'sfields or function's input parameters on MVC controller or hero function or PartyConfigurator.
+
+- New `Party.PartyConfigure(relativePath string, partyReg ...PartyConfigurator) Party` helper, registers a children Party like `Party` and `PartyFunc` but instead it accepts a structure value which may contain one or more of the dependencies registered by `RegisterDependency` or `ConfigureContainer().RegisterDependency` methods and fills the unset/zero exported struct's fields respectfully (useful when the api's dependencies amount are too much to pass on a function).
+
+- **New feature:** add the ability to set custom error handlers on path type parameters errors (existing or custom ones). Example Code:
+
+```go
+app.Macros().Get("uuid").HandleError(func(ctx iris.Context, paramIndex int, err error) {
+    ctx.StatusCode(iris.StatusBadRequest)
+
+    param := ctx.Params().GetEntryAt(paramIndex)
+    ctx.JSON(iris.Map{
+        "error":     err.Error(),
+        "message":   "invalid path parameter",
+        "parameter": param.Key,
+        "value":     param.ValueRaw,
+    })
+})
+
+app.Get("/users/{id:uuid}", getUser)
+```
+
+- Improve the performance and fix `:int, :int8, :int16, :int32, :int64, :uint, :uint8, :uint16, :uint32, :uint64` path type parameters couldn't accept a positive number written with the plus symbol or with a leading zeroes, e.g. `+42` and `021`.
+
+- The `iris.WithEmptyFormError` option is respected on `context.ReadQuery` method too, as requested at [#1727](https://github.com/kataras/iris/issues/1727). [Example comments](https://github.com/kataras/iris/blob/master/_examples/request-body/read-query/main.go) were updated.
+
+- New `httptest.Strict` option setter to enable the `httpexpect.RequireReporter` instead of the default `httpexpect.AssetReporter. Use that to enable complete test failure on the first error. As requested at: [#1722](https://github.com/kataras/iris/issues/1722).
+
+- New `uuid` builtin path parameter type. Example:
+
+```go
+// +------------------------+
+// | {param:uuid}           |
+// +------------------------+
+// UUIDv4 (and v1) path parameter validation.
+
+// http://localhost:8080/user/bb4f33e4-dc08-40d8-9f2b-e8b2bb615c0e -> OK
+// http://localhost:8080/user/dsadsa-invalid-uuid                  -> NOT FOUND
+app.Get("/user/{id:uuid}", func(ctx iris.Context) {
+    id := ctx.Params().Get("id")
+    ctx.WriteString(id)
+})
+```
+
+- New `Configuration.KeepAlive` and `iris.WithKeepAlive(time.Duration) Configurator` added as helpers to start the server using a tcp listener featured with keep-alive.
+
+- New `DirOptions.ShowHidden bool` is added by [@tuhao1020](https://github.com/tuhao1020) at [PR #1717](https://github.com/kataras/iris/pull/1717) to show or hide the hidden files when `ShowList` is set to true.
+
+- New `Context.ReadJSONStream` method and `JSONReader` options for `Context.ReadJSON` and `Context.ReadJSONStream`, see the [example](_examples/request-body/read-json-stream/main.go).
+
+- New `FallbackView` feature, per-party or per handler chain. Example can be found at: [_examples/view/fallback](_examples/view/fallback).
+
+```go
+    app.FallbackView(iris.FallbackViewFunc(func(ctx iris.Context, err iris.ErrViewNotExist) error {
+        // err.Name is the previous template name.
+        // err.IsLayout reports whether the failure came from the layout template.
+        // err.Data is the template data provided to the previous View call.
+        // [...custom logic e.g. ctx.View("fallback.html", err.Data)]
+        return err
+    }))
+```
+
 - New `versioning.Aliases` middleware and up to 80% faster version resolve. Example Code:
 
 ```go
@@ -334,6 +475,7 @@ var dirOpts = iris.DirOptions{
 
 ## New Context Methods
 
+- `Context.FormFiles(key string, before ...func(*Context, *multipart.FileHeader) bool) (files []multipart.File, headers []*multipart.FileHeader, err error)` method.
 - `Context.ReadURL(ptr interface{}) error` shortcut of `ReadParams` and `ReadQuery`. Binds URL dynamic path parameters and URL query parameters to the given "ptr" pointer of a struct value.
 - `Context.SetUser(User)` and `Context.User() User` to store and retrieve an authenticated client. Read more [here](https://github.com/iris-contrib/middleware/issues/63).
 - `Context.SetLogoutFunc(fn interface{}, persistenceArgs ...interface{})` and `Logout(args ...interface{}) error` methods to allow different kind of auth middlewares to be able to set a "logout" a user/client feature with a single function, the route handler may not be aware of the implementation of the authentication used.
@@ -346,7 +488,7 @@ var dirOpts = iris.DirOptions{
 - `Context.ReadHeaders(ptr interface{}) error` binds request headers to "ptr". [Example](https://github.com/kataras/iris/blob/master/_examples/request-body/read-headers/main.go).
 - `Context.ReadParams(ptr interface{}) error` binds dynamic path parameters to "ptr". [Example](https://github.com/kataras/iris/blob/master/_examples/request-body/read-params/main.go).
 - `Context.SaveFormFile(fh *multipart.FileHeader, dest string) (int64, error)` previously unexported. Accepts a result file of `Context.FormFile` and saves it to the disk.
-- `Context.URLParamSlice(name string) []string` is a a shortcut of `ctx.Request().URL.Query()[name]`. Like `URLParam` but it returns all values as a string slice instead of a single string separated by commas.
+- `Context.URLParamSlice(name string) []string` is a a shortcut of `ctx.Request().URL.Query()[name]`. Like `URLParam` but it returns all values as a string slice instead of a single string separated by commas. Note that it skips any empty values (e.g. https://iris-go.com?values=).
 - `Context.PostValueMany(name string) (string, error)` returns the post data of a given key. The returned value is a single string separated by commas on multiple values. It also reports whether the form was empty or when the "name" does not exist or whether the available values are empty. It strips any empty key-values from the slice before return. See `ErrEmptyForm`, `ErrNotFound` and `ErrEmptyFormField` respectfully. The `PostValueInt`, `PostValueInt64`, `PostValueFloat64` and `PostValueBool` now respect the above errors too (the `PostValues` method now returns a second output argument of `error` too, see breaking changes below). 
 - `Context.URLParamsSorted() []memstore.StringEntry` returns a sorted (by key) slice of key-value entries of the URL Query parameters.
 - `Context.ViewEngine(ViewEngine)` to set a view engine on-fly for the current chain of handlers, responsible to render templates through `ctx.View`. [Example](_examples/view/context-view-engine).
